@@ -1,0 +1,83 @@
+#ifndef MODULARENGINE_H
+#define MODULARENGINE_H
+
+#include <stdio.h>
+#include <iostream>
+
+#include "SDL.h"
+#include <gl/gl.h>
+#include <gl/glu.h>
+//#include <SDL_mixer.h>
+//#include <SDL_opengl.h>
+#include "SDL_image.h"
+
+#include <list>
+#include <map>
+
+#include "mge/RenderEngine.h"
+#include "mge/WorldEngine.h"
+#include "mge/PhysicsEngine.h"
+#include "mge/AudioEngine.h"
+#include "mge/Clock.h"
+
+#include "mge/Event.h"
+
+class ModularEngine : public EventHandler {
+public:
+
+    //Static methods
+    static void init(int iSDLVideoFlags);
+    static void clean();
+    static ModularEngine *get() { return mge; }
+
+    //Less static methods
+    void run();
+    void stop() { m_bIsRunning = false; }
+
+    //From EventHandler
+	virtual void addListener(Listener *pListener, EventID id, char* triggerData = NULL);
+	virtual bool removeListener(uint uiListenerID, EventID eventID);	//Returns true if object found
+	virtual uint getID() { return 0; }
+	virtual void informListeners(EventID id);
+
+	//Getter/setter methods
+	void setWorldEngine(WorldEngine *we)        { this->we = we; }
+	void setPhysicsEngine(PhysicsEngine *pe)    { this->pe = pe; }
+	void setRenderEngine(RenderEngine *re)      { this->re = re; }
+	void setAudioEngine(AudioEngine *ae)        { this->ae = ae; }
+    
+    //Input adjustment
+    void mapInput(int iSdlInputName, int iGameInputName);
+
+protected:
+private:
+    ModularEngine(int iSDLVideoFlags);
+    virtual ~ModularEngine();
+
+    //Static members
+    static ModularEngine *mge;
+
+    //Manager objects
+    Clock         *ck;
+    RenderEngine  *re;
+    WorldEngine   *we;
+    PhysicsEngine *pe;
+    AudioEngine   *ae;
+
+    //Input handling
+    InputData m_sInputData;
+	std::map<int, int> m_mInputMap;	//Maps SDL constants to InputIDs
+	std::list<Listener*> m_lsButtonInputList;
+	std::list<Listener*> m_lsMouseMoveList;
+
+    //General
+	bool m_bIsRunning;
+    uint m_uiLastTime;
+
+    //Helper methods
+    void handleInput(SDL_Event *pEvent);
+    void handleKey( SDL_Event *pEvent, bool bDown);
+    void handleButton(SDL_Event *pEvent, bool bDown);
+};
+
+#endif // MODULARENGINE_H

@@ -1,0 +1,138 @@
+ _____________________________________________________________________________
+/                                                                             \
+|                             MODULAR GAME ENGINE                             |
+|                               -=< README >=-                                |
+|                                                                             |
+|                     AUTHOR: Nathan Heisey                                   |
+|                    CONTACT: nathanheisey@gmail.com                          |
+\_____________________________________________________________________________/ 
+
+
+===INTRODUCTION===
+
+Welcome to the Modular Game Engine project!
+
+The MGE Project seeks to create a cross-platform engine with modular
+component engines- namely, separate world, physics, rendering, and audio
+modules.  Each of these must fit a standard interface so that the other modules
+may interface with them.  At the same time, they may (and probably should)
+provide many other functions so that internal process can be helped.
+
+This file provides information on setting up the project in Code::Blocks, the
+module developer interfaces, information for more general developers, and
+game programmer interfaces.
+
+While this engine was designed to be expanded upon, please keep in mind that
+not every possible use of this project was considered by the primary developer.
+Some implementations of engines and games may not be efficient or even remotely
+possible with the main engine design.  That said, this project hopefully
+provides sufficient variability and efficiency for most games.
+
+
+===PROJECT STATUS===
+
+v0.0 of the engine is complete as of 10/10/2012.
+> Engine operable within test parameters
+> BasicRenderEngine tested, outmoded
+> BasicWorldEngine tested, outmoded
+> BasicPhysicsEngine tested, replacement in progress
+> OrderedRenderEngine tested, operable
+> PartitionedWorldEngine tested, operable
+> NicksPhysicsEngine tested, inoperable
+> BasicRenderEngine and BasicWorldEngine currently removed from the project
+> NicksPhysicsEngine not added to project
+> TODO: Will update basic engines so they still meet standard interface
+  requirements
+> TODO: Improve efficiency of PartitionedWorldEngine
+> TODO: Check for and remove any outstanding memory leaks
+> TODO: Comment the code
+> TODO: Modify code so that it is possible to build an area not the current
+  area.  Best way is probably to give necessary classes knowledge of what area
+  they are joining.
+
+===PROJECT SETUP===
+
+--General--
+> Download and install Code::Blocks.  If given the option, install the GNU GCC
+  Compiler too (unless it is already installed and you know where it is).
+> Download and install the GNU GCC Compiler and tell Code::Blocks where to find
+  it, unless already installed as in the first step.
+> Download and install GitHub interface
+> Clone the git repository to a folder on your development machine
+> Open the .cbp file found in the main directory.
+
+--Windows--
+Tested on Windows 7 with SDL and other libraries pre-installed
+> Right click on the project and select "Properties..." at the bottom.
+> Click on the button marked "Project's build options..." on the bottom right.
+> Make sure that ModularEngine (as opposed to Debug or Release) is selected in
+  the left-hand pane.
+> Make sure the selected compiler is "GNU GCC Compiler"
+> Click on the tab marked "Linker settings"
+> Make sure the "Link libraries" and "Other linker options" fields are empty.
+  If not, only add the items that cannot be found in said options.
+> Add the following to "Link libraries:", so that the items appear in order:
+  mingw32
+  SDLmain
+  SDL_image
+  SDL.dll
+  opengl32
+  glu32
+  user32
+  gdi32
+  winmm
+  dxguid
+> Copy the following line into "Other linker options:"
+  `sdl-config --cflags` `sdl-config --libs`
+> Click on the tab marked "Search directories"
+> Click on the internal tab marked "Compiler"
+> Add the following:
+  [insert-your-repository-directory-here]\ModularEngine\
+> Click on the internal tab marked "Linker"
+  [insert-your-repository-directory-here]\ModularEngine\lib
+> Click OK
+> Click OK
+
+Hopefully that should be sufficient for you to compile the project!  If you
+find that something went wrong during or at the end of these steps, I can
+do little to help you; however, I have found that online forums are extremely
+helpful when you search "CodeBlocks [insert error here]".  Good luck!
+
+--Linux--
+> Coming as soon as I decide to risk trying to rebuild everything on my other
+  OS...
+  
+--Haiku--
+> Coming once I get it working on Windows and Linux.  And once SDL_mixer and
+  SDL_image are properly ported.  Need to reinstall this OS on my machine,
+  too...
+
+--Comments on Other Setups--
+The project has not been tested with other machines, but should hopefully work
+with little additional effort  When in doubt, consult the forums.
+
+Don't use/like codeblocks?  Frankly I don't like it much either, it's just that
+it's a free IDE that works on Windows and Linux.  I wish I had a makefile to
+give you, but (1) I haven't learned to write one yet and (2) I haven't
+figured out if Code::Blocks can generate one.  If you remain undaunted and
+determined to proceed without Code::Blocks, kudos to you!
+
+
+===PRIMARY ENGINE DEVELOPER INFORMATION===
+
+
+===MODULE DEVELOPER INFORMATION===
+
+
+===GAME DEVELOPER INFORMATION===
+
+--Intended Use--
+This engine was designed for developers who want more rigid control over their
+games than some engines may offer.  Game developers should be prepared to work
+with what they may consider to be the "low-level" aspects of their games.
+Why was it designed that way?  Good question!  The primary developer is a C++
+fanatic who believes in micromanagement of everything.  If this does not fit
+with your game plan, then you may want to try a different engine.  Of course,
+if it does fit with your designs, then you are probably making your own game
+engine anyway...
+
