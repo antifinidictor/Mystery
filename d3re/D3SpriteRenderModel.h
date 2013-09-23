@@ -22,6 +22,9 @@ public:
     void setFrameH(int fh) { m_iFrameH = fh; }
     void setRepsW(int rw)  { m_iRepsW = rw; }
     void setRepsH(int rh)  { m_iRepsH = rh; }
+    
+    void setColor(const Color &cr) { m_crColor = cr; }
+    Color &getColor() { return m_crColor; }
 
 private:
     Image *m_pImage;
@@ -29,6 +32,8 @@ private:
 
     int m_iFrameW, m_iFrameH;
     int m_iRepsW, m_iRepsH;
+    
+    Color m_crColor;
 
     GameObject *m_pParent;
 };

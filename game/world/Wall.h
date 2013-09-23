@@ -35,6 +35,10 @@ public:
     virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }
     virtual PhysicsModel *getPhysicsModel() { return m_pPhysicsModel; }
 
+    //Misc
+    void setColor(const Color &cr) { m_pRenderModel->setColor(cr); }
+    Color &getColor() { return m_pRenderModel->getColor(); }
+
 private:
     uint m_uiID;
     uint m_uiFlags;

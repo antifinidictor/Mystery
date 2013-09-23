@@ -131,6 +131,41 @@ void initWorld() {
     buildWorld();
 }
 
+void buildRoom(Box bxVol) {
+    PartitionedWorldEngine *we = PWE::get();
+
+    //"Mins" are inside the wall, "maxes" are outside the wall
+    float minEast = bxVol.x,
+          maxEast = minEast - TILE_SIZE;
+    float minWest = bxVol.x + bxVol.w,
+          maxWest = minWest + TILE_SIZE;
+    float minNorth = bxVol.z,
+          maxNorth = minNorth - TILE_SIZE;
+    float minSouth = bxVol.z + bxVol.l,
+          maxSouth = minSouth + TILE_SIZE;
+    float minDown = bxVol.y,
+          maxDown = minDown - TILE_SIZE;
+    float height = TILE_SIZE,
+          width = TILE_SIZE;
+
+
+    Wall *wallNorth = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+                               Box(minEast, minDown, maxNorth, maxWest - minEast, height, width), WALL_SOUTH);
+    Wall *wallEast  = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+                               Box(maxEast, minDown, maxNorth, width, height, maxNorth - minSouth), WALL_WEST);
+    Wall *wallSouth = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+                               Box(maxEast, minDown, minSouth, minWest - maxEast, height, minSouth - maxSouth), WALL_NORTH);
+    Wall *wallWest  = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+                               Box(minEast, minDown, minNorth, maxWest - minWest, height, minNorth - maxSouth), WALL_EAST);
+    Wall *wallFloor = new Wall(we->genID(), IMG_WALL_TOP, IMG_NONE, IMG_NONE,
+                               Box(maxEast, maxDown, maxNorth, maxWest - maxEast, minDown - maxDown, maxNorth - maxSouth), WALL_UP);
+    we->add(wallNorth);
+    we->add(wallSouth);
+    we->add(wallEast);
+    we->add(wallWest);
+    we->add(wallFloor);
+}
+
 void buildWorld() {
     PartitionedWorldEngine *we = PWE::get();
 
@@ -144,8 +179,8 @@ void buildWorld() {
 
     Wall *wall0 = new Wall(we->genID(), IMG_WALL_TOP, IMG_WALL_BOTTOM, IMG_WALL_SIDE,
                           Box(50, -32, 50, 128, 32, 128), WALL_SOUTH | WALL_NORTH | WALL_WEST | WALL_EAST | WALL_DOWN);
+    wall0->setColor(Color(0, 0, 0xFF));
     we->add(wall0);
-
 
     Player *player = new Player(we->genID(), Point());
     we->add(player);

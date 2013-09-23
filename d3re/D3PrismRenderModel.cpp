@@ -12,6 +12,8 @@ D3PrismRenderModel::D3PrismRenderModel(GameObject *parent, Box bxVolume) {
     for(uint i = 0; i < 6; ++i) {
         m_aTextures[i] = 0;
     }
+
+    m_crColor = Color(0xFF, 0xFF, 0xFF);
 }
 
 
@@ -26,7 +28,7 @@ D3PrismRenderModel::setTexture(int iFace, uint uiTexId) {
 void
 D3PrismRenderModel::render(RenderEngine *re) {
     Color worldColor = D3RE::get()->getWorldColor();
-    Color ourColor = Color(worldColor); //Eventually there may be a mix done in here
+    Color ourColor = mix(2, &worldColor, &m_crColor);
 
     Point ptPos = getPosition();
     glTranslatef((int)(ptPos.x + m_bxVolume.x), (int)(ptPos.y + m_bxVolume.y), (int)(ptPos.z + m_bxVolume.z));
@@ -36,10 +38,10 @@ D3PrismRenderModel::render(RenderEngine *re) {
     // Top face (y = v.y)
     renderFace(
         m_aTextures[UP],    //Texture id to bind
-        Point(         0.f, m_bxVolume.l,          0.f),
-        Point(m_bxVolume.w, m_bxVolume.l,          0.f),
-        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
-        Point(         0.f, m_bxVolume.l, m_bxVolume.h)
+        Point(         0.f, m_bxVolume.h,          0.f),
+        Point(m_bxVolume.w, m_bxVolume.h,          0.f),
+        Point(m_bxVolume.w, m_bxVolume.h, m_bxVolume.l),
+        Point(         0.f, m_bxVolume.h, m_bxVolume.l)
     );
 
     // Bottom face (y = 0.f)
@@ -47,33 +49,24 @@ D3PrismRenderModel::render(RenderEngine *re) {
         m_aTextures[DOWN],
         Point(         0.f,          0.f,          0.f),
         Point(m_bxVolume.w,          0.f,          0.f),
-        Point(m_bxVolume.w,          0.f, m_bxVolume.h),
-        Point(         0.f,          0.f, m_bxVolume.h)
+        Point(m_bxVolume.w,          0.f, m_bxVolume.l),
+        Point(         0.f,          0.f, m_bxVolume.l)
     );
-    /*
-    renderFace(
-        m_aTextures[DOWN],
-        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
-        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
-        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
-        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h)
-    );
-    */
 
     // Front face  (z = v.z)
     renderFace(
         m_aTextures[SOUTH],
-        Point(         0.f, m_bxVolume.l, m_bxVolume.h),
-        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
-        Point(m_bxVolume.w,          0.f, m_bxVolume.h),
-        Point(         0.f,          0.f, m_bxVolume.h)
+        Point(         0.f, m_bxVolume.h, m_bxVolume.l),
+        Point(m_bxVolume.w, m_bxVolume.h, m_bxVolume.l),
+        Point(m_bxVolume.w,          0.f, m_bxVolume.l),
+        Point(         0.f,          0.f, m_bxVolume.l)
     );
 
     // Back face (z = 0.f)
     renderFace(
         m_aTextures[NORTH],
-        Point(         0.f, m_bxVolume.l,          0.f),
-        Point(m_bxVolume.w, m_bxVolume.l,          0.f),
+        Point(         0.f, m_bxVolume.h,          0.f),
+        Point(m_bxVolume.w, m_bxVolume.h,          0.f),
         Point(m_bxVolume.w,          0.f,          0.f),
         Point(         0.f,          0.f,          0.f)
     );
@@ -81,19 +74,19 @@ D3PrismRenderModel::render(RenderEngine *re) {
     // Left face (x = 0.f)
     renderFace(
         m_aTextures[WEST],
-        Point(         0.f, m_bxVolume.l, m_bxVolume.h),
-        Point(         0.f, m_bxVolume.l,          0.f),
+        Point(         0.f, m_bxVolume.h, m_bxVolume.l),
+        Point(         0.f, m_bxVolume.h,          0.f),
         Point(         0.f,          0.f,          0.f),
-        Point(         0.f,          0.f, m_bxVolume.h)
+        Point(         0.f,          0.f, m_bxVolume.l)
     );
 
     // Right face (x = 1.0f)
     renderFace(
         m_aTextures[EAST],
-        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
-        Point(m_bxVolume.w, m_bxVolume.l,          0.f),
+        Point(m_bxVolume.w, m_bxVolume.h, m_bxVolume.l),
+        Point(m_bxVolume.w, m_bxVolume.h,          0.f),
         Point(m_bxVolume.w,          0.f,          0.f),
-        Point(m_bxVolume.w,          0.f, m_bxVolume.h)
+        Point(m_bxVolume.w,          0.f, m_bxVolume.l)
     );
 }
 

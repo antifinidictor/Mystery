@@ -7,6 +7,7 @@
 #define DEFS_H
 #include <math.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 typedef unsigned int uint;
 
@@ -43,6 +44,8 @@ const int SCREEN_WIDTH = 640;
 
 #define TRUE 1
 #define FALSE 0
+
+#define TILE_SIZE 32
 
 //Macros
 #define GET_FLAG(flags, flag)             ((flags >> flag) & 0x1)
@@ -161,13 +164,13 @@ typedef struct tRect {
 	float x;
 	float y;
 	int w;
-	int l;
-	tRect() { x = y = 0.0F; w = l = 0; }
-	tRect(float fx, float fy, int iw, int il) { x = fx; y = fy; w = iw; l = il; }
+	int h;
+	tRect() { x = y = 0.0F; w = h = 0; }
+	tRect(float fx, float fy, int iw, int ih) { x = fx; y = fy; w = iw; h = ih; }
 	operator tBox();
 	void operator+=(const Vec3f &pt) { x += pt.x; y += pt.y; }
 	void operator-=(const Vec3f &pt) { x -= pt.x; y -= pt.y; }
-	void operator=(const tRect &rc) { x = rc.x; y = rc.y; w = rc.w; l = rc.l; }
+	void operator=(const tRect &rc) { x = rc.x; y = rc.y; w = rc.w; h = rc.h; }
 } Rect, RC;
 
 typedef struct tBox {
@@ -175,17 +178,17 @@ typedef struct tBox {
 	float y;
 	float z;
 	int w;
-	int l;
 	int h;
+	int l;
 	tBox() { x = y = z = 0.0F; w = l = h = 0; }
-	tBox(float fx, float fy, float fz, int iw, int il, int ih) { x = fx; y = fy; z = fz; w = iw; l = il; h = ih; }
+	tBox(float fx, float fy, float fz, int iw, int ih, int il) { x = fx; y = fy; z = fz; w = iw; l = il; h = ih; }
 
 	//Constant operators
 	tBox operator+(const Vec3f &pt) const {  //positive translation
-        return tBox(x + pt.x, y + pt.y, z + pt.z, w, l, h);
+        return tBox(x + pt.x, y + pt.y, z + pt.z, w, h, l);
 	}
 	tBox operator-(const Vec3f &pt) const {  //negative translation
-        return tBox(x - pt.x, y - pt.y, z - pt.z, w, l, h);
+        return tBox(x - pt.x, y - pt.y, z - pt.z, w, h, l);
 	}
 	bool operator==(const tBox &bx) const {
 	    return  x == bx.x && y == bx.y && z == bx.z &&
@@ -201,7 +204,7 @@ typedef struct tBox {
 	    return !(*this == pt);
 	}
 	operator tRect() {
-        return tRect(x,y,w,l);
+        return tRect(x,y,w,h);
     }
 
 	//Nonconstant operators
@@ -227,6 +230,8 @@ typedef struct tColor {
         b = g = r = 0;
     }
 } Color, CR;
+
+Color mix(int numColors, ...);
 
 bool  rcIntersects(const RC &rc1, const RC &rc2);
 char  rcOutOfBounds(const RC &rc, const RC &rcBounds);

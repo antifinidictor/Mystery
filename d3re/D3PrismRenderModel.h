@@ -19,6 +19,8 @@ public:
     virtual Rect getDrawArea();
     
     void setTexture(int iFace, uint uiTexId);   //Assumes values are valid!
+    void setColor(const Color &cr) { m_crColor = cr; }
+    Color &getColor() { return m_crColor; }
 
 private:
     void renderFace(uint texId, const Point &tl, const Point &tr, const Point &bl, const Point &br);
@@ -26,6 +28,8 @@ private:
     uint m_aTextures[6];    //One for each side
     Box m_bxVolume;
 
+    Color m_crColor;
+    
     GameObject *m_pParent;
 };
 

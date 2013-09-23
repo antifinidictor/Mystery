@@ -4,8 +4,8 @@ Wall::Wall(uint uiId, uint texTopId, uint texBottomId, uint texSideId, Box bxVol
     m_uiID = uiId;
     m_uiFlags = 0;
 
-    m_pRenderModel = new D3PrismRenderModel(this, Box(-bxVolume.w / 2, -bxVolume.l / 2, -bxVolume.h / 2,
-                                                       bxVolume.w,      bxVolume.l,      bxVolume.h));
+    m_pRenderModel = new D3PrismRenderModel(this, Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
+                                                       bxVolume.w,      bxVolume.h,      bxVolume.l));
 
     m_pRenderModel->setTexture(NORTH, ((visibleFaces & WALL_NORTH) ? texSideId : IMG_NONE));
     m_pRenderModel->setTexture(SOUTH, ((visibleFaces & WALL_SOUTH) ? texSideId : IMG_NONE));

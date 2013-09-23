@@ -71,7 +71,7 @@ bool Vec3f::operator<(const Point &pt) const {
 
 //Box
 tRect::operator tBox() {
-    return tBox(x, y, 0, w, l, 0);
+    return tBox(x, y, 0, w, h, 0);
 }
 
 /* Function definitions from STD_Defs.h */
@@ -82,8 +82,8 @@ tRect::operator tBox() {
 bool rcIntersects( const Rect &rc1, const Rect &rc2 ) {
 	return	rc1.x < rc2.x + rc2.w &&
 			rc2.x < rc1.x + rc1.w &&
-			rc1.y < rc2.y + rc2.l &&
-			rc2.y < rc1.y + rc1.l;
+			rc1.y < rc2.y + rc2.h &&
+			rc2.y < rc1.y + rc1.h;
 }
 
 /*
@@ -95,7 +95,7 @@ bool rcIntersects( const Rect &rc1, const Rect &rc2 ) {
 char rcOutOfBounds(const Rect &rc, const Rect &rcBounds) {
 	return	((rc.y < rcBounds.y) << NORTH) |                        //North
 			((rc.x + rc.w > rcBounds.x + rcBounds.w) << EAST) |     //East
-			((rc.y + rc.l > rcBounds.y + rcBounds.l) << SOUTH) |    //South
+			((rc.y + rc.h > rcBounds.y + rcBounds.h) << SOUTH) |    //South
 			((rc.x < rcBounds.x) << WEST);                          //West
 }
 
@@ -107,7 +107,7 @@ char rcOutOfBounds(const Rect &rc, const Rect &rcBounds) {
 char ptOutOfBounds(const PT &pt, const RC &rcBounds) {
 	return	((pt.y < rcBounds.y) << NORTH) |                //North
 			((pt.x > rcBounds.x + rcBounds.w) << EAST) |    //East
-			((pt.y > rcBounds.y + rcBounds.l) << SOUTH) |   //South
+			((pt.y > rcBounds.y + rcBounds.h) << SOUTH) |   //South
 			((pt.x < rcBounds.x) << WEST);                  //West
 }
 
@@ -118,10 +118,10 @@ char ptOutOfBounds(const PT &pt, const RC &rcBounds) {
 bool bxIntersects(const Box &bx1, const Box &bx2) {
     return  bx1.x <= bx2.x + bx2.w &&
 			bx2.x <= bx1.x + bx1.w &&
-			bx1.y <= bx2.y + bx2.l &&
-			bx2.y <= bx1.y + bx1.l &&
-			bx1.z <= bx2.z + bx2.h &&
-			bx2.z <= bx1.z + bx1.h;
+			bx1.y <= bx2.y + bx2.h &&
+			bx2.y <= bx1.y + bx1.h &&
+			bx1.z <= bx2.z + bx2.l &&
+			bx2.z <= bx1.z + bx1.l;
 }
 
 /*
@@ -133,9 +133,9 @@ bool bxIntersects(const Box &bx1, const Box &bx2) {
 char bxOutOfBounds(const Box &bx, const Box &bxBounds) {
     return  ((bx.y < bxBounds.y) << NORTH) |
             ((bx.x + bx.w > bxBounds.x + bxBounds.w) << EAST) |
-            ((bx.y + bx.l > bxBounds.y + bxBounds.l) << SOUTH) |
+            ((bx.y + bx.h > bxBounds.y + bxBounds.h) << SOUTH) |
             ((bx.x < bxBounds.x) << WEST) |
-            ((bx.z + bx.h > bxBounds.z + bxBounds.h) << UP) |
+            ((bx.z + bx.l > bxBounds.z + bxBounds.l) << UP) |
             ((bx.z < bxBounds.z) << DOWN);
 }
 
@@ -147,9 +147,9 @@ char bxOutOfBounds(const Box &bx, const Box &bxBounds) {
 char ptOutOfBounds(const Point &pt, const Box &bxBounds) {
     return  ((pt.y < bxBounds.y) << NORTH) |
             ((pt.x > bxBounds.x + bxBounds.w) << EAST) |
-            ((pt.y > bxBounds.y + bxBounds.l) << SOUTH) |
+            ((pt.y > bxBounds.y + bxBounds.h) << SOUTH) |
             ((pt.x < bxBounds.x) << WEST) |
-            ((pt.z > bxBounds.z + bxBounds.h) << UP) |
+            ((pt.z > bxBounds.z + bxBounds.l) << UP) |
             ((pt.z < bxBounds.z) << DOWN);
 }
 
@@ -162,7 +162,7 @@ bool ptInRect(const Point &pt, const Rect &rc) {
 	return	pt.x >= rc.x &&
 			pt.x <= rc.x + rc.w &&
 			pt.y >= rc.y &&
-			pt.y <= rc.y + rc.l;
+			pt.y <= rc.y + rc.h;
 }
 
 
@@ -171,7 +171,7 @@ bool ptInRect(const Point &pt, const Rect &rc) {
  * Returns the center point of the bounding box/rectangle.
  */
 Point bxCenter(const Box &bx) {
-    return Point(bx.x + bx.w / 2, bx.y + bx.l / 2, bx.z + bx.h / 2);
+    return Point(bx.x + bx.w / 2, bx.y + bx.h / 2, bx.z + bx.l / 2);
 }
 
 /*
@@ -181,8 +181,8 @@ Point bxCenter(const Box &bx) {
 Box bxScaleAboutPt(const Box &bx, const Point &locus, const double scale) {
     Box sbx = bx;
     sbx.w *= scale;
-    sbx.l *= scale;
     sbx.h *= scale;
+    sbx.l *= scale;
     //Translate the box to the new coordinates
     return sbx + (bxCenter(bx) - locus) * scale + locus - bxCenter(sbx);
 }
@@ -202,8 +202,8 @@ Box bxIntersection(const Box &bx1, const Box &bx2) {
     ret.y = bx1.y > bx2.y ? bx1.y : bx2.y;
     ret.z = bx1.z > bx2.z ? bx1.z : bx2.z;
     ret.w = bx1.x + bx1.w > bx2.x + bx2.w ? bx1.x + bx1.w - ret.x : bx2.x + bx2.w - ret.x;
-    ret.l = bx1.y + bx1.l > bx2.y + bx2.l ? bx1.y + bx1.l - ret.y : bx2.y + bx2.l - ret.y;
-    ret.h = bx1.z + bx1.h > bx2.z + bx2.h ? bx1.z + bx1.h - ret.z : bx2.z + bx2.h - ret.z;
+    ret.h = bx1.y + bx1.h > bx2.y + bx2.h ? bx1.y + bx1.h - ret.y : bx2.y + bx2.h - ret.y;
+    ret.l = bx1.z + bx1.l > bx2.z + bx2.l ? bx1.z + bx1.l - ret.z : bx2.z + bx2.l - ret.z;
     return ret;
 }
 
@@ -212,7 +212,7 @@ Rect rcIntersection(const Rect &rc1, const Rect &rc2) {
     ret.x = rc1.x > rc2.x ? rc1.x : rc2.x;
     ret.y = rc1.y > rc2.y ? rc1.y : rc2.y;
     ret.w = rc1.x + rc1.w > rc2.x + rc2.w ? rc1.x + rc1.w - ret.x : rc2.x + rc2.w - ret.x;
-    ret.l = rc1.y + rc1.l > rc2.y + rc2.l ? rc1.y + rc1.l - ret.y : rc2.y + rc2.l - ret.y;
+    ret.h = rc1.y + rc1.h > rc2.y + rc2.h ? rc1.y + rc1.h - ret.y : rc2.y + rc2.h - ret.y;
     return ret;
 }
 
@@ -253,6 +253,18 @@ float dot(PT &pt1, PT &pt2) {
 	return pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z;
 }
 
+Color mix(int numColors, ...) {
+    va_list vl;
+    va_start(vl, numColors);
+    long r = 0, g = 0, b = 0;
+    for(int i = 0; i < numColors; ++i) {
+        Color *cr = va_arg(vl, Color*);
+        r += cr->r;
+        g += cr->g;
+        b += cr->b;
+    }
+    return Color(r / numColors, g / numColors, b / numColors);
+}
 
 
 

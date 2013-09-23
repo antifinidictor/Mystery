@@ -14,7 +14,7 @@
 using namespace std;
 
 #define CAM_DIST 200.f
-#define CAM_ANGLE (M_PI / 3)
+#define CAM_ANGLE (9 * M_PI / 32)
 
 //static members
 D3RenderEngine *D3RenderEngine::re;

@@ -14,8 +14,8 @@
 class SimplePhysicsObject : public GameObject {
 public:
     SimplePhysicsObject(uint id, Image *img, Box bxVolume) {
-        m_pRenderModel = new D3PrismRenderModel(this, Box(-bxVolume.w / 2, -bxVolume.l / 2, -bxVolume.h / 2,
-                                                           bxVolume.w,      bxVolume.l,      bxVolume.h));
+        m_pRenderModel = new D3PrismRenderModel(this, Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
+                                                           bxVolume.w,      bxVolume.h,      bxVolume.l));
         //Hidden faces not rendered
         m_pRenderModel->setTexture(NORTH, IMG_NONE);//img->m_uiID);
         m_pRenderModel->setTexture(SOUTH, img->m_uiID);
@@ -45,6 +45,10 @@ public:
     //Models
     virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }
     virtual PhysicsModel *getPhysicsModel() { return m_pPhysicsModel; }
+
+    //Misc
+    void setColor(const Color &cr) { m_pRenderModel->setColor(cr); }
+    Color &getColor() { return m_pRenderModel->getColor(); }
 
 private:
     uint m_uiID;
