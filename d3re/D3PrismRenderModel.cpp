@@ -27,6 +27,7 @@ D3PrismRenderModel::setTexture(int iFace, uint uiTexId) {
 
 void
 D3PrismRenderModel::render(RenderEngine *re) {
+    D3RE::get()->prepCamera();
     Color worldColor = D3RE::get()->getWorldColor();
     Color ourColor = mix(2, &worldColor, &m_crColor);
 

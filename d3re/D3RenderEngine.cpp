@@ -59,7 +59,7 @@ D3RenderEngine::render() {
 
     for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
             it != m_mObjsOnScreen.end(); ++it) {
-        prepCamera();
+        //prepCamera();
         it->second->getRenderModel()->render(this);
     }
 
