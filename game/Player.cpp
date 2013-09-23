@@ -90,9 +90,9 @@ void Player::handleButton(InputData* data) {
         m_fDeltaZoom = 0.f;
     } else if(data->getInputState(IN_SHIFT)) {
         if(data->getInputState(IN_NORTH)) {
-            m_fDeltaZoom = -0.5f;
+            m_fDeltaZoom = -1.0f;
         } else if(data->getInputState(IN_SOUTH)) {
-            m_fDeltaZoom = 0.5f;
+            m_fDeltaZoom = 1.0f;
         } else {
             m_fDeltaZoom = 0.f;
         }

@@ -154,7 +154,7 @@ void buildRoom(Box bxVol) {
     Wall *wallWest  = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
                                Box(maxEast, minDown, minNorth, width, height, minSouth - minNorth), WALL_EAST);
     Wall *wallSouth = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
-                               Box(minEast, minDown, minSouth, minWest - maxEast, height, width), WALL_NORTH);
+                               Box(minEast, minDown, minSouth, minWest - minEast, height, width), WALL_NORTH);
     Wall *wallEast  = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
                                Box(minWest, minDown, minNorth, width, height, minSouth - minNorth), WALL_WEST);
     Wall *wallFloor = new Wall(we->genID(), IMG_WALL_TOP, IMG_NONE, IMG_NONE,
@@ -178,10 +178,12 @@ void buildWorld() {
     SimplePhysicsObject *block = new SimplePhysicsObject(we->genID(), D3RE::get()->getImage(IMG_BLOCK), Box(-32,0,0,32,32,32));
     we->add(block);
 
+/*
     Wall *wall0 = new Wall(we->genID(), IMG_WALL_TOP, IMG_WALL_BOTTOM, IMG_WALL_SIDE,
                           Box(50, -32, 50, 128, 32, 128), WALL_SOUTH | WALL_NORTH | WALL_WEST | WALL_EAST | WALL_DOWN);
     wall0->setColor(Color(0, 0, 0xFF));
     we->add(wall0);
+*/
 
     Player *player = new Player(we->genID(), Point());
     we->add(player);

@@ -35,7 +35,7 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
 
     //Apply gravity
     if(obj->getFlag(TPE_FALLING) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC)) {
-        //tmdl->applyForce(Point(0,0,-3));
+        tmdl->applyForce(Point(0,-3,0));
     }
 
     //Apply general physics updates to object
@@ -101,36 +101,7 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
             iDir1 = WEST;
             iDir2 = EAST;
         }
-    } else if(fabs(fYShift) < fabs(fXShift) && fabs(fYShift) < fabs(fZShift)) {
-        //Shift by Y
-        if(obj1->getFlag(TPE_STATIC)) {
-            ptObj1Shift = Point();
-            ptObj2Shift = Point(0, -fYShift, 0);
-        } else if(obj2->getFlag(TPE_STATIC)) {
-            ptObj1Shift = Point(0, fYShift, 0);
-            ptObj2Shift = Point();
-        } else {    //Split evenly
-            ptObj1Shift = Point(0, fYShift / 2, 0);
-            ptObj2Shift = Point(0, -fYShift / 2, 0);
-        }
-
-        if(bx2.y > bx1.y/*fZShift < 0*/) {
-            iDir1 = UP;
-            iDir2 = DOWN;
-            if(!obj1->getFlag(TPE_PASSABLE) && !obj2->getFlag(TPE_PASSABLE)) {
-                obj2->setFlag(TPE_FALLING, false);
-                tpm2->clearVerticalVelocity();
-            }
-        } else {
-            iDir1 = DOWN;
-            iDir2 = UP;
-            if(!obj1->getFlag(TPE_PASSABLE) && !obj2->getFlag(TPE_PASSABLE)) {
-                obj1->setFlag(TPE_FALLING, false);
-                tpm1->clearVerticalVelocity();
-            }
-        }
-        bApplyForce = false;
-    } else {
+    } else if(fabs(fZShift) < fabs(fXShift) && fabs(fZShift) < fabs(fYShift)) {
         //Shift by Z
         if(obj1->getFlag(TPE_STATIC)) {
             ptObj1Shift = Point();
@@ -151,6 +122,35 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
             iDir1 = SOUTH;
             iDir2 = NORTH;
         }
+    } else {
+        //Shift by Y
+        if(obj1->getFlag(TPE_STATIC)) {
+            ptObj1Shift = Point();
+            ptObj2Shift = Point(0, -fYShift, 0);
+        } else if(obj2->getFlag(TPE_STATIC)) {
+            ptObj1Shift = Point(0, fYShift, 0);
+            ptObj2Shift = Point();
+        } else {    //Split evenly
+            ptObj1Shift = Point(0, fYShift / 2, 0);
+            ptObj2Shift = Point(0, -fYShift / 2, 0);
+        }
+
+        if(bx2.y < bx1.y/*fZShift < 0*/) {
+            iDir1 = UP;
+            iDir2 = DOWN;
+            if(!obj1->getFlag(TPE_PASSABLE) && !obj2->getFlag(TPE_PASSABLE)) {
+                obj2->setFlag(TPE_FALLING, false);
+                tpm2->clearVerticalVelocity();
+            }
+        } else {
+            iDir1 = DOWN;
+            iDir2 = UP;
+            if(!obj1->getFlag(TPE_PASSABLE) && !obj2->getFlag(TPE_PASSABLE)) {
+                obj1->setFlag(TPE_FALLING, false);
+                tpm1->clearVerticalVelocity();
+            }
+        }
+        bApplyForce = false;
     }
 
     //Only move the objects if they aren't passable.  We needed some of
