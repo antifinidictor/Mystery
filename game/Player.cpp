@@ -56,8 +56,8 @@ bool Player::update(uint time) {
             --timer;
         }
     }
-
-    D3RE::get()->moveScreenTo(m_pPhysicsModel->getPosition());
+    Point ptPos = m_pPhysicsModel->getPosition();
+    D3RE::get()->moveScreenTo(ptPos);
 
     return false;
 }

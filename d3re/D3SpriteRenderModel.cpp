@@ -39,7 +39,7 @@ D3SpriteRenderModel::render(RenderEngine *re) {
 
     //Bind the texture to which subsequent calls refer to
     glBindTexture( GL_TEXTURE_2D, m_pImage->m_uiTexture );
-    glDepthMask(GL_FALSE);
+    //glDepthMask(GL_FALSE);
     glBegin(GL_QUADS);
         glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);
         //Top-left vertex (corner)
@@ -58,7 +58,7 @@ D3SpriteRenderModel::render(RenderEngine *re) {
         glTexCoord2f(fTexLeft, fTexBottom);
         glVertex3f(0.f, 0.f, 0.f);
     glEnd();
-    glDepthMask(GL_TRUE);
+    //glDepthMask(GL_TRUE);
 }
 
 Rect

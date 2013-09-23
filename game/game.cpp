@@ -145,20 +145,20 @@ void buildRoom(Box bxVol) {
           maxSouth = minSouth + TILE_SIZE;
     float minDown = bxVol.y,
           maxDown = minDown - TILE_SIZE;
-    float height = TILE_SIZE,
+    float height = bxVol.h,
           width = TILE_SIZE;
 
 
     Wall *wallNorth = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
-                               Box(minEast, minDown, maxNorth, maxWest - minEast, height, width), WALL_SOUTH);
-    Wall *wallEast  = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
-                               Box(maxEast, minDown, maxNorth, width, height, maxNorth - minSouth), WALL_WEST);
-    Wall *wallSouth = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
-                               Box(maxEast, minDown, minSouth, minWest - maxEast, height, minSouth - maxSouth), WALL_NORTH);
+                               Box(minEast, minDown, maxNorth, minWest - minEast, height, width), WALL_SOUTH);
     Wall *wallWest  = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
-                               Box(minEast, minDown, minNorth, maxWest - minWest, height, minNorth - maxSouth), WALL_EAST);
+                               Box(maxEast, minDown, minNorth, width, height, minSouth - minNorth), WALL_EAST);
+    Wall *wallSouth = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+                               Box(minEast, minDown, minSouth, minWest - maxEast, height, width), WALL_NORTH);
+    Wall *wallEast  = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+                               Box(minWest, minDown, minNorth, width, height, minSouth - minNorth), WALL_WEST);
     Wall *wallFloor = new Wall(we->genID(), IMG_WALL_TOP, IMG_NONE, IMG_NONE,
-                               Box(maxEast, maxDown, maxNorth, maxWest - maxEast, minDown - maxDown, maxNorth - maxSouth), WALL_UP);
+                               Box(minEast, maxDown, minNorth, minWest - minEast, minDown - maxDown, minSouth - minNorth), WALL_UP);
     we->add(wallNorth);
     we->add(wallSouth);
     we->add(wallEast);
@@ -173,6 +173,7 @@ void buildWorld() {
     we->setCurrentArea(GM_MAIN_GAME);
     we->setEffectiveArea(GM_MAIN_GAME); //Make sure objects actually get added here
 
+    buildRoom(Box(-128, 0, -256, 256, TILE_SIZE, 512));
 
     SimplePhysicsObject *block = new SimplePhysicsObject(we->genID(), D3RE::get()->getImage(IMG_BLOCK), Box(-32,0,0,32,32,32));
     we->add(block);
