@@ -24,6 +24,9 @@ enum IMAGE_TYPES {
     IMG_FONT,
     IMG_PLAYER,
     IMG_BLOCK,
+    IMG_WALL_TOP,
+    IMG_WALL_BOTTOM,
+    IMG_WALL_SIDE,
     NUM_IMAGES
 };
 
@@ -41,6 +44,8 @@ enum InputID {
     IN_SOUTH,
     IN_WEST,
     IN_SELECT,
+    IN_SHIFT,   //Modify key #1
+    IN_CTRL,    //Modify key #2
     IN_CAST,    //Cast spell
     IN_HOME,    //Home screen
     IN_BREAK,   //Escape key

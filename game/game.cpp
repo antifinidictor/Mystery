@@ -22,7 +22,8 @@
 #include "game/game_defs.h"
 #include "game/gui/TextRenderer.h"
 #include "game/Player.h"
-#include "game/SimplePhysicsObject.h"
+#include "game/world/SimplePhysicsObject.h"
+#include "game/world/Wall.h"
 
 //Function prototypes
 void buildWorld();
@@ -107,12 +108,17 @@ void initWorld() {
     mge->mapInput(SDLK_s,     IN_SOUTH);
     mge->mapInput(SDLK_a,     IN_WEST);
     mge->mapInput(SDLK_SPACE, IN_CAST);
+    mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
+    mge->mapInput(SDLK_LCTRL, IN_CTRL);
     mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
     mge->mapInput(SDLK_h,     IN_BREAK);
 
-    D3RE::get()->createImage(IMG_PLAYER, "res/Magus.png", 8, 4);
-    D3RE::get()->createImage(IMG_FONT,   "res/gui/font.png", 26, 3);
-    D3RE::get()->createImage(IMG_BLOCK,  "res/BlockTexture.png");
+    D3RE::get()->createImage(IMG_PLAYER,   "res/Magus.png", 8, 4);
+    D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3);
+    D3RE::get()->createImage(IMG_BLOCK,    "res/world/block.png");
+    D3RE::get()->createImage(IMG_WALL_TOP, "res/world/wallTop.png");
+    D3RE::get()->createImage(IMG_WALL_BOTTOM, "res/world/wallBottom.png");
+    D3RE::get()->createImage(IMG_WALL_SIDE, "res/world/wallSide.png");
 
     //Other singleton initializations
     TextRenderer::init();
@@ -132,9 +138,15 @@ void buildWorld() {
     we->setCurrentArea(GM_MAIN_GAME);
     we->setEffectiveArea(GM_MAIN_GAME); //Make sure objects actually get added here
 
-    Player *player = new Player(we->genID(), Point());
-    we->add(player);
 
     SimplePhysicsObject *block = new SimplePhysicsObject(we->genID(), D3RE::get()->getImage(IMG_BLOCK), Box(-32,0,0,32,32,32));
     we->add(block);
+
+    Wall *wall0 = new Wall(we->genID(), IMG_WALL_TOP, IMG_WALL_BOTTOM, IMG_WALL_SIDE,
+                          Box(50, -32, 50, 128, 32, 128), WALL_SOUTH | WALL_NORTH | WALL_WEST | WALL_EAST | WALL_DOWN);
+    we->add(wall0);
+
+
+    Player *player = new Player(we->genID(), Point());
+    we->add(player);
 }

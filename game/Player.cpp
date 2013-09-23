@@ -8,7 +8,7 @@ Player::Player(uint uiId, const Point &ptPos) {
     m_uiFlags = 0;
 
     Rect rcDrawArea = Rect(-w / 2, -h / 2, w, h);
-    Box bxVolume = Box(ptPos.x - w / 4, ptPos.y - h / 4, ptPos.z, w / 2, h / 2, h);
+    Box bxVolume = Box(ptPos.x - w / 4, ptPos.y, ptPos.z - h / 4, w / 2, h, h / 2);
     m_pPhysicsModel = new TimePhysicsModel(bxVolume);
     m_pRenderModel  = new D3SpriteRenderModel(this, img, rcDrawArea);
 
@@ -28,6 +28,10 @@ bool Player::update(uint time) {
     Point mov = Point(dx,0,dy);
     mov.normalize();
     m_pPhysicsModel->applyForce(mov);
+
+    //Camera adjustment
+    D3RE::get()->adjustCamAngle(m_fDeltaPitch);
+    D3RE::get()->adjustCamDist(m_fDeltaZoom);
 
     if(dx > 0 && dy == 0) {
         m_iDirection = EAST;
@@ -73,12 +77,37 @@ void Player::callBack(uint cID, void *data, EventID id) {
 }
 
 void Player::handleButton(InputData* data) {
-    if(data->getInputState(IN_NORTH)) {
-        dy = -1;
-    } else if(data->getInputState(IN_SOUTH)) {
-        dy = 1;
-    } else {
+    if(data->getInputState(IN_CTRL)) {
+        if(data->getInputState(IN_NORTH)) {
+            m_fDeltaPitch = M_PI / 100;
+        } else if(data->getInputState(IN_SOUTH)) {
+            m_fDeltaPitch = -M_PI / 100;
+        } else {
+            m_fDeltaPitch = 0.f;
+        }
         dy = 0;
+
+        m_fDeltaZoom = 0.f;
+    } else if(data->getInputState(IN_SHIFT)) {
+        if(data->getInputState(IN_NORTH)) {
+            m_fDeltaZoom = -0.5f;
+        } else if(data->getInputState(IN_SOUTH)) {
+            m_fDeltaZoom = 0.5f;
+        } else {
+            m_fDeltaZoom = 0.f;
+        }
+        dy = 0;
+
+        m_fDeltaPitch = 0.f;
+    } else {
+        if(data->getInputState(IN_NORTH)) {
+            dy = -1;
+        } else if(data->getInputState(IN_SOUTH)) {
+            dy = 1;
+        } else {
+            dy = 0;
+        }
+        m_fDeltaZoom = m_fDeltaPitch = 0.f;
     }
 
     if(data->getInputState(IN_WEST)) {

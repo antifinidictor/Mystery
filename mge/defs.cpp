@@ -237,7 +237,7 @@ int order(const PT &pt1, const PT &pt2) {
 }
 
 
-double getDist(PT &ptHere, PT &ptThere) {
+double dist(const PT &ptHere, const PT &ptThere) {
 	return sqrt((ptThere.x - ptHere.x) * (ptThere.x - ptHere.x) +
 				(ptThere.y - ptHere.y) * (ptThere.y - ptHere.y) +
 				(ptThere.z - ptHere.z) * (ptThere.z - ptHere.z));

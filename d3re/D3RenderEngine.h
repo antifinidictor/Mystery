@@ -5,7 +5,7 @@
 #ifndef D3_RENDER_ENGINE_H
 #define D3_RENDER_ENGINE_H
 
-#include <list>
+#include <map>
 #include <vector>
 
 #include "mge/RenderEngine.h"
@@ -39,18 +39,28 @@ public:
     const Color& getWorldColor() const { return m_crWorld; }
     void setWorldColor(const Color &cr) { m_crWorld = cr; }
 
+    void adjustCamDist(float delta);
+    void adjustCamAngle(float delta);
+
     void resetCamera();
     void resize(uint width, uint height);
+    Point getCameraPosition() { return m_ptCamPos; }
 
 private:
+
     D3RenderEngine();
     virtual ~D3RenderEngine();
 
+    void updateCamPos();
+    void addInOrder(GameObject *obj);
+    void resort(GameObject *obj);
+
     static D3RenderEngine *re;
-    Point m_ptPos;
+    Point m_ptPos, m_ptCamPos;
     Color m_crWorld;
-    float m_camDist;
-    std::list<GameObject*> m_lsObjsOnScreen;
+    float m_fCamDist, m_fCamAngle;
+
+    std::map<float, GameObject *> m_mObjsOnScreen;
     std::vector<Image*> m_vImages;
 };
 

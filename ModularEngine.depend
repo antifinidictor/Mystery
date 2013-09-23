@@ -1314,10 +1314,10 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1379906291 source:k:\projects\games\mge\mystery\game\player.cpp
+1379917858 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
 
-1379894769 k:\projects\games\mge\mystery\game\player.h
+1379917734 k:\projects\games\mge\mystery\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1376,7 +1376,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1379907371 source:k:\projects\games\mge\mystery\game\game.cpp
+1379917382 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	<gl/gl.h>
@@ -1390,7 +1390,8 @@
 	"game/game_defs.h"
 	"game/gui/TextRenderer.h"
 	"game/Player.h"
-	"game/SimplePhysicsObject.h"
+	"game/world/SimplePhysicsObject.h"
+	"game/world/Wall.h"
 
 1376281503 k:\projects\games\mge\mystery\game\game.h
 
@@ -1438,11 +1439,11 @@
 	"ModularEngine.h"
 	"defs.h"
 
-1376282432 k:\projects\games\mge\mystery\mge\defs.h
+1379910030 k:\projects\games\mge\mystery\mge\defs.h
 	<math.h>
 	<stdio.h>
 
-1376280058 source:k:\projects\games\mge\mystery\mge\defs.cpp
+1379910038 source:k:\projects\games\mge\mystery\mge\defs.cpp
 	"defs.h"
 
 1376280198 source:k:\projects\games\mge\mystery\ore\edgerendermodel.cpp
@@ -1514,7 +1515,7 @@
 
 1344719835 k:\projects\games\mge\mystery\\mge\audioengine.h
 
-1376282432 k:\projects\games\mge\mystery\\mge\defs.h
+1379910030 k:\projects\games\mge\mystery\\mge\defs.h
 	<math.h>
 	<stdio.h>
 
@@ -1640,7 +1641,7 @@
 	<map>
 	"mge/defs.h"
 
-1379894769 k:\projects\games\mge\mystery\\game\player.h
+1379917734 k:\projects\games\mge\mystery\\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1801,7 +1802,7 @@
 	"mge/RenderModel.h"
 	"mge/Image.h"
 
-1379903029 k:\projects\games\mge\mystery\\game\game_defs.h
+1379916876 k:\projects\games\mge\mystery\\game\game_defs.h
 	"mge/defs.h"
 
 1376284084 k:\projects\games\mge\mystery\ore\orderedrendermodel.h
@@ -1823,7 +1824,7 @@
 	"mge/defs.h"
 	<string>
 
-1379907134 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
+1379917830 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
 	"d3re.h"
 	"SDL.h"
 	<gl/gl.h>
@@ -1836,8 +1837,8 @@
 	"D3SpriteRenderModel.h"
 	"D3PrismRenderModel.h"
 
-1379895335 k:\projects\games\mge\mystery\d3re\d3renderengine.h
-	<list>
+1379919544 k:\projects\games\mge\mystery\d3re\d3renderengine.h
+	<map>
 	<vector>
 	"mge/RenderEngine.h"
 	"mge/Image.h"
@@ -1847,7 +1848,7 @@
 	"mge/defs.h"
 	"mge/Image.h"
 
-1379896301 source:k:\projects\games\mge\mystery\d3re\d3spriterendermodel.cpp
+1379915530 source:k:\projects\games\mge\mystery\d3re\d3spriterendermodel.cpp
 	"d3re.h"
 	"mge/GameObject.h"
 
@@ -1864,8 +1865,8 @@
 	"D3SpriteRenderModel.h"
 	"D3PrismRenderModel.h"
 
-1379895335 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
-	<list>
+1379919544 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
+	<map>
 	<vector>
 	"mge/RenderEngine.h"
 	"mge/Image.h"
@@ -1875,17 +1876,42 @@
 	"mge/defs.h"
 	"mge/Image.h"
 
-1379906868 k:\projects\games\mge\mystery\d3re\d3prismrendermodel.h
+1379911599 k:\projects\games\mge\mystery\d3re\d3prismrendermodel.h
 	"mge/RenderModel.h"
 	"mge/defs.h"
 	"mge/Image.h"
 
-1379906868 k:\projects\games\mge\mystery\\d3re\d3prismrendermodel.h
+1379911599 k:\projects\games\mge\mystery\\d3re\d3prismrendermodel.h
 	"mge/RenderModel.h"
 	"mge/defs.h"
 	"mge/Image.h"
 
-1379906550 source:k:\projects\games\mge\mystery\d3re\d3prismrendermodel.cpp
+1379911674 source:k:\projects\games\mge\mystery\d3re\d3prismrendermodel.cpp
 	"d3re.h"
 	"mge/GameObject.h"
+
+1379911737 k:\projects\games\mge\mystery\\game\world\simplephysicsobject.h
+	"mge/GameObject.h"
+	"tpe/TimePhysicsModel.h"
+	"d3re/d3re.h"
+	"game/game_defs.h"
+
+1379914339 k:\projects\games\mge\mystery\\game\world\wall.h
+	"mge/GameObject.h"
+	"d3re/d3re.h"
+	"tpe/tpe.h"
+	"game/game_defs.h"
+
+1379912678 k:\projects\games\mge\mystery\\tpe\tpe.h
+	"TimePhysicsEngine.h"
+	"TimePhysicsModel.h"
+
+1379914430 source:k:\projects\games\mge\mystery\game\world\wall.cpp
+	"Wall.h"
+
+1379914339 k:\projects\games\mge\mystery\game\world\wall.h
+	"mge/GameObject.h"
+	"d3re/d3re.h"
+	"tpe/tpe.h"
+	"game/game_defs.h"
 

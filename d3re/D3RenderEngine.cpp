@@ -14,6 +14,7 @@
 using namespace std;
 
 #define CAM_DIST 200.f
+#define CAM_ANGLE (M_PI / 3)
 
 //static members
 D3RenderEngine *D3RenderEngine::re;
@@ -40,9 +41,11 @@ D3RenderEngine::D3RenderEngine() {
 
     //Other values
 
+    m_fCamDist = CAM_DIST;
+    m_fCamAngle = CAM_ANGLE;
     m_ptPos = Point();
+    updateCamPos();
     m_crWorld = Color(0xFF, 0xFF, 0xFF);
-    m_camDist = CAM_DIST;
 }
 
 D3RenderEngine::~D3RenderEngine() {
@@ -53,12 +56,13 @@ D3RenderEngine::render() {
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    for(list<GameObject*>::iterator it = m_lsObjsOnScreen.begin();
-            it != m_lsObjsOnScreen.end(); ++it) {
+    for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
+            it != m_mObjsOnScreen.end(); ++it) {
         resetCamera();
-        (*it)->getRenderModel()->render(this);
+        it->second->getRenderModel()->render(this);
     }
 
+    glBindTexture(GL_TEXTURE_2D, 0);
     SDL_GL_SwapBuffers();   //Should probably be done by the render engine
 }
 
@@ -67,21 +71,34 @@ D3RenderEngine::manageObjOnScreen(GameObject *obj) {
     //TODO: Optimize!  For now this just adds everything
     bool bIntersects = true; //rcIntersects(obj->getRenderModel()->getDrawArea(), m_rcScreenArea);
     if(bIntersects && !obj->getFlag(D3RE_ON_SCREEN)) {
-        m_lsObjsOnScreen.push_back(obj);
-        obj->setFlag(D3RE_ON_SCREEN, true);
-//    } else if(bIntersects) {
-//        resort(obj);  //Do nothing for now
-    } else if(!bIntersects && obj->getFlag(D3RE_ON_SCREEN)) {
+        addInOrder(obj);
+    } else if(bIntersects) {
+        resort(obj);
+    } else if(obj->getFlag(D3RE_ON_SCREEN)) {
         remove(obj);
     }
 }
 
 void
+D3RenderEngine::addInOrder(GameObject *obj) {
+    float distance = -dist(obj->getPhysicsModel()->getPosition(), m_ptCamPos);
+    m_mObjsOnScreen[distance] = obj;
+    obj->setFlag(D3RE_ON_SCREEN, true);
+}
+
+void
+D3RenderEngine::resort(GameObject *obj) {
+    //TODO: implement an actual resorting algorithm!
+    remove(obj);
+    addInOrder(obj);
+}
+
+void
 D3RenderEngine::remove(GameObject *obj) {
-    for(list<GameObject*>::iterator it = m_lsObjsOnScreen.begin();
-            it != m_lsObjsOnScreen.end(); ++it) {
-        if(obj->getID() == (*it)->getID()) {
-            m_lsObjsOnScreen.erase(it);
+    for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
+            it != m_mObjsOnScreen.end(); ++it) {
+        if(obj->getID() == it->second->getID()) {
+            m_mObjsOnScreen.erase(it);
             obj->setFlag(D3RE_ON_SCREEN, false);
             return;
         }
@@ -90,21 +107,23 @@ D3RenderEngine::remove(GameObject *obj) {
 
 void
 D3RenderEngine::clearScreen() {
-    for(list<GameObject*>::iterator it = m_lsObjsOnScreen.begin();
-            it != m_lsObjsOnScreen.end(); ++it) {
-        (*it)->setFlag(D3RE_ON_SCREEN, false);
+    for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
+            it != m_mObjsOnScreen.end(); ++it) {
+        it->second->setFlag(D3RE_ON_SCREEN, false);
     }
-    m_lsObjsOnScreen.clear();
+    m_mObjsOnScreen.clear();
 }
 
 void
 D3RenderEngine::moveScreenTo(Point pt) {
     m_ptPos = pt;
+    updateCamPos();
 }
 
 void
 D3RenderEngine::moveScreenBy(Point pt) {
     m_ptPos += pt;
+    updateCamPos();
 }
 
 Image *
@@ -137,12 +156,24 @@ D3RenderEngine::freeImage(uint id) {
 }
 
 void
+D3RenderEngine::adjustCamDist(float delta) {
+    m_fCamDist += delta;
+    updateCamPos();
+}
+
+void
+D3RenderEngine::adjustCamAngle(float delta) {
+    m_fCamAngle += delta;
+    updateCamPos();
+}
+
+void
 D3RenderEngine::resetCamera() {
     glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-    gluLookAt(m_ptPos.x,  m_ptPos.y + m_camDist, m_ptPos.z + m_camDist, //Camera position
-              m_ptPos.x,  m_ptPos.y,             m_ptPos.z,             //Look at this coord
-              0,          1,                     -1);                   //Up vector
+    gluLookAt(m_ptCamPos.x, m_ptCamPos.y, m_ptCamPos.z, //Camera position
+              m_ptPos.x,    m_ptPos.y,    m_ptPos.z,             //Look at this coord
+              0,            1,            -1);                   //Up vector
 }
 
 void D3RenderEngine::resize(uint width, uint height) {
@@ -159,3 +190,11 @@ void D3RenderEngine::resize(uint width, uint height) {
    // Enable perspective projection with fovy, aspect, zNear and zFar
    gluPerspective(45.0f, aspect, 1.f, 1024.0f);
 }
+
+void
+D3RenderEngine::updateCamPos() {
+    m_ptCamPos = Point(m_ptPos.x,
+                       m_ptPos.y + m_fCamDist * sin(m_fCamAngle),
+                       m_ptPos.z + m_fCamDist * cos(m_fCamAngle));
+}
+

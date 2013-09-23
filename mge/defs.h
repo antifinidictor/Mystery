@@ -241,7 +241,7 @@ PT    ptMid(const PT &A, const PT &B);
 Box   bxIntersection(const BX &bx1, const BX &bx2);
 Rect  rcIntersection(const Rect &rc1, const Rect &rc2);
 
-double getDist(PT &ptHere, PT &ptThere);
+double dist(const PT &ptHere, const PT &ptThere);
 bool equal(PT &pt1, PT &pt2, float offset);
 float dot(PT &pt1, PT &pt2);
 int order(const PT &pt1, const PT &pt2);    //FIXME: Obsolete

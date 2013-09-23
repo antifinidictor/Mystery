@@ -21,9 +21,7 @@ public:
     void setTexture(int iFace, uint uiTexId);   //Assumes values are valid!
 
 private:
-    void renderFaceX(uint texId, float x, float y, float z0, float z1, float fRepsW, float fRepsH); //Left/Right faces
-    void renderFaceY(uint texId, float x, float y, float z0, float z1, float fRepsW, float fRepsH); //Top/bottom faces
-    void renderFaceZ(uint texId, float x, float y0, float y1, float z, float fRepsW, float fRepsH); //Front/back faces    
+    void renderFace(uint texId, const Point &tl, const Point &tr, const Point &bl, const Point &br);
 
     uint m_aTextures[6];    //One for each side
     Box m_bxVolume;

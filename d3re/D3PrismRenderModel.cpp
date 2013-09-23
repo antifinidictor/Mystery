@@ -31,78 +31,74 @@ D3PrismRenderModel::render(RenderEngine *re) {
     Point ptPos = getPosition();
     glTranslatef((int)(ptPos.x + m_bxVolume.x), (int)(ptPos.y + m_bxVolume.y), (int)(ptPos.z + m_bxVolume.z));
 
-    //glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);
-    glColor3f(1.0f, 0.5f, 0.5f);
+    glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);
 
     // Top face (y = v.y)
-    renderFaceY(
+    renderFace(
         m_aTextures[UP],    //Texture id to bind
-        m_bxVolume.w,       //x-value
-        m_bxVolume.l,       //y-value
-        0.f,                //z0: 1st two z values
-        m_bxVolume.h,       //z1: 2nd two z values
-        1.f,                //reps wide
-        1.f                 //reps high
+        Point(         0.f, m_bxVolume.l,          0.f),
+        Point(m_bxVolume.w, m_bxVolume.l,          0.f),
+        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
+        Point(         0.f, m_bxVolume.l, m_bxVolume.h)
     );
 
     // Bottom face (y = 0.f)
-    renderFaceY(
-        m_aTextures[DOWN],    //Texture id to bind
-        m_bxVolume.w,       //x-value
-        0.f,                //y-value
-        m_bxVolume.h,       //z0: 1st two z values
-        0.f,                //z1: 2nd two z values
-        1.f,                //reps wide
-        1.f                 //reps high
+    renderFace(
+        m_aTextures[DOWN],
+        Point(         0.f,          0.f,          0.f),
+        Point(m_bxVolume.w,          0.f,          0.f),
+        Point(m_bxVolume.w,          0.f, m_bxVolume.h),
+        Point(         0.f,          0.f, m_bxVolume.h)
     );
+    /*
+    renderFace(
+        m_aTextures[DOWN],
+        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
+        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
+        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
+        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h)
+    );
+    */
 
     // Front face  (z = v.z)
-    renderFaceZ(
-        m_aTextures[SOUTH],    //Texture id to bind
-        m_bxVolume.w,       //x-value
-        m_bxVolume.l,       //y0: 1st two y values
-        0.f,                //y1: 2nd two y values
-        m_bxVolume.h,       //z-value
-        1.f,                //reps wide
-        1.f                 //reps high
+    renderFace(
+        m_aTextures[SOUTH],
+        Point(         0.f, m_bxVolume.l, m_bxVolume.h),
+        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
+        Point(m_bxVolume.w,          0.f, m_bxVolume.h),
+        Point(         0.f,          0.f, m_bxVolume.h)
     );
 
     // Back face (z = 0.f)
-    renderFaceZ(
-        m_aTextures[NORTH],    //Texture id to bind
-        m_bxVolume.w,       //x-value
-        0.f,                //y0: 1st two y values
-        m_bxVolume.l,       //y1: 2nd two y values
-        0.f,                //z-value
-        1.f,                //reps wide
-        1.f                 //reps high
+    renderFace(
+        m_aTextures[NORTH],
+        Point(         0.f, m_bxVolume.l,          0.f),
+        Point(m_bxVolume.w, m_bxVolume.l,          0.f),
+        Point(m_bxVolume.w,          0.f,          0.f),
+        Point(         0.f,          0.f,          0.f)
     );
 
     // Left face (x = 0.f)
-    renderFaceX(
-        m_aTextures[WEST],    //Texture id to bind
-        0.f,                //x-value
-        m_bxVolume.l,       //y-value
-        m_bxVolume.h,       //z0: first and last z values
-        0.f,                //z1: middle z values
-        1.f,                //reps wide
-        1.f                 //reps high
+    renderFace(
+        m_aTextures[WEST],
+        Point(         0.f, m_bxVolume.l, m_bxVolume.h),
+        Point(         0.f, m_bxVolume.l,          0.f),
+        Point(         0.f,          0.f,          0.f),
+        Point(         0.f,          0.f, m_bxVolume.h)
     );
 
     // Right face (x = 1.0f)
-    renderFaceX(
-        m_aTextures[EAST],    //Texture id to bind
-        m_bxVolume.w,       //x-value
-        m_bxVolume.l,       //y-value
-        0.f,                //z0: first and last z values
-        m_bxVolume.h,       //z1: middle z values
-        1.f,                //reps wide
-        1.f                 //reps high
+    renderFace(
+        m_aTextures[EAST],
+        Point(m_bxVolume.w, m_bxVolume.l, m_bxVolume.h),
+        Point(m_bxVolume.w, m_bxVolume.l,          0.f),
+        Point(m_bxVolume.w,          0.f,          0.f),
+        Point(m_bxVolume.w,          0.f, m_bxVolume.h)
     );
 }
 
 void
-D3PrismRenderModel::renderFaceX(uint texId, float x, float y, float z0, float z1, float fRepsW, float fRepsH) {
+D3PrismRenderModel::renderFace(uint texId, const Point &tl, const Point &tr, const Point &br, const Point &bl) {
     Image *tex = D3RE::get()->getImage(texId);
     if(tex == NULL) return;
 
@@ -111,89 +107,24 @@ D3PrismRenderModel::renderFaceX(uint texId, float x, float y, float z0, float z1
     //Tiled texture
     fTexLeft   = 0;
     fTexTop    = 0;
-    fTexRight  = fRepsW;
-    fTexBottom = fRepsH;
-
-
-    glBindTexture(GL_TEXTURE_2D, tex->m_uiTexture);
-
-    
-    //Must be inside a glBegin() and glEnd() pair
-    glBegin(GL_QUADS);
-        glTexCoord2f(fTexLeft,  fTexTop);
-        glVertex3f(x, y,   z0);
-
-        glTexCoord2f(fTexRight, fTexTop);
-        glVertex3f(x, y,   z1);
-
-        glTexCoord2f(fTexRight, fTexBottom);
-        glVertex3f(x, 0.f, z1);
-
-        glTexCoord2f(fTexLeft,  fTexBottom);
-        glVertex3f(x, 0.f, z0);
-    glEnd();
-}
-
-void
-D3PrismRenderModel::renderFaceY(uint texId, float x, float y, float z0, float z1, float fRepsW, float fRepsH) {
-    Image *tex = D3RE::get()->getImage(texId);
-    if(tex == NULL) return;
-
-    float fTexLeft, fTexTop, fTexRight, fTexBottom;
-
-    //Tiled texture
-    fTexLeft   = 0;
-    fTexTop    = 0;
-    fTexRight  = fRepsW;
-    fTexBottom = fRepsH;
-
+    fTexRight  = dist(tl, tr) / tex->w;
+    fTexBottom = dist(tl, bl) / tex->h;
 
     glBindTexture(GL_TEXTURE_2D, tex->m_uiTexture);
 
     //Must be inside a glBegin() and glEnd() pair
     glBegin(GL_QUADS);
         glTexCoord2f(fTexLeft,  fTexTop);
-        glVertex3f(x,   y, z0);
+        glVertex3f(tl.x, tl.y, tl.z);
 
         glTexCoord2f(fTexRight, fTexTop);
-        glVertex3f(0.f, y, z0);
+        glVertex3f(tr.x, tr.y, tr.z);
 
         glTexCoord2f(fTexRight, fTexBottom);
-        glVertex3f(0.f, y, z1);
+        glVertex3f(br.x, br.y, br.z);
 
         glTexCoord2f(fTexLeft,  fTexBottom);
-        glVertex3f(x,   y, z1);
-    glEnd();
-}
-
-void
-D3PrismRenderModel::renderFaceZ(uint texId, float x, float y0, float y1, float z, float fRepsW, float fRepsH) {
-    Image *tex = D3RE::get()->getImage(texId);
-    if(tex == NULL) return;
-
-    float fTexLeft, fTexTop, fTexRight, fTexBottom;
-
-    //Tiled texture
-    fTexLeft   = 0;
-    fTexTop    = 0;
-    fTexRight  = fRepsW;
-    fTexBottom = fRepsH;
-
-    glBindTexture(GL_TEXTURE_2D, tex->m_uiTexture);
-
-    //Must be inside a glBegin() and glEnd() pair
-    glBegin(GL_QUADS);
-        glTexCoord2f(fTexLeft,  fTexTop);
-        glVertex3f(x,   y0, z);
-
-        glTexCoord2f(fTexRight, fTexTop);
-        glVertex3f(0.f, y0, z);
-
-        glTexCoord2f(fTexRight, fTexBottom);
-        glVertex3f(0.f, y1, z);
-
-        glTexCoord2f(fTexLeft,  fTexBottom);
-        glVertex3f(x,   y1, z);
+        glVertex3f(bl.x, bl.y, bl.z);
     glEnd();
 }
 
