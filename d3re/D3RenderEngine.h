@@ -42,11 +42,14 @@ public:
     void adjustCamDist(float delta);
     void adjustCamAngle(float delta);
 
-    void resetCamera();
+    void prepCamera();
+    void prepHud();
     void resize(uint width, uint height);
     Point getCameraPosition() { return m_ptCamPos; }
 
 private:
+    void enableCameraMode();
+    void enableGuiMode();
 
     D3RenderEngine();
     virtual ~D3RenderEngine();
@@ -59,9 +62,11 @@ private:
     Point m_ptPos, m_ptCamPos;
     Color m_crWorld;
     float m_fCamDist, m_fCamAngle;
+    uint m_uiWidth, m_uiHeight;
 
     std::map<float, GameObject *> m_mObjsOnScreen;
     std::vector<Image*> m_vImages;
+    bool m_bGuiMode;
 };
 
 typedef D3RenderEngine D3RE;

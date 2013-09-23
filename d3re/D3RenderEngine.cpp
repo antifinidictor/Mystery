@@ -37,7 +37,7 @@ D3RenderEngine::D3RenderEngine() {
     glShadeModel(GL_SMOOTH);   // Enable smooth shading
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
 
-    resetCamera();
+    prepCamera();
 
     //Other values
 
@@ -46,6 +46,7 @@ D3RenderEngine::D3RenderEngine() {
     m_ptPos = Point();
     updateCamPos();
     m_crWorld = Color(0xFF, 0xFF, 0xFF);
+    m_bGuiMode = false;
 }
 
 D3RenderEngine::~D3RenderEngine() {
@@ -58,7 +59,7 @@ D3RenderEngine::render() {
 
     for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
             it != m_mObjsOnScreen.end(); ++it) {
-        resetCamera();
+        prepCamera();
         it->second->getRenderModel()->render(this);
     }
 
@@ -168,7 +169,8 @@ D3RenderEngine::adjustCamAngle(float delta) {
 }
 
 void
-D3RenderEngine::resetCamera() {
+D3RenderEngine::prepCamera() {
+    enableCameraMode();
     glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
     gluLookAt(m_ptCamPos.x, m_ptCamPos.y, m_ptCamPos.z, //Camera position
@@ -176,19 +178,32 @@ D3RenderEngine::resetCamera() {
               0,            1,            -1);                   //Up vector
 }
 
+void
+D3RenderEngine::prepHud() {
+    enableGuiMode();
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
+}
+
 void D3RenderEngine::resize(uint width, uint height) {
     // Compute aspect ratio of the new window
-   if (height == 0) height = 1;                // To prevent divide by 0
-   GLfloat aspect = (GLfloat)width / (GLfloat)height;
+    if (height == 0) height = 1;                // To prevent divide by 0
+    m_uiWidth = width;
+    m_uiHeight = height;
 
-   // Set the viewport to cover the new window
-   glViewport(0, 0, width, height);
+    // Set the viewport to cover the new window
+    glViewport(0, 0, width, height);
 
-   // Set the aspect ratio of the clipping volume to match the viewport
-   glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
-   glLoadIdentity();             // Reset
-   // Enable perspective projection with fovy, aspect, zNear and zFar
-   gluPerspective(45.0f, aspect, 1.f, 1024.0f);
+    // Set the aspect ratio of the clipping volume to match the viewport
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    if(m_bGuiMode) {
+        glOrtho(0.0f, m_uiWidth, m_uiHeight, 0.0f, -1.0f, 1.0f);
+    } else {
+        GLfloat aspect = (GLfloat)width / (GLfloat)height;
+        // Enable perspective projection with fovy, aspect, zNear and zFar
+        gluPerspective(45.0f, aspect, 1.f, 1024.0f);
+    }
 }
 
 void
@@ -196,5 +211,31 @@ D3RenderEngine::updateCamPos() {
     m_ptCamPos = Point(m_ptPos.x,
                        m_ptPos.y + m_fCamDist * sin(m_fCamAngle),
                        m_ptPos.z + m_fCamDist * cos(m_fCamAngle));
+}
+
+
+void
+D3RenderEngine::enableCameraMode() {
+    if(m_bGuiMode) {
+        m_bGuiMode = false;
+        GLfloat aspect = (GLfloat)m_uiWidth / (GLfloat)m_uiHeight;
+
+        // Set the aspect ratio of the clipping volume to match the viewport
+        glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
+        glLoadIdentity();             // Reset
+        // Enable perspective projection with fovy, aspect, zNear and zFar
+        gluPerspective(45.0f, aspect, 1.f, 1024.0f);
+    }
+}
+
+void
+D3RenderEngine::enableGuiMode() {
+    if(!m_bGuiMode) {
+        m_bGuiMode = true;
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0.0f, m_uiWidth, m_uiHeight, 0.0f, -1.0f, 1.0f);
+    }
 }
 
