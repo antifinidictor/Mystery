@@ -1826,7 +1826,7 @@
 	"mge/defs.h"
 	<string>
 
-1379919838 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
+1379928385 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
 	"d3re.h"
 	"SDL.h"
 	<gl/gl.h>
@@ -1834,9 +1834,10 @@
 	"mge/GameObject.h"
 	"game/game_defs.h"
 
-1379898492 k:\projects\games\mge\mystery\d3re\d3re.h
+1379928505 k:\projects\games\mge\mystery\d3re\d3re.h
 	"D3RenderEngine.h"
 	"D3SpriteRenderModel.h"
+	"D3HudRenderModel.h"
 	"D3PrismRenderModel.h"
 
 1379927816 k:\projects\games\mge\mystery\d3re\d3renderengine.h
@@ -1850,7 +1851,7 @@
 	"mge/defs.h"
 	"mge/Image.h"
 
-1379924581 source:k:\projects\games\mge\mystery\d3re\d3spriterendermodel.cpp
+1379928457 source:k:\projects\games\mge\mystery\d3re\d3spriterendermodel.cpp
 	"d3re.h"
 	"mge/GameObject.h"
 
@@ -1862,9 +1863,10 @@
 	"d3re/d3re.h"
 	"tpe/TimePhysicsEngine.h"
 
-1379898492 k:\projects\games\mge\mystery\\d3re\d3re.h
+1379928505 k:\projects\games\mge\mystery\\d3re\d3re.h
 	"D3RenderEngine.h"
 	"D3SpriteRenderModel.h"
+	"D3HudRenderModel.h"
 	"D3PrismRenderModel.h"
 
 1379927816 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
@@ -1888,7 +1890,7 @@
 	"mge/defs.h"
 	"mge/Image.h"
 
-1379922264 source:k:\projects\games\mge\mystery\d3re\d3prismrendermodel.cpp
+1379928357 source:k:\projects\games\mge\mystery\d3re\d3prismrendermodel.cpp
 	"d3re.h"
 	"mge/GameObject.h"
 
@@ -1916,4 +1918,18 @@
 	"d3re/d3re.h"
 	"tpe/tpe.h"
 	"game/game_defs.h"
+
+1379928603 k:\projects\games\mge\mystery\d3re\d3hudrendermodel.h
+	"mge/RenderModel.h"
+	"mge/defs.h"
+	"mge/Image.h"
+
+1379928603 k:\projects\games\mge\mystery\\d3re\d3hudrendermodel.h
+	"mge/RenderModel.h"
+	"mge/defs.h"
+	"mge/Image.h"
+
+1379928738 source:k:\projects\games\mge\mystery\d3re\d3hudrendermodel.cpp
+	"d3re.h"
+	"mge/GameObject.h"
 

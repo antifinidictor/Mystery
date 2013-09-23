@@ -5,5 +5,5 @@
 
 #include "D3RenderEngine.h"
 #include "D3SpriteRenderModel.h"
-//#include "D3HudRenderModel.h"
+#include "D3HudRenderModel.h"
 #include "D3PrismRenderModel.h"
