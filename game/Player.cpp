@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "bae/BasicAudioEngine.h"
 
 Player::Player(uint uiId, const Point &ptPos) {
     Image *img = D3RE::get()->getImage(IMG_PLAYER);
@@ -22,6 +23,30 @@ Player::Player(uint uiId, const Point &ptPos) {
 Player::~Player() {
     delete m_pPhysicsModel;
     delete m_pRenderModel;
+}
+
+
+GameObject*
+Player::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
+    uint id = pt.get(keyBase + ".id", 0);
+    float x = pt.get(keyBase + ".pos.x", 0.f);
+    float y = pt.get(keyBase + ".pos.y", 0.f);
+    float z = pt.get(keyBase + ".pos.z", 0.f);
+
+    //Put state information here
+
+    return new Player(id, Point(x,y,z));
+}
+
+void
+Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
+    std::string key = keyBase + "Player";
+    key += m_uiId;
+    Point ptPos = m_pPhysicsModel->getPosition();
+    pt.put(key + ".id", m_uiId);
+    pt.get(keyBase + ".pos.x", 0.f);
+    pt.get(keyBase + ".pos.y", 0.f);
+    pt.get(keyBase + ".pos.z", 0.f);
 }
 
 bool Player::update(uint time) {
@@ -122,4 +147,5 @@ void Player::handleButton(InputData* data) {
 void Player::handleCollision(HandleCollisionData *data) {
 
 }
+
 

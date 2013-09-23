@@ -30,6 +30,12 @@ enum IMAGE_TYPES {
     NUM_IMAGES
 };
 
+enum SOUND_TYPES {
+    AUD_NONE,   //Reserved: No sound
+    AUD_STEP,
+    NUM_SOUNDS
+};
+
 enum RENDER_ORDER {
     ORDER_FLOOR,
     ORDER_LOW_FX,

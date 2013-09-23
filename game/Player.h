@@ -30,6 +30,10 @@ public:
     //Input
     virtual void callBack(uint cID, void *data, EventID id);
 
+    //File i/o
+    static GameObject* read(const boost::property_tree::ptree &pt, const std::string &keyBase);
+    virtual void write(boost::property_tree::ptree &pt, const std::string &keyBase);
+
 private:
     void handleButton(InputData* data);
     void handleCollision(HandleCollisionData *data);

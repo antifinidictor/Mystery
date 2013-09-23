@@ -113,12 +113,16 @@ void initWorld() {
     mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
     mge->mapInput(SDLK_h,     IN_BREAK);
 
+    //Load image resources
     D3RE::get()->createImage(IMG_PLAYER,   "res/Magus.png", 8, 4);
     D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3);
     D3RE::get()->createImage(IMG_BLOCK,    "res/world/block.png");
     D3RE::get()->createImage(IMG_WALL_TOP, "res/world/wallTop.png");
     D3RE::get()->createImage(IMG_WALL_BOTTOM, "res/world/wallBottom.png");
     D3RE::get()->createImage(IMG_WALL_SIDE, "res/world/wallSide.png");
+
+    //Load audio resources
+    BAE::get()->loadSound(AUD_STEP, "res/audio/step.wav");
 
     //Other singleton initializations
     TextRenderer::init();
@@ -127,6 +131,8 @@ void initWorld() {
     for(uint ui = 0; ui < GM_NUM_AREAS; ++ui) {
         we->generateArea(ui);
     }
+
+    D3RE::get()->setBackgroundColor(Color(0x9a,0xd7,0xfb));
 
     buildWorld();
 }
@@ -173,7 +179,7 @@ void buildWorld() {
     we->setCurrentArea(GM_MAIN_GAME);
     we->setEffectiveArea(GM_MAIN_GAME); //Make sure objects actually get added here
 
-    buildRoom(Box(-128, 0, -256, 256, TILE_SIZE, 512));
+    buildRoom(Box(-128, 0, -256, 256, TILE_SIZE * 2, 512));
 
     SimplePhysicsObject *block = new SimplePhysicsObject(we->genID(), D3RE::get()->getImage(IMG_BLOCK), Box(-32,0,0,32,32,32));
     we->add(block);

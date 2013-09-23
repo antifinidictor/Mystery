@@ -9,6 +9,7 @@
 #include "mge/defs.h"
 #include "mge/PhysicsModel.h"
 #include "mge/RenderModel.h"
+#include <boost/property_tree/xml_parser.hpp>
 
 class GameObject {
 public:
@@ -28,6 +29,10 @@ public:
     //Render model
     virtual RenderModel  *getRenderModel() = 0;
     virtual PhysicsModel *getPhysicsModel() = 0;
+    
+    //File I/O
+    //virtual void read(ifstream &fin) = 0;
+    //virtual void write(ofstream &fout) = 0;
 };
 
 #endif

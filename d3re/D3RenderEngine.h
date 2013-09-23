@@ -46,13 +46,15 @@ public:
     void prepHud();
     void resize(uint width, uint height);
     Point getCameraPosition() { return m_ptCamPos; }
+    
+    void setBackgroundColor(const Color &cr);
 
 private:
-    void enableCameraMode();
-    void enableGuiMode();
-
     D3RenderEngine();
     virtual ~D3RenderEngine();
+    
+    void enableCameraMode();
+    void enableGuiMode();
 
     void updateCamPos();
     void addInOrder(GameObject *obj);

@@ -16,12 +16,12 @@ public:
     static void init();
     static void clean() { delete bae; }
     static BasicAudioEngine *get() { return bae; }
-    
-    uint loadMusic(const char *filename);
-    uint loadSound(const char *filename);
 
-    void playMusic(uint uiID, int fadeout=0, int fadein = 0);
-    void playSound(uint uiID, int reps=0, int channel=-1);
+    void loadMusic(uint uiId, const char *filename);
+    void loadSound(uint uiId, const char *filename);
+
+    void playMusic(uint uiId, int fadeout=0, int fadein = 0);
+    void playSound(uint uiId, int reps=0, int channel=-1);
 
     //For the thread
     bool isRunning() { return m_bRunning; }
@@ -34,7 +34,7 @@ private:
     virtual ~BasicAudioEngine();
 
     static BasicAudioEngine *bae;
-    
+
     struct SoundQ {
         SoundQ(uint i, int r, int c) { id = i; reps = r; chnl = c; }
         uint id;
@@ -52,10 +52,6 @@ private:
     int  m_iNextMusicFadein,
          m_iNextMusicFadeout;
 
-    //Sound id management: keeps track of sound ids
-    uint m_uiMusicID;
-    uint m_uiChunkID;
-
     //Thread data
     SDL_Thread *m_pThread;
     bool m_bRunning;
@@ -64,5 +60,7 @@ private:
 
     void initThread();
 };
+
+typedef BasicAudioEngine BAE;
 
 #endif // BASICAUDIOENGINE_H

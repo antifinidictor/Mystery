@@ -7,9 +7,6 @@ BasicAudioEngine *BasicAudioEngine::bae;
 
 //Constructor
 BasicAudioEngine::BasicAudioEngine() {
-    //Initialize static variables
-    m_uiMusicID = 1; //0 is reserved for NO_MUSIC
-    m_uiChunkID = 1; //0 is reserved for NO_SOUND
 
     //Initialize audio
     int audio_rate = 22050;
@@ -22,8 +19,8 @@ BasicAudioEngine::BasicAudioEngine() {
         printf("Unable to open audio!\n");
         exit(1);
     }
-    
-    
+
+
     /* If we actually care about what we got, we can ask here.  In this
      program we don't, but I'm showing the function call here anyway
      in case we'd want to know later. */
@@ -115,28 +112,6 @@ void BasicAudioEngine::initThread() {
     m_pThread = SDL_CreateThread(audioThread, m_pLock);
 }
 
-
-
-/*
-    printf("Played music %i\n", uiID);
-    if(fadeout == 0) {
-        Mix_HaltMusic();
-    } else {
-        Mix_FadeOutMusic(fadeout);
-    }
-
-    if(uiID != NO_MUSIC) {
-        if(fadein == 0) {
-            Mix_PlayMusic(m_mMusic.find(uiID)->second, -1);
-        } else {
-            if(Mix_FadeInMusic(m_mMusic.find(uiID)->second, -1, fadein) == -1) {
-                printf("Mix_FadeInMusic: %s\n", Mix_GetError());
-            }
-        }
-    }
-    */
-
-
 void BasicAudioEngine::loadNextSong() {
     m_bQueuedSong = false;  //We will dequeue it shortly
 
@@ -162,29 +137,30 @@ void BasicAudioEngine::loadNextSong() {
 
 }
 
-uint BasicAudioEngine::loadMusic(const char *filename) {
+void
+BasicAudioEngine::loadMusic(uint uiId, const char *filename) {
     SDL_mutexP(m_pLock);
-    m_mMusic[m_uiMusicID] = Mix_LoadMUS(filename);
-    if(m_mMusic[m_uiMusicID] == NULL) {
-        printf("Error: Failed to load muisc %d (%s)- %s\n", m_uiMusicID, filename, Mix_GetError());
+    m_mMusic[uiId] = Mix_LoadMUS(filename);
+    if(m_mMusic[uiId] == NULL) {
+        printf("Error: Failed to load muisc %d (%s)- %s\n", uiId, filename, Mix_GetError());
     }
     SDL_mutexV(m_pLock);
-    return m_uiMusicID++;
 }
 
-uint BasicAudioEngine::loadSound(const char *filename) {
+void
+BasicAudioEngine::loadSound(uint uiId, const char *filename) {
     SDL_mutexP(m_pLock);
-    m_mChunks[m_uiChunkID] = Mix_LoadWAV(filename);
-    if(m_mChunks[m_uiChunkID] == NULL) {
-        printf("Error: Failed to load sound chunk %d (%s)- %s\n", m_uiChunkID, filename, Mix_GetError());
+    m_mChunks[uiId] = Mix_LoadWAV(filename);
+    if(m_mChunks[uiId] == NULL) {
+        printf("Error: Failed to load sound chunk %d (%s)- %s\n", uiId, filename, Mix_GetError());
     }
     SDL_mutexV(m_pLock);
-    return m_uiChunkID++;
 }
 
-void BasicAudioEngine::playMusic(uint uiID, int fadein, int fadeout) {
+void
+BasicAudioEngine::playMusic(uint uiId, int fadein, int fadeout) {
     SDL_mutexP(m_pLock);
-    m_uiNextMusicID = uiID;
+    m_uiNextMusicID = uiId;
     m_iNextMusicFadein = fadein;
     m_iNextMusicFadeout = fadeout;
     m_bQueuedSong = true;
@@ -192,7 +168,8 @@ void BasicAudioEngine::playMusic(uint uiID, int fadein, int fadeout) {
 
 }
 
-void BasicAudioEngine::playSound(uint uiID, int reps, int channel) {
-    Mix_PlayChannel(channel, m_mChunks[uiID], reps);    //Apparently this does not clash with the music channel...
+void
+BasicAudioEngine::playSound(uint uiId, int reps, int channel) {
+    Mix_PlayChannel(channel, m_mChunks[uiId], reps);    //Apparently this does not clash with the music channel...
 }
 

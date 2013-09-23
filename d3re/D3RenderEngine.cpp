@@ -60,7 +60,9 @@ D3RenderEngine::render() {
     for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
             it != m_mObjsOnScreen.end(); ++it) {
         //prepCamera();
-        it->second->getRenderModel()->render(this);
+        if(!it->second->getFlag(D3RE_INVISIBLE)) {
+            it->second->getRenderModel()->render(this);
+        }
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -204,6 +206,11 @@ void D3RenderEngine::resize(uint width, uint height) {
         // Enable perspective projection with fovy, aspect, zNear and zFar
         gluPerspective(45.0f, aspect, 1.f, 1024.0f);
     }
+}
+
+void
+D3RenderEngine::setBackgroundColor(const Color &cr) {
+    glClearColor(cr.r / 255.f, cr.g / 255.f, cr.b / 255.f, 1.0f);
 }
 
 void
