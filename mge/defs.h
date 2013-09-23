@@ -114,31 +114,31 @@ public:
 struct tRect;
 struct tBox;
 
-typedef struct tPoint {
+typedef struct Vec3f {
 	float x;
 	float y;
 	float z;
-	tPoint() { x = 0; y = 0; z = 0; }
-	tPoint(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
-	tPoint(const tPoint &pt) { x = pt.x; y = pt.y; z = pt.z; }
-	tPoint(const tRect &rc);
-	tPoint(const tBox &bx);
+	Vec3f() { x = 0; y = 0; z = 0; }
+	Vec3f(float fx, float fy, float fz) { x = fx; y = fy; z = fz; }
+	Vec3f(const Vec3f &pt) { x = pt.x; y = pt.y; z = pt.z; }
+	Vec3f(const tRect &rc);
+	Vec3f(const tBox &bx);
 
     // Constant operators
-	bool operator==(const tPoint &pt) const { return x == pt.x && y == pt.y && z == pt.z; }
-	bool operator!=(const tPoint &pt) const { return !(pt == *this); }
-	bool operator<(const tPoint &pt) const;
-	tPoint operator+(const tPoint &pt) const{
-        return tPoint(x + pt.x, y + pt.y, z + pt.z);
+	bool operator==(const Vec3f &pt) const { return x == pt.x && y == pt.y && z == pt.z; }
+	bool operator!=(const Vec3f &pt) const { return !(pt == *this); }
+	bool operator<(const Vec3f &pt) const;
+	Vec3f operator+(const Vec3f &pt) const{
+        return Vec3f(x + pt.x, y + pt.y, z + pt.z);
 	}
-	tPoint operator-(const tPoint &pt) const{
-        return tPoint(x - pt.x, y - pt.y, z - pt.z);
+	Vec3f operator-(const Vec3f &pt) const{
+        return Vec3f(x - pt.x, y - pt.y, z - pt.z);
 	}
-	tPoint operator*(const float val) const{
-	    return tPoint(x * val, y * val, z * val);
+	Vec3f operator*(const float val) const{
+	    return Vec3f(x * val, y * val, z * val);
 	}
-	tPoint operator/(const float val) const{
-	    return tPoint(x / val, y / val, z / val);
+	Vec3f operator/(const float val) const{
+	    return Vec3f(x / val, y / val, z / val);
 	}
     float magnitude() {
         return sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
@@ -146,9 +146,9 @@ typedef struct tPoint {
 
 	//Nonconstant operators
 	void operator*=(const float val) { x *= val; y *= val; z *= val; }
-	void operator-=(const tPoint &pt) { x -= pt.x; y -= pt.y; z -= pt.z; }
-	void operator+=(const tPoint &pt) { x += pt.x; y += pt.y; z += pt.z; }
-	void operator=(const tPoint &pt) { x = pt.x; y = pt.y; z = pt.z; }
+	void operator-=(const Vec3f &pt) { x -= pt.x; y -= pt.y; z -= pt.z; }
+	void operator+=(const Vec3f &pt) { x += pt.x; y += pt.y; z += pt.z; }
+	void operator=(const Vec3f &pt) { x = pt.x; y = pt.y; z = pt.z; }
 	void normalize() {
 	    float magnitude = this->magnitude();
         if(magnitude != 0) {
@@ -165,8 +165,8 @@ typedef struct tRect {
 	tRect() { x = y = 0.0F; w = l = 0; }
 	tRect(float fx, float fy, int iw, int il) { x = fx; y = fy; w = iw; l = il; }
 	operator tBox();
-	void operator+=(const tPoint &pt) { x += pt.x; y += pt.y; }
-	void operator-=(const tPoint &pt) { x -= pt.x; y -= pt.y; }
+	void operator+=(const Vec3f &pt) { x += pt.x; y += pt.y; }
+	void operator-=(const Vec3f &pt) { x -= pt.x; y -= pt.y; }
 	void operator=(const tRect &rc) { x = rc.x; y = rc.y; w = rc.w; l = rc.l; }
 } Rect, RC;
 
@@ -181,23 +181,23 @@ typedef struct tBox {
 	tBox(float fx, float fy, float fz, int iw, int il, int ih) { x = fx; y = fy; z = fz; w = iw; l = il; h = ih; }
 
 	//Constant operators
-	tBox operator+(const tPoint &pt) const {  //positive translation
+	tBox operator+(const Vec3f &pt) const {  //positive translation
         return tBox(x + pt.x, y + pt.y, z + pt.z, w, l, h);
 	}
-	tBox operator-(const tPoint &pt) const {  //negative translation
+	tBox operator-(const Vec3f &pt) const {  //negative translation
         return tBox(x - pt.x, y - pt.y, z - pt.z, w, l, h);
 	}
 	bool operator==(const tBox &bx) const {
 	    return  x == bx.x && y == bx.y && z == bx.z &&
                 w == bx.w && l == bx.l && h == bx.h;
 	}
-	bool operator==(const tPoint &pt) const {
+	bool operator==(const Vec3f &pt) const {
 	    return  x == pt.x && y == pt.y && z == pt.z;
 	}
 	bool operator!=(const tBox &bx) const {
 	    return !(*this == bx);
 	}
-	bool operator!=(const tPoint &pt) const {
+	bool operator!=(const Vec3f &pt) const {
 	    return !(*this == pt);
 	}
 	operator tRect() {
@@ -205,10 +205,28 @@ typedef struct tBox {
     }
 
 	//Nonconstant operators
-	void operator+=(const tPoint &pt) { x += pt.x; y += pt.y; z += pt.z; }
-	void operator-=(const tPoint &pt) { x -= pt.x; y -= pt.y; z -= pt.z; }
+	void operator+=(const Vec3f &pt) { x += pt.x; y += pt.y; z += pt.z; }
+	void operator-=(const Vec3f &pt) { x -= pt.x; y -= pt.y; z -= pt.z; }
 	void operator=(const tBox &bx) { x = bx.x; y = bx.y; z = bx.z; w = bx.w; l = bx.l; h = bx.h; }
 } Box, BX;
+
+typedef struct tColor {
+    unsigned b : 8;
+    unsigned g : 8;
+    unsigned r : 8;
+
+    tColor(unsigned int color) {
+        *this = *((tColor*)&color);
+    }
+    tColor(unsigned char r, unsigned char g, unsigned char b) {
+        this->r = r;
+        this->g = g;
+        this->b = b;
+    }
+    tColor() {
+        b = g = r = 0;
+    }
+} Color, CR;
 
 bool  rcIntersects(const RC &rc1, const RC &rc2);
 char  rcOutOfBounds(const RC &rc, const RC &rcBounds);

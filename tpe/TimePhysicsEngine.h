@@ -3,6 +3,7 @@
 
 #include <list>
 #include "mge/PhysicsEngine.h"
+#include "TimePhysicsModel.h"
 
 class GameObject;
 class PhysicsModel;
@@ -37,7 +38,6 @@ public:
     virtual bool applyPhysics(GameObject *obj);
     virtual void applyPhysics(GameObject *obj1, GameObject *obj2);
 
-protected:
 private:
     TimePhysicsEngine();
     virtual ~TimePhysicsEngine();

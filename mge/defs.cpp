@@ -52,20 +52,20 @@ void InputData::setInputState(int flag, int val) {
 }
 
 //Point
-tPoint::tPoint(const tRect &rc) {
+Vec3f::Vec3f(const tRect &rc) {
     x = rc.x;
     y = rc.y;
     z = 0;
 }
 
-tPoint::tPoint(const tBox &bx) {
+Vec3f::Vec3f(const tBox &bx) {
     x = bx.x;
     y = bx.y;
     z = bx.z;
 }
 
 //<: Ordering operator.  If pt1 < pt2, pt1 should be rendered before pt2.
-bool tPoint::operator<(const Point &pt) const {
+bool Vec3f::operator<(const Point &pt) const {
     return  order(*this, pt) < 0;
 }
 

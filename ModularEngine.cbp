@@ -27,6 +27,24 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="mge">
+				<Option output="bin\mge\ModularEngine" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin\mge\" />
+				<Option object_output="obj\mge\" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-DBUILD_DLL" />
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="user32" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
@@ -49,8 +67,22 @@
 		</Linker>
 		<Unit filename="bae\BasicAudioEngine.cpp" />
 		<Unit filename="bae\BasicAudioEngine.h" />
+		<Unit filename="d3re\D3PrismRenderModel.cpp" />
+		<Unit filename="d3re\D3PrismRenderModel.h" />
+		<Unit filename="d3re\D3RenderEngine.cpp" />
+		<Unit filename="d3re\D3RenderEngine.h" />
+		<Unit filename="d3re\D3SpriteRenderModel.cpp" />
+		<Unit filename="d3re\D3SpriteRenderModel.h" />
+		<Unit filename="d3re\d3re.h" />
+		<Unit filename="game\Player.cpp" />
+		<Unit filename="game\Player.h" />
 		<Unit filename="game\game.cpp" />
 		<Unit filename="game\game.h" />
+		<Unit filename="game\game_defs.h" />
+		<Unit filename="game\gui\TextRenderer.cpp" />
+		<Unit filename="game\gui\TextRenderer.h" />
+		<Unit filename="game\world\Region.cpp" />
+		<Unit filename="game\world\Region.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="mge\AudioEngine.h" />
 		<Unit filename="mge\Clock.h" />
@@ -66,13 +98,6 @@
 		<Unit filename="mge\WorldEngine.h" />
 		<Unit filename="mge\defs.cpp" />
 		<Unit filename="mge\defs.h" />
-		<Unit filename="ore\EdgeRenderModel.cpp" />
-		<Unit filename="ore\EdgeRenderModel.h" />
-		<Unit filename="ore\OrderedRenderEngine.cpp" />
-		<Unit filename="ore\OrderedRenderEngine.h" />
-		<Unit filename="ore\OrderedRenderModel.h" />
-		<Unit filename="ore\StripRenderModel.cpp" />
-		<Unit filename="ore\StripRenderModel.h" />
 		<Unit filename="pwe\PartitionedWorldEngine.cpp" />
 		<Unit filename="pwe\PartitionedWorldEngine.h" />
 		<Unit filename="tpe\TimePhysicsEngine.cpp" />

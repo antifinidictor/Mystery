@@ -18,4 +18,19 @@ public:
     virtual Rect getDrawArea() = 0;
 };
 
+class NullRenderModel : public RenderModel {
+private:
+    static NullRenderModel *rm;
+
+public:
+    static void init() { rm = new NullRenderModel(); }
+    static NullRenderModel *get() { return rm; }
+    static void clean() { delete rm; }
+
+    virtual void render(RenderEngine *re) {}
+    virtual void moveBy(Point ptShift) {}
+    virtual Point getPosition() { return Point(); }
+    virtual Rect getDrawArea() { return Rect(); }
+};
+
 #endif

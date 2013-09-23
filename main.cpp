@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     ModularEngine::get()->setAudioEngine(createAudioEngine());
 
     //Build game world
-    buildWorld();
+    initWorld();
 
 	//Run the game
 	ModularEngine::get()->run();

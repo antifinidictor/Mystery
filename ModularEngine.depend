@@ -1314,28 +1314,16 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1361188223 source:k:\projects\games\mge\mystery\game\player.cpp
+1379906291 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
-	"ore/OrderedRenderEngine.h"
-	"tpe/TimePhysicsEngine.h"
-	"pwe/PartitionedWorldEngine.h"
-	"game/FXSprite.h"
-	"game/spells/Spells.h"
-	"game/gameDefs.h"
-	"game/GameManager.h"
-	<stdlib.h>
-	<time.h>
 
-1358495928 k:\projects\games\mge\mystery\game\player.h
+1379894769 k:\projects\games\mge\mystery\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
-	"mge/Image.h"
-	"mge/defs.h"
-	"tpe/TimePhysicsModel.h"
-	"ore/OrderedRenderModel.h"
-	"game/FileManager.h"
-	"game/Item.h"
-	"game/GameDefs.h"
+	"game/game_defs.h"
+	"d3re/d3re.h"
+	"pwe/PartitionedWorldEngine.h"
+	"tpe/TimePhysicsEngine.h"
 
 1358063926 source:k:\projects\games\mge\mystery\game\textbubble.cpp
 	"TextBubble.h"
@@ -1388,7 +1376,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1364501073 source:k:\projects\games\mge\mystery\game\game.cpp
+1379907371 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	<gl/gl.h>
@@ -1396,30 +1384,15 @@
 	<fstream>
 	"mge/ModularEngine.h"
 	"pwe/PartitionedWorldEngine.h"
-	"ore/OrderedRenderEngine.h"
+	"d3re/d3re.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/TimePhysicsEngine.h"
+	"game/game_defs.h"
+	"game/gui/TextRenderer.h"
 	"game/Player.h"
-	"game/PhysicsSurface.h"
-	"game/Wall.h"
-	"game/MazeGenerator.h"
 	"game/SimplePhysicsObject.h"
-	"game/FXSprite.h"
-	"game/spells/Spells.h"
-	"game/GameDefs.h"
-	"game/TextRenderer.h"
-	"game/Button.h"
-	"game/GameManager.h"
-	"game/Decorative.h"
-	"game/Npc.h"
-	"game/TextBubble.h"
-	"game/Elevator.h"
-	"ore/EdgeRenderModel.h"
-	"game/StateButton.h"
-	"game/ClickableItem.h"
-	"ore/StripRenderModel.h"
 
-1346599871 k:\projects\games\mge\mystery\game\game.h
+1376281503 k:\projects\games\mge\mystery\game\game.h
 
 1358064489 source:k:\projects\games\mge\mystery\game\spells\spells.cpp
 	"Spells.h"
@@ -1441,7 +1414,7 @@
 	"ore/OrderedRenderModel.h"
 	"game/Decorative.h"
 
-1346600150 source:k:\projects\games\mge\mystery\main.cpp
+1376281699 source:k:\projects\games\mge\mystery\main.cpp
 	"game/game.h"
 	"mge/ModularEngine.h"
 
@@ -1465,17 +1438,17 @@
 	"ModularEngine.h"
 	"defs.h"
 
-1355192849 k:\projects\games\mge\mystery\mge\defs.h
+1376282432 k:\projects\games\mge\mystery\mge\defs.h
 	<math.h>
 	<stdio.h>
 
-1357467495 source:k:\projects\games\mge\mystery\mge\defs.cpp
+1376280058 source:k:\projects\games\mge\mystery\mge\defs.cpp
 	"defs.h"
 
-1364320184 source:k:\projects\games\mge\mystery\ore\edgerendermodel.cpp
+1376280198 source:k:\projects\games\mge\mystery\ore\edgerendermodel.cpp
 	"EdgeRenderModel.h"
 	"OrderedRenderEngine.h"
-	"game/GameDefs.h"
+	"game/game_defs.h"
 
 1361705813 k:\projects\games\mge\mystery\ore\edgerendermodel.h
 	"mge/RenderModel.h"
@@ -1483,7 +1456,7 @@
 	"mge/Image.h"
 	<vector>
 
-1361185925 k:\projects\games\mge\mystery\ore\orderedrenderengine.h
+1376280696 k:\projects\games\mge\mystery\ore\orderedrenderengine.h
 	<vector>
 	<list>
 	<map>
@@ -1491,8 +1464,11 @@
 	"mge/defs.h"
 	"mge/RenderModel.h"
 	"mge/Image.h"
+	"EdgeRenderModel.h"
+	"OrderedRenderModel.h"
+	"StripRenderModel.h"
 
-1361187502 source:k:\projects\games\mge\mystery\ore\orderedrenderengine.cpp
+1379874002 source:k:\projects\games\mge\mystery\ore\orderedrenderengine.cpp
 	"OrderedRenderEngine.h"
 	"SDL.h"
 	<gl/gl.h>
@@ -1502,12 +1478,12 @@
 	"mge/GameObject.h"
 	"mge/PhysicsModel.h"
 
-1357887139 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
+1376283646 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
 	"PartitionedWorldEngine.h"
 	"mge/ModularEngine.h"
 	<list>
 
-1357888347 k:\projects\games\mge\mystery\pwe\partitionedworldengine.h
+1376283655 k:\projects\games\mge\mystery\pwe\partitionedworldengine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -1517,7 +1493,7 @@
 	"mge/GameObject.h"
 	"mge/Event.h"
 
-1361516532 source:k:\projects\games\mge\mystery\tpe\timephysicsengine.cpp
+1379896422 source:k:\projects\games\mge\mystery\tpe\timephysicsengine.cpp
 	"tpe/TimePhysicsEngine.h"
 	"mge/GameObject.h"
 	"mge/RenderModel.h"
@@ -1531,13 +1507,14 @@
 	"mge/PhysicsModel.h"
 	"mge/Event.h"
 
-1358062790 k:\projects\games\mge\mystery\tpe\timephysicsengine.h
+1376364687 k:\projects\games\mge\mystery\tpe\timephysicsengine.h
 	<list>
 	"mge/PhysicsEngine.h"
+	"TimePhysicsModel.h"
 
 1344719835 k:\projects\games\mge\mystery\\mge\audioengine.h
 
-1355192849 k:\projects\games\mge\mystery\\mge\defs.h
+1376282432 k:\projects\games\mge\mystery\\mge\defs.h
 	<math.h>
 	<stdio.h>
 
@@ -1549,7 +1526,7 @@
 	"tpe/TimePhysicsModel.h"
 	"game/GameDefs.h"
 
-1358495253 k:\projects\games\mge\mystery\\mge\gameobject.h
+1376277327 k:\projects\games\mge\mystery\\mge\gameobject.h
 	"mge/defs.h"
 	"mge/PhysicsModel.h"
 	"mge/RenderModel.h"
@@ -1557,13 +1534,13 @@
 1356819833 k:\projects\games\mge\mystery\\mge\physicsmodel.h
 	"mge/defs.h"
 
-1349135363 k:\projects\games\mge\mystery\\mge\rendermodel.h
+1376364491 k:\projects\games\mge\mystery\\mge\rendermodel.h
 	"mge/defs.h"
 
 1346599201 k:\projects\games\mge\mystery\\mge\event.h
 	"defs.h"
 
-1364501523 k:\projects\games\mge\mystery\\ore\orderedrendermodel.h
+1376284084 k:\projects\games\mge\mystery\\ore\orderedrendermodel.h
 	"mge/RenderModel.h"
 	"mge/RenderEngine.h"
 	"mge/Image.h"
@@ -1586,7 +1563,7 @@
 1364493359 k:\projects\games\mge\mystery\\game\gamedefs.h
 	"mge/defs.h"
 
-1361185925 k:\projects\games\mge\mystery\\ore\orderedrenderengine.h
+1376280696 k:\projects\games\mge\mystery\\ore\orderedrenderengine.h
 	<vector>
 	<list>
 	<map>
@@ -1594,8 +1571,11 @@
 	"mge/defs.h"
 	"mge/RenderModel.h"
 	"mge/Image.h"
+	"EdgeRenderModel.h"
+	"OrderedRenderModel.h"
+	"StripRenderModel.h"
 
-1357888347 k:\projects\games\mge\mystery\\pwe\partitionedworldengine.h
+1376283655 k:\projects\games\mge\mystery\\pwe\partitionedworldengine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -1634,9 +1614,10 @@
 	"ore/OrderedRenderModel.h"
 	"tpe/TimePhysicsModel.h"
 
-1358062790 k:\projects\games\mge\mystery\\tpe\timephysicsengine.h
+1376364687 k:\projects\games\mge\mystery\\tpe\timephysicsengine.h
 	<list>
 	"mge/PhysicsEngine.h"
+	"TimePhysicsModel.h"
 
 1358495990 k:\projects\games\mge\mystery\\game\wall.h
 	"mge/GameObject.h"
@@ -1659,16 +1640,13 @@
 	<map>
 	"mge/defs.h"
 
-1358495928 k:\projects\games\mge\mystery\\game\player.h
+1379894769 k:\projects\games\mge\mystery\\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
-	"mge/Image.h"
-	"mge/defs.h"
-	"tpe/TimePhysicsModel.h"
-	"ore/OrderedRenderModel.h"
-	"game/FileManager.h"
-	"game/Item.h"
-	"game/GameDefs.h"
+	"game/game_defs.h"
+	"d3re/d3re.h"
+	"pwe/PartitionedWorldEngine.h"
+	"tpe/TimePhysicsEngine.h"
 
 1359279859 k:\projects\games\mge\mystery\\game\item.h
 	"mge/Event.h"
@@ -1753,12 +1731,11 @@
 
 1348938425 k:\projects\games\mge\mystery\\game\mazegenerator.h
 
-1358495974 k:\projects\games\mge\mystery\\game\simplephysicsobject.h
+1379907300 k:\projects\games\mge\mystery\\game\simplephysicsobject.h
 	"mge/GameObject.h"
 	"tpe/TimePhysicsModel.h"
-	"ore/OrderedRenderModel.h"
-	"ore/OrderedRenderEngine.h"
-	"game/GameDefs.h"
+	"d3re/d3re.h"
+	"game/game_defs.h"
 
 1364352779 k:\projects\games\mge\mystery\\game\button.h
 	"mge/defs.h"
@@ -1823,4 +1800,92 @@
 1364491712 k:\projects\games\mge\mystery\ore\striprendermodel.h
 	"mge/RenderModel.h"
 	"mge/Image.h"
+
+1379903029 k:\projects\games\mge\mystery\\game\game_defs.h
+	"mge/defs.h"
+
+1376284084 k:\projects\games\mge\mystery\ore\orderedrendermodel.h
+	"mge/RenderModel.h"
+	"mge/RenderEngine.h"
+	"mge/Image.h"
+
+1376282288 k:\projects\games\mge\mystery\\game\gui\textrenderer.h
+	"mge/defs.h"
+	<string>
+
+1379875621 source:k:\projects\games\mge\mystery\game\gui\textrenderer.cpp
+	"TextRenderer.h"
+	"mge/Image.h"
+	"game/game_defs.h"
+	"d3re/d3re.h"
+
+1376282288 k:\projects\games\mge\mystery\game\gui\textrenderer.h
+	"mge/defs.h"
+	<string>
+
+1379907134 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
+	"d3re.h"
+	"SDL.h"
+	<gl/gl.h>
+	<gl/glu.h>
+	"mge/GameObject.h"
+	"game/game_defs.h"
+
+1379898492 k:\projects\games\mge\mystery\d3re\d3re.h
+	"D3RenderEngine.h"
+	"D3SpriteRenderModel.h"
+	"D3PrismRenderModel.h"
+
+1379895335 k:\projects\games\mge\mystery\d3re\d3renderengine.h
+	<list>
+	<vector>
+	"mge/RenderEngine.h"
+	"mge/Image.h"
+
+1379895752 k:\projects\games\mge\mystery\d3re\d3spriterendermodel.h
+	"mge/RenderModel.h"
+	"mge/defs.h"
+	"mge/Image.h"
+
+1379896301 source:k:\projects\games\mge\mystery\d3re\d3spriterendermodel.cpp
+	"d3re.h"
+	"mge/GameObject.h"
+
+1379873404 source:k:\projects\games\mge\mystery\game\world\region.cpp
+	"Region.h"
+
+1379875818 k:\projects\games\mge\mystery\game\world\region.h
+	"mge/GameObject.h"
+	"d3re/d3re.h"
+	"tpe/TimePhysicsEngine.h"
+
+1379898492 k:\projects\games\mge\mystery\\d3re\d3re.h
+	"D3RenderEngine.h"
+	"D3SpriteRenderModel.h"
+	"D3PrismRenderModel.h"
+
+1379895335 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
+	<list>
+	<vector>
+	"mge/RenderEngine.h"
+	"mge/Image.h"
+
+1379895752 k:\projects\games\mge\mystery\\d3re\d3spriterendermodel.h
+	"mge/RenderModel.h"
+	"mge/defs.h"
+	"mge/Image.h"
+
+1379906868 k:\projects\games\mge\mystery\d3re\d3prismrendermodel.h
+	"mge/RenderModel.h"
+	"mge/defs.h"
+	"mge/Image.h"
+
+1379906868 k:\projects\games\mge\mystery\\d3re\d3prismrendermodel.h
+	"mge/RenderModel.h"
+	"mge/defs.h"
+	"mge/Image.h"
+
+1379906550 source:k:\projects\games\mge\mystery\d3re\d3prismrendermodel.cpp
+	"d3re.h"
+	"mge/GameObject.h"
 

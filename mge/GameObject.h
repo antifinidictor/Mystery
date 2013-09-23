@@ -22,7 +22,6 @@ public:
     virtual void setFlag(uint flag, bool value) = 0;
     virtual uint getType() = 0;         //Returns some identifier indicating the object's class
     virtual void moveBy(Point ptShift) {
-        getRenderModel()->moveBy(ptShift);
         getPhysicsModel()->moveBy(ptShift);
     }
 

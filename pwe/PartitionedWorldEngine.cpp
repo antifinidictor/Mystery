@@ -44,7 +44,7 @@ void PartitionedWorldEngine::update(uint time) {
         if(it->second->update(time)) {
             //This object requested that it be removed
             GameObject *obj = it->second;
-            
+
             //Get the previous iterator, then go back to the next element
             map<uint, GameObject*>::iterator itTemp = (--it)++;
 
@@ -111,9 +111,8 @@ void PartitionedWorldEngine::remove(uint id) {
 /*
  * Partitioned-World specific functions
  */
-uint PartitionedWorldEngine::generateArea() {
-    m_mWorld[m_mWorld.size()] = M_Area();
-    return m_mWorld.size() - 1;
+void PartitionedWorldEngine::generateArea(uint uiAreaId) {
+    m_mWorld[uiAreaId] = M_Area();
 }
 
 void PartitionedWorldEngine::setCurrentArea(uint uiAreaID) {
@@ -260,6 +259,8 @@ bool PartitionedWorldEngine::removeListener(uint uiListenerID, EventID eventID, 
 }
 
 void PartitionedWorldEngine::callBack(uint cID, void *data, EventID id) {
+    if(m_pCurArea == NULL) { return; }
+
     //Pass directly on to the current list of listeners
 	map<uint,Listener*>::iterator iter;
 	switch(id) {

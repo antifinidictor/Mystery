@@ -31,7 +31,7 @@ public:
     virtual void remove(uint id);           //Removes object from current area and the screen
 
     //Specific to the partitioned world engine
-    virtual uint generateArea();                                //generates a new area and returns its id
+    virtual void generateArea(uint uiAreaId);                   //generates a new area and returns its id
     virtual void setCurrentArea(uint uiAreaID);                 //Queue a set to the current area
     virtual uint getCurrentArea() { return m_uiCurArea; }
     virtual void setEffectiveArea(uint uiAreaID) { m_uiEffectiveArea = uiAreaID; }  //Set when adding objects to some area not currently set

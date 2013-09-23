@@ -19,7 +19,7 @@ TimePhysicsEngine::~TimePhysicsEngine() {
 
 
 void TimePhysicsEngine::update(uint time) {
-    m_uiDeltaTime = time - m_uiLastUpdated;
+    m_uiDeltaTime = 7;//time - m_uiLastUpdated;
     m_uiLastUpdated = time;
 }
 
@@ -35,7 +35,7 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
 
     //Apply gravity
     if(obj->getFlag(TPE_FALLING) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC)) {
-        tmdl->applyForce(Point(0,0,-3));
+        //tmdl->applyForce(Point(0,0,-3));
     }
 
     //Apply general physics updates to object
