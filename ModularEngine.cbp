@@ -49,6 +49,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add directory="K:\projects\games\mge\Mystery\" />
+			<Add directory="$(#boost)" />
+			<Add directory="$(#boost.include)" />
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --cflags` `sdl-config --libs`" />
@@ -64,9 +66,12 @@
 			<Add library="winmm" />
 			<Add library="dxguid" />
 			<Add directory="K:\projects\games\mge\Mystery\lib" />
+			<Add directory="$(#boost.lib)" />
 		</Linker>
 		<Unit filename="bae\BasicAudioEngine.cpp" />
 		<Unit filename="bae\BasicAudioEngine.h" />
+		<Unit filename="d3re\D3HudRenderModel.cpp" />
+		<Unit filename="d3re\D3HudRenderModel.h" />
 		<Unit filename="d3re\D3PrismRenderModel.cpp" />
 		<Unit filename="d3re\D3PrismRenderModel.h" />
 		<Unit filename="d3re\D3RenderEngine.cpp" />
@@ -81,8 +86,9 @@
 		<Unit filename="game\game_defs.h" />
 		<Unit filename="game\gui\TextRenderer.cpp" />
 		<Unit filename="game\gui\TextRenderer.h" />
-		<Unit filename="game\world\Region.cpp" />
-		<Unit filename="game\world\Region.h" />
+		<Unit filename="game\world\SimplePhysicsObject.h" />
+		<Unit filename="game\world\Wall.cpp" />
+		<Unit filename="game\world\Wall.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="mge\AudioEngine.h" />
 		<Unit filename="mge\Clock.h" />
@@ -104,6 +110,7 @@
 		<Unit filename="tpe\TimePhysicsEngine.h" />
 		<Unit filename="tpe\TimePhysicsModel.cpp" />
 		<Unit filename="tpe\TimePhysicsModel.h" />
+		<Unit filename="tpe\tpe.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
