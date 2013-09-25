@@ -29,7 +29,7 @@ public:
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
     virtual uint getType()                      { return ED_TYPE_EDITOR_OBJECT; }
     virtual const std::string getClass()        { return "EditorObject"; }
-    
+
     virtual void moveBy(Point ptShift);
 
     //Render model
@@ -39,11 +39,15 @@ public:
     //Input
     virtual void callBack(uint cID, void *data, uint id);
 
+    void prepState(EditorState eState);
+
+    Box getVolume() { return m_pRenderModel->getVolume(); }
+
 private:
     void enterTextHandleKey(InputData *data);
     void normalStateHandleKey(InputData *data);
     void pitchStateHandleKey(InputData *data);
-    
+
     Point toTile(const Point &pt);
 
     uint m_uiId, m_uiFlags, m_uiAreaId;
@@ -51,8 +55,8 @@ private:
     AbstractTimePhysicsModel   *m_pPhysicsModel;
 
     std::string m_sInput;
-    
-    Point m_ptTilePos;
+
+    Point m_ptTilePos, m_ptInitSelectPos;
     Point m_ptDeltaPos;
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas
 };

@@ -40,9 +40,8 @@ Player::read(const boost::property_tree::ptree &pt, const std::string &keyBase) 
 
 void
 Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
-    std::string key = keyBase + getName();
     Point ptPos = m_pPhysicsModel->getPosition();
-    pt.put(key + ".id", m_uiId);
+    pt.put(keyBase + ".id", m_uiId);
     pt.put(keyBase + ".pos.x", ptPos.x);
     pt.put(keyBase + ".pos.y", ptPos.y);
     pt.put(keyBase + ".pos.z", ptPos.z);

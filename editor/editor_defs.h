@@ -22,6 +22,8 @@ enum EditorKeys {
     ED_IN_UNDERSCORE,
     ED_IN_BACKSPACE,
     ED_IN_ENTER,
+    ED_IN_SLASH,
+    ED_IN_COLON,
     ED_NUM_INPUTS
 };
 
@@ -38,14 +40,23 @@ enum EditorAreas {
 
 enum EditorState {
     ED_STATE_NORMAL,
-    ED_STATE_ENTER_TEXT,
+    ED_STATE_LOAD_FILE,
+    ED_STATE_SAVE_FILE,
     ED_STATE_SELECT,
     ED_NUM_STATES
 };
 
 enum EditorHudIds {
     ED_HUD_CURSOR_POS,
-    ED_HUD_CREATE_OBJECT,
+    ED_HUD_NEW,
+    ED_HUD_CREATE,
+    ED_HUD_CANCEL,
+    ED_LOAD,
+    ED_LOAD_FILE,
+    ED_SAVE,
+    ED_SAVE_FILE,
+    ED_TEXT,
+    ED_MESSAGE,
     ED_NUM_HUDS
 };
 

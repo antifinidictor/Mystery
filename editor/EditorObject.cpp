@@ -43,9 +43,8 @@ EditorObject::read(const boost::property_tree::ptree &pt, const std::string &key
 
 void
 EditorObject::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
-    std::string key = keyBase + getName();
     Point ptPos = m_pPhysicsModel->getPosition();
-    pt.put(key + ".id", m_uiId);
+    pt.put(keyBase + ".id", m_uiId);
     pt.put(keyBase + ".areaId", m_uiAreaId);
     pt.put(keyBase + ".pos.x", ptPos.x);
     pt.put(keyBase + ".pos.y", ptPos.y);
@@ -67,7 +66,13 @@ EditorObject::update(uint time) {
     D3RE::get()->moveScreenTo(m_pPhysicsModel->getPosition());
 
     std::ostringstream posText;
-    posText << "#00FF00#(" << m_ptTilePos.x << "," << m_ptTilePos.y << "," << m_ptTilePos.z << ")";
+
+    if(EditorManager::get()->getState() == ED_STATE_NORMAL) {
+        posText << "#0000FF#(" << m_ptTilePos.x << "," << m_ptTilePos.y << "," << m_ptTilePos.z << ")";
+    } else if(EditorManager::get()->getState() == ED_STATE_SELECT) {
+        Box bxVol = m_pRenderModel->getVolume();
+        posText << "#FF0000#(" << m_ptTilePos.x << "," << m_ptTilePos.y << "," << m_ptTilePos.z << " : " << bxVol.w << "," << bxVol.h << "," << bxVol.l << ")";
+    }
     D3RE::get()->getHudElement(ED_HUD_CURSOR_POS)->updateText(posText.str());
     return false;
 }
@@ -78,10 +83,20 @@ EditorObject::moveBy(Point ptShift) {
 
     //Tile size jump?
     Point ptTileShift = toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2));
+    m_ptTilePos += Point(ptTileShift);
     if(EditorManager::get()->getState() == ED_STATE_NORMAL) {
         m_pRenderModel->moveBy(ptTileShift);
+    } else if(EditorManager::get()->getState() == ED_STATE_SELECT) {
+        Box bxVolume = Box(
+            m_ptTilePos.x < m_ptInitSelectPos.x ? m_ptTilePos.x : m_ptInitSelectPos.x,
+            m_ptTilePos.y < m_ptInitSelectPos.y ? m_ptTilePos.y : m_ptInitSelectPos.y,
+            m_ptTilePos.z < m_ptInitSelectPos.z ? m_ptTilePos.z : m_ptInitSelectPos.z,
+           (m_ptTilePos.x < m_ptInitSelectPos.x ? (m_ptInitSelectPos.x - m_ptTilePos.x) : (m_ptTilePos.x - m_ptInitSelectPos.x)) + TILE_SIZE,
+           (m_ptTilePos.y < m_ptInitSelectPos.y ? (m_ptInitSelectPos.y - m_ptTilePos.y) : (m_ptTilePos.y - m_ptInitSelectPos.y)) + TILE_SIZE,
+           (m_ptTilePos.z < m_ptInitSelectPos.z ? (m_ptInitSelectPos.z - m_ptTilePos.z) : (m_ptTilePos.z - m_ptInitSelectPos.z)) + TILE_SIZE
+        );
+        m_pRenderModel->setVolume(bxVolume);
     }
-    m_ptTilePos += Point(ptTileShift);
 }
 
 void
@@ -89,6 +104,7 @@ EditorObject::callBack(uint cID, void *data, uint eventId) {
     //This is a hack, but it should largely work: When any event is called, this editor object's area has come into play
     if(eventId == PWE_ON_AREA_SWITCH) {
         EditorManager::get()->setEditorObject(this);
+        prepState(EditorManager::get()->getState());    //on state change
         return;
     }
 
@@ -99,10 +115,27 @@ EditorObject::callBack(uint cID, void *data, uint eventId) {
             normalStateHandleKey((InputData*)data);
         }
         break;
-    case ED_STATE_ENTER_TEXT:
+    case ED_STATE_LOAD_FILE:
+    case ED_STATE_SAVE_FILE:
         if(eventId == ON_BUTTON_INPUT) {
             enterTextHandleKey((InputData*)data);
         }
+        break;
+    default:
+        break;
+    }
+}
+
+void
+EditorObject::prepState(EditorState eState) {
+    switch(eState) {
+    case ED_STATE_NORMAL:
+        m_pRenderModel->setVolume(Box(m_ptTilePos.x, m_ptTilePos.y, m_ptTilePos.z, TILE_SIZE, TILE_SIZE, TILE_SIZE));
+        m_pRenderModel->setColor(Color(0x0,0x0,0xFF));
+        break;
+    case ED_STATE_SELECT:
+        m_pRenderModel->setColor(Color(0xFF,0x0,0x0));
+        m_ptInitSelectPos = m_ptTilePos;
         break;
     default:
         break;
@@ -138,18 +171,33 @@ EditorObject::enterTextHandleKey(InputData *data) {
             m_sInput.append(1, '-');
         }
     }
+    if(data->getInputState(ED_IN_SLASH) && data->hasChanged(ED_IN_SLASH)) {
+        m_sInput.append(1, '/');
+    }
+    if(data->getInputState(ED_IN_COLON) && data->hasChanged(ED_IN_COLON)) {
+        m_sInput.append(1, ':');
+    }
     if(data->getInputState(ED_IN_BACKSPACE) && data->hasChanged(ED_IN_BACKSPACE)) {
         m_sInput.resize(m_sInput.size() - 1);
     }
     if(data->getInputState(ED_IN_ENTER) && data->hasChanged(ED_IN_ENTER)) {
         printf("\tString entered: \"%s\"\n", m_sInput.c_str());
+        m_sInput.append(".info");
+        if(EditorManager::get()->getState() == ED_STATE_LOAD_FILE) {
+
+            EditorManager::get()->callBack(m_uiId, &m_sInput, ED_LOAD_FILE);
+        } else {
+            EditorManager::get()->callBack(m_uiId, &m_sInput, ED_SAVE_FILE);
+        }
         m_sInput.clear();
+    } else {
+        D3RE::get()->getHudElement(ED_TEXT)->updateText(m_sInput + ".info");
     }
 }
 
 void EditorObject::normalStateHandleKey(InputData *data) {
     m_fDeltaPitch = 0.f;
-    if(data->getInputState(IN_CTRL)) {
+    if(data->getInputState(IN_SHIFT)) {
         if(data->getInputState(IN_NORTH)) {
             m_ptDeltaPos.y = 1.f;
         } else if(data->getInputState(IN_SOUTH)) {
@@ -160,7 +208,7 @@ void EditorObject::normalStateHandleKey(InputData *data) {
         m_ptDeltaPos.z = 0;
 
         m_fDeltaZoom = 0.f;
-    } else if(data->getInputState(IN_SHIFT)) {
+    } else if(data->getInputState(IN_CTRL)) {
         if(data->getInputState(IN_NORTH)) {
             m_fDeltaZoom = -1.0f;
         } else if(data->getInputState(IN_SOUTH)) {

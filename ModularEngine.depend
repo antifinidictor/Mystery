@@ -1462,7 +1462,7 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1380084437 source:k:\projects\games\mge\mystery\game\player.cpp
+1380100377 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 
@@ -1527,7 +1527,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1380059618 source:k:\projects\games\mge\mystery\game\game.cpp
+1380100597 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	<gl/gl.h>
@@ -1539,7 +1539,6 @@
 	"bae/BasicAudioEngine.h"
 	"tpe/TimePhysicsEngine.h"
 	"game/game_defs.h"
-	"game/gui/TextRenderer.h"
 	"game/Player.h"
 	"game/world/SimplePhysicsObject.h"
 	"game/world/Wall.h"
@@ -1588,7 +1587,7 @@
 	"mge/Clock.h"
 	"mge/Event.h"
 
-1380076136 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
+1380094382 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
 	"ModularEngine.h"
 	"defs.h"
 
@@ -1806,7 +1805,7 @@
 	<map>
 	"mge/defs.h"
 
-1380063283 k:\projects\games\mge\mystery\\game\player.h
+1380072888 k:\projects\games\mge\mystery\\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -2098,7 +2097,7 @@
 	"mge/defs.h"
 	"mge/Image.h"
 
-1380088500 source:k:\projects\games\mge\mystery\d3re\d3hudrendermodel.cpp
+1380094080 source:k:\projects\games\mge\mystery\d3re\d3hudrendermodel.cpp
 	"d3re.h"
 	"mge/GameObject.h"
 	"TextRenderer.h"
@@ -7763,13 +7762,13 @@
 	"d3re/d3re.h"
 	"game/game_defs.h"
 
-1380092247 source:k:\projects\games\mge\mystery\editor\editorobject.cpp
+1380100422 source:k:\projects\games\mge\mystery\editor\editorobject.cpp
 	"EditorObject.h"
 	"EditorManager.h"
 	"bae/BasicAudioEngine.h"
 	<string>
 
-1380091890 k:\projects\games\mge\mystery\editor\editorobject.h
+1380096434 k:\projects\games\mge\mystery\editor\editorobject.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -7778,13 +7777,13 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1380066156 k:\projects\games\mge\mystery\\editor\selectionrendermodel.h
+1380095353 k:\projects\games\mge\mystery\\editor\selectionrendermodel.h
 	"d3re/d3re.h"
 
-1380089842 k:\projects\games\mge\mystery\\editor\editor_defs.h
+1380099556 k:\projects\games\mge\mystery\\editor\editor_defs.h
 	"game/game_defs.h"
 
-1380092076 source:k:\projects\games\mge\mystery\editor\editor.cpp
+1380099577 source:k:\projects\games\mge\mystery\editor\editor.cpp
 	"game/game.h"
 	<SDL.h>
 	<gl/gl.h>
@@ -7801,16 +7800,18 @@
 
 1376281503 k:\projects\games\mge\mystery\\game\game.h
 
-1380092911 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
+1380100109 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
 	"EditorManager.h"
 	"EditorObject.h"
 	"EditorHudButton.h"
+	"game/world/Wall.h"
+	"pwe/PartitionedWorldEngine.h"
 
-1380092726 k:\projects\games\mge\mystery\editor\editormanager.h
+1380098012 k:\projects\games\mge\mystery\editor\editormanager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
 
-1380091890 k:\projects\games\mge\mystery\\editor\editorobject.h
+1380096434 k:\projects\games\mge\mystery\\editor\editorobject.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -7819,7 +7820,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1380092726 k:\projects\games\mge\mystery\\editor\editormanager.h
+1380098012 k:\projects\games\mge\mystery\\editor\editormanager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
 

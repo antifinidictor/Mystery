@@ -201,7 +201,7 @@ bool ModularEngine::removeListener(uint uiListenerID, uint id) {
 			iter != m_lsMouseMoveList.end();
 			++iter ) {
 			if( (*iter)->getID() == uiListenerID ) {
-				m_lsMouseMoveList.remove(*iter);
+				m_lsMouseMoveList.erase(iter);
 				return true;
 			}
 		}
@@ -211,7 +211,7 @@ bool ModularEngine::removeListener(uint uiListenerID, uint id) {
 			iter != m_lsButtonInputList.end();
 			++iter ) {
 			if( (*iter)->getID() == uiListenerID ) {
-				m_lsButtonInputList.remove(*iter);
+				m_lsButtonInputList.erase(iter);
 				return true;
 			}
 		}

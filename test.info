@@ -1,0 +1,130 @@
+allArea0
+{
+    EditorObject
+    {
+        EditorObject6
+        {
+            id 6
+            areaId 0
+            pos
+            {
+                x 34
+                y 63
+                z 158
+            }
+        }
+    }
+    Wall
+    {
+        Wall12
+        {
+            id 12
+            vol
+            {
+                x -128
+                y 0
+                z -96
+                w 288
+                h 32
+                l 288
+            }
+            tex
+            {
+                north 0
+                south 7
+                east 7
+                west 7
+                up 5
+                down 0
+            }
+        }
+        Wall18
+        {
+            id 18
+            vol
+            {
+                x 128
+                y 32
+                z -96
+                w 32
+                h 32
+                l 288
+            }
+            tex
+            {
+                north 0
+                south 7
+                east 7
+                west 7
+                up 5
+                down 0
+            }
+        }
+        Wall29
+        {
+            id 29
+            vol
+            {
+                x -128
+                y 32
+                z -96
+                w 256
+                h 32
+                l 32
+            }
+            tex
+            {
+                north 0
+                south 7
+                east 7
+                west 7
+                up 5
+                down 0
+            }
+        }
+        Wall35
+        {
+            id 35
+            vol
+            {
+                x -128
+                y 32
+                z -64
+                w 32
+                h 32
+                l 256
+            }
+            tex
+            {
+                north 0
+                south 7
+                east 7
+                west 7
+                up 5
+                down 0
+            }
+        }
+        Wall41
+        {
+            id 41
+            vol
+            {
+                x -128
+                y 64
+                z -32
+                w 288
+                h 96
+                l 96
+            }
+            tex
+            {
+                north 0
+                south 7
+                east 7
+                west 7
+                up 5
+                down 0
+            }
+        }
+    }
+}

@@ -20,7 +20,6 @@
 
 //Game includes
 #include "game/game_defs.h"
-#include "game/gui/TextRenderer.h"
 #include "game/Player.h"
 #include "game/world/SimplePhysicsObject.h"
 #include "game/world/Wall.h"

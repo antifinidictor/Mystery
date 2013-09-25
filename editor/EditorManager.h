@@ -40,7 +40,11 @@ private:
     EditorManager(uint uiId);
     virtual ~EditorManager();
     
+    void initConstHud();
     void initMainHud();
+    void initCreateObjectHud();
+    void initLoadFileHud();
+    void initSaveFileHud();
 
     static EditorManager *m_pInstance;
 

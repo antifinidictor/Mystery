@@ -32,9 +32,30 @@ public:
 
     virtual Rect getDrawArea() { return m_bxVolume; }
 
+    Box getVolume() { return m_bxVolume; }
+    
     void setVolume(const Box &bx) {
         m_bxVolume = bx;
     }
+    
+    void expandVolume(const Point &pt) {
+        m_bxVolume.w += pt.x;
+        m_bxVolume.h += pt.y;
+        m_bxVolume.l += pt.z;
+        while (m_bxVolume.w < TILE_SIZE) {
+            m_bxVolume.x -= TILE_SIZE;
+            m_bxVolume.w += TILE_SIZE;
+        }
+        while (m_bxVolume.l < TILE_SIZE) {
+            m_bxVolume.z -= TILE_SIZE;
+            m_bxVolume.l += TILE_SIZE;
+        }
+        while (m_bxVolume.h < TILE_SIZE) {
+            m_bxVolume.y -= TILE_SIZE;
+            m_bxVolume.h += TILE_SIZE;
+        }
+    }
+    
     void setColor(const Color &cr) {
         m_crColor = cr;
     }
