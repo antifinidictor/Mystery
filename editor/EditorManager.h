@@ -39,12 +39,14 @@ public:
 private:
     EditorManager(uint uiId);
     virtual ~EditorManager();
+    
+    void initMainHud();
 
     static EditorManager *m_pInstance;
 
     uint m_uiId, m_uiFlags;
     EditorObject *m_pEditorObject;
-    EditorState m_eState;
+    EditorState m_eState, m_eNewState;
 };
 
 #endif //EDITOR_MANAGER_H

@@ -42,6 +42,7 @@ public:
 private:
     void enterTextHandleKey(InputData *data);
     void normalStateHandleKey(InputData *data);
+    void pitchStateHandleKey(InputData *data);
     
     Point toTile(const Point &pt);
 
@@ -52,7 +53,7 @@ private:
     std::string m_sInput;
     
     Point m_ptTilePos;
-    int dx, dy;
+    Point m_ptDeltaPos;
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas
 };
 

@@ -36,7 +36,7 @@ TextRenderer::TextRenderer() {
 //*/
     memcpy(m_aWidths,t,78);
 
-    m_pFont = D3RE::get()->getImage(0);
+    m_pFont = D3RE::get()->getImage(1);
 }
 
 TextRenderer::~TextRenderer() {

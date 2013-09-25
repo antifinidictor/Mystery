@@ -92,14 +92,26 @@ void initWorld() {
     mge->mapInput(SDLK_LCTRL, IN_CTRL);
 
     // Navigation
+    mge->mapInput(SDLK_w,     IN_NORTH);
+    mge->mapInput(SDLK_d,     IN_EAST);
+    mge->mapInput(SDLK_s,     IN_SOUTH);
+    mge->mapInput(SDLK_a,     IN_WEST);
+    /*
     mge->mapInput(SDLK_UP,    IN_NORTH);
     mge->mapInput(SDLK_RIGHT, IN_EAST);
     mge->mapInput(SDLK_DOWN,  IN_SOUTH);
     mge->mapInput(SDLK_LEFT,  IN_WEST);
+    */
+    
+    // Selection
+    mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
 
-    //Load image resources
-    D3RE::get()->createImage(IMG_PLAYER,   "res/Magus.png", 8, 4);
+    //Load image resources (required by editor)
     D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3);
+    D3RE::get()->createImage(IMG_BUTTON,   "res/gui/button.png", 3, 1);
+    
+    //These could be loaded from a file
+    D3RE::get()->createImage(IMG_PLAYER,   "res/Magus.png", 8, 4);
     D3RE::get()->createImage(IMG_BLOCK,    "res/world/block.png");
     D3RE::get()->createImage(IMG_WALL_TOP, "res/world/wallTop.png");
     D3RE::get()->createImage(IMG_WALL_BOTTOM, "res/world/wallBottom.png");

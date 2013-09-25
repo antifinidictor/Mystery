@@ -57,6 +57,9 @@ public:
     D3HudRenderModel *getHudElement(uint uiHudId) { return m_mHudElements[uiHudId]; }
     void clearHud();
 
+    uint getScreenWidth() { return m_uiWidth; }
+    uint getScreenHeight() { return m_uiHeight; }
+
 private:
     D3RenderEngine();
     virtual ~D3RenderEngine();

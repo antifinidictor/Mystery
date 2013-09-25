@@ -10,12 +10,12 @@ EditorObject::EditorObject(uint uiId, uint uiAreaId, const Point &ptPos) {
     m_uiAreaId = uiAreaId;
 
     m_ptTilePos = toTile(ptPos);
-    
+
     Box bxVolume = Box(m_ptTilePos.x, m_ptTilePos.y, m_ptTilePos.z, TILE_SIZE, TILE_SIZE, TILE_SIZE);
     m_pPhysicsModel = new NullTimePhysicsModel(bxVolume);
     m_pRenderModel  = new SelectionRenderModel(bxVolume, Color(0x0, 0x0, 0xFF));
 
-    dx = dy = 0;
+    m_ptDeltaPos = Point();
     m_fDeltaPitch = m_fDeltaZoom = 0.f;
 
     PWE *we = PWE::get();
@@ -59,27 +59,28 @@ EditorObject::write(boost::property_tree::ptree &pt, const std::string &keyBase)
 // The Manager responds to all events.
 bool
 EditorObject::update(uint time) {
-    Point mov = Point(dx,0,dy);
-    moveBy(mov);
+    moveBy(m_ptDeltaPos);
 
     D3RE::get()->adjustCamAngle(m_fDeltaPitch);
     D3RE::get()->adjustCamDist(m_fDeltaZoom);
 
     D3RE::get()->moveScreenTo(m_pPhysicsModel->getPosition());
-    
+
     std::ostringstream posText;
     posText << "#00FF00#(" << m_ptTilePos.x << "," << m_ptTilePos.y << "," << m_ptTilePos.z << ")";
-    re->getHudElement(ED_HUD_CURSOR_POS)->updateText(posText.str());
+    D3RE::get()->getHudElement(ED_HUD_CURSOR_POS)->updateText(posText.str());
     return false;
 }
 
 void
 EditorObject::moveBy(Point ptShift) {
     m_pPhysicsModel->moveBy(ptShift);
-    
+
     //Tile size jump?
-    Point ptTileShift = toTile(m_pPhysicsModel->getPosition() - m_ptTilePos);
-    m_pRenderModel->moveBy(ptTileShift);
+    Point ptTileShift = toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2));
+    if(EditorManager::get()->getState() == ED_STATE_NORMAL) {
+        m_pRenderModel->moveBy(ptTileShift);
+    }
     m_ptTilePos += Point(ptTileShift);
 }
 
@@ -88,10 +89,12 @@ EditorObject::callBack(uint cID, void *data, uint eventId) {
     //This is a hack, but it should largely work: When any event is called, this editor object's area has come into play
     if(eventId == PWE_ON_AREA_SWITCH) {
         EditorManager::get()->setEditorObject(this);
+        return;
     }
 
     switch(EditorManager::get()->getState()) {
     case ED_STATE_NORMAL:
+    case ED_STATE_SELECT:
         if(eventId == ON_BUTTON_INPUT) {
             normalStateHandleKey((InputData*)data);
         }
@@ -145,15 +148,16 @@ EditorObject::enterTextHandleKey(InputData *data) {
 }
 
 void EditorObject::normalStateHandleKey(InputData *data) {
+    m_fDeltaPitch = 0.f;
     if(data->getInputState(IN_CTRL)) {
         if(data->getInputState(IN_NORTH)) {
-            m_fDeltaPitch = M_PI / 100;
+            m_ptDeltaPos.y = 1.f;
         } else if(data->getInputState(IN_SOUTH)) {
-            m_fDeltaPitch = -M_PI / 100;
+            m_ptDeltaPos.y = -1.f;
         } else {
-            m_fDeltaPitch = 0.f;
+            m_ptDeltaPos.y = 0.f;
         }
-        dy = 0;
+        m_ptDeltaPos.z = 0;
 
         m_fDeltaZoom = 0.f;
     } else if(data->getInputState(IN_SHIFT)) {
@@ -164,28 +168,70 @@ void EditorObject::normalStateHandleKey(InputData *data) {
         } else {
             m_fDeltaZoom = 0.f;
         }
-        dy = 0;
+        m_ptDeltaPos.z = 0;
+    } else {
+        if(data->getInputState(IN_NORTH)) {
+            m_ptDeltaPos.z = -1;
+        } else if(data->getInputState(IN_SOUTH)) {
+            m_ptDeltaPos.z = 1;
+        } else {
+            m_ptDeltaPos.z = 0;
+        }
+        m_fDeltaZoom = 0.f;
+    }
+
+    if(data->getInputState(IN_WEST)) {
+        m_ptDeltaPos.x = -1;
+    } else if(data->getInputState(IN_EAST)) {
+        m_ptDeltaPos.x = 1;
+    } else {
+        m_ptDeltaPos.x = 0;
+    }
+}
+
+void EditorObject::pitchStateHandleKey(InputData *data) {
+    if(data->getInputState(IN_CTRL)) {
+        if(data->getInputState(IN_NORTH)) {
+            m_fDeltaPitch = M_PI / 100;
+        } else if(data->getInputState(IN_SOUTH)) {
+            m_fDeltaPitch = -M_PI / 100;
+        } else {
+            m_fDeltaPitch = 0.f;
+        }
+        m_ptDeltaPos.z = 0;
+
+        m_fDeltaZoom = 0.f;
+    } else if(data->getInputState(IN_SHIFT)) {
+        if(data->getInputState(IN_NORTH)) {
+            m_fDeltaZoom = -1.0f;
+        } else if(data->getInputState(IN_SOUTH)) {
+            m_fDeltaZoom = 1.0f;
+        } else {
+            m_fDeltaZoom = 0.f;
+        }
+        m_ptDeltaPos.z = 0;
 
         m_fDeltaPitch = 0.f;
     } else {
         if(data->getInputState(IN_NORTH)) {
-            dy = -1;
+            m_ptDeltaPos.z = -1;
         } else if(data->getInputState(IN_SOUTH)) {
-            dy = 1;
+            m_ptDeltaPos.z = 1;
         } else {
-            dy = 0;
+            m_ptDeltaPos.z = 0;
         }
         m_fDeltaZoom = m_fDeltaPitch = 0.f;
     }
 
     if(data->getInputState(IN_WEST)) {
-        dx = -1;
+        m_ptDeltaPos.x = -1;
     } else if(data->getInputState(IN_EAST)) {
-        dx = 1;
+        m_ptDeltaPos.x = 1;
     } else {
-        dx = 0;
+        m_ptDeltaPos.x = 0;
     }
 }
+
 
 Point
 EditorObject::toTile(const Point &pt) {

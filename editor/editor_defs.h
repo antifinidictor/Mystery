@@ -7,6 +7,9 @@
 
 #include "game/game_defs.h"
 
+#define BUTTON_WIDTH  128
+#define BUTTON_HEIGHT 32
+
 enum EditorTypes {
     ED_TYPE_EDITOR_OBJECT = NUM_TYPES,
     ED_TYPE_EDITOR_MANAGER,
@@ -36,11 +39,13 @@ enum EditorAreas {
 enum EditorState {
     ED_STATE_NORMAL,
     ED_STATE_ENTER_TEXT,
+    ED_STATE_SELECT,
     ED_NUM_STATES
 };
 
 enum EditorHudIds {
     ED_HUD_CURSOR_POS,
+    ED_HUD_CREATE_OBJECT,
     ED_NUM_HUDS
 };
 

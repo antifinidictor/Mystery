@@ -271,6 +271,15 @@ D3RenderEngine::setBackgroundColor(const Color &cr) {
 }
 
 void
+D3RenderEngine::clearHud() {
+    map<uint,D3HudRenderModel*>::iterator iter;
+    for(iter = m_mHudElements.begin(); iter != m_mHudElements.end(); ++iter) {
+        delete (iter->second);
+    }
+    m_mHudElements.clear();
+}
+
+void
 D3RenderEngine::updateCamPos() {
     m_ptCamPos = Point(m_ptPos.x,
                        m_ptPos.y + m_fCamDist * sin(m_fCamAngle),

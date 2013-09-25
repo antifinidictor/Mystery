@@ -28,7 +28,7 @@ D3HudRenderModel::D3HudRenderModel(const std::string &data, const Rect &rcArea, 
 
     m_fTextSize = textSize;
     m_sData = data;
-    m_ptTextPos = Point();
+    m_ptTextPos = Point(rcArea.x, rcArea.y, 0.f);
 
     m_iFrameW = 0;
     m_iFrameH = 0;
