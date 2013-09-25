@@ -10,9 +10,9 @@
 
 class D3HudRenderModel : public RenderModel {
 public:
-    D3HudRenderModel(GameObject *parent, Image *img, const Rect &rcArea);
-    D3HudRenderModel(GameObject *parent, const std::string &data, const Rect &rcArea, float textSize = 1.f);
-    D3HudRenderModel(GameObject *parent, Image *img, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize = 1.f);
+    D3HudRenderModel(Image *img, const Rect &rcArea);
+    D3HudRenderModel(const std::string &data, const Rect &rcArea, float textSize = 1.f);
+    D3HudRenderModel(Image *img, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize = 1.f);
     virtual ~D3HudRenderModel();
 
     virtual void render(RenderEngine *re);
@@ -46,8 +46,6 @@ private:
     int m_iRepsW, m_iRepsH;
 
     Color m_crImageColor;
-
-    GameObject *m_pParent;
 };
 
 #endif

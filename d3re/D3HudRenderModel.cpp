@@ -6,7 +6,7 @@
 #include "mge/GameObject.h"
 #include "TextRenderer.h"
 
-D3HudRenderModel::D3HudRenderModel(GameObject *parent, Image *img, const Rect &rcArea) {
+D3HudRenderModel::D3HudRenderModel(Image *img, const Rect &rcArea) {
     m_pImage = img;
     m_rcDrawArea = rcArea;
 
@@ -20,11 +20,9 @@ D3HudRenderModel::D3HudRenderModel(GameObject *parent, Image *img, const Rect &r
     m_iRepsH = 1;
 
     m_crImageColor = Color(0xFF, 0xFF, 0xFF);
-
-    m_pParent = parent;
 }
 
-D3HudRenderModel::D3HudRenderModel(GameObject *parent, const std::string &data, const Rect &rcArea, float textSize) {
+D3HudRenderModel::D3HudRenderModel(const std::string &data, const Rect &rcArea, float textSize) {
     m_pImage = NULL;
     m_rcDrawArea = rcArea;
 
@@ -38,11 +36,9 @@ D3HudRenderModel::D3HudRenderModel(GameObject *parent, const std::string &data, 
     m_iRepsH = 1;
 
     m_crImageColor = Color(0xFF, 0xFF, 0xFF);
-
-    m_pParent = parent;
 }
 
-D3HudRenderModel::D3HudRenderModel(GameObject *parent, Image *img, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize) {
+D3HudRenderModel::D3HudRenderModel(Image *img, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize) {
     m_pImage = img;
     m_rcDrawArea = rcArea;
 
@@ -56,8 +52,6 @@ D3HudRenderModel::D3HudRenderModel(GameObject *parent, Image *img, const Rect &r
     m_iRepsH = 1;
 
     m_crImageColor = Color(0xFF, 0xFF, 0xFF);
-
-    m_pParent = parent;
 }
 
 D3HudRenderModel::~D3HudRenderModel() {
@@ -75,17 +69,12 @@ D3HudRenderModel::render(RenderEngine *re) {
 
 Rect
 D3HudRenderModel::getDrawArea() {
-    Point ptPos = getPosition();
-    return Rect(ptPos.x + m_rcDrawArea.x, ptPos.y + m_rcDrawArea.y, m_rcDrawArea.w, m_rcDrawArea.h);
+    return m_rcDrawArea;
 }
 
 Point
 D3HudRenderModel::getPosition() {
-    Point ptPos = Point();
-    if(m_pParent != NULL) {
-        ptPos = m_pParent->getPhysicsModel()->getPosition();
-    }
-    return ptPos;
+    return Point(m_rcDrawArea.x, m_rcDrawArea.y, 0.f);
 }
 
 void
@@ -109,9 +98,6 @@ D3HudRenderModel::renderImage() {
           fTexTop    = m_iFrameH * 1.0F / m_pImage->m_iNumFramesH,
           fTexRight  = m_iFrameW * 1.0F / m_pImage->m_iNumFramesW + m_iRepsW * 1.0F / m_pImage->m_iNumFramesW,
           fTexBottom = m_iFrameH * 1.0F / m_pImage->m_iNumFramesH + m_iRepsH * 1.0F / m_pImage->m_iNumFramesH;
-
-    Point ptPos = getPosition();
-    //glTranslatef((int)(ptPos.x + m_rcDrawArea.x), (int)(ptPos.y + m_rcDrawArea.y), (int)(ptPos.z));
 
     //Bind the texture to which subsequent calls refer to
     glBindTexture( GL_TEXTURE_2D, m_pImage->m_uiTexture );

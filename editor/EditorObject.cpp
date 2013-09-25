@@ -66,6 +66,10 @@ EditorObject::update(uint time) {
     D3RE::get()->adjustCamDist(m_fDeltaZoom);
 
     D3RE::get()->moveScreenTo(m_pPhysicsModel->getPosition());
+    
+    std::ostringstream posText;
+    posText << "#00FF00#(" << m_ptTilePos.x << "," << m_ptTilePos.y << "," << m_ptTilePos.z << ")";
+    re->getHudElement(ED_HUD_CURSOR_POS)->updateText(posText.str());
     return false;
 }
 

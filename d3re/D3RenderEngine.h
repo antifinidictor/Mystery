@@ -54,6 +54,7 @@ public:
 
     void setBackgroundColor(const Color &cr);
     void addHudElement(uint uiHudId, D3HudRenderModel *hud) { m_mHudElements[uiHudId] = hud; }
+    D3HudRenderModel *getHudElement(uint uiHudId) { return m_mHudElements[uiHudId]; }
     void clearHud();
 
 private:
