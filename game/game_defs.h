@@ -22,6 +22,7 @@ enum OBJECT_TYPES {
 enum IMAGE_TYPES {
     IMG_NONE,   //Reserved: No image
     IMG_FONT,
+    IMG_BUTTON,
     IMG_PLAYER,
     IMG_BLOCK,
     IMG_WALL_TOP,

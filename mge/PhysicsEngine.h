@@ -7,6 +7,7 @@ class GameObject;
 
 class PhysicsEngine {
 public:
+    virtual ~PhysicsEngine() {}
     virtual void update(uint time) = 0;
 
     virtual bool applyPhysics(GameObject *obj) = 0;

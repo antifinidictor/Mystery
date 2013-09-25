@@ -10,6 +10,7 @@
 
 class PhysicsModel {
 public:
+    virtual ~PhysicsModel() {}
     virtual Point getPosition() = 0;
     virtual Point getLastVelocity() = 0;
     virtual void  moveBy(Point ptShift) = 0;    //non-physics shift

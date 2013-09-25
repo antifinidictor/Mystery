@@ -12,6 +12,7 @@ class RenderEngine;
 
 class RenderModel {
 public:
+    virtual ~RenderModel() {}
     virtual void render(RenderEngine *re) = 0;
     virtual void moveBy(Point ptShift) = 0;
     virtual Point getPosition() = 0;

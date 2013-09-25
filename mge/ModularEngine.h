@@ -80,4 +80,6 @@ private:
     void handleButton(SDL_Event *pEvent, bool bDown);
 };
 
+typedef ModularEngine MGE;
+
 #endif // MODULARENGINE_H

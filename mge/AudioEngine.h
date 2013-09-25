@@ -3,6 +3,7 @@
 
 class AudioEngine {
 public:
+    virtual ~AudioEngine() {}
 
 protected:
 private:

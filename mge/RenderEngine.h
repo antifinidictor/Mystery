@@ -8,6 +8,7 @@ class GameObject;
 
 class RenderEngine {
 public:
+    virtual ~RenderEngine() {}
     virtual void  render() = 0;
     virtual Point getRenderOffset() = 0;
     virtual void  moveScreenTo(Point pt) = 0;

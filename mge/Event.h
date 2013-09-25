@@ -29,6 +29,7 @@ public:
 
 class EventHandler {
 public:
+    virtual ~EventHandler() {}
 	virtual void addListener(Listener *pListener, uint id, char* triggerData = 0) = 0;
 	virtual bool removeListener(uint uiListenerID, uint eventID) = 0;	//Returns true if object found
 	virtual uint getID() = 0;
