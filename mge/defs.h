@@ -8,6 +8,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <vector>
 
 typedef unsigned int uint;
 
@@ -51,12 +52,47 @@ const int SCREEN_WIDTH = 640;
 #define GET_FLAG(flags, flag)             ((flags >> flag) & 0x1)
 #define SET_FLAG(flags, flag, val)   ((val) ? (flags | (1 << flag)) : (flags & ~(1 << flag)))
 
+enum LetterKeyMasks {
+    LKEY_A = 0x1,
+    LKEY_B = 0x2,
+    LKEY_C = 0x4,
+    LKEY_D = 0x8,
+    LKEY_E = 0x10,
+    LKEY_F = 0x20,
+    LKEY_G = 0x40,
+    LKEY_H = 0x80,
+    LKEY_I = 0x100,
+    LKEY_J = 0x200,
+    LKEY_K = 0x400,
+    LKEY_L = 0x800,
+    LKEY_M = 0x1000,
+    LKEY_N = 0x2000,
+    LKEY_O = 0x4000,
+    LKEY_P = 0x8000,
+    LKEY_Q = 0x10000,
+    LKEY_R = 0x20000,
+    LKEY_S = 0x40000,
+    LKEY_T = 0x80000,
+    LKEY_U = 0x100000,
+    LKEY_V = 0x200000,
+    LKEY_W = 0x400000,
+    LKEY_X = 0x800000,
+    LKEY_Y = 0x1000000,
+    LKEY_Z = 0x2000000,
+    LKEY_MAX = 0x3FFFFFF
+};
+
 //Identities for boolean and nonboolean inputs.  IDs are related to what the
 // input does, not what triggers the input.  Maximum 8 bools (IN_NUM_BOOLS can
 // be no more than 8); any values after that must be integers, and have their
 // code manually added to the setInput function.
+enum LetterKeyId {
+    LKIN_KEY_PRESSED,
+    LKIN_NUM_EVENTS
+};
+
 enum MouseInputID {
-	MIN_MOUSE_X,
+	MIN_MOUSE_X = LKIN_NUM_EVENTS,
 	MIN_MOUSE_Y,
 	MIN_MOUSE_REL_X,
 	MIN_MOUSE_REL_Y,
@@ -98,20 +134,29 @@ enum EngineIDs {
 
 class InputData {
 private:
-    uint m_uiBoolInputs,
-         m_uiChangedInputs;
+    std::vector<bool> m_vBoolInputs;
+    std::vector<bool> m_vChangedInputs;
 	int m_iMouseX,
 		m_iMouseY,
 		m_iMouseRelX,
 		m_iMouseRelY;
+    bool m_bMouseHasMoved, m_bInputHasChanged;
+    uint m_uiLetterKeyUp,
+         m_uiLetterKeyDown; //Special info used for typing
 public:
+    InputData(uint size = 64);
+    ~InputData();
+
     void clear();
-    void clearChanged()         { m_uiChangedInputs = 0; }
+    void clearChanged();
     int  getInputState(int flag);
-    bool hasChanged(int flag)   { return GET_FLAG(m_uiChangedInputs, flag); }
-    bool mouseHasMoved()        { return m_uiChangedInputs & MOUSE_MOVE_MASK; }
-    bool inputHasChanged()      { return m_uiChangedInputs & BUTTON_INPUT_MASK; }
     void setInputState(int flag, int val);
+    bool hasChanged(int flag)   { return m_vChangedInputs[flag]; }
+    bool mouseHasMoved()        { return m_bMouseHasMoved; }
+    bool inputHasChanged()      { return m_bInputHasChanged; }
+    void setLetter(uint letter, bool bDown);
+    uint getLettersUp()   { return m_uiLetterKeyUp; }
+    uint getLettersDown() { return m_uiLetterKeyDown; }
 };
 
 struct tRect;

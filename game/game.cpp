@@ -25,6 +25,8 @@
 #include "game/world/SimplePhysicsObject.h"
 #include "game/world/Wall.h"
 
+using namespace std;
+
 //Function prototypes
 void buildWorld();
 
@@ -181,7 +183,7 @@ void buildWorld() {
 
     buildRoom(Box(-128, 0, -256, 256, TILE_SIZE * 2, 512));
 
-    SimplePhysicsObject *block = new SimplePhysicsObject(we->genID(), D3RE::get()->getImage(IMG_BLOCK), Box(-32,0,0,32,32,32));
+    SimplePhysicsObject *block = new SimplePhysicsObject(we->genID(), IMG_BLOCK, Box(-32,0,0,32,32,32));
     we->add(block);
 
 /*

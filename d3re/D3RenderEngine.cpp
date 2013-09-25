@@ -25,7 +25,11 @@ D3RenderEngine::D3RenderEngine() {
 	glEnable( GL_TEXTURE_2D );
 	glEnable( GL_BLEND );
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	//These allow for only binary alpha values: all visible or not visible.
+	// Until proper render sorting is implemented, this should be used.
     glAlphaFunc(GL_GREATER, 0.9f);
+    glEnable(GL_ALPHA_TEST);
 
     //Set the initial window size
     resize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -65,7 +69,12 @@ D3RenderEngine::render() {
         }
     }
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+    for(map<uint, D3HudRenderModel*>::iterator it = m_mHudElements.begin();
+            it != m_mHudElements.end(); ++it) {
+        it->second->render(this);
+    }
+
+    //glBindTexture(GL_TEXTURE_2D, 0);
     SDL_GL_SwapBuffers();   //Should probably be done by the render engine
 }
 
@@ -206,6 +215,54 @@ void D3RenderEngine::resize(uint width, uint height) {
         // Enable perspective projection with fovy, aspect, zNear and zFar
         gluPerspective(45.0f, aspect, 1.f, 1024.0f);
     }
+}
+
+void
+D3RenderEngine::drawBox(const Box &bx, const Color &cr) {
+    D3RE::get()->prepCamera();
+
+    glBindTexture( GL_TEXTURE_2D, NULL);
+    glBegin(GL_LINES);
+        //Bottom edges
+        glColor3f(cr.r / 255.f, cr.g / 255.f, cr.b / 255.f);
+        glVertex3f(bx.x,        bx.y,        bx.z);
+        glVertex3f(bx.x + bx.w, bx.y,        bx.z);
+
+        glVertex3f(bx.x + bx.w, bx.y,        bx.z);
+        glVertex3f(bx.x + bx.w, bx.y,        bx.z + bx.l);
+
+        glVertex3f(bx.x + bx.w, bx.y,        bx.z + bx.l);
+        glVertex3f(bx.x,        bx.y,        bx.z + bx.l);
+
+        glVertex3f(bx.x,        bx.y,        bx.z + bx.l);
+        glVertex3f(bx.x,        bx.y,        bx.z);
+
+        //Middle edges
+        glVertex3f(bx.x,        bx.y,        bx.z);
+        glVertex3f(bx.x,        bx.y + bx.h, bx.z);
+
+        glVertex3f(bx.x + bx.w, bx.y,        bx.z);
+        glVertex3f(bx.x + bx.w, bx.y + bx.h, bx.z);
+
+        glVertex3f(bx.x + bx.w, bx.y,        bx.z + bx.l);
+        glVertex3f(bx.x + bx.w, bx.y + bx.h, bx.z + bx.l);
+
+        glVertex3f(bx.x,        bx.y,        bx.z + bx.l);
+        glVertex3f(bx.x,        bx.y + bx.h, bx.z + bx.l);
+
+        //Top edges
+        glVertex3f(bx.x,        bx.y + bx.h, bx.z);
+        glVertex3f(bx.x + bx.w, bx.y + bx.h, bx.z);
+
+        glVertex3f(bx.x + bx.w, bx.y + bx.h, bx.z);
+        glVertex3f(bx.x + bx.w, bx.y + bx.h, bx.z + bx.l);
+
+        glVertex3f(bx.x + bx.w, bx.y + bx.h, bx.z + bx.l);
+        glVertex3f(bx.x,        bx.y + bx.h, bx.z + bx.l);
+
+        glVertex3f(bx.x,        bx.y + bx.h, bx.z + bx.l);
+        glVertex3f(bx.x,        bx.y + bx.h, bx.z);
+    glEnd();
 }
 
 void

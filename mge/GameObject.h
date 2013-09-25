@@ -10,6 +10,7 @@
 #include "mge/PhysicsModel.h"
 #include "mge/RenderModel.h"
 #include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/info_parser.hpp>
 
 class GameObject {
 public:
@@ -22,6 +23,12 @@ public:
     virtual bool getFlag(uint flag) = 0;
     virtual void setFlag(uint flag, bool value) = 0;
     virtual uint getType() = 0;         //Returns some identifier indicating the object's class
+    virtual const std::string getClass() = 0;   //Returns the human-readable class name
+    virtual const std::string getName() {
+        std::ostringstream name;
+        name << getClass() << getID();
+        return name.str();
+    }
     virtual void moveBy(Point ptShift) {
         getPhysicsModel()->moveBy(ptShift);
     }
@@ -29,10 +36,9 @@ public:
     //Render model
     virtual RenderModel  *getRenderModel() = 0;
     virtual PhysicsModel *getPhysicsModel() = 0;
-    
-    //File I/O
-    //virtual void read(ifstream &fin) = 0;
-    //virtual void write(ofstream &fout) = 0;
+
+    //File I/O &keyBase);
+    virtual void write(boost::property_tree::ptree &pt, const std::string &keyBase) = 0;
 };
 
 #endif

@@ -5,14 +5,42 @@
 
 #include "defs.h"
 
+using namespace std;
+
 /* Static members */
 
 /* Functions from structs and classes */
 
 //InputData
+InputData::InputData(uint size) {
+    for(uint i = 0; i < size; ++i) {
+        m_vBoolInputs.push_back(false);
+        m_vChangedInputs.push_back(false);
+    }
+}
+
+InputData::~InputData() {
+    m_vBoolInputs.clear();
+    m_vChangedInputs.clear();
+}
+
 void InputData::clear() {
-    m_uiBoolInputs = m_uiChangedInputs = 0;
+    for(uint i = 0; i < m_vBoolInputs.size(); ++i) {
+        m_vBoolInputs[i] = false;
+        m_vChangedInputs[i] = false;
+    }
     m_iMouseX = m_iMouseY = m_iMouseRelX = m_iMouseRelY = 0;
+    m_bMouseHasMoved = m_bInputHasChanged = false;
+    m_uiLetterKeyUp = m_uiLetterKeyDown = 0;
+}
+
+void InputData::clearChanged() {
+    vector<bool>::iterator it;
+    for(it = m_vChangedInputs.begin(); it < m_vChangedInputs.end(); ++it) {
+        *it = false;
+    }
+    m_bMouseHasMoved = m_bInputHasChanged = false;
+    m_uiLetterKeyUp = m_uiLetterKeyDown = 0;
 }
 
 int InputData::getInputState(int flag) {
@@ -26,29 +54,42 @@ int InputData::getInputState(int flag) {
 	case MIN_MOUSE_REL_Y:
         return m_iMouseRelY;
     default:
-        return GET_FLAG(m_uiBoolInputs, flag);
+        return m_vBoolInputs[flag];
     }
 }
 
 void InputData::setInputState(int flag, int val) {
     switch(flag) {
 	case MIN_MOUSE_X:
+        m_bMouseHasMoved = true;
         m_iMouseX = val;
         break;
 	case MIN_MOUSE_Y:
+        m_bMouseHasMoved = true;
         m_iMouseY = val;
         break;
 	case MIN_MOUSE_REL_X:
+        m_bMouseHasMoved = true;
         m_iMouseRelX = val;
         break;
 	case MIN_MOUSE_REL_Y:
+        m_bMouseHasMoved = true;
         m_iMouseRelY = val;
         break;
     default:
-        m_uiBoolInputs = SET_FLAG(m_uiBoolInputs, flag, val);
+        m_bInputHasChanged = true;
+        m_vBoolInputs[flag] = (bool)val;
         break;
     }
-    m_uiChangedInputs = SET_FLAG(m_uiChangedInputs, flag, TRUE);
+    m_vChangedInputs[flag] = true;
+}
+
+void InputData::setLetter(uint letter, bool bDown) {
+    if(bDown) {
+        m_uiLetterKeyDown = SET_FLAG(m_uiLetterKeyDown, letter, true);
+    } else {
+        m_uiLetterKeyUp = SET_FLAG(m_uiLetterKeyUp, letter, true);
+    }
 }
 
 //Point

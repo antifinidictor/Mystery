@@ -17,7 +17,8 @@ public:
     virtual void moveBy(Point ptShift) {}
     virtual Point getPosition();
     virtual Rect getDrawArea();
-    
+
+    uint getTexture(int iFace) { return m_aTextures[iFace]; }
     void setTexture(int iFace, uint uiTexId);   //Assumes values are valid!
     void setColor(const Color &cr) { m_crColor = cr; }
     Color &getColor() { return m_crColor; }
@@ -29,7 +30,7 @@ private:
     Box m_bxVolume;
 
     Color m_crColor;
-    
+
     GameObject *m_pParent;
 };
 

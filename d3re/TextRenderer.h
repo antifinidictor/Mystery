@@ -19,21 +19,24 @@ public:
     static void clean() { delete m_pInstance; }
 
     //Use these
-    void render(const char *str, double x, double y);
-    char *splitText(const char *str, double maxw);
-    void splitText(std::string &str, double maxw);
-    Rect getArea(const char *str, double x, double y);
+    void render(const char *str, float x, float y, float size = 1.0);
+    char *splitText(const char *str, float maxw, float size = 1.0);
+    void splitText(std::string &str, float maxw, float size = 1.0);
+    void setFont(Image *pFont) { m_pFont = pFont; }
+    Rect getArea(const char *str, float x, float y);
+    int  getNextLine(const char *str, int start);
+    float getLineHeight(float size = 1.0);
 
 private:
     //Helper methods
     TextRenderer();
     int char2IndH(char c);
     int char2IndW(char c);
-    double twMin(int iw);
-    double twMax(int iw, int ih);
-    double thMin(int ih);
-    double thMax(int ih);
-    double renderChar(char c, double x, double y);
+    float twMin(int iw);
+    float twMax(int iw, int ih);
+    float thMin(int ih);
+    float thMax(int ih);
+    float renderChar(char c, float x, float y, float size);
     int setColor(const char *hexColor);
 
     //Members

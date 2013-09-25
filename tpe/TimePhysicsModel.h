@@ -78,7 +78,7 @@ private:
  */
 class NullTimePhysicsModel : public AbstractTimePhysicsModel {
 public:
-    NullTimePhysicsModel(Box bxVolume);
+    NullTimePhysicsModel(Box bxVolume) { m_ptPosition = bxCenter(bxVolume); }
     virtual ~NullTimePhysicsModel() {}
 
     virtual Point getPosition() { return m_ptPosition; }

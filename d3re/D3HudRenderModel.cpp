@@ -4,18 +4,58 @@
 
 #include "d3re.h"
 #include "mge/GameObject.h"
+#include "TextRenderer.h"
 
-D3HudRenderModel::D3HudRenderModel(GameObject *parent, Image *img, Rect rcArea) {
-
+D3HudRenderModel::D3HudRenderModel(GameObject *parent, Image *img, const Rect &rcArea) {
     m_pImage = img;
     m_rcDrawArea = rcArea;
+
+    m_fTextSize = -1.f;
+    m_sData = "";
+    m_ptTextPos = Point();
 
     m_iFrameW = 0;
     m_iFrameH = 0;
     m_iRepsW = 1;
     m_iRepsH = 1;
 
-    m_crColor = Color(0xFF, 0xFF, 0xFF);
+    m_crImageColor = Color(0xFF, 0xFF, 0xFF);
+
+    m_pParent = parent;
+}
+
+D3HudRenderModel::D3HudRenderModel(GameObject *parent, const std::string &data, const Rect &rcArea, float textSize) {
+    m_pImage = NULL;
+    m_rcDrawArea = rcArea;
+
+    m_fTextSize = textSize;
+    m_sData = data;
+    m_ptTextPos = Point();
+
+    m_iFrameW = 0;
+    m_iFrameH = 0;
+    m_iRepsW = 1;
+    m_iRepsH = 1;
+
+    m_crImageColor = Color(0xFF, 0xFF, 0xFF);
+
+    m_pParent = parent;
+}
+
+D3HudRenderModel::D3HudRenderModel(GameObject *parent, Image *img, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize) {
+    m_pImage = img;
+    m_rcDrawArea = rcArea;
+
+    m_fTextSize = textSize;
+    m_sData = data;
+    m_ptTextPos = Point(ptTextOffset.x + rcArea.x, ptTextOffset.y + rcArea.y, ptTextOffset.z);
+
+    m_iFrameW = 0;
+    m_iFrameH = 0;
+    m_iRepsW = 1;
+    m_iRepsH = 1;
+
+    m_crImageColor = Color(0xFF, 0xFF, 0xFF);
 
     m_pParent = parent;
 }
@@ -25,9 +65,44 @@ D3HudRenderModel::~D3HudRenderModel() {
 
 void
 D3HudRenderModel::render(RenderEngine *re) {
+    if(m_pImage != NULL) {
+        renderImage();
+    }
+    if(m_fTextSize > 0.f) {
+        renderText();
+    }
+}
+
+Rect
+D3HudRenderModel::getDrawArea() {
+    Point ptPos = getPosition();
+    return Rect(ptPos.x + m_rcDrawArea.x, ptPos.y + m_rcDrawArea.y, m_rcDrawArea.w, m_rcDrawArea.h);
+}
+
+Point
+D3HudRenderModel::getPosition() {
+    Point ptPos = Point();
+    if(m_pParent != NULL) {
+        ptPos = m_pParent->getPhysicsModel()->getPosition();
+    }
+    return ptPos;
+}
+
+void
+D3HudRenderModel::updateText(const std::string &data, float textSize) {
+    if(textSize > 0.f) {
+        m_fTextSize = textSize;
+    } else if(m_fTextSize < 0.f) {
+        m_fTextSize = 1.f;
+    }
+    m_sData = data;
+}
+
+
+void
+D3HudRenderModel::renderImage() {
     D3RE::get()->prepHud();
-    Color worldColor = D3RE::get()->getWorldColor();
-    Color ourColor = mix(2, &worldColor, &m_crColor);
+    Color ourColor = m_crImageColor;
 
     //Render engine is responsible for resetting the camera
     float fTexLeft   = m_iFrameW * 1.0F / m_pImage->m_iNumFramesW,
@@ -62,17 +137,8 @@ D3HudRenderModel::render(RenderEngine *re) {
     //glDepthMask(GL_TRUE);
 }
 
-Rect
-D3HudRenderModel::getDrawArea() {
-    Point ptPos = getPosition();
-    return Rect(ptPos.x + m_rcDrawArea.x, ptPos.y + m_rcDrawArea.y, m_rcDrawArea.w, m_rcDrawArea.h);
-}
-
-Point
-D3HudRenderModel::getPosition() {
-    Point ptPos = Point();
-    if(m_pParent != NULL) {
-        ptPos = m_pParent->getPhysicsModel()->getPosition();
-    }
-    return ptPos;
+void
+D3HudRenderModel::renderText() {
+    D3RE::get()->prepHud();
+    TextRenderer::get()->render(m_sData.c_str(), m_ptTextPos.x, m_ptTextPos.y, m_fTextSize);
 }

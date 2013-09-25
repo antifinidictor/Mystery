@@ -13,27 +13,13 @@
 
 class SimplePhysicsObject : public GameObject {
 public:
-    SimplePhysicsObject(uint id, Image *img, Box bxVolume) {
-        m_pRenderModel = new D3PrismRenderModel(this, Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
-                                                           bxVolume.w,      bxVolume.h,      bxVolume.l));
-        //Hidden faces not rendered
-        m_pRenderModel->setTexture(NORTH, IMG_NONE);//img->m_uiID);
-        m_pRenderModel->setTexture(SOUTH, img->m_uiID);
-        m_pRenderModel->setTexture(EAST,  img->m_uiID);
-        m_pRenderModel->setTexture(WEST,  img->m_uiID);
-        m_pRenderModel->setTexture(UP,    img->m_uiID);
-        m_pRenderModel->setTexture(DOWN,  IMG_NONE);//img->m_uiID);
+    SimplePhysicsObject(uint id, uint texId, Box bxVolume);
 
-        m_pPhysicsModel = new TimePhysicsModel(bxVolume);
+    virtual ~SimplePhysicsObject();
 
-        m_uiID = id;
-        m_uiFlags = 0;
-    }
-
-    virtual ~SimplePhysicsObject() {
-        delete m_pRenderModel;
-        delete m_pPhysicsModel;
-    }
+    //File i/o
+    static GameObject* read(const boost::property_tree::ptree &pt, const std::string &keyBase);
+    virtual void write(boost::property_tree::ptree &pt, const std::string &keyBase);
 
     //General
     virtual uint getID() { return m_uiID; }
@@ -41,6 +27,7 @@ public:
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
     virtual uint getType() { return TYPE_GENERAL; }
+    virtual const std::string getClass() { return "SimplePhysicsObject"; }
 
     //Models
     virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }

@@ -18,11 +18,13 @@ public:
     virtual Point getPosition();
     virtual Rect getDrawArea();
 
+    Image *getTexture() { return m_pImage; }
+
     void setFrameW(int fw) { m_iFrameW = fw; }
     void setFrameH(int fh) { m_iFrameH = fh; }
     void setRepsW(int rw)  { m_iRepsW = rw; }
     void setRepsH(int rh)  { m_iRepsH = rh; }
-    
+
     void setColor(const Color &cr) { m_crColor = cr; }
     Color &getColor() { return m_crColor; }
 
@@ -32,7 +34,7 @@ private:
 
     int m_iFrameW, m_iFrameH;
     int m_iRepsW, m_iRepsH;
-    
+
     Color m_crColor;
 
     GameObject *m_pParent;

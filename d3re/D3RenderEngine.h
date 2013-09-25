@@ -10,6 +10,9 @@
 
 #include "mge/RenderEngine.h"
 #include "mge/Image.h"
+#include "mge/defs.h"
+
+class D3HudRenderModel;
 
 enum RenderFlags {
     D3RE_ON_SCREEN = RENDER_FLAGS_BEGIN,
@@ -46,13 +49,17 @@ public:
     void prepHud();
     void resize(uint width, uint height);
     Point getCameraPosition() { return m_ptCamPos; }
-    
+
+    void drawBox(const Box &bxVolume, const Color &cr = Color(0xFF, 0xFF, 0xFF));
+
     void setBackgroundColor(const Color &cr);
+    void addHudElement(uint uiHudId, D3HudRenderModel *hud) { m_mHudElements[uiHudId] = hud; }
+    void clearHud();
 
 private:
     D3RenderEngine();
     virtual ~D3RenderEngine();
-    
+
     void enableCameraMode();
     void enableGuiMode();
 
@@ -67,6 +74,7 @@ private:
     uint m_uiWidth, m_uiHeight;
 
     std::map<float, GameObject *> m_mObjsOnScreen;
+    std::map<uint, D3HudRenderModel *> m_mHudElements;
     std::vector<Image*> m_vImages;
     bool m_bGuiMode;
 };

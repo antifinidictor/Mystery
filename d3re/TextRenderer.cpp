@@ -4,7 +4,7 @@
 
 #include "TextRenderer.h"
 #include "mge/Image.h"
-#include "game/game_defs.h"
+#include "mge/defs.h"
 #include "d3re/d3re.h"
 using namespace std;
 
@@ -36,7 +36,7 @@ TextRenderer::TextRenderer() {
 //*/
     memcpy(m_aWidths,t,78);
 
-    m_pFont = D3RE::get()->getImage(IMG_FONT);
+    m_pFont = D3RE::get()->getImage(0);
 }
 
 TextRenderer::~TextRenderer() {
@@ -99,37 +99,49 @@ int TextRenderer::char2IndW(char c) {
     }
 }
 
-double TextRenderer::twMin(int iw) {
+float TextRenderer::twMin(int iw) {
     return iw * 1.0F / m_pFont->m_iNumFramesW;
 }
 
-double TextRenderer::twMax(int iw, int ih) {
-    return twMin(iw) + m_aWidths[iw * m_pFont->m_iNumFramesH + ih] / (double)m_pFont->w;
+float TextRenderer::twMax(int iw, int ih) {
+    return twMin(iw) + m_aWidths[iw * m_pFont->m_iNumFramesH + ih] / (float)m_pFont->w;
 }
 
-double TextRenderer::thMin(int ih) {
+float TextRenderer::thMin(int ih) {
     return ih * 1.0F / m_pFont->m_iNumFramesH;
 }
 
-double TextRenderer::thMax(int ih) {
+float TextRenderer::thMax(int ih) {
     return thMin(ih) + 1.0F / m_pFont->m_iNumFramesH;
 }
 
-void TextRenderer::render(const char *str, double x, double y) {
-    double x_start = x;
+
+float TextRenderer::getLineHeight(float size) {
+    return size * m_pFont->h / m_pFont->m_iNumFramesH;
+}
+
+int TextRenderer::getNextLine(const char *str, int start) {
+    int i;
+    for(i = start; (str[i] != '\0' && str[i] != '\n'); ++i) { }
+    if(str[i] == '\0') return i;
+    else return i + 1;
+}
+
+void TextRenderer::render(const char *str, float x, float y, float size) {
+    float x_start = x;
 
     glBindTexture( GL_TEXTURE_2D, m_pFont->m_uiTexture );
 
     for(int i = 0; str[i] != '\0'; ++i) {
         if(str[i] == '\n') {
-            y += m_pFont->h / m_pFont->m_iNumFramesH;
+            y += m_pFont->h / m_pFont->m_iNumFramesH * size;
             x = x_start;
             continue;
         } else if(str[i] == '#') {
             i += setColor(str + i + 1);
             continue;
         }
-        x += renderChar(str[i], x, y);
+        x += renderChar(str[i], x, y, size);
     }
     //Reset the color to default
     glColor3f(1.f, 1.f, 1.f);
@@ -142,14 +154,14 @@ int TextRenderer::setColor(const char *hexColor) {
     return end - hexColor + 1;
 }
 
-double TextRenderer::renderChar(char c, double x, double y) {
+float TextRenderer::renderChar(char c, float x, float y, float size) {
     int iw = char2IndW(c),
         ih = char2IndH(c);
     if(ih < 0) {
-        return SPACE_WIDTH;   //Space & unsupported characters
+        return SPACE_WIDTH * size;   //Space & unsupported characters
     }
-    double w = m_aWidths[iw * m_pFont->m_iNumFramesH + ih],
-          h = m_pFont->h / m_pFont->m_iNumFramesH;
+    float w = m_aWidths[iw * m_pFont->m_iNumFramesH + ih] * size,
+          h = m_pFont->h / m_pFont->m_iNumFramesH * size;
 
 	glBegin( GL_QUADS );
 		//Top-left vertex (corner)
@@ -171,9 +183,9 @@ double TextRenderer::renderChar(char c, double x, double y) {
 	return w;
 }
 
-char* TextRenderer::splitText(const char *str, double maxw) {
+char* TextRenderer::splitText(const char *str, float maxw, float size) {
 //#if 0
-    double xw = 0;
+    float xw = 0;
     int lastSpace = 0;
     int oi = 0;
     char *out = (char*)SDL_calloc(strlen(str) * 2, sizeof(char));
@@ -192,7 +204,7 @@ char* TextRenderer::splitText(const char *str, double maxw) {
         int iw = char2IndW(str[i]),
             ih = char2IndH(str[i]);
 
-        xw += m_aWidths[iw * m_pFont->m_iNumFramesH + ih];
+        xw += m_aWidths[iw * m_pFont->m_iNumFramesH + ih] * size;
         if(xw > maxw) {
             if(lastSpace == 0) {
                 out[oi] = '\n';
@@ -220,10 +232,11 @@ char* TextRenderer::splitText(const char *str, double maxw) {
 //#endif
 }
 
-void TextRenderer::splitText(string &str, double maxw) {
+void TextRenderer::splitText(string &str, float maxw, float size) {
 //#if 0
-    double xw = 0;
+    float xw = 0;
     int lastSpace = 0;
+    int oi = 0;
     //char *out = (char*)SDL_calloc(strlen(str) * 2, sizeof(char));
     for(string::iterator curChar = str.begin(); curChar < str.end(); ++curChar) {
         if(*curChar == '\n') {
@@ -237,7 +250,7 @@ void TextRenderer::splitText(string &str, double maxw) {
 
         int iw = char2IndW(*curChar),
             ih = char2IndH(*curChar);
-        xw += m_aWidths[iw * m_pFont->m_iNumFramesH + ih];
+        xw += m_aWidths[iw * m_pFont->m_iNumFramesH + ih] * size;
 
         if(xw > maxw) {
             if(lastSpace == 0) {    //word is too long
@@ -260,10 +273,10 @@ void TextRenderer::splitText(string &str, double maxw) {
 //#endif
 }
 
-Rect TextRenderer::getArea(const char *str, double x, double y) {
-    const double h = m_pFont->h / m_pFont->m_iNumFramesH;
+Rect TextRenderer::getArea(const char *str, float x, float y) {
+    const float h = m_pFont->h / m_pFont->m_iNumFramesH;
 
-    double cur_w = 0.f,
+    float cur_w = 0.f,
           max_w = 0.f,
           max_h = h;
 

@@ -14,6 +14,7 @@ Player::Player(uint uiId, const Point &ptPos) {
     m_pRenderModel  = new D3SpriteRenderModel(this, img, rcDrawArea);
 
     dx = dy = 0;
+    m_fDeltaPitch = m_fDeltaZoom = 0.f;
     state = timer = 0;
     m_iDirection = SOUTH;
 
@@ -24,7 +25,6 @@ Player::~Player() {
     delete m_pPhysicsModel;
     delete m_pRenderModel;
 }
-
 
 GameObject*
 Player::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
@@ -40,13 +40,15 @@ Player::read(const boost::property_tree::ptree &pt, const std::string &keyBase) 
 
 void
 Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
-    std::string key = keyBase + "Player";
-    key += m_uiId;
+    std::string key = keyBase + getName();
     Point ptPos = m_pPhysicsModel->getPosition();
     pt.put(key + ".id", m_uiId);
-    pt.get(keyBase + ".pos.x", 0.f);
-    pt.get(keyBase + ".pos.y", 0.f);
-    pt.get(keyBase + ".pos.z", 0.f);
+    pt.put(keyBase + ".pos.x", ptPos.x);
+    pt.put(keyBase + ".pos.y", ptPos.y);
+    pt.put(keyBase + ".pos.z", ptPos.z);
+
+    //Read state information here
+
 }
 
 bool Player::update(uint time) {
@@ -88,7 +90,7 @@ bool Player::update(uint time) {
 }
 
 
-void Player::callBack(uint cID, void *data, EventID id) {
+void Player::callBack(uint cID, void *data, uint id) {
     switch(id) {
     case ON_BUTTON_INPUT:
         handleButton((InputData*)data);

@@ -35,17 +35,17 @@ public:
     void stop() { m_bIsRunning = false; }
 
     //From EventHandler
-	virtual void addListener(Listener *pListener, EventID id, char* triggerData = NULL);
-	virtual bool removeListener(uint uiListenerID, EventID eventID);	//Returns true if object found
+	virtual void addListener(Listener *pListener, uint id, char* triggerData = NULL);
+	virtual bool removeListener(uint uiListenerID, uint eventID);	//Returns true if object found
 	virtual uint getID() { return 0; }
-	virtual void informListeners(EventID id);
+	virtual void informListeners(uint id);
 
 	//Getter/setter methods
 	void setWorldEngine(WorldEngine *we)        { this->we = we; }
 	void setPhysicsEngine(PhysicsEngine *pe)    { this->pe = pe; }
 	void setRenderEngine(RenderEngine *re)      { this->re = re; }
 	void setAudioEngine(AudioEngine *ae)        { this->ae = ae; }
-    
+
     //Input adjustment
     void mapInput(int iSdlInputName, int iGameInputName);
 

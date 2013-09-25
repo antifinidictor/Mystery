@@ -24,12 +24,17 @@ public:
     Wall(uint uiId, uint texTopId, uint texBottomId, uint texSideId, Box bxVolume, uint visibleFaces = WALL_DEFAULT);
     virtual ~Wall();
 
+    //File i/o
+    static GameObject* read(const boost::property_tree::ptree &pt, const std::string &keyBase);
+    virtual void write(boost::property_tree::ptree &pt, const std::string &keyBase);
+
     //General
-    virtual uint getID() { return m_uiID; }
+    virtual uint getID() { return m_uiId; }
     virtual bool update(uint time)              { return false; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
     virtual uint getType() { return TYPE_GENERAL; }
+    virtual const std::string getClass() { return "Wall"; }
 
     //Models
     virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }
@@ -40,7 +45,7 @@ public:
     Color &getColor() { return m_pRenderModel->getColor(); }
 
 private:
-    uint m_uiID;
+    uint m_uiId;
     uint m_uiFlags;
 
     D3PrismRenderModel *m_pRenderModel;

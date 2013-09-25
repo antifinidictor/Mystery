@@ -1,19 +1,21 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef EDITOR_OBJECT_H
+#define EDITOR_OBJECT_H
 
 #include "mge/GameObject.h"
 #include "mge/Event.h"
-#include "game/game_defs.h"
+
+#include "editor/SelectionRenderModel.h"
+#include "editor/editor_defs.h"
 
 #include "d3re/d3re.h"
 #include "pwe/PartitionedWorldEngine.h"
-#include "tpe/TimePhysicsEngine.h"
+#include "tpe/tpe.h"
 
-class Player : public GameObject, public Listener
+class EditorObject : public GameObject, public Listener
 {
 public:
-    Player(uint uiId, const Point &ptPos);
-    virtual ~Player();
+    EditorObject(uint uiId, uint uiAreaId, const Point &ptPos);
+    virtual ~EditorObject();
 
     //File i/o
     static GameObject* read(const boost::property_tree::ptree &pt, const std::string &keyBase);
@@ -25,8 +27,10 @@ public:
     virtual uint getID()                        { return m_uiId; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
-    virtual uint getType()                      { return TYPE_PLAYER; }
-    virtual const std::string getClass()        { return "Player"; }
+    virtual uint getType()                      { return ED_TYPE_EDITOR_OBJECT; }
+    virtual const std::string getClass()        { return "EditorObject"; }
+    
+    virtual void moveBy(Point ptShift);
 
     //Render model
     virtual RenderModel  *getRenderModel()      { return m_pRenderModel; }
@@ -36,17 +40,20 @@ public:
     virtual void callBack(uint cID, void *data, uint id);
 
 private:
-    void handleButton(InputData* data);
-    void handleCollision(HandleCollisionData *data);
+    void enterTextHandleKey(InputData *data);
+    void normalStateHandleKey(InputData *data);
+    
+    Point toTile(const Point &pt);
 
-    uint m_uiId, m_uiFlags;
-    D3SpriteRenderModel *m_pRenderModel;
-    TimePhysicsModel   *m_pPhysicsModel;
+    uint m_uiId, m_uiFlags, m_uiAreaId;
+    SelectionRenderModel *m_pRenderModel;
+    AbstractTimePhysicsModel   *m_pPhysicsModel;
 
+    std::string m_sInput;
+    
+    Point m_ptTilePos;
     int dx, dy;
-    int m_iDirection;
-    int timer, state;
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas
 };
 
-#endif // PLAYER_H
+#endif // EDITOR_OBJECT_H

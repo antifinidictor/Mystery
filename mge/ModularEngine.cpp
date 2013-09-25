@@ -19,18 +19,6 @@ void ModularEngine::clean() {
 ModularEngine::ModularEngine(int iSDLVideoFlags) {
 	m_sInputData.clear();
 
-#if 0
-	//Map default inputs to SDL constants. Keep in mind that if some constants share values, we have a problem.
-	m_mInputMap.insert(pair<int,InputID>(SDLK_UP,			IN_UP));
-	m_mInputMap.insert(pair<int,InputID>(SDLK_RIGHT,		IN_RIGHT));
-	m_mInputMap.insert(pair<int,InputID>(SDLK_DOWN,			IN_DOWN));
-	m_mInputMap.insert(pair<int,InputID>(SDLK_LEFT,			IN_LEFT));
-
-	m_mInputMap.insert(pair<int,InputID>(SDL_BUTTON_LEFT,	IN_L_ACTION));
-	m_mInputMap.insert(pair<int,InputID>(SDL_BUTTON_MIDDLE,	IN_M_ACTION));
-	m_mInputMap.insert(pair<int,InputID>(SDL_BUTTON_RIGHT,	IN_R_ACTION));
-	m_mInputMap.insert(pair<int,InputID>(SDLK_KP_ENTER,		IN_SELECT));
-#endif
 	//Initialize SDL
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
 		exit(-1);
@@ -143,11 +131,18 @@ void ModularEngine::handleKey( SDL_Event *pEvent, bool bDown) {
 		m_bIsRunning = false;
 		break;
 	default:
-		key = m_mInputMap.find(pEvent->key.keysym.sym);
+        uint sdlKeyId = pEvent->key.keysym.sym;
+		key = m_mInputMap.find(sdlKeyId);
 		//If the key mapping exists
 		if( key != m_mInputMap.end() ) {
 			m_sInputData.setInputState((*key).second, (int)bDown);
 		}
+
+        //If the key is a letter (may or may not already be mapped)
+        if((sdlKeyId >= SDLK_a) && (sdlKeyId <= SDLK_z)) {
+            m_sInputData.setLetter((sdlKeyId - SDLK_a), bDown);
+            m_sInputData.setInputState(LKIN_KEY_PRESSED, (int)bDown);
+        }
 	}
 }
 
@@ -163,7 +158,7 @@ void ModularEngine::handleButton(SDL_Event *pEvent, bool bDown) {
     }
 }
 
-void ModularEngine::informListeners(EventID id) {
+void ModularEngine::informListeners(uint id) {
 	list<Listener*>::iterator iter;
 	switch(id) {
 	case ON_MOUSE_MOVE:
@@ -185,7 +180,7 @@ void ModularEngine::informListeners(EventID id) {
 	}
 }
 
-void ModularEngine::addListener(Listener *pListener, EventID id, char* triggerData) {
+void ModularEngine::addListener(Listener *pListener, uint id, char* triggerData) {
 	switch(id) {
 	case ON_MOUSE_MOVE:
 		m_lsMouseMoveList.push_back(pListener);
@@ -198,7 +193,7 @@ void ModularEngine::addListener(Listener *pListener, EventID id, char* triggerDa
 	}
 }
 
-bool ModularEngine::removeListener(uint uiListenerID, EventID id) {
+bool ModularEngine::removeListener(uint uiListenerID, uint id) {
 	list<Listener*>::iterator iter;
 	switch(id) {
 	case ON_MOUSE_MOVE:

@@ -7,8 +7,8 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\ModularEngine" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin/Debug/ModularEngine" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -16,8 +16,8 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\ModularEngine" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/ModularEngine" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -28,9 +28,9 @@
 				</Linker>
 			</Target>
 			<Target title="mge">
-				<Option output="bin\mge\ModularEngine" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="bin\mge\" />
-				<Option object_output="obj\mge\" />
+				<Option output="bin/mge/ModularEngine" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/mge/" />
+				<Option object_output="obj/mge/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -48,7 +48,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="K:\projects\games\mge\Mystery\" />
+			<Add directory="../" />
 			<Add directory="$(#boost)" />
 			<Add directory="$(#boost.include)" />
 		</Compiler>
@@ -65,52 +65,52 @@
 			<Add library="gdi32" />
 			<Add library="winmm" />
 			<Add library="dxguid" />
-			<Add directory="K:\projects\games\mge\Mystery\lib" />
+			<Add directory="./lib" />
 			<Add directory="$(#boost.lib)" />
 		</Linker>
-		<Unit filename="bae\BasicAudioEngine.cpp" />
-		<Unit filename="bae\BasicAudioEngine.h" />
-		<Unit filename="d3re\D3HudRenderModel.cpp" />
-		<Unit filename="d3re\D3HudRenderModel.h" />
-		<Unit filename="d3re\D3PrismRenderModel.cpp" />
-		<Unit filename="d3re\D3PrismRenderModel.h" />
-		<Unit filename="d3re\D3RenderEngine.cpp" />
-		<Unit filename="d3re\D3RenderEngine.h" />
-		<Unit filename="d3re\D3SpriteRenderModel.cpp" />
-		<Unit filename="d3re\D3SpriteRenderModel.h" />
-		<Unit filename="d3re\d3re.h" />
-		<Unit filename="game\Player.cpp" />
-		<Unit filename="game\Player.h" />
-		<Unit filename="game\game.cpp" />
-		<Unit filename="game\game.h" />
-		<Unit filename="game\game_defs.h" />
-		<Unit filename="game\gui\TextRenderer.cpp" />
-		<Unit filename="game\gui\TextRenderer.h" />
-		<Unit filename="game\world\SimplePhysicsObject.h" />
-		<Unit filename="game\world\Wall.cpp" />
-		<Unit filename="game\world\Wall.h" />
+		<Unit filename="bae/BasicAudioEngine.cpp" />
+		<Unit filename="bae/BasicAudioEngine.h" />
+		<Unit filename="d3re/D3HudRenderModel.cpp" />
+		<Unit filename="d3re/D3HudRenderModel.h" />
+		<Unit filename="d3re/D3PrismRenderModel.cpp" />
+		<Unit filename="d3re/D3PrismRenderModel.h" />
+		<Unit filename="d3re/D3RenderEngine.cpp" />
+		<Unit filename="d3re/D3RenderEngine.h" />
+		<Unit filename="d3re/D3SpriteRenderModel.cpp" />
+		<Unit filename="d3re/D3SpriteRenderModel.h" />
+		<Unit filename="d3re/d3re.h" />
+		<Unit filename="game/Player.cpp" />
+		<Unit filename="game/Player.h" />
+		<Unit filename="game/game.cpp" />
+		<Unit filename="game/game.h" />
+		<Unit filename="game/game_defs.h" />
+		<Unit filename="game/gui/TextRenderer.cpp" />
+		<Unit filename="game/gui/TextRenderer.h" />
+		<Unit filename="game/world/SimplePhysicsObject.h" />
+		<Unit filename="game/world/Wall.cpp" />
+		<Unit filename="game/world/Wall.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="mge\AudioEngine.h" />
-		<Unit filename="mge\Clock.h" />
-		<Unit filename="mge\Event.h" />
-		<Unit filename="mge\GameObject.h" />
-		<Unit filename="mge\Image.h" />
-		<Unit filename="mge\ModularEngine.cpp" />
-		<Unit filename="mge\ModularEngine.h" />
-		<Unit filename="mge\PhysicsEngine.h" />
-		<Unit filename="mge\PhysicsModel.h" />
-		<Unit filename="mge\RenderEngine.h" />
-		<Unit filename="mge\RenderModel.h" />
-		<Unit filename="mge\WorldEngine.h" />
-		<Unit filename="mge\defs.cpp" />
-		<Unit filename="mge\defs.h" />
-		<Unit filename="pwe\PartitionedWorldEngine.cpp" />
-		<Unit filename="pwe\PartitionedWorldEngine.h" />
-		<Unit filename="tpe\TimePhysicsEngine.cpp" />
-		<Unit filename="tpe\TimePhysicsEngine.h" />
-		<Unit filename="tpe\TimePhysicsModel.cpp" />
-		<Unit filename="tpe\TimePhysicsModel.h" />
-		<Unit filename="tpe\tpe.h" />
+		<Unit filename="mge/AudioEngine.h" />
+		<Unit filename="mge/Clock.h" />
+		<Unit filename="mge/Event.h" />
+		<Unit filename="mge/GameObject.h" />
+		<Unit filename="mge/Image.h" />
+		<Unit filename="mge/ModularEngine.cpp" />
+		<Unit filename="mge/ModularEngine.h" />
+		<Unit filename="mge/PhysicsEngine.h" />
+		<Unit filename="mge/PhysicsModel.h" />
+		<Unit filename="mge/RenderEngine.h" />
+		<Unit filename="mge/RenderModel.h" />
+		<Unit filename="mge/WorldEngine.h" />
+		<Unit filename="mge/defs.cpp" />
+		<Unit filename="mge/defs.h" />
+		<Unit filename="pwe/PartitionedWorldEngine.cpp" />
+		<Unit filename="pwe/PartitionedWorldEngine.h" />
+		<Unit filename="tpe/TimePhysicsEngine.cpp" />
+		<Unit filename="tpe/TimePhysicsEngine.h" />
+		<Unit filename="tpe/TimePhysicsModel.cpp" />
+		<Unit filename="tpe/TimePhysicsModel.h" />
+		<Unit filename="tpe/tpe.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
