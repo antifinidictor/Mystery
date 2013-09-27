@@ -9,6 +9,7 @@
 
 #include "pwe/PartitionedWorldEngine.h"
 #include "editor/editor_defs.h"
+#include <stack>
 
 class EditorCursor;
 
@@ -54,7 +55,8 @@ private:
 
     uint m_uiId, m_uiFlags;
     EditorCursor *m_pEditorCursor;
-    EditorState m_eState, m_eNewState;
+    //EditorState m_eState, m_eNewState;
+    std::stack<EditorState> m_skState;
 };
 
 #endif //EDITOR_MANAGER_H

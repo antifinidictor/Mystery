@@ -38,8 +38,9 @@ enum EditorAreas {
     ED_AREA_0
 };
 
+//This one looks wacky because it is responsible for making everything happen
 enum EditorState {
-    ED_STATE_NORMAL,
+    ED_STATE_MAIN,
     ED_STATE_LOAD_FILE,
     ED_STATE_LOADING_FILE,
     ED_STATE_SAVE_FILE,
@@ -82,8 +83,12 @@ enum EditorHudSaveWorldIds {
 };
 
 //Object creation panel
-
-//Area creation panel
+enum EditorHudNewObjIds {
+    ED_HUD_NEW_OBJ_CANCEL,
+    ED_HUD_NEW_OBJ_UP,
+    ED_HUD_NEW_OBJ_DOWN,
+    ED_HUD_NEW_OBJ_LIST_START
+};
 
 //Texture loading panel
 
