@@ -35,8 +35,6 @@ public:
     virtual const std::string getClass()        { return getClassName(); }
     static const std::string getClassName()     { return "EditorCursor"; }
 
-    virtual void moveBy(Point ptShift);
-
     //Render model
     virtual RenderModel  *getRenderModel()      { return m_pRenderModel; }
     virtual PhysicsModel *getPhysicsModel()     { return m_pPhysicsModel; }

@@ -36,12 +36,23 @@ public:
     virtual void callBack(uint cID, void *data, uint id);
 
     void setEditorCursor(EditorCursor *obj) { m_pEditorCursor = obj; }
-    EditorState getState() { return m_eState; }
+    //EditorState getState() { return m_eState; }
 
 private:
     EditorManager(uint uiId);
     virtual ~EditorManager();
 
+    void pushState(EditorState eState);
+    void popState();
+
+    void cleanState(EditorState eState);
+    void initState(EditorState eState);
+
+    void initHud();
+    void initMainHud();
+
+
+/*
     void prepState();
 
     void initConstHud();
@@ -50,7 +61,7 @@ private:
     void initLoadFileHud();
     void initSaveFileHud();
     void initListObjectHud();
-
+*/
     static EditorManager *m_pInstance;
 
     uint m_uiId, m_uiFlags;

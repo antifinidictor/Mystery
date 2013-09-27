@@ -19,7 +19,7 @@ EditorManager::EditorManager(uint uiId) {
     m_uiFlags = 0;
     PWE::get()->setState(PWE_PAUSED);
     m_pEditorCursor = NULL;
-    m_eState = m_eNewState = ED_STATE_NORMAL;
+    m_skState.push(ED_STATE_INIT);
 }
 
 EditorManager::~EditorManager() {
@@ -31,6 +31,26 @@ EditorManager::write(boost::property_tree::ptree &pt, const std::string &keyBase
 
 bool
 EditorManager::update(uint time) {
+
+    switch(m_skState.top()) {
+    case ED_STATE_INIT:
+        //Add basic hud containers
+        initHud();
+        popState(); //Init state keeps off of the stack
+        pushState(ED_STATE_MAIN);   //Push on main state
+
+        //Continue into the main state
+    case ED_STATE_MAIN:
+        break;
+    default:
+        break;
+    }
+
+    if(m_pEditorCursor != NULL) {
+        m_pEditorCursor->update(time);
+    }
+
+#if 0
     switch(m_eNewState) {
     case ED_STATE_NORMAL:
         prepState();
@@ -66,11 +86,13 @@ EditorManager::update(uint time) {
         m_pEditorCursor->update(time);
     }
     m_eNewState = ED_NUM_STATES;
+#endif
     return false;
 }
 
 void
 EditorManager::callBack(uint cID, void *data, uint eventId) {
+#if 0
     switch(eventId) {
     case ED_HUD_NEW:
         m_eNewState = ED_STATE_SELECT;//ED_STATE_LIST_OBJECTS;
@@ -126,8 +148,70 @@ EditorManager::callBack(uint cID, void *data, uint eventId) {
     default:
         break;
     }
+#endif
 }
 
+
+void
+EditorManager::pushState(EditorState eState) {
+    cleanState(m_skState.top());
+    m_skState.push(eState);
+    initState(m_skState.top());
+}
+
+void
+EditorManager::popState() {
+    cleanState(m_skState.top());
+    m_skState.pop();
+    initState(m_skState.top());
+}
+
+void
+EditorManager::cleanState(EditorState eState) {
+    switch(eState) {
+    case ED_STATE_MAIN:
+        D3RE::get()->getHudContainer()
+            ->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)
+            ->clear();
+        break;
+    default:
+        break;
+    }
+}
+
+void
+EditorManager::initState(EditorState eState) {
+    switch(eState) {
+    case ED_STATE_MAIN:
+        //Restore main hud
+        initMainHud();
+        break;
+    default:
+        break;
+    }
+}
+
+void
+EditorManager::initHud() {
+    ContainerRenderModel *leftPane = new ContainerRenderModel(Rect(0, BUTTON_HEIGHT, BUTTON_WIDTH, SCREEN_HEIGHT - BUTTON_HEIGHT)),
+                       *middlePane = new ContainerRenderModel(Rect(BUTTON_WIDTH, 0, SCREEN_WIDTH - BUTTON_WIDTH * 2, SCREEN_HEIGHT)),
+                        *rightPane = new ContainerRenderModel(Rect(SCREEN_WIDTH - BUTTON_WIDTH, 0, BUTTON_WIDTH, SCREEN_HEIGHT))
+    ;
+    ContainerRenderModel *hud = D3RE::get()->getHudContainer();
+    hud->add(ED_HUD_LEFT_PANE,   leftPane);
+    hud->add(ED_HUD_MIDDLE_PANE, middlePane);
+    hud->add(ED_HUD_RIGHT_PANE,  rightPane);
+}
+
+
+void
+EditorManager::initMainHud() {
+    EditorHudButton *loadWorld = new EditorHudButton(ED_HUD_OP_LOAD_WORLD, "Load World", Point(0,BUTTON_HEIGHT * 0,0));
+    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    rpanel->add(ED_HUD_MAIN_LOAD_WORLD, loadWorld);
+}
+
+#if 0
 
 void
 EditorManager::initConstHud() {
@@ -135,7 +219,6 @@ EditorManager::initConstHud() {
     D3HudRenderModel *posText = new D3HudRenderModel("(?,?,?)", Rect(0,0,BUTTON_WIDTH,BUTTON_HEIGHT));
     D3RE::get()->addHudElement(ED_HUD_CURSOR_POS, posText);
 }
-
 void
 EditorManager::initMainHud() {
     initConstHud();
@@ -246,4 +329,5 @@ EditorManager::prepState() {
         m_pEditorCursor->prepState(m_eState);
     }
 }
+#endif
 

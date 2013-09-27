@@ -26,10 +26,10 @@ EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
     PWE *we = PWE::get();
     we->addListener(this, ON_BUTTON_INPUT, m_uiAreaId);
     we->addListener(this, PWE_ON_AREA_SWITCH, m_uiAreaId);
-    
+
     D3HudRenderModel *posText = new D3HudRenderModel("(?,?,?)", Rect(0,0,BUTTON_WIDTH,BUTTON_HEIGHT));
-    D3RE::get()->addHudElement(ED_HUD_CURSOR_POS, posText);
-    
+    D3RE::get()->getHudContainer()->add(ED_HUD_CURSOR_POS, posText);
+
 }
 
 EditorCursor::~EditorCursor() {
@@ -245,9 +245,15 @@ void
 EditorCursor::typeUpdate() {
     m_uiBlinkTimer++;
     if(m_uiBlinkTimer == 50) {
-        D3RE::get()->getHudContainer()->get<D3HudRenderModel*>(ED_TEXT)->updateText(m_sInput + "_");
+        D3RE::get()->getHudContainer()
+            ->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE)
+            ->get<D3HudRenderModel*>(ED_HUD_FIELD_TEXT)
+            ->updateText(m_sInput + "_");
     } else if(m_uiBlinkTimer >= 100) {
-        D3RE::get()->getHudContainer()->get<D3HudRenderModel*>(ED_TEXT)->updateText(m_sInput);
+        D3RE::get()->getHudContainer()
+            ->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE)
+            ->get<D3HudRenderModel*>(ED_HUD_FIELD_TEXT)
+            ->updateText(m_sInput);
         m_uiBlinkTimer = 0;
     }
 }
