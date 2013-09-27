@@ -94,6 +94,25 @@ ObjectFactory::read(const std::string &fileName) {
     }
 }
 
+
+void
+ObjectFactory::write(const std::string &fileName) {
+    using boost::property_tree::ptree;
+    ptree pt;
+
+    D3RE::get()->write(pt, "resources");
+
+    //Read areas
+    PWE::get()->write(pt, "areas");
+
+    uint fileExtIndex = fileName.find_last_of(".");
+    if(fileName.substr(fileExtIndex) == ".info") {
+        write_info(fileName, pt);
+    } else {
+        write_xml(fileName, pt);
+    }
+}
+
 /*
  * FactoryData
  */

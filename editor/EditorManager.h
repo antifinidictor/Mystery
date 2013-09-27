@@ -10,6 +10,7 @@
 #include "pwe/PartitionedWorldEngine.h"
 #include "editor/editor_defs.h"
 #include <stack>
+#include <queue>
 
 class EditorCursor;
 
@@ -50,6 +51,8 @@ private:
 
     void initHud();
     void initMainHud();
+    void initLoadHud();
+    void initSaveHud();
 
 
 /*
@@ -68,6 +71,9 @@ private:
     EditorCursor *m_pEditorCursor;
     //EditorState m_eState, m_eNewState;
     std::stack<EditorState> m_skState;
+    std::queue<uint> m_qEvents;
+
+    static const float BUTTON_TEXT_SIZE = 0.8f;
 };
 
 #endif //EDITOR_MANAGER_H

@@ -19,7 +19,7 @@ struct Image {
 public:
 	//Constructor/Destructor
 //	Image(std::string &sFileName, char cID, int iNumFramesH = 1, int iNumFramesW = 1);
-	Image(const char *szFileName, uint uiID, int iNumFramesH = 1, int iNumFramesW = 1);
+	Image(const std::string &sFileName, uint uiID, int iNumFramesH = 1, int iNumFramesW = 1);
 	virtual ~Image();
 	//Members
 	std::string m_sImageFileName;
@@ -41,19 +41,19 @@ public:
  * Code thanks to http://gpwiki.org/index.php/SDL:Tutorials:Using_SDL_with_OpenGL
  * (variable names differ)
  */
-inline Image::Image(const char *szFileName, uint uiID, int iNumFramesH, int iNumFramesW) {
+inline Image::Image(const std::string &sFileName, uint uiID, int iNumFramesH, int iNumFramesW) {
     //Load image onto a surface
-	SDL_Surface *pSurface = /*SDL_LoadBMP*/IMG_Load(szFileName/*sFileName.c_str()*/);
+	SDL_Surface *pSurface = /*SDL_LoadBMP*/IMG_Load(sFileName.c_str()/*sFileName.c_str()*/);
 
 	if( pSurface ) {
 		// Check that the image's width is a power of 2
 		if ( (pSurface->w & (pSurface->w - 1)) != 0 ) {
-			std::cout << "warning: " << szFileName << "'s width is not a power of 2\n";
+			std::cout << "warning: " << sFileName << "'s width is not a power of 2\n";
 		}
 
 		// Also check if the height is a power of 2
 		if ( (pSurface->h & (pSurface->h - 1)) != 0 ) {
-			std::cout << "warning: " << szFileName << "'s height is not a power of 2\n";
+			std::cout << "warning: " << sFileName << "'s height is not a power of 2\n";
 		}
 
 		//Store the original width and height of the image
@@ -93,7 +93,7 @@ inline Image::Image(const char *szFileName, uint uiID, int iNumFramesH, int iNum
 		glTexImage2D( GL_TEXTURE_2D, 0, m_iNumColors, pSurface->w, pSurface->h, 0,
 						  m_eTextureFormat, GL_UNSIGNED_BYTE, pSurface->pixels );
 	} else {
-		std::cout << "SDL could not load " << szFileName << ": " << SDL_GetError();
+		std::cout << "SDL could not load " << sFileName << ": " << SDL_GetError();
 		exit(-1);
 	}
 
@@ -105,7 +105,7 @@ inline Image::Image(const char *szFileName, uint uiID, int iNumFramesH, int iNum
 	//Initialize other members
 	m_iNumFramesH = iNumFramesH;
 	m_iNumFramesW = iNumFramesW;
-	m_sImageFileName = szFileName;
+	m_sImageFileName = sFileName;
 	m_uiID = uiID;
 }
 

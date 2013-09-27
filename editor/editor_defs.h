@@ -56,6 +56,7 @@ enum EditorCursorState {
     EDC_STATE_SELECT_VOL,   //Select a volume
     EDC_STATE_SELECT_RECT,
     EDC_STATE_TYPE,         //Looks for ED_HUD_TEXT objs
+    EDC_STATE_TYPE_FIELD,
     EDC_NUM_STATES
 };
 
@@ -106,6 +107,7 @@ enum EditorHudNewObjIds {
 
 //Field panel
 enum EditorHudFieldIds {
+    ED_HUD_FIELD_LABEL,
     ED_HUD_FIELD_TEXT,  //Accessed by EditorCursor
     ED_HUD_NUM_FIELDS
 };

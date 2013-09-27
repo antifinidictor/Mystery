@@ -2,20 +2,6 @@ areas
 {
     Area0 0
     {
-        EditorObject
-        {
-            EditorObject6
-            {
-                id 6
-                areaId 0
-                pos
-                {
-                    x 70
-                    y 33
-                    z 105
-                }
-            }
-        }
         Wall
         {
             Wall12

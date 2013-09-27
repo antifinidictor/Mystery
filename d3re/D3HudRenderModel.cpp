@@ -128,6 +128,9 @@ D3HudRenderModel::renderImage() {
 void
 D3HudRenderModel::renderText() {
     glPushMatrix();
-    TextRenderer::get()->render(m_sData.c_str(), m_ptTextPos.x, m_ptTextPos.y, m_fTextSize);
+    std::string splitData = m_sData;
+    float margin = m_ptTextPos.x - m_rcDrawArea.x;
+    TextRenderer::get()->splitText(splitData, m_rcDrawArea.w - margin * 2, m_fTextSize);
+    TextRenderer::get()->render(splitData.c_str(), m_ptTextPos.x, m_ptTextPos.y, m_fTextSize);
     glPopMatrix();
 }

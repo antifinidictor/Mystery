@@ -84,12 +84,13 @@ public:
     //Creating objects from scratch
     FactoryData &initObject(const std::string &className, const std::string &objName);
     GameObject *createFromAttributes();
-    
+
     void initClass(const std::string &className);
     GameObject *createFromTree(const boost::property_tree::ptree &pt, const std::string &keyBase);
 
     //Reading files: Writes to world engine
     void read(const std::string &fileName);
+    void write(const std::string &fileName);
 
 private:
     //Data required for constructing an object

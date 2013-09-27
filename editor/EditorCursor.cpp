@@ -66,6 +66,7 @@ EditorCursor::update(uint time) {
     case EDC_STATE_SELECT_RECT:
         selectRectUpdate();
         break;
+    case EDC_STATE_TYPE_FIELD:
     case EDC_STATE_TYPE:
         typeUpdate();
         break;
@@ -98,6 +99,7 @@ EditorCursor::callBack(uint cID, void *data, uint eventId) {
         case EDC_STATE_SELECT_RECT:
             selectRectOnKeyPress((InputData*)data);
             break;
+        case EDC_STATE_TYPE_FIELD:
         case EDC_STATE_TYPE:
             typeOnKeyPress((InputData*)data);
             break;
@@ -128,6 +130,7 @@ EditorCursor::setState(EditorCursorState eState) {
     case EDC_STATE_SELECT_RECT: {
         break;
       }
+    case EDC_STATE_TYPE_FIELD:
     case EDC_STATE_TYPE: {
         break;
       }
@@ -156,6 +159,7 @@ EditorCursor::setState(EditorCursorState eState) {
     case EDC_STATE_SELECT_RECT: {
         break;
       }
+    case EDC_STATE_TYPE_FIELD:
     case EDC_STATE_TYPE: {
         break;
       }
@@ -365,7 +369,11 @@ EditorCursor::typeOnKeyPress(InputData *data) {
         m_sInput.resize(m_sInput.size() - 1);
     }
     if(data->getInputState(ED_IN_ENTER) && data->hasChanged(ED_IN_ENTER)) {
-        m_sInput.append(1, '\n');
+        if(m_eState == EDC_STATE_TYPE_FIELD) {
+            EditorManager::get()->callBack(this->getID(), NULL, ED_HUD_OP_FINALIZE);
+        } else {
+            m_sInput.append(1, '\n');
+        }
     }
 }
 

@@ -31,6 +31,37 @@ EditorManager::write(boost::property_tree::ptree &pt, const std::string &keyBase
 
 bool
 EditorManager::update(uint time) {
+    //Handle events
+    while(!m_qEvents.empty()) {
+        switch(m_qEvents.front()) {
+        case ED_HUD_OP_FINALIZE: {
+            //Do some additional stuff here before popping the state
+            switch(m_skState.top()) {
+            case ED_STATE_LOAD_FILE:
+                ObjectFactory::get()->read(m_pEditorCursor->getText());
+                break;
+            case ED_STATE_SAVE_FILE:
+                ObjectFactory::get()->write(m_pEditorCursor->getText());
+                break;
+            default:
+                break;
+            }
+          }
+        case ED_HUD_OP_CANCEL:
+            popState();
+            break;
+        case ED_HUD_OP_LOAD_WORLD:
+            pushState(ED_STATE_LOAD_FILE);
+            break;
+        case ED_HUD_OP_SAVE_WORLD:
+            pushState(ED_STATE_SAVE_FILE);
+            break;
+        default:
+            break;
+        }
+        m_qEvents.pop();
+    }
+
 
     switch(m_skState.top()) {
     case ED_STATE_INIT:
@@ -91,6 +122,15 @@ EditorManager::update(uint time) {
 
 void
 EditorManager::callBack(uint cID, void *data, uint eventId) {
+    //If the data needs to be handled, handle it here.  Otherwise push an event.
+    switch(eventId) {
+    case ED_HUD_OP_FINALIZE:
+        //Do some additional stuff here before popping the state
+        break;
+    default:
+        break;
+    }
+    m_qEvents.push(eventId);
 #if 0
     switch(eventId) {
     case ED_HUD_NEW:
@@ -168,6 +208,12 @@ EditorManager::popState() {
 void
 EditorManager::cleanState(EditorState eState) {
     switch(eState) {
+    case ED_STATE_SAVE_FILE:
+    case ED_STATE_LOAD_FILE:
+        D3RE::get()->getHudContainer()
+            ->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE)
+            ->clear();
+        //Also clear the right pane
     case ED_STATE_MAIN:
         D3RE::get()->getHudContainer()
             ->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)
@@ -184,6 +230,12 @@ EditorManager::initState(EditorState eState) {
     case ED_STATE_MAIN:
         //Restore main hud
         initMainHud();
+        break;
+    case ED_STATE_SAVE_FILE:
+        initSaveHud();
+        break;
+    case ED_STATE_LOAD_FILE:
+        initLoadHud();
         break;
     default:
         break;
@@ -208,13 +260,13 @@ EditorManager::initMainHud() {
     ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
 
     int i = 0;
-    EditorHudButton *loadWorld = new EditorHudButton(rpanel, ED_HUD_OP_LOAD_WORLD, "Load World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
-        *saveWorld  = new EditorHudButton(rpanel, ED_HUD_OP_SAVE_WORLD, "Save World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
-        *newArea    = new EditorHudButton(rpanel, ED_HUD_OP_NEW_AREA, "New area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
-        *renameArea = new EditorHudButton(rpanel, ED_HUD_OP_RENAME_AREA, "Rename area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
-        *goToArea   = new EditorHudButton(rpanel, ED_HUD_OP_GO_TO_AREA, "Go to area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
-        *newObj     = new EditorHudButton(rpanel, ED_HUD_OP_NEW_OBJ, "New Object", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
-        *newTex     = new EditorHudButton(rpanel, ED_HUD_OP_NEW_TEXTURE, "New Texture", Point(0.f ,BUTTON_HEIGHT * i++, 0.f));
+    EditorHudButton *loadWorld = new EditorHudButton(rpanel, ED_HUD_OP_LOAD_WORLD, "Load World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *saveWorld  = new EditorHudButton(rpanel, ED_HUD_OP_SAVE_WORLD, "Save World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *newArea    = new EditorHudButton(rpanel, ED_HUD_OP_NEW_AREA, "New area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *renameArea = new EditorHudButton(rpanel, ED_HUD_OP_RENAME_AREA, "Rename area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *goToArea   = new EditorHudButton(rpanel, ED_HUD_OP_GO_TO_AREA, "Go to area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *newObj     = new EditorHudButton(rpanel, ED_HUD_OP_NEW_OBJ, "New Object", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *newTex     = new EditorHudButton(rpanel, ED_HUD_OP_NEW_TEXTURE, "New Texture", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
 
     rpanel->add(ED_HUD_MAIN_LOAD_WORLD, loadWorld);
     rpanel->add(ED_HUD_MAIN_SAVE_WORLD, saveWorld);
@@ -223,7 +275,54 @@ EditorManager::initMainHud() {
     rpanel->add(ED_HUD_MAIN_GO_TO_AREA, goToArea);
     rpanel->add(ED_HUD_MAIN_NEW_OBJ, newObj);
     rpanel->add(ED_HUD_MAIN_NEW_TEXTURE, newTex);
+
+    if(m_pEditorCursor) {
+        m_pEditorCursor->setState(EDC_STATE_MOVE);
+    }
 }
+
+void
+EditorManager::initLoadHud() {
+    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    ContainerRenderModel *mpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE);
+
+    int i = 0;
+    EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *finalize  = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, "Load it!", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    D3HudRenderModel *label = new D3HudRenderModel("Enter filename:", Rect(0,0,SCREEN_WIDTH - BUTTON_WIDTH*2,BUTTON_HEIGHT));
+    D3HudRenderModel *text = new D3HudRenderModel("", Rect(0,BUTTON_HEIGHT,SCREEN_WIDTH - BUTTON_WIDTH*2,SCREEN_HEIGHT));
+
+    rpanel->add(ED_HUD_LOAD_CANCEL, cancel);
+    rpanel->add(ED_HUD_LOAD_LOAD, finalize);
+    mpanel->add(ED_HUD_FIELD_LABEL, label);
+    mpanel->add(ED_HUD_FIELD_TEXT, text);
+
+    if(m_pEditorCursor) {
+        m_pEditorCursor->setState(EDC_STATE_TYPE_FIELD);
+    }
+}
+
+void
+EditorManager::initSaveHud() {
+    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    ContainerRenderModel *mpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE);
+
+    int i = 0;
+    EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *finalize  = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, "Save it!", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    D3HudRenderModel *label = new D3HudRenderModel("Enter filename:", Rect(0,0,SCREEN_WIDTH - BUTTON_WIDTH*2,BUTTON_HEIGHT));
+    D3HudRenderModel *text = new D3HudRenderModel("", Rect(0,BUTTON_HEIGHT,SCREEN_WIDTH - BUTTON_WIDTH*2,SCREEN_HEIGHT));
+
+    rpanel->add(ED_HUD_SAVE_CANCEL, cancel);
+    rpanel->add(ED_HUD_SAVE_SAVE, finalize);
+    mpanel->add(ED_HUD_FIELD_LABEL, label);
+    mpanel->add(ED_HUD_FIELD_TEXT, text);
+
+    if(m_pEditorCursor) {
+        m_pEditorCursor->setState(EDC_STATE_TYPE_FIELD);
+    }
+}
+
 
 #if 0
 
