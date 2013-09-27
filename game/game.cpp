@@ -23,6 +23,7 @@
 #include "game/Player.h"
 #include "game/world/SimplePhysicsObject.h"
 #include "game/world/Wall.h"
+#include "game/ObjectFactory.h"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ void buildWorld();
 //Engine initialization, cleanup
 WorldEngine   *createWorldEngine() {
     PWE::init();
+    ObjectFactory::init();
     return PWE::get();
 }
 
@@ -54,6 +56,7 @@ AudioEngine   *createAudioEngine() {
 
 void cleanWorldEngine() {
     PWE::clean();
+    ObjectFactory::clean();
 }
 
 void cleanPhysicsEngine() {
@@ -94,12 +97,20 @@ void resetGamePage(uint buttonID, uint eventID) {
     }
 }
 
+/*
+GameObject*
+readEmpty(const boost::property_tree::ptree &pt, const std::string &keyBase) {
+    return NULL;
+}
+*/
 
 void initWorld() {
     //Perform last-minute setup of the world engine
     PartitionedWorldEngine *we = PWE::get();
     we->setPhysicsEngine(TimePhysicsEngine::get());
     we->setRenderEngine(D3RE::get());
+
+    registerClasses();
 
     ModularEngine *mge = ModularEngine::get();
 

@@ -141,7 +141,13 @@ void ModularEngine::handleKey( SDL_Event *pEvent, bool bDown) {
         //If the key is a letter (may or may not already be mapped)
         if((sdlKeyId >= SDLK_a) && (sdlKeyId <= SDLK_z)) {
             m_sInputData.setLetter((sdlKeyId - SDLK_a), bDown);
-            m_sInputData.setInputState(LKIN_KEY_PRESSED, (int)bDown);
+            m_sInputData.setInputState(KIN_LETTER_PRESSED, (int)bDown);
+        }
+
+        //If the key is a number
+        if((sdlKeyId >= SDLK_0) && (sdlKeyId <= SDLK_9)) {
+            m_sInputData.setNumber((sdlKeyId - SDLK_0), bDown);
+            m_sInputData.setInputState(KIN_NUMBER_PRESSED, (int)bDown);
         }
 	}
 }

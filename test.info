@@ -1,129 +1,190 @@
-allArea0
+areas
 {
-    EditorObject
+    Area0 0
     {
-        EditorObject6
+        EditorObject
         {
-            id 6
-            areaId 0
-            pos
+            EditorObject6
             {
-                x 34
-                y 63
-                z 158
+                id 6
+                areaId 0
+                pos
+                {
+                    x 70
+                    y 33
+                    z 105
+                }
             }
         }
-    }
-    Wall
-    {
-        Wall12
+        Wall
         {
-            id 12
-            vol
+            Wall12
             {
-                x -128
-                y 0
-                z -96
-                w 288
-                h 32
-                l 288
+                id 12
+                vol
+                {
+                    x 0
+                    y 0
+                    z 0
+                    w 128
+                    h 32
+                    l 160
+                }
+                cr
+                {
+                    r 0
+                    g 0
+                    b 255
+                }
+                tex
+                {
+                    north 0
+                    south 7
+                    east 7
+                    west 7
+                    up 5
+                    down 0
+                }
             }
-            tex
+            Wall18
             {
-                north 0
-                south 7
-                east 7
-                west 7
-                up 5
-                down 0
+                id 18
+                vol
+                {
+                    x 0
+                    y 32
+                    z 0
+                    w 32
+                    h 32
+                    l 160
+                }
+                cr
+                {
+                    r 0
+                    g 0
+                    b 255
+                }
+                tex
+                {
+                    north 0
+                    south 7
+                    east 7
+                    west 7
+                    up 5
+                    down 0
+                }
             }
-        }
-        Wall18
-        {
-            id 18
-            vol
+            Wall24
             {
-                x 128
-                y 32
-                z -96
-                w 32
-                h 32
-                l 288
+                id 24
+                vol
+                {
+                    x 32
+                    y 32
+                    z 0
+                    w 32
+                    h 64
+                    l 32
+                }
+                cr
+                {
+                    r 0
+                    g 0
+                    b 255
+                }
+                tex
+                {
+                    north 0
+                    south 7
+                    east 7
+                    west 7
+                    up 5
+                    down 0
+                }
             }
-            tex
+            Wall30
             {
-                north 0
-                south 7
-                east 7
-                west 7
-                up 5
-                down 0
+                id 30
+                vol
+                {
+                    x 64
+                    y 64
+                    z 0
+                    w 64
+                    h 32
+                    l 32
+                }
+                cr
+                {
+                    r 0
+                    g 0
+                    b 255
+                }
+                tex
+                {
+                    north 0
+                    south 7
+                    east 7
+                    west 7
+                    up 5
+                    down 0
+                }
             }
-        }
-        Wall29
-        {
-            id 29
-            vol
+            Wall36
             {
-                x -128
-                y 32
-                z -96
-                w 256
-                h 32
-                l 32
+                id 36
+                vol
+                {
+                    x 96
+                    y 32
+                    z 0
+                    w 64
+                    h 32
+                    l 32
+                }
+                cr
+                {
+                    r 0
+                    g 0
+                    b 255
+                }
+                tex
+                {
+                    north 0
+                    south 7
+                    east 7
+                    west 7
+                    up 5
+                    down 0
+                }
             }
-            tex
+            Wall42
             {
-                north 0
-                south 7
-                east 7
-                west 7
-                up 5
-                down 0
-            }
-        }
-        Wall35
-        {
-            id 35
-            vol
-            {
-                x -128
-                y 32
-                z -64
-                w 32
-                h 32
-                l 256
-            }
-            tex
-            {
-                north 0
-                south 7
-                east 7
-                west 7
-                up 5
-                down 0
-            }
-        }
-        Wall41
-        {
-            id 41
-            vol
-            {
-                x -128
-                y 64
-                z -32
-                w 288
-                h 96
-                l 96
-            }
-            tex
-            {
-                north 0
-                south 7
-                east 7
-                west 7
-                up 5
-                down 0
+                id 42
+                vol
+                {
+                    x 128
+                    y 32
+                    z 32
+                    w 32
+                    h 32
+                    l 128
+                }
+                cr
+                {
+                    r 0
+                    g 0
+                    b 255
+                }
+                tex
+                {
+                    north 0
+                    south 7
+                    east 7
+                    west 7
+                    up 5
+                    down 0
+                }
             }
         }
     }

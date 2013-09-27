@@ -29,6 +29,7 @@ public:
     Color &getImageColor() { return m_crImageColor; }
 
     void updateText(const std::string &data, float textSize = -1.f);
+    std::string getText() { return m_sData; }
 
 private:
     void renderImage();

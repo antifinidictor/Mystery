@@ -39,6 +39,11 @@ SimplePhysicsObject::read(const boost::property_tree::ptree &pt, const std::stri
     bxVolume.h = pt.get(keyBase + ".vol.h", 0);
     bxVolume.l = pt.get(keyBase + ".vol.l", 0);
     SimplePhysicsObject *obj = new SimplePhysicsObject(uiId, uiTexId, bxVolume);
+    Color cr;
+    cr.r = pt.get(keyBase + ".cr.r", 0xFF);
+    cr.g = pt.get(keyBase + ".cr.g", 0xFF);
+    cr.b = pt.get(keyBase + ".cr.b", 0xFF);
+    obj->m_pRenderModel->setColor(cr);
     return obj;
 }
 
@@ -53,5 +58,9 @@ SimplePhysicsObject::write(boost::property_tree::ptree &pt, const std::string &k
     pt.put(keyBase + ".vol.w", bxVolume.w);
     pt.put(keyBase + ".vol.h", bxVolume.h);
     pt.put(keyBase + ".vol.l", bxVolume.l);
+    Color cr = m_pRenderModel->getColor();
+    pt.put(keyBase + ".cr.r", cr.r);
+    pt.put(keyBase + ".cr.g", cr.g);
+    pt.put(keyBase + ".cr.b", cr.b);
 }
 

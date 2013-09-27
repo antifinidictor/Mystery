@@ -7,10 +7,14 @@
 
 #include <map>
 #include <vector>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/foreach.hpp>
 
 #include "mge/RenderEngine.h"
 #include "mge/Image.h"
 #include "mge/defs.h"
+
+#include "ContainerRenderModel.h"
 
 class D3HudRenderModel;
 
@@ -53,12 +57,14 @@ public:
     void drawBox(const Box &bxVolume, const Color &cr = Color(0xFF, 0xFF, 0xFF));
 
     void setBackgroundColor(const Color &cr);
-    void addHudElement(uint uiHudId, D3HudRenderModel *hud) { m_mHudElements[uiHudId] = hud; }
-    D3HudRenderModel *getHudElement(uint uiHudId) { return m_mHudElements[uiHudId]; }
-    void clearHud();
+
+    ContainerRenderModel *getHudContainer() { return m_pHudContainer; }
 
     uint getScreenWidth() { return m_uiWidth; }
     uint getScreenHeight() { return m_uiHeight; }
+
+    void write(boost::property_tree::ptree &pt, const std::string &keyBase);
+    void read(boost::property_tree::ptree &pt, const std::string &keyBase);
 
 private:
     D3RenderEngine();
@@ -78,8 +84,8 @@ private:
     uint m_uiWidth, m_uiHeight;
 
     std::map<float, GameObject *> m_mObjsOnScreen;
-    std::map<uint, D3HudRenderModel *> m_mHudElements;
     std::vector<Image*> m_vImages;
+    ContainerRenderModel *m_pHudContainer;
     bool m_bGuiMode;
 };
 

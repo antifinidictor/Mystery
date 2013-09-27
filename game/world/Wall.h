@@ -34,7 +34,8 @@ public:
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
     virtual uint getType() { return TYPE_GENERAL; }
-    virtual const std::string getClass() { return "Wall"; }
+    virtual const std::string getClass()        { return getClassName(); }
+    static const std::string getClassName()     { return "Wall"; }
 
     //Models
     virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }

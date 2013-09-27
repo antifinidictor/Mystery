@@ -20,14 +20,17 @@
 
 //Game includes
 #include "editor/editor_defs.h"
-#include "editor/EditorObject.h"
+#include "editor/EditorCursor.h"
 #include "editor/EditorManager.h"
+#include "game/ObjectFactory.h"
+#include "game/ObjectFactory.h"
 
 using namespace std;
 
 //Engine initialization, cleanup
 WorldEngine   *createWorldEngine() {
     PWE::init();
+    ObjectFactory::init();
     EditorManager::init();
     PWE::get()->setManager(EditorManager::get());
     return PWE::get();
@@ -52,6 +55,7 @@ AudioEngine   *createAudioEngine() {
 
 void cleanWorldEngine() {
     PWE::clean();
+    ObjectFactory::clean();
     EditorManager::clean();
 }
 
@@ -72,12 +76,13 @@ int getSDLVideoFlags() {
     return SDL_OPENGL | SDL_HWSURFACE;// | SDL_NOFRAME | SDL_FULLSCREEN;
 }
 
-
 void initWorld() {
     //Perform last-minute setup of the world engine
     PartitionedWorldEngine *we = PWE::get();
     we->setPhysicsEngine(TimePhysicsEngine::get());
     we->setRenderEngine(D3RE::get());
+
+    registerClasses();
 
     ModularEngine *mge = ModularEngine::get();
 
@@ -104,14 +109,14 @@ void initWorld() {
     mge->mapInput(SDLK_DOWN,  IN_SOUTH);
     mge->mapInput(SDLK_LEFT,  IN_WEST);
     */
-    
+
     // Selection
     mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
 
     //Load image resources (required by editor)
     D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3);
     D3RE::get()->createImage(IMG_BUTTON,   "res/gui/button.png", 3, 1);
-    
+
     //These could be loaded from a file
     D3RE::get()->createImage(IMG_PLAYER,   "res/Magus.png", 8, 4);
     D3RE::get()->createImage(IMG_BLOCK,    "res/world/block.png");
@@ -132,8 +137,8 @@ void initWorld() {
     D3RE::get()->setBackgroundColor(Color(0x0,0x0,0x0));
 
     //Create first editor object for initial area
-    EditorObject *ed = new EditorObject(we->genID(), ED_AREA_0, Point());
-    EditorManager::get()->setEditorObject(ed);
+    EditorCursor *ed = new EditorCursor(we->genID(), ED_AREA_0, Point());
+    EditorManager::get()->setEditorCursor(ed);
     we->add(ed);
 }
 

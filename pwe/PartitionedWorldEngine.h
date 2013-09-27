@@ -41,6 +41,9 @@ public:
     virtual void add(GameObject *obj);      //Adds object to current area
     virtual void remove(uint id);           //Removes object from current area and the screen
 
+    GameObject *find(uint uiObjId);
+    GameObject *findIn(uint uiObjId, uint uiAreaId);
+
     //Specific to the partitioned world engine
     void generateArea(uint uiAreaId);                   //generates a new area and returns its id
     void setCurrentArea(uint uiAreaID);                 //Queue a set to the current area
@@ -55,6 +58,9 @@ public:
     const std::string getAreaName(uint uiAreaId);
     void setAreaName(uint uiAreaId, const std::string &name);
     void writeArea(uint uiAreaId, boost::property_tree::ptree &pt, const std::string &keyBase);
+    void readArea(uint uiAreaId, boost::property_tree::ptree &pt, const std::string &keyBase);
+    void write(boost::property_tree::ptree &pt, const std::string &keyBase);
+    void read(boost::property_tree::ptree &pt, const std::string &keyBase);
 
     //Listener
     virtual uint getID() { return ID_WORLD_ENGINE; }
@@ -91,6 +97,12 @@ private:
     virtual ~PartitionedWorldEngine();
     virtual void setCurrentArea();      //Actually set the current area
 
+    void cleanAllAreas();
+    void cleanAreaNow(uint uiAreaId);
+    void removeFromNow(uint uiObjId, uint uiAreaId);
+    void deleteFromNow(uint uiObjId, uint uiAreaId);
+    void addToNow(GameObject *obj, uint uiAreaId);
+
     static PartitionedWorldEngine *pwe;
 
     PhysicsEngine *pe;
@@ -100,6 +112,12 @@ private:
     std::map<uint, GameObject *> *m_mCurArea;
     uint m_uiCurArea, m_uiNextArea, m_uiEffectiveArea;
     bool m_bFirstRun;
+
+    //Scheduled events
+    std::list<uint> m_lsAreasToClean;
+    std::list<std::pair<uint,uint> > m_lsObjsToRemove;
+    std::list<std::pair<uint,uint> > m_lsObjsToDelete;
+    std::list<std::pair<GameObject*,uint> > m_lsObjsToAdd;
 
     GameObject *m_pManagerObject;   //This object performs management functions
 

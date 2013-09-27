@@ -1468,7 +1468,7 @@
 
 1379962800 AudioEngine.h"
 
-1380072888 k:\projects\games\mge\mystery\game\player.h
+1380133545 k:\projects\games\mge\mystery\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1527,7 +1527,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1380100597 source:k:\projects\games\mge\mystery\game\game.cpp
+1380171936 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	<gl/gl.h>
@@ -1542,6 +1542,7 @@
 	"game/Player.h"
 	"game/world/SimplePhysicsObject.h"
 	"game/world/Wall.h"
+	"game/ObjectFactory.h"
 
 1379964199 d/Wall.h"
 
@@ -1587,17 +1588,17 @@
 	"mge/Clock.h"
 	"mge/Event.h"
 
-1380094382 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
+1380261884 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
 	"ModularEngine.h"
 	"defs.h"
 
-1380075673 k:\projects\games\mge\mystery\mge\defs.h
+1380261275 k:\projects\games\mge\mystery\mge\defs.h
 	<math.h>
 	<stdio.h>
 	<stdarg.h>
 	<vector>
 
-1380076458 source:k:\projects\games\mge\mystery\mge\defs.cpp
+1380262653 source:k:\projects\games\mge\mystery\mge\defs.cpp
 	"defs.h"
 
 1376280198 source:k:\projects\games\mge\mystery\ore\edgerendermodel.cpp
@@ -1637,12 +1638,14 @@
 	"mge/GameObject.h"
 	"mge/PhysicsModel.h"
 
-1380085068 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
+1380265461 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
 	"PartitionedWorldEngine.h"
 	"mge/ModularEngine.h"
+	"game/ObjectFactory.h"
 	<list>
+	<boost/foreach.hpp>
 
-1380083363 k:\projects\games\mge\mystery\pwe\partitionedworldengine.h
+1380265167 k:\projects\games\mge\mystery\pwe\partitionedworldengine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -1673,7 +1676,7 @@
 
 1380093195 k:\projects\games\mge\mystery\\mge\audioengine.h
 
-1380075673 k:\projects\games\mge\mystery\\mge\defs.h
+1380261275 k:\projects\games\mge\mystery\\mge\defs.h
 	<math.h>
 	<stdio.h>
 	<stdarg.h>
@@ -1687,12 +1690,11 @@
 	"tpe/TimePhysicsModel.h"
 	"game/GameDefs.h"
 
-1380061821 k:\projects\games\mge\mystery\\mge\gameobject.h
+1380140396 k:\projects\games\mge\mystery\\mge\gameobject.h
 	"mge/defs.h"
 	"mge/PhysicsModel.h"
 	"mge/RenderModel.h"
-	<boost/property_tree/xml_parser.hpp>
-	<boost/property_tree/info_parser.hpp>
+	<boost/property_tree/ptree.hpp>
 
 1379965669 perty_tree/xml_parser.hpp>
 
@@ -1740,7 +1742,7 @@
 	"OrderedRenderModel.h"
 	"StripRenderModel.h"
 
-1380083363 k:\projects\games\mge\mystery\\pwe\partitionedworldengine.h
+1380265167 k:\projects\games\mge\mystery\\pwe\partitionedworldengine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -1805,7 +1807,7 @@
 	<map>
 	"mge/defs.h"
 
-1380072888 k:\projects\games\mge\mystery\\game\player.h
+1380133545 k:\projects\games\mge\mystery\\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1988,7 +1990,7 @@
 	"mge/defs.h"
 	<string>
 
-1380087988 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
+1380268401 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
 	"d3re.h"
 	"SDL.h"
 	<gl/gl.h>
@@ -2005,12 +2007,15 @@
 
 1379928505 nderModel.h"
 
-1380088117 k:\projects\games\mge\mystery\d3re\d3renderengine.h
+1380268295 k:\projects\games\mge\mystery\d3re\d3renderengine.h
 	<map>
 	<vector>
+	<boost/property_tree/ptree.hpp>
+	<boost/foreach.hpp>
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 	"mge/defs.h"
+	"ContainerRenderModel.h"
 
 1380060203 k:\projects\games\mge\mystery\d3re\d3spriterendermodel.h
 	"mge/RenderModel.h"
@@ -2036,12 +2041,15 @@
 	"D3PrismRenderModel.h"
 	"TextRenderer.h"
 
-1380088117 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
+1380268295 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
 	<map>
 	<vector>
+	<boost/property_tree/ptree.hpp>
+	<boost/foreach.hpp>
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 	"mge/defs.h"
+	"ContainerRenderModel.h"
 
 1380060203 k:\projects\games\mge\mystery\\d3re\d3spriterendermodel.h
 	"mge/RenderModel.h"
@@ -2062,13 +2070,13 @@
 	"d3re.h"
 	"mge/GameObject.h"
 
-1380060177 k:\projects\games\mge\mystery\\game\world\simplephysicsobject.h
+1380133647 k:\projects\games\mge\mystery\\game\world\simplephysicsobject.h
 	"mge/GameObject.h"
 	"tpe/TimePhysicsModel.h"
 	"d3re/d3re.h"
 	"game/game_defs.h"
 
-1380055517 k:\projects\games\mge\mystery\\game\world\wall.h
+1380133635 k:\projects\games\mge\mystery\\game\world\wall.h
 	"mge/GameObject.h"
 	"d3re/d3re.h"
 	"tpe/tpe.h"
@@ -2078,21 +2086,21 @@
 	"TimePhysicsEngine.h"
 	"TimePhysicsModel.h"
 
-1380055487 source:k:\projects\games\mge\mystery\game\world\wall.cpp
+1380134889 source:k:\projects\games\mge\mystery\game\world\wall.cpp
 	"Wall.h"
 
-1380055517 k:\projects\games\mge\mystery\game\world\wall.h
+1380133635 k:\projects\games\mge\mystery\game\world\wall.h
 	"mge/GameObject.h"
 	"d3re/d3re.h"
 	"tpe/tpe.h"
 	"game/game_defs.h"
 
-1380085703 k:\projects\games\mge\mystery\d3re\d3hudrendermodel.h
+1380136506 k:\projects\games\mge\mystery\d3re\d3hudrendermodel.h
 	"mge/RenderModel.h"
 	"mge/defs.h"
 	"mge/Image.h"
 
-1380085703 k:\projects\games\mge\mystery\\d3re\d3hudrendermodel.h
+1380136506 k:\projects\games\mge\mystery\\d3re\d3hudrendermodel.h
 	"mge/RenderModel.h"
 	"mge/defs.h"
 	"mge/Image.h"
@@ -7753,22 +7761,22 @@
 	"boost/property_tree/detail/info_parser_utils.hpp"
 	<string>
 
-1380060243 source:k:\projects\games\mge\mystery\game\world\simplephysicsobject.cpp
+1380134610 source:k:\projects\games\mge\mystery\game\world\simplephysicsobject.cpp
 	"SimplePhysicsObject.h"
 
-1380060177 k:\projects\games\mge\mystery\game\world\simplephysicsobject.h
+1380133647 k:\projects\games\mge\mystery\game\world\simplephysicsobject.h
 	"mge/GameObject.h"
 	"tpe/TimePhysicsModel.h"
 	"d3re/d3re.h"
 	"game/game_defs.h"
 
-1380100422 source:k:\projects\games\mge\mystery\editor\editorobject.cpp
+1380263040 source:k:\projects\games\mge\mystery\editor\editorobject.cpp
 	"EditorObject.h"
 	"EditorManager.h"
 	"bae/BasicAudioEngine.h"
 	<string>
 
-1380096434 k:\projects\games\mge\mystery\editor\editorobject.h
+1380262895 k:\projects\games\mge\mystery\editor\editorobject.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -7780,10 +7788,10 @@
 1380095353 k:\projects\games\mge\mystery\\editor\selectionrendermodel.h
 	"d3re/d3re.h"
 
-1380099556 k:\projects\games\mge\mystery\\editor\editor_defs.h
+1380254466 k:\projects\games\mge\mystery\\editor\editor_defs.h
 	"game/game_defs.h"
 
-1380099577 source:k:\projects\games\mge\mystery\editor\editor.cpp
+1380219307 source:k:\projects\games\mge\mystery\editor\editor.cpp
 	"game/game.h"
 	<SDL.h>
 	<gl/gl.h>
@@ -7797,21 +7805,26 @@
 	"editor/editor_defs.h"
 	"editor/EditorObject.h"
 	"editor/EditorManager.h"
+	"game/ObjectFactory.h"
+	"game/ObjectFactory.h"
 
 1376281503 k:\projects\games\mge\mystery\\game\game.h
 
-1380100109 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
+1380223043 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
 	"EditorManager.h"
 	"EditorObject.h"
 	"EditorHudButton.h"
 	"game/world/Wall.h"
 	"pwe/PartitionedWorldEngine.h"
+	"game/ObjectFactory.h"
+	<boost/property_tree/xml_parser.hpp>
+	<boost/property_tree/info_parser.hpp>
 
-1380098012 k:\projects\games\mge\mystery\editor\editormanager.h
+1380266794 k:\projects\games\mge\mystery\editor\editormanager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
 
-1380096434 k:\projects\games\mge\mystery\\editor\editorobject.h
+1380262895 k:\projects\games\mge\mystery\\editor\editorobject.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -7820,7 +7833,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1380098012 k:\projects\games\mge\mystery\\editor\editormanager.h
+1380220325 k:\projects\games\mge\mystery\\editor\editormanager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
 
@@ -7838,9 +7851,214 @@
 	"mge/defs.h"
 	<string>
 
-1380091652 k:\projects\games\mge\mystery\editor\editorhudbutton.h
+1380137822 k:\projects\games\mge\mystery\editor\editorhudbutton.h
 	"d3re/d3re.h"
 	"editor/editor_defs.h"
 	"editor/EditorManager.h"
 	"mge/ModularEngine.h"
+
+1380212381 source:k:\projects\games\mge\mystery\game\objectfactory.cpp
+	"ObjectFactory.h"
+	"d3re/d3re.h"
+	"pwe/PartitionedWorldEngine.h"
+	<boost/property_tree/xml_parser.hpp>
+	<boost/property_tree/info_parser.hpp>
+
+1380141645 k:\projects\games\mge\mystery\game\objectfactory.h
+	"game_defs.h"
+	<map>
+	<list>
+	<boost/property_tree/ptree.hpp>
+
+1380089077 k:\projects\games\mge\mystery\game\game_defs.h
+	"mge/defs.h"
+
+1380141645 k:\projects\games\mge\mystery\\game\objectfactory.h
+	"game_defs.h"
+	<map>
+	<list>
+	<boost/property_tree/ptree.hpp>
+
+1380134920 source:k:\projects\games\mge\mystery\game\registration.cpp
+	"game/ObjectFactory.h"
+	"game/Player.h"
+	"game/world/SimplePhysicsObject.h"
+	"game/world/Wall.h"
+
+1362873305 c:\libs\boost\boost_1_54_0\boost\foreach.hpp
+	<cstddef>
+	<utility>
+	<boost/config.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/mpl/if.hpp>
+	<boost/mpl/assert.hpp>
+	<boost/mpl/logical.hpp>
+	<boost/mpl/eval_if.hpp>
+	<boost/noncopyable.hpp>
+	<boost/range/end.hpp>
+	<boost/range/begin.hpp>
+	<boost/range/rend.hpp>
+	<boost/range/rbegin.hpp>
+	<boost/range/iterator.hpp>
+	<boost/range/reverse_iterator.hpp>
+	<boost/type_traits/is_array.hpp>
+	<boost/type_traits/is_const.hpp>
+	<boost/type_traits/is_abstract.hpp>
+	<boost/type_traits/is_base_and_derived.hpp>
+	<boost/type_traits/is_rvalue_reference.hpp>
+	<boost/iterator/iterator_traits.hpp>
+	<boost/utility/addressof.hpp>
+	<boost/foreach_fwd.hpp>
+	<new>
+	<boost/aligned_storage.hpp>
+	<boost/utility/enable_if.hpp>
+	<boost/type_traits/remove_const.hpp>
+
+1294644902 c:\libs\boost\boost_1_54_0\boost\range\end.hpp
+	<boost/range/config.hpp>
+	<boost/range/detail/end.hpp>
+	<boost/range/detail/implementation_help.hpp>
+	<boost/range/iterator.hpp>
+	<boost/range/const_iterator.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\config.hpp
+	<boost/detail/workaround.hpp>
+	<boost/config.hpp>
+
+1294644902 c:\libs\boost\boost_1_54_0\boost\range\detail\end.hpp
+	<boost/config.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/range/detail/vc6/end.hpp>
+	<boost/range/detail/implementation_help.hpp>
+	<boost/range/iterator.hpp>
+	<boost/range/detail/common.hpp>
+	<boost/range/detail/remove_extent.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\detail\vc6\end.hpp
+	<boost/range/detail/implementation_help.hpp>
+	<boost/range/detail/implementation_help.hpp>
+	<boost/range/result_iterator.hpp>
+	<boost/range/detail/common.hpp>
+	<boost/range/detail/remove_extent.hpp>
+
+1270411213 c:\libs\boost\boost_1_54_0\boost\range\detail\implementation_help.hpp
+	<boost/range/config.hpp>
+	<boost/range/detail/common.hpp>
+	<boost/type_traits/is_same.hpp>
+	<cstddef>
+	<string.h>
+	<wchar.h>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\detail\common.hpp
+	<boost/range/config.hpp>
+	<boost/range/detail/sfinae.hpp>
+	<boost/type_traits/is_void.hpp>
+	<boost/type_traits/detail/ice_or.hpp>
+	<boost/mpl/if.hpp>
+	<boost/mpl/int.hpp>
+	<cstddef>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\detail\sfinae.hpp
+	<boost/range/config.hpp>
+	<boost/type_traits/is_array.hpp>
+	<boost/type_traits/detail/yes_no_type.hpp>
+	<utility>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\result_iterator.hpp
+	<boost/range/iterator.hpp>
+
+1270411213 c:\libs\boost\boost_1_54_0\boost\range\iterator.hpp
+	<boost/range/config.hpp>
+	<boost/range/mutable_iterator.hpp>
+	<boost/range/const_iterator.hpp>
+	<boost/type_traits/is_const.hpp>
+	<boost/type_traits/remove_const.hpp>
+	<boost/mpl/eval_if.hpp>
+
+1270411213 c:\libs\boost\boost_1_54_0\boost\range\mutable_iterator.hpp
+	<boost/range/config.hpp>
+	<boost/range/detail/iterator.hpp>
+	<boost/range/detail/extract_optional_type.hpp>
+	<boost/iterator/iterator_traits.hpp>
+	<cstddef>
+	<utility>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\detail\iterator.hpp
+	<boost/range/detail/common.hpp>
+	<boost/range/detail/remove_extent.hpp>
+	<boost/static_assert.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\detail\remove_extent.hpp
+	<boost/config.hpp>
+	<cstddef>
+	<boost/mpl/eval_if.hpp>
+	<boost/mpl/identity.hpp>
+	<boost/type_traits/is_same.hpp>
+
+1371522127 c:\libs\boost\boost_1_54_0\boost\range\detail\extract_optional_type.hpp
+	<boost/config.hpp>
+
+1270411213 c:\libs\boost\boost_1_54_0\boost\range\const_iterator.hpp
+	<boost/range/config.hpp>
+	<boost/range/detail/const_iterator.hpp>
+	<boost/range/detail/extract_optional_type.hpp>
+	<boost/type_traits/remove_const.hpp>
+	<cstddef>
+	<utility>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\detail\const_iterator.hpp
+	<boost/range/detail/common.hpp>
+	<boost/range/detail/remove_extent.hpp>
+
+1294644902 c:\libs\boost\boost_1_54_0\boost\range\begin.hpp
+	<boost/range/config.hpp>
+	<boost/range/detail/begin.hpp>
+	<boost/range/iterator.hpp>
+
+1294644902 c:\libs\boost\boost_1_54_0\boost\range\detail\begin.hpp
+	<boost/config.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/range/iterator.hpp>
+	<boost/range/detail/common.hpp>
+	<boost/range/value_type.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\value_type.hpp
+	<boost/range/config.hpp>
+	<boost/range/iterator.hpp>
+	<boost/iterator/iterator_traits.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\rend.hpp
+	<boost/range/begin.hpp>
+	<boost/range/reverse_iterator.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\reverse_iterator.hpp
+	<boost/range/config.hpp>
+	<boost/range/iterator.hpp>
+	<boost/iterator/reverse_iterator.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\rbegin.hpp
+	<boost/range/end.hpp>
+	<boost/range/reverse_iterator.hpp>
+
+1380268870 k:\projects\games\mge\mystery\d3re\containerrendermodel.h
+	<map>
+	"mge/RenderModel.h"
+
+1380268870 k:\projects\games\mge\mystery\\d3re\containerrendermodel.h
+	<map>
+	"mge/RenderModel.h"
+
+1380267057 source:k:\projects\games\mge\mystery\editor\editorcursor.cpp
+	"EditorCursor.h"
+	"EditorManager.h"
+	<string>
+
+1380267028 k:\projects\games\mge\mystery\editor\editorcursor.h
+	"mge/GameObject.h"
+	"mge/Event.h"
+	"editor/SelectionRenderModel.h"
+	"editor/editor_defs.h"
+	"d3re/d3re.h"
+	"pwe/PartitionedWorldEngine.h"
+	"tpe/tpe.h"
 

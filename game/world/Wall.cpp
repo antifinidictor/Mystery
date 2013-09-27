@@ -43,6 +43,11 @@ Wall::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
     wall->m_pRenderModel->setTexture(WEST,  pt.get(keyBase + ".tex.west",  (uint)IMG_NONE));
     wall->m_pRenderModel->setTexture(UP,    pt.get(keyBase + ".tex.up",    (uint)IMG_NONE));
     wall->m_pRenderModel->setTexture(DOWN,  pt.get(keyBase + ".tex.down",  (uint)IMG_NONE));
+    Color cr;
+    cr.r = pt.get(keyBase + ".cr.r", 0xFF);
+    cr.g = pt.get(keyBase + ".cr.g", 0xFF);
+    cr.b = pt.get(keyBase + ".cr.b", 0xFF);
+    wall->m_pRenderModel->setColor(cr);
     return wall;
 }
 
@@ -56,6 +61,10 @@ Wall::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     pt.put(keyBase + ".vol.w", bxVolume.w);
     pt.put(keyBase + ".vol.h", bxVolume.h);
     pt.put(keyBase + ".vol.l", bxVolume.l);
+    Color cr = m_pRenderModel->getColor();
+    pt.put(keyBase + ".cr.r", cr.r);
+    pt.put(keyBase + ".cr.g", cr.g);
+    pt.put(keyBase + ".cr.b", cr.b);
     pt.put(keyBase + ".tex.north", m_pRenderModel->getTexture(NORTH));
     pt.put(keyBase + ".tex.south", m_pRenderModel->getTexture(SOUTH));
     pt.put(keyBase + ".tex.east",  m_pRenderModel->getTexture(EAST));

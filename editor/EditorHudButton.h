@@ -60,7 +60,8 @@ private:
             } else {
                 setFrameH(HUD_BUTTON_SELECT);
                 if(data->hasChanged(IN_SELECT)) {
-                    EditorManager::get()->callBack(m_uiId, NULL, m_uiEventId);
+                    m_sText = getText();
+                    EditorManager::get()->callBack(m_uiId, &m_sText, m_uiEventId);
                 }
             }
         } else {
@@ -69,6 +70,7 @@ private:
     }
 
     uint m_uiId, m_uiEventId;
+    std::string m_sText;
 };
 
 #endif //HUD_BUTTON_H

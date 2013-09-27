@@ -51,9 +51,12 @@ D3RenderEngine::D3RenderEngine() {
     updateCamPos();
     m_crWorld = Color(0xFF, 0xFF, 0xFF);
     m_bGuiMode = false;
+
+    m_pHudContainer = new ContainerRenderModel();
 }
 
 D3RenderEngine::~D3RenderEngine() {
+    delete m_pHudContainer;
 }
 
 void
@@ -69,10 +72,7 @@ D3RenderEngine::render() {
         }
     }
 
-    for(map<uint, D3HudRenderModel*>::iterator it = m_mHudElements.begin();
-            it != m_mHudElements.end(); ++it) {
-        it->second->render(this);
-    }
+    m_pHudContainer->render(this);
 
     //glBindTexture(GL_TEXTURE_2D, 0);
     SDL_GL_SwapBuffers();   //Should probably be done by the render engine
@@ -271,12 +271,32 @@ D3RenderEngine::setBackgroundColor(const Color &cr) {
 }
 
 void
-D3RenderEngine::clearHud() {
-    map<uint,D3HudRenderModel*>::iterator iter;
-    for(iter = m_mHudElements.begin(); iter != m_mHudElements.end(); ++iter) {
-        delete (iter->second);
+D3RenderEngine::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
+    std::vector<Image*>::iterator iter;
+    std::string key;
+    for(iter = m_vImages.begin(); iter != m_vImages.end(); ++iter) {
+        key = keyBase + "." + (*iter)->m_sImageFileName;
+        pt.put(key, (*iter)->m_uiID);
+        pt.put(key + ".framesW", (*iter)->m_iNumFramesW);
+        pt.put(key + ".framesH", (*iter)->m_iNumFramesH);
     }
-    m_mHudElements.clear();
+}
+
+void
+D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase) {
+    using boost::property_tree::ptree;
+    try {
+    BOOST_FOREACH(ptree::value_type &v, pt.get_child(keyBase.c_str())) {
+        //Each element should be stored by filename
+        string filename = v.first.data();
+        uint framesW = pt.get(filename + ".framesW", 1);
+        uint framesH = pt.get(filename + ".framesH", 1);
+        uint id = pt.get(filename, 0);
+        createImage(id, filename.c_str(), framesW, framesH);
+    }
+    } catch(exception e) {
+        printf("Could not read resources\n");
+    }
 }
 
 void

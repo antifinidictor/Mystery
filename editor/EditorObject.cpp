@@ -8,7 +8,8 @@ EditorObject::EditorObject(uint uiId, uint uiAreaId, const Point &ptPos) {
     m_uiId = uiId;
     m_uiFlags = 0;
     m_uiAreaId = uiAreaId;
-
+    m_uiBlinkTimer = 0;
+    
     m_ptTilePos = toTile(ptPos);
 
     Box bxVolume = Box(m_ptTilePos.x, m_ptTilePos.y, m_ptTilePos.z, TILE_SIZE, TILE_SIZE, TILE_SIZE);
@@ -72,6 +73,14 @@ EditorObject::update(uint time) {
     } else if(EditorManager::get()->getState() == ED_STATE_SELECT) {
         Box bxVol = m_pRenderModel->getVolume();
         posText << "#FF0000#(" << m_ptTilePos.x << "," << m_ptTilePos.y << "," << m_ptTilePos.z << " : " << bxVol.w << "," << bxVol.h << "," << bxVol.l << ")";
+    } else {
+        m_uiBlinkTimer++;
+        if(m_uiBlinkTimer == 50) {
+            D3RE::get()->getHudElement(ED_TEXT)->updateText(m_sInput + "_");
+        } else if(m_uiBlinkTimer >= 100) {
+            D3RE::get()->getHudElement(ED_TEXT)->updateText(m_sInput);
+            m_uiBlinkTimer = 0;
+        }
     }
     D3RE::get()->getHudElement(ED_HUD_CURSOR_POS)->updateText(posText.str());
     return false;
@@ -145,7 +154,7 @@ EditorObject::prepState(EditorState eState) {
 
 void
 EditorObject::enterTextHandleKey(InputData *data) {
-    if(data->getInputState(LKIN_KEY_PRESSED) && data->hasChanged(LKIN_KEY_PRESSED)) {
+    if(data->getInputState(KIN_LETTER_PRESSED) && data->hasChanged(KIN_LETTER_PRESSED)) {
         uint letters = data->getLettersDown();
         uint l = 1;
         for(int i = 0; i < 26; ++i) {
@@ -155,6 +164,16 @@ EditorObject::enterTextHandleKey(InputData *data) {
                 m_sInput.append(1, 'a' + i);
             }
             l = l << 1;
+        }
+    }
+    if(data->getInputState(KIN_NUMBER_PRESSED) && data->hasChanged(KIN_NUMBER_PRESSED)) {
+        uint numbers = data->getNumbersDown();
+        uint n = 1;
+        for(int i = 0; i < 10; ++i) {
+            if(numbers & n) {
+                m_sInput.append(1, '0' + i);
+            }
+            n = n << 1;
         }
     }
 
@@ -181,18 +200,9 @@ EditorObject::enterTextHandleKey(InputData *data) {
         m_sInput.resize(m_sInput.size() - 1);
     }
     if(data->getInputState(ED_IN_ENTER) && data->hasChanged(ED_IN_ENTER)) {
-        printf("\tString entered: \"%s\"\n", m_sInput.c_str());
-        m_sInput.append(".info");
-        if(EditorManager::get()->getState() == ED_STATE_LOAD_FILE) {
-
-            EditorManager::get()->callBack(m_uiId, &m_sInput, ED_LOAD_FILE);
-        } else {
-            EditorManager::get()->callBack(m_uiId, &m_sInput, ED_SAVE_FILE);
-        }
-        m_sInput.clear();
-    } else {
-        D3RE::get()->getHudElement(ED_TEXT)->updateText(m_sInput + ".info");
+        m_sInput.append(1, '\n');
     }
+    D3RE::get()->getHudElement(ED_TEXT)->updateText(m_sInput);
 }
 
 void EditorObject::normalStateHandleKey(InputData *data) {

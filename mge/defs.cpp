@@ -41,6 +41,7 @@ void InputData::clearChanged() {
     }
     m_bMouseHasMoved = m_bInputHasChanged = false;
     m_uiLetterKeyUp = m_uiLetterKeyDown = 0;
+    m_uiNumberKeyUp = m_uiNumberKeyDown = 0;
 }
 
 int InputData::getInputState(int flag) {
@@ -89,6 +90,14 @@ void InputData::setLetter(uint letter, bool bDown) {
         m_uiLetterKeyDown = SET_FLAG(m_uiLetterKeyDown, letter, true);
     } else {
         m_uiLetterKeyUp = SET_FLAG(m_uiLetterKeyUp, letter, true);
+    }
+}
+
+void InputData::setNumber(uint number, bool bDown) {
+    if(bDown) {
+        m_uiNumberKeyDown = SET_FLAG(m_uiNumberKeyDown, number, true);
+    } else {
+        m_uiNumberKeyUp = SET_FLAG(m_uiNumberKeyUp, number, true);
     }
 }
 

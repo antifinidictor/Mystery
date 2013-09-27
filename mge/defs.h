@@ -86,13 +86,14 @@ enum LetterKeyMasks {
 // input does, not what triggers the input.  Maximum 8 bools (IN_NUM_BOOLS can
 // be no more than 8); any values after that must be integers, and have their
 // code manually added to the setInput function.
-enum LetterKeyId {
-    LKIN_KEY_PRESSED,
-    LKIN_NUM_EVENTS
+enum TypingKeyId {
+    KIN_LETTER_PRESSED,
+    KIN_NUMBER_PRESSED,
+    KIN_NUM_EVENTS
 };
 
 enum MouseInputID {
-	MIN_MOUSE_X = LKIN_NUM_EVENTS,
+	MIN_MOUSE_X = KIN_NUM_EVENTS,
 	MIN_MOUSE_Y,
 	MIN_MOUSE_REL_X,
 	MIN_MOUSE_REL_Y,
@@ -143,6 +144,8 @@ private:
     bool m_bMouseHasMoved, m_bInputHasChanged;
     uint m_uiLetterKeyUp,
          m_uiLetterKeyDown; //Special info used for typing
+    uint m_uiNumberKeyUp,
+         m_uiNumberKeyDown;
 public:
     InputData(uint size = 64);
     ~InputData();
@@ -157,6 +160,9 @@ public:
     void setLetter(uint letter, bool bDown);
     uint getLettersUp()   { return m_uiLetterKeyUp; }
     uint getLettersDown() { return m_uiLetterKeyDown; }
+    void setNumber(uint letter, bool bDown);
+    uint getNumbersUp()   { return m_uiNumberKeyUp; }
+    uint getNumbersDown() { return m_uiNumberKeyDown; }
 };
 
 struct tRect;
