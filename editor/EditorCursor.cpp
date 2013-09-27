@@ -29,7 +29,7 @@ EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
 
     D3HudRenderModel *posText = new D3HudRenderModel("(?,?,?)", Rect(0,0,BUTTON_WIDTH,BUTTON_HEIGHT));
     D3RE::get()->getHudContainer()->add(ED_HUD_CURSOR_POS, posText);
-
+    m_eState = EDC_STATE_MOVE;
 }
 
 EditorCursor::~EditorCursor() {

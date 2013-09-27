@@ -52,7 +52,7 @@ D3RenderEngine::D3RenderEngine() {
     m_crWorld = Color(0xFF, 0xFF, 0xFF);
     m_bGuiMode = false;
 
-    m_pHudContainer = new ContainerRenderModel();
+    m_pHudContainer = new ContainerRenderModel(Rect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT));
 }
 
 D3RenderEngine::~D3RenderEngine() {
@@ -64,14 +64,15 @@ D3RenderEngine::render() {
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+    //prepCamera();
     for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
             it != m_mObjsOnScreen.end(); ++it) {
-        //prepCamera();
         if(!it->second->getFlag(D3RE_INVISIBLE)) {
             it->second->getRenderModel()->render(this);
         }
     }
 
+    prepHud();
     m_pHudContainer->render(this);
 
     //glBindTexture(GL_TEXTURE_2D, 0);

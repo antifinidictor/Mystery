@@ -12,7 +12,7 @@
 
 class EditorHudButton : public D3HudRenderModel, public Listener {
 public:
-    EditorHudButton(uint uiEventId, const std::string &label, const Point &ptPos, float textSize = 1.f)
+    EditorHudButton(RenderModel *parent, uint uiEventId, const std::string &label, const Point &ptPos, float textSize = 1.f)
         : D3HudRenderModel(D3RE::get()->getImage(IMG_BUTTON),
                            Rect(ptPos.x, ptPos.y, BUTTON_WIDTH, BUTTON_HEIGHT),
                            label,
@@ -21,6 +21,7 @@ public:
     {
         m_uiId = PWE::get()->genID();
         m_uiEventId = uiEventId;
+        m_pParent = parent;
 
         //Add myself to the MGE
         MGE::get()->addListener(this, ON_MOUSE_MOVE);
@@ -53,7 +54,8 @@ private:
     };
 
     void handleMouseEvent(InputData *data) {
-        Point ptMouse = Point(data->getInputState(MIN_MOUSE_X), data->getInputState(MIN_MOUSE_Y), 0);
+        Point ptMouse = Point(data->getInputState(MIN_MOUSE_X), data->getInputState(MIN_MOUSE_Y), 0)
+            - m_pParent->getPosition();
         if(ptInRect(ptMouse, getDrawArea())) {
             if(data->getInputState(IN_SELECT)) {
                 setFrameH(HUD_BUTTON_DOWN);
@@ -68,6 +70,8 @@ private:
             setFrameH(HUD_BUTTON_UP);
         }
     }
+
+    RenderModel *m_pParent;
 
     uint m_uiId, m_uiEventId;
     std::string m_sText;

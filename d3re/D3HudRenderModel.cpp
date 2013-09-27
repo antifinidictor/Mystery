@@ -90,7 +90,8 @@ D3HudRenderModel::updateText(const std::string &data, float textSize) {
 
 void
 D3HudRenderModel::renderImage() {
-    D3RE::get()->prepHud();
+    glPushMatrix();
+    //D3RE::get()->prepHud();
     Color ourColor = m_crImageColor;
 
     //Render engine is responsible for resetting the camera
@@ -121,10 +122,12 @@ D3HudRenderModel::renderImage() {
         glVertex3f(m_rcDrawArea.x, m_rcDrawArea.y + m_rcDrawArea.h, 0.f);
     glEnd();
     //glDepthMask(GL_TRUE);
+    glPopMatrix();
 }
 
 void
 D3HudRenderModel::renderText() {
-    D3RE::get()->prepHud();
+    glPushMatrix();
     TextRenderer::get()->render(m_sData.c_str(), m_ptTextPos.x, m_ptTextPos.y, m_fTextSize);
+    glPopMatrix();
 }

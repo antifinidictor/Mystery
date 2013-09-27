@@ -75,6 +75,8 @@ enum EditorHudMainIds {
     ED_HUD_MAIN_NEW_AREA,
     ED_HUD_MAIN_RENAME_AREA,
     ED_HUD_MAIN_GO_TO_AREA,
+    ED_HUD_MAIN_NEW_OBJ,
+    ED_HUD_MAIN_NEW_TEXTURE,
     ED_HUD_NUM_MAIN_IDS
 };
 
@@ -114,13 +116,13 @@ enum EditorHudOps {
     ED_HUD_OP_FINALIZE,     //Opposite of cancel: accept current input
     ED_HUD_OP_LOAD_WORLD,   //Loads world from file
     ED_HUD_OP_SAVE_WORLD,   //Saves world to file
-    ED_HUD_OP_NEW_OBJ,      //Create new object
     ED_HUD_OP_NEW_AREA,     //Create new area
-    ED_HUD_OP_NEW_TEXTURE,  //Create new texture
+    ED_HUD_OP_RENAME_AREA,  //New HUD area name
     ED_HUD_OP_GO_TO_AREA,   //Go to existing area
+    ED_HUD_OP_NEW_OBJ,      //Create new object
+    ED_HUD_OP_NEW_TEXTURE,  //Create new texture
     ED_HUD_OP_UP,           //Go up one HUD display section
     ED_HUD_OP_DOWN,         //Go down one HUD display section
-    ED_HUD_OP_RENAME_AREA,  //New HUD area name
     ED_HUD_NUM_OPS
 };
 

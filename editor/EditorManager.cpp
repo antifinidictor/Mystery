@@ -36,7 +36,6 @@ EditorManager::update(uint time) {
     case ED_STATE_INIT:
         //Add basic hud containers
         initHud();
-        popState(); //Init state keeps off of the stack
         pushState(ED_STATE_MAIN);   //Push on main state
 
         //Continue into the main state
@@ -206,9 +205,24 @@ EditorManager::initHud() {
 
 void
 EditorManager::initMainHud() {
-    EditorHudButton *loadWorld = new EditorHudButton(ED_HUD_OP_LOAD_WORLD, "Load World", Point(0,BUTTON_HEIGHT * 0,0));
     ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+
+    int i = 0;
+    EditorHudButton *loadWorld = new EditorHudButton(rpanel, ED_HUD_OP_LOAD_WORLD, "Load World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
+        *saveWorld  = new EditorHudButton(rpanel, ED_HUD_OP_SAVE_WORLD, "Save World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
+        *newArea    = new EditorHudButton(rpanel, ED_HUD_OP_NEW_AREA, "New area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
+        *renameArea = new EditorHudButton(rpanel, ED_HUD_OP_RENAME_AREA, "Rename area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
+        *goToArea   = new EditorHudButton(rpanel, ED_HUD_OP_GO_TO_AREA, "Go to area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
+        *newObj     = new EditorHudButton(rpanel, ED_HUD_OP_NEW_OBJ, "New Object", Point(0.f ,BUTTON_HEIGHT * i++, 0.f)),
+        *newTex     = new EditorHudButton(rpanel, ED_HUD_OP_NEW_TEXTURE, "New Texture", Point(0.f ,BUTTON_HEIGHT * i++, 0.f));
+
     rpanel->add(ED_HUD_MAIN_LOAD_WORLD, loadWorld);
+    rpanel->add(ED_HUD_MAIN_SAVE_WORLD, saveWorld);
+    rpanel->add(ED_HUD_MAIN_NEW_AREA, newArea);
+    rpanel->add(ED_HUD_MAIN_RENAME_AREA, renameArea);
+    rpanel->add(ED_HUD_MAIN_GO_TO_AREA, goToArea);
+    rpanel->add(ED_HUD_MAIN_NEW_OBJ, newObj);
+    rpanel->add(ED_HUD_MAIN_NEW_TEXTURE, newTex);
 }
 
 #if 0
