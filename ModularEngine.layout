@@ -11,34 +11,34 @@
 		<Cursor position="1152" topLine="30" />
 	</File>
 	<File name="d3re\D3HudRenderModel.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="3675" topLine="112" />
+		<Cursor position="1518" topLine="51" />
 	</File>
-	<File name="d3re\D3HudRenderModel.h" open="0" top="0" tabpos="0">
-		<Cursor position="407" topLine="0" />
+	<File name="d3re\D3HudRenderModel.h" open="1" top="0" tabpos="5">
+		<Cursor position="1193" topLine="20" />
 	</File>
 	<File name="d3re\D3PrismRenderModel.cpp" open="0" top="0" tabpos="7">
 		<Cursor position="760" topLine="24" />
 	</File>
 	<File name="d3re\D3PrismRenderModel.h" open="0" top="0" tabpos="0">
-		<Cursor position="278" topLine="7" />
+		<Cursor position="493" topLine="9" />
 	</File>
-	<File name="d3re\D3RenderEngine.cpp" open="1" top="1" tabpos="4">
-		<Cursor position="7985" topLine="265" />
+	<File name="d3re\D3RenderEngine.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="8851" topLine="286" />
 	</File>
 	<File name="d3re\D3RenderEngine.h" open="1" top="0" tabpos="3">
 		<Cursor position="125" topLine="41" />
 	</File>
 	<File name="d3re\D3SpriteRenderModel.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="1696" topLine="37" />
+		<Cursor position="753" topLine="25" />
 	</File>
 	<File name="d3re\D3SpriteRenderModel.h" open="0" top="0" tabpos="0">
-		<Cursor position="563" topLine="8" />
+		<Cursor position="529" topLine="8" />
 	</File>
 	<File name="d3re\TextRenderer.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="1624" topLine="15" />
+		<Cursor position="5122" topLine="157" />
 	</File>
 	<File name="d3re\TextRenderer.h" open="0" top="0" tabpos="0">
-		<Cursor position="561" topLine="6" />
+		<Cursor position="1064" topLine="20" />
 	</File>
 	<File name="d3re\d3re.h" open="0" top="0" tabpos="2">
 		<Cursor position="301" topLine="0" />
@@ -49,10 +49,10 @@
 	<File name="editor\EditorCursor.h" open="0" top="0" tabpos="0">
 		<Cursor position="143" topLine="0" />
 	</File>
-	<File name="editor\EditorHudButton.h" open="1" top="0" tabpos="5">
-		<Cursor position="1008" topLine="16" />
+	<File name="editor\EditorHudButton.h" open="1" top="1" tabpos="7">
+		<Cursor position="1041" topLine="17" />
 	</File>
-	<File name="editor\EditorManager.cpp" open="1" top="0" tabpos="11">
+	<File name="editor\EditorManager.cpp" open="0" top="0" tabpos="11">
 		<Cursor position="1308" topLine="26" />
 	</File>
 	<File name="editor\EditorManager.h" open="0" top="0" tabpos="0">
@@ -67,14 +67,14 @@
 	<File name="editor\editor_defs.h" open="0" top="0" tabpos="0">
 		<Cursor position="1584" topLine="59" />
 	</File>
-	<File name="game\ObjectFactory.cpp" open="1" top="0" tabpos="7">
+	<File name="game\ObjectFactory.cpp" open="0" top="0" tabpos="7">
 		<Cursor position="2691" topLine="90" />
 	</File>
-	<File name="game\ObjectFactory.h" open="1" top="0" tabpos="6">
+	<File name="game\ObjectFactory.h" open="0" top="0" tabpos="6">
 		<Cursor position="3282" topLine="70" />
 	</File>
 	<File name="game\Player.cpp" open="0" top="0" tabpos="6">
-		<Cursor position="1370" topLine="26" />
+		<Cursor position="539" topLine="2" />
 	</File>
 	<File name="game\Player.h" open="0" top="0" tabpos="5">
 		<Cursor position="938" topLine="19" />
@@ -118,7 +118,7 @@
 	<File name="mge\GameObject.h" open="0" top="0" tabpos="0">
 		<Cursor position="245" topLine="0" />
 	</File>
-	<File name="mge\Image.h" open="1" top="0" tabpos="10">
+	<File name="mge\Image.h" open="0" top="0" tabpos="10">
 		<Cursor position="1227" topLine="33" />
 	</File>
 	<File name="mge\ModularEngine.cpp" open="0" top="0" tabpos="7">

@@ -53,7 +53,12 @@ private:
     void initMainHud();
     void initLoadHud();
     void initSaveHud();
+    void initRenameAreaHud();
+    
+    void initAreaPanel();
+    void initAreaListPanel(uint uiAreaFirst);
 
+    void initClassListPanel();
 
 /*
     void prepState();
@@ -72,6 +77,18 @@ private:
     //EditorState m_eState, m_eNewState;
     std::stack<EditorState> m_skState;
     std::queue<uint> m_qEvents;
+    std::vector<uint> m_vAreas;
+    
+    //Area list
+    uint m_uiHudAreaButtonIdStart;
+    uint m_uiAreaFirst;
+    uint m_uiCurAreaId;
+    uint m_uiSwitchedAreaId;
+    
+    //Right-panel list (classes, textures, etc)
+    uint m_uiHudObjButtonIdStart //start of obj ids;
+    uint m_uiObjFirst;  //first item in the list
+    
 
     static const float BUTTON_TEXT_SIZE = 0.8f;
 };

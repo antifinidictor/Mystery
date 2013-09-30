@@ -97,6 +97,11 @@ PartitionedWorldEngine::update(uint time) {
 
         //Clear the list of moved objects
         lsHasMoved.clear();
+    } else {
+        for(map<uint, GameObject*>::iterator it = m_pCurArea->m_mCurArea.begin();
+                it != m_pCurArea->m_mCurArea.end(); ++it) {
+            re->manageObjOnScreen(it->second);
+        }
     }
 
     //Scheduled events
@@ -106,18 +111,22 @@ PartitionedWorldEngine::update(uint time) {
     for(itObjIdAreaId = m_lsObjsToDelete.begin(); itObjIdAreaId != m_lsObjsToDelete.end(); ++itObjIdAreaId) {
         deleteFromNow(itObjIdAreaId->first, itObjIdAreaId->second);
     }
+    m_lsObjsToDelete.clear();
 
     for(itObjIdAreaId = m_lsObjsToRemove.begin(); itObjIdAreaId != m_lsObjsToRemove.end(); ++itObjIdAreaId) {
         removeFromNow(itObjIdAreaId->first, itObjIdAreaId->second);
     }
+    m_lsObjsToRemove.clear();
 
     for(itAreaId = m_lsAreasToClean.begin(); itAreaId != m_lsAreasToClean.end(); ++itAreaId) {
         cleanAreaNow(*itAreaId);
     }
+    m_lsAreasToClean.clear();
 
     for(itObjAreaId = m_lsObjsToAdd.begin(); itObjAreaId != m_lsObjsToAdd.end(); ++itObjAreaId) {
         addToNow(itObjAreaId->first, itObjAreaId->second);
     }
+    m_lsObjsToAdd.clear();
 
     //If necessary, set the current area (we wanted to finish this update first)
     if(m_uiCurArea != m_uiNextArea) {
@@ -153,7 +162,7 @@ PartitionedWorldEngine::findIn(uint uiObjId, uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     map<uint, GameObject*>::iterator itObj;
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to find object in area that doesn't exist\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to find object in area %d that doesn't exist\n", __FILE__, __LINE__, uiAreaId);
         return NULL;
     }
 
@@ -161,7 +170,7 @@ PartitionedWorldEngine::findIn(uint uiObjId, uint uiAreaId) {
     if(itObj != itArea->second.m_mCurArea.end()) {
         return itObj->second;
     } else {
-        printf("ERROR %s %d: Tried to find nonexistent object\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to find nonexistent object %d\n", __FILE__, __LINE__, uiObjId);
         return NULL;
     }
 }
@@ -201,7 +210,7 @@ PartitionedWorldEngine::setCurrentArea() {
 		}
 
     } else {
-        printf("ERROR %s %d: Tried to set current area to a map that doesn't exist\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to set current area to a map %d that doesn't exist\n", __FILE__, __LINE__, m_uiNextArea);
     }
 }
 
@@ -231,7 +240,7 @@ const std::string
 PartitionedWorldEngine::getAreaName(uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to get the name of a nonexistent area\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to get the name of a nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return "[nonexistent area]";
     }
     return itArea->second.m_sName;
@@ -241,7 +250,7 @@ void
 PartitionedWorldEngine::setAreaName(uint uiAreaId, const std::string &name) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to name nonexistent area\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to name nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;
     }
     itArea->second.m_sName = name;
@@ -252,7 +261,7 @@ PartitionedWorldEngine::writeArea(uint uiAreaId, boost::property_tree::ptree &pt
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     map<uint, GameObject*>::iterator itObj;
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to write nonexistent area\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to write nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;
     }
 
@@ -268,6 +277,11 @@ PartitionedWorldEngine::writeArea(uint uiAreaId, boost::property_tree::ptree &pt
 
 void
 PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt, const std::string &keyBase) {
+    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
+    if(itArea == m_mWorld.end()) {
+        generateArea(uiAreaId);
+    }
+
     using boost::property_tree::ptree;
     string className, key;
     BOOST_FOREACH(ptree::value_type &c, pt.get_child(keyBase)) {
@@ -309,12 +323,20 @@ PartitionedWorldEngine::read(boost::property_tree::ptree &pt, const std::string 
     }
 }
 
+void
+PartitionedWorldEngine::getAreas(std::vector<uint> &vAreas) {
+    map<uint, M_Area>::iterator itArea;
+    for(itArea = m_mWorld.begin(); itArea != m_mWorld.end(); ++itArea) {
+        vAreas.push_back(itArea->first);
+    }
+}
+
 //Event Handler
 void
 PartitionedWorldEngine::addListener(Listener *pListener, uint id, uint uiAreaID, char* triggerData) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaID);
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to add listener to nonexistent area\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to add listener to nonexistent area %d\n", __FILE__, __LINE__, uiAreaID);
         return;
     }
 
@@ -334,11 +356,11 @@ PartitionedWorldEngine::addListener(Listener *pListener, uint id, uint uiAreaID,
 }
 
 bool
-PartitionedWorldEngine::removeListener(uint uiListenerID, uint eventID, uint uiAreaID) {
-    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaID);
+PartitionedWorldEngine::removeListener(uint uiListenerID, uint eventID, uint uiAreaId) {
+    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
 	map<uint, Listener*>::iterator iter;
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to remove listener from nonexistent area\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to remove listener from nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return false;
     }
 
@@ -412,7 +434,7 @@ PartitionedWorldEngine::cleanAreaNow(uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     map<uint, GameObject*>::iterator itObj;
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to clean nonexistent area\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to clean nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;
     }
 
@@ -435,7 +457,7 @@ PartitionedWorldEngine::removeFromNow(uint uiObjId, uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     map<uint, GameObject*>::iterator itObj;
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to remove object from nonexistent area\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to remove object from nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;
     }
 
@@ -443,7 +465,7 @@ PartitionedWorldEngine::removeFromNow(uint uiObjId, uint uiAreaId) {
     if(itObj != itArea->second.m_mCurArea.end()) {
         itArea->second.m_mCurArea.erase(itObj);
     } else {
-        printf("ERROR %s %d: Tried to erase nonexistent object\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to erase nonexistent object %d\n", __FILE__, __LINE__, uiObjId);
         return;
     }
 }
@@ -453,7 +475,7 @@ PartitionedWorldEngine::deleteFromNow(uint uiObjId, uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     map<uint, GameObject*>::iterator itObj;
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to remove object from nonexistent area\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to remove object from nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;
     }
 
@@ -462,7 +484,7 @@ PartitionedWorldEngine::deleteFromNow(uint uiObjId, uint uiAreaId) {
         delete (itObj->second);
         itArea->second.m_mCurArea.erase(itObj);
     } else {
-        printf("ERROR %s %d: Tried to erase nonexistent object\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to erase nonexistent object %d\n", __FILE__, __LINE__, uiObjId);
         return;
     }
 }
@@ -472,13 +494,8 @@ PartitionedWorldEngine::addToNow(GameObject *obj, uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea != m_mWorld.end()) {
         itArea->second.m_mCurArea[obj->getID()] = obj;
-
-        //We may want to render new objects even if the game is paused
-        if(m_eState != PWE_RUNNING) {
-            re->manageObjOnScreen(obj);
-        }
     } else {
-        printf("ERROR %s %d: Tried to add object to nonexistent area\n", __FILE__, __LINE__);
+        printf("ERROR %s %d: Tried to add object to nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;
     }
 }

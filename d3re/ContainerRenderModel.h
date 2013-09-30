@@ -15,6 +15,13 @@ class ContainerRenderModel : public RenderModel {
 public:
     ContainerRenderModel(Rect rcArea) {
         m_rcTotalArea = rcArea;
+        m_ptOffset = Point();
+    }
+
+    //This is a hack
+    ContainerRenderModel(Rect rcArea, Point ptOffset) {
+        m_rcTotalArea = rcArea;
+        m_ptOffset = ptOffset;
     }
 
     virtual ~ContainerRenderModel() {
@@ -39,7 +46,7 @@ public:
     }
 
     virtual Point getPosition() {
-        return m_rcTotalArea;
+        return Point(m_rcTotalArea) + m_ptOffset;
     }
 
     void add(uint id, RenderModel *mdl) {
@@ -73,6 +80,7 @@ public:
 private:
     std::map<uint, RenderModel*> m_mModels;
     Rect m_rcTotalArea;
+    Point m_ptOffset;
 };
 
 #endif //CONTAINER_RENDER_MODEL_H

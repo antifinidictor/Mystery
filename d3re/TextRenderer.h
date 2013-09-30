@@ -22,7 +22,7 @@ public:
     void render(const char *str, float x, float y, float size = 1.0);
     char *splitText(const char *str, float maxw, float size = 1.0);
     void splitText(std::string &str, float maxw, float size = 1.0);
-    void setFont(Image *pFont) { m_pFont = pFont; }
+    void setFont(uint uiFontId) { m_uiFontId = uiFontId; }
     Rect getArea(const char *str, float x, float y);
     int  getNextLine(const char *str, int start);
     float getLineHeight(float size = 1.0);
@@ -36,11 +36,11 @@ private:
     float twMax(int iw, int ih);
     float thMin(int ih);
     float thMax(int ih);
-    float renderChar(char c, float x, float y, float size);
+    float renderChar(Image *pFont, char c, float x, float y, float size);
     int setColor(const char *hexColor);
 
     //Members
-    Image *m_pFont;
+    uint m_uiFontId;
     char m_aWidths[78];
 
     static TextRenderer *m_pInstance;

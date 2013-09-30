@@ -43,10 +43,10 @@ enum EditorState {
     ED_STATE_INIT,
     ED_STATE_MAIN,
     ED_STATE_LOAD_FILE,
-    ED_STATE_LOADING_FILE,
     ED_STATE_SAVE_FILE,
     ED_STATE_SELECT,
     ED_STATE_LIST_OBJECTS,
+    ED_STATE_NAME_AREA,
     ED_NUM_STATES
 };
 
@@ -100,10 +100,21 @@ enum EditorHudNewObjIds {
     ED_HUD_NEW_OBJ_CANCEL,
     ED_HUD_NEW_OBJ_UP,
     ED_HUD_NEW_OBJ_DOWN,
-    ED_HUD_NEW_OBJ_LIST_START
+    ED_HUD_NEW_OBJ_LIST_PANE,
+    ED_HUD_NUM_NEW_OBJ_IDS
 };
 
 //Texture loading panel
+
+//Area panel
+enum EditorHudAreaIds {
+    ED_HUD_AREA_NEW,
+    ED_HUD_AREA_RENAME,
+    ED_HUD_AREA_UP,
+    ED_HUD_AREA_DOWN,
+    ED_HUD_AREA_LIST_PANE,
+    ED_HUD_NUM_AREA_IDS
+};
 
 //Field panel
 enum EditorHudFieldIds {
@@ -125,6 +136,8 @@ enum EditorHudOps {
     ED_HUD_OP_NEW_TEXTURE,  //Create new texture
     ED_HUD_OP_UP,           //Go up one HUD display section
     ED_HUD_OP_DOWN,         //Go down one HUD display section
+    ED_HUD_OP_UP_AREA,      //Go up one HUD display section
+    ED_HUD_OP_DOWN_AREA,    //Go down one HUD display section
     ED_HUD_NUM_OPS
 };
 

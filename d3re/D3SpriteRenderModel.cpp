@@ -5,9 +5,9 @@
 #include "d3re.h"
 #include "mge/GameObject.h"
 
-D3SpriteRenderModel::D3SpriteRenderModel(GameObject *parent, Image *img, Rect rcArea) {
+D3SpriteRenderModel::D3SpriteRenderModel(GameObject *parent, uint uiImageId, Rect rcArea) {
 
-    m_pImage = img;
+    m_uiImageId = uiImageId;
     m_rcDrawArea = rcArea;
 
     m_iFrameW = 0;
@@ -29,17 +29,20 @@ D3SpriteRenderModel::render(RenderEngine *re) {
     Color worldColor = D3RE::get()->getWorldColor();
     Color ourColor = mix(2, &worldColor, &m_crColor);
 
+    Image *pImage = D3RE::get()->getImage(m_uiImageId);
+    if(pImage == NULL) return;
+
     //Render engine is responsible for resetting the camera
-    float fTexLeft   = m_iFrameW * 1.0F / m_pImage->m_iNumFramesW,
-          fTexTop    = m_iFrameH * 1.0F / m_pImage->m_iNumFramesH,
-          fTexRight  = m_iFrameW * 1.0F / m_pImage->m_iNumFramesW + m_iRepsW * 1.0F / m_pImage->m_iNumFramesW,
-          fTexBottom = m_iFrameH * 1.0F / m_pImage->m_iNumFramesH + m_iRepsH * 1.0F / m_pImage->m_iNumFramesH;
+    float fTexLeft   = m_iFrameW * 1.0F / pImage->m_iNumFramesW,
+          fTexTop    = m_iFrameH * 1.0F / pImage->m_iNumFramesH,
+          fTexRight  = m_iFrameW * 1.0F / pImage->m_iNumFramesW + m_iRepsW * 1.0F / pImage->m_iNumFramesW,
+          fTexBottom = m_iFrameH * 1.0F / pImage->m_iNumFramesH + m_iRepsH * 1.0F / pImage->m_iNumFramesH;
 
     Point ptPos = getPosition();
     glTranslatef((int)(ptPos.x + m_rcDrawArea.x), (int)(ptPos.y + m_rcDrawArea.y), (int)(ptPos.z));
 
     //Bind the texture to which subsequent calls refer to
-    glBindTexture( GL_TEXTURE_2D, m_pImage->m_uiTexture );
+    glBindTexture( GL_TEXTURE_2D, pImage->m_uiTexture );
     //glDepthMask(GL_FALSE);
     glBegin(GL_QUADS);
         glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);

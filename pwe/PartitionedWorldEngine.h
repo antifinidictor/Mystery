@@ -62,6 +62,8 @@ public:
     void write(boost::property_tree::ptree &pt, const std::string &keyBase);
     void read(boost::property_tree::ptree &pt, const std::string &keyBase);
 
+    void getAreas(std::vector<uint> &vAreas); //Populates the list with a list of areas
+
     //Listener
     virtual uint getID() { return ID_WORLD_ENGINE; }
 	virtual void callBack(uint cID, void *data, uint id);

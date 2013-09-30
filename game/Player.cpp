@@ -11,7 +11,7 @@ Player::Player(uint uiId, const Point &ptPos) {
     Rect rcDrawArea = Rect(-w / 2, -h / 2, w, h);
     Box bxVolume = Box(ptPos.x - w / 4, ptPos.y, ptPos.z - h / 4, w / 2, h, h / 2);
     m_pPhysicsModel = new TimePhysicsModel(bxVolume);
-    m_pRenderModel  = new D3SpriteRenderModel(this, img, rcDrawArea);
+    m_pRenderModel  = new D3SpriteRenderModel(this, IMG_PLAYER, rcDrawArea);
 
     dx = dy = 0;
     m_fDeltaPitch = m_fDeltaZoom = 0.f;

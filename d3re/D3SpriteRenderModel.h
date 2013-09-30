@@ -10,7 +10,7 @@
 
 class D3SpriteRenderModel : public RenderModel {
 public:
-    D3SpriteRenderModel(GameObject *parent, Image *img, Rect rcArea);
+    D3SpriteRenderModel(GameObject *parent, uint uiImageId, Rect rcArea);
     virtual ~D3SpriteRenderModel();
 
     virtual void render(RenderEngine *re);
@@ -18,7 +18,7 @@ public:
     virtual Point getPosition();
     virtual Rect getDrawArea();
 
-    Image *getTexture() { return m_pImage; }
+    //Image *getTexture() { return m_pImage; }
 
     void setFrameW(int fw) { m_iFrameW = fw; }
     void setFrameH(int fh) { m_iFrameH = fh; }
@@ -29,7 +29,7 @@ public:
     Color &getColor() { return m_crColor; }
 
 private:
-    Image *m_pImage;
+    uint m_uiImageId;
     Rect m_rcDrawArea;
 
     int m_iFrameW, m_iFrameH;

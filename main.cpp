@@ -18,10 +18,10 @@ int main(int argc, char *argv[])
 	//Run the game
 	ModularEngine::get()->run();
 
-	ModularEngine::clean();
-	cleanWorldEngine();
     cleanPhysicsEngine();
     cleanRenderEngine();
     cleanAudioEngine();
+	cleanWorldEngine();
+	ModularEngine::clean();
 	return 0;
 }

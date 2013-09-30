@@ -142,7 +142,9 @@ D3RenderEngine::moveScreenBy(Point pt) {
 Image *
 D3RenderEngine::createImage(uint id, const char *name, int numFramesH, int numFramesW) {
     if(id < m_vImages.size() && m_vImages[id] != NULL) {
-        delete m_vImages[id];
+        //TODO: Find out why this doesn't work!
+        //delete m_vImages[id];
+        return m_vImages[id];
     }
     while(id >= m_vImages.size()) {
         m_vImages.push_back(NULL);
@@ -274,12 +276,13 @@ D3RenderEngine::setBackgroundColor(const Color &cr) {
 void
 D3RenderEngine::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     std::vector<Image*>::iterator iter;
-    std::string key;
     for(iter = m_vImages.begin(); iter != m_vImages.end(); ++iter) {
-        key = keyBase + "." + (*iter)->m_sImageFileName;
-        pt.put(key, (*iter)->m_uiID);
-        pt.put(key + ".framesW", (*iter)->m_iNumFramesW);
-        pt.put(key + ".framesH", (*iter)->m_iNumFramesH);
+        if(*iter == NULL) continue;
+        std::ostringstream key;
+        key << keyBase << "." << (*iter)->m_uiID;
+        pt.put(key.str(), (*iter)->m_sImageFileName);
+        pt.put(key.str() + ".framesW", (*iter)->m_iNumFramesW);
+        pt.put(key.str() + ".framesH", (*iter)->m_iNumFramesH);
     }
 }
 
@@ -288,12 +291,13 @@ D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase
     using boost::property_tree::ptree;
     try {
     BOOST_FOREACH(ptree::value_type &v, pt.get_child(keyBase.c_str())) {
-        //Each element should be stored by filename
-        string filename = v.first.data();
-        uint framesW = pt.get(filename + ".framesW", 1);
-        uint framesH = pt.get(filename + ".framesH", 1);
-        uint id = pt.get(filename, 0);
-        createImage(id, filename.c_str(), framesW, framesH);
+        //Each element should be stored by id
+        string key = keyBase + "." + v.first.data();
+        string filename = v.second.data();
+        uint uiId = atoi(v.first.data());
+        uint framesW = pt.get(key + ".framesW", 1);
+        uint framesH = pt.get(key + ".framesH", 1);
+        createImage(uiId, filename.c_str(), framesW, framesH);
     }
     } catch(exception e) {
         printf("Could not read resources\n");

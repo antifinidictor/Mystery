@@ -10,9 +10,9 @@
 
 class D3HudRenderModel : public RenderModel {
 public:
-    D3HudRenderModel(Image *img, const Rect &rcArea);
+    D3HudRenderModel(uint uiImageId, const Rect &rcArea);
     D3HudRenderModel(const std::string &data, const Rect &rcArea, float textSize = 1.f);
-    D3HudRenderModel(Image *img, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize = 1.f);
+    D3HudRenderModel(uint uiImageId, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize = 1.f);
     virtual ~D3HudRenderModel();
 
     virtual void render(RenderEngine *re);
@@ -32,10 +32,10 @@ public:
     std::string getText() { return m_sData; }
 
 private:
-    void renderImage();
+    void renderImage(Image *pImage);
     void renderText();
 
-    Image *m_pImage;
+    uint m_uiImageId;
 
     std::string m_sData;
     float m_fTextSize;

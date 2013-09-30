@@ -13,7 +13,7 @@
 class EditorHudButton : public D3HudRenderModel, public Listener {
 public:
     EditorHudButton(RenderModel *parent, uint uiEventId, const std::string &label, const Point &ptPos, float textSize = 1.f)
-        : D3HudRenderModel(D3RE::get()->getImage(IMG_BUTTON),
+        : D3HudRenderModel(IMG_BUTTON,
                            Rect(ptPos.x, ptPos.y, BUTTON_WIDTH, BUTTON_HEIGHT),
                            label,
                            Point(5,5,0),

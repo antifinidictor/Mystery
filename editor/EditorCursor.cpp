@@ -210,7 +210,6 @@ EditorCursor::moveUpdate() {
     std::ostringstream posText;
     posText << "#0000FF#(" << m_ptTilePos.x << "," << m_ptTilePos.y << ","
             << m_ptTilePos.z << ")";
-
     D3RE::get()->getHudContainer()->get<D3HudRenderModel*>(ED_HUD_CURSOR_POS)->updateText(posText.str());
 }
 

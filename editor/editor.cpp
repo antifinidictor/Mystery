@@ -118,11 +118,13 @@ void initWorld() {
     D3RE::get()->createImage(IMG_BUTTON,   "res/gui/button.png", 3, 1);
 
     //These could be loaded from a file
+    /*
     D3RE::get()->createImage(IMG_PLAYER,   "res/Magus.png", 8, 4);
     D3RE::get()->createImage(IMG_BLOCK,    "res/world/block.png");
     D3RE::get()->createImage(IMG_WALL_TOP, "res/world/wallTop.png");
     D3RE::get()->createImage(IMG_WALL_BOTTOM, "res/world/wallBottom.png");
     D3RE::get()->createImage(IMG_WALL_SIDE, "res/world/wallSide.png");
+    */
 
     //Load audio resources
     BAE::get()->loadSound(AUD_STEP, "res/audio/step.wav");

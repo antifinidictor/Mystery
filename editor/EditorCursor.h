@@ -48,6 +48,7 @@ public:
     Box getVolume() { return m_pRenderModel->getVolume(); }
     std::string getText() { return m_sInput; }
     void clearText() { m_sInput.clear(); }
+    void setText(const std::string &s) { m_sInput = s; }
 
 private:
     //state-specific update functions

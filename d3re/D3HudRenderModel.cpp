@@ -6,8 +6,8 @@
 #include "mge/GameObject.h"
 #include "TextRenderer.h"
 
-D3HudRenderModel::D3HudRenderModel(Image *img, const Rect &rcArea) {
-    m_pImage = img;
+D3HudRenderModel::D3HudRenderModel(uint uiImageId, const Rect &rcArea) {
+    m_uiImageId = uiImageId;
     m_rcDrawArea = rcArea;
 
     m_fTextSize = -1.f;
@@ -23,7 +23,7 @@ D3HudRenderModel::D3HudRenderModel(Image *img, const Rect &rcArea) {
 }
 
 D3HudRenderModel::D3HudRenderModel(const std::string &data, const Rect &rcArea, float textSize) {
-    m_pImage = NULL;
+    m_uiImageId = 0;
     m_rcDrawArea = rcArea;
 
     m_fTextSize = textSize;
@@ -38,8 +38,8 @@ D3HudRenderModel::D3HudRenderModel(const std::string &data, const Rect &rcArea, 
     m_crImageColor = Color(0xFF, 0xFF, 0xFF);
 }
 
-D3HudRenderModel::D3HudRenderModel(Image *img, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize) {
-    m_pImage = img;
+D3HudRenderModel::D3HudRenderModel(uint uiImageId, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize) {
+    m_uiImageId = uiImageId;
     m_rcDrawArea = rcArea;
 
     m_fTextSize = textSize;
@@ -59,8 +59,9 @@ D3HudRenderModel::~D3HudRenderModel() {
 
 void
 D3HudRenderModel::render(RenderEngine *re) {
-    if(m_pImage != NULL) {
-        renderImage();
+    Image *pImage = D3RE::get()->getImage(m_uiImageId);
+    if(pImage != NULL) {
+        renderImage(pImage);
     }
     if(m_fTextSize > 0.f) {
         renderText();
@@ -89,19 +90,19 @@ D3HudRenderModel::updateText(const std::string &data, float textSize) {
 
 
 void
-D3HudRenderModel::renderImage() {
+D3HudRenderModel::renderImage(Image *pImage) {
     glPushMatrix();
     //D3RE::get()->prepHud();
     Color ourColor = m_crImageColor;
 
     //Render engine is responsible for resetting the camera
-    float fTexLeft   = m_iFrameW * 1.0F / m_pImage->m_iNumFramesW,
-          fTexTop    = m_iFrameH * 1.0F / m_pImage->m_iNumFramesH,
-          fTexRight  = m_iFrameW * 1.0F / m_pImage->m_iNumFramesW + m_iRepsW * 1.0F / m_pImage->m_iNumFramesW,
-          fTexBottom = m_iFrameH * 1.0F / m_pImage->m_iNumFramesH + m_iRepsH * 1.0F / m_pImage->m_iNumFramesH;
+    float fTexLeft   = m_iFrameW * 1.0F / pImage->m_iNumFramesW,
+          fTexTop    = m_iFrameH * 1.0F / pImage->m_iNumFramesH,
+          fTexRight  = m_iFrameW * 1.0F / pImage->m_iNumFramesW + m_iRepsW * 1.0F / pImage->m_iNumFramesW,
+          fTexBottom = m_iFrameH * 1.0F / pImage->m_iNumFramesH + m_iRepsH * 1.0F / pImage->m_iNumFramesH;
 
     //Bind the texture to which subsequent calls refer to
-    glBindTexture( GL_TEXTURE_2D, m_pImage->m_uiTexture );
+    glBindTexture( GL_TEXTURE_2D, pImage->m_uiTexture );
     //glDepthMask(GL_FALSE);
     glBegin(GL_QUADS);
         glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);
