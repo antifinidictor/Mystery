@@ -22,7 +22,9 @@ enum WorldState {
 };
 
 enum WorldEvents {
-    PWE_ON_AREA_SWITCH = NUM_EVENT_IDS,
+    PWE_ON_AREA_SWITCH = WORLD_EVENTS_BEGIN,
+    PWE_ON_ADDED_TO_AREA,
+    PWE_ON_REMOVED_FROM_AREA,
     PWE_NUM_EVENT_IDS
 };
 

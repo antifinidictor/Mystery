@@ -9,8 +9,13 @@
 #include "game/ObjectFactory.h"
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/info_parser.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/tokenizer.hpp>
 
 using namespace std;
+using namespace boost;
+
+#define UNUSED_TEXTURE_ID 0xFFFFFFFF
 
 EditorManager *EditorManager::m_pInstance;
 
@@ -26,6 +31,10 @@ EditorManager::EditorManager(uint uiId) {
     m_uiObjFirst = 0;
     m_uiHudObjButtonIdStart = 0;
     m_uiHudAreaButtonIdStart = 0;
+    m_uiObjMax = 0;
+    initListPanelFunc = NULL;
+    m_sFile = "res/game.info";
+    m_uiCurImageId = 3;
 }
 
 EditorManager::~EditorManager() {
@@ -44,30 +53,178 @@ EditorManager::update(uint time) {
             //Do some additional stuff here before popping the state
             switch(m_skState.top()) {
             case ED_STATE_LOAD_FILE:
-                ObjectFactory::get()->read(m_pEditorCursor->getText());
+                m_sFile = m_pEditorCursor->getText();
+                ObjectFactory::get()->read(m_sFile);
                 initAreaListPanel(m_uiAreaFirst);
                 break;
             case ED_STATE_SAVE_FILE:
-                ObjectFactory::get()->write(m_pEditorCursor->getText());
+                D3RE::get()->freeImage(0);
+                m_sFile = m_pEditorCursor->getText();
+                ObjectFactory::get()->write(m_sFile);
+                D3RE::get()->createImage(IMG_NONE, "res/gui/noImage.png");
                 break;
             case ED_STATE_NAME_AREA:
                 PWE::get()->setAreaName(PWE::get()->getCurrentArea(), m_pEditorCursor->getText());
                 initAreaListPanel(m_uiAreaFirst);
                 m_uiCurAreaId = m_vAreas.size();
                 break;
+            case ED_STATE_CREATE_OBJECT: {
+                GameObject *obj = ObjectFactory::get()->createFromAttributes();
+                PWE::get()->add(obj);
+                break;
+              }
+            case ED_STATE_ENTER_UINT: {
+                string s = m_pEditorCursor->getText();
+                try {
+                    m_pCurData->setAttribute(m_sCurKey, boost::lexical_cast<uint>(s));
+                } catch(boost::bad_lexical_cast &){
+                    printf("ERROR %s %d: Failed to convert %s to uint\n", __FILE__, __LINE__, s.c_str());
+                }
+                break;
+              }
+            case ED_STATE_ENTER_INT: {
+                string s = m_pEditorCursor->getText();
+                try {
+                    m_pCurData->setAttribute(m_sCurKey, boost::lexical_cast<int>(s));
+                } catch(boost::bad_lexical_cast &){
+                    printf("ERROR %s %d: Failed to convert %s to int\n", __FILE__, __LINE__, s.c_str());
+                }
+                break;
+              }
+            case ED_STATE_ENTER_FLOAT: {
+                string s = m_pEditorCursor->getText();
+                try {
+                    m_pCurData->setAttribute(m_sCurKey, boost::lexical_cast<float>(s));
+                } catch(boost::bad_lexical_cast &){
+                    printf("ERROR %s %d: Failed to convert %s to float\n", __FILE__, __LINE__, s.c_str());
+                }
+                break;
+              }
+            case ED_STATE_ENTER_STRING: {
+                string s = m_pEditorCursor->getText();
+                m_pCurData->setAttribute(m_sCurKey, s);
+                break;
+              }
+            case ED_STATE_ENTER_COLOR: {
+                string s = m_pEditorCursor->getText();
+                tokenizer<> tok(s);
+                int i = 0;
+                Color cr = Color(0xFF,0xFF,0xFF);
+                for(tokenizer<>::iterator it = tok.begin(); it != tok.end(); ++it){
+                    try {
+                        if(i == 0) {
+                            cr.r = lexical_cast<uint>(*it);
+                        } else if(i == 1) {
+                            cr.g = lexical_cast<uint>(*it);
+                        } else {
+                            cr.b = lexical_cast<uint>(*it);
+                        }
+                        i++;
+                    } catch(boost::bad_lexical_cast &){
+                        printf("ERROR %s %d: Failed to convert item %d of %s to color\n", __FILE__, __LINE__, i, s.c_str());
+                    }
+                }
+                m_pCurData->setAttribute(m_sCurKey, cr);
+                break;
+              }
+            case ED_STATE_NEW_TEXTURE: {
+                string s = m_pEditorCursor->getText();
+                D3RE::get()->createImage(m_uiCurImageId++, s.c_str());
+                break;
+              }
+            case ED_STATE_SELECT_VOLUME: {
+                Box bx = m_pEditorCursor->getVolume();
+                m_pCurData->setAttribute(m_sCurKey, bx);
+                break;
+              }
+            case ED_STATE_SELECT_POINT: {
+                Point pt = m_pEditorCursor->getPosition();
+                m_pCurData->setAttribute(m_sCurKey, pt);
+                break;
+              }
             default:
                 break;
             }
           }
             //Continue without breaking
+        case ED_HUD_OP_CHOOSE_TEXTURE:
         case ED_HUD_OP_CANCEL:
             popState();
             break;
         case ED_HUD_OP_LOAD_WORLD:
+            m_pEditorCursor->setText(m_sFile);
             pushState(ED_STATE_LOAD_FILE);
             break;
         case ED_HUD_OP_SAVE_WORLD:
+            m_pEditorCursor->setText(m_sFile);
             pushState(ED_STATE_SAVE_FILE);
+            break;
+        case ED_HUD_OP_NEW_OBJ:
+            pushState(ED_STATE_LIST_OBJECTS);
+            break;
+        case ED_HUD_OP_CHOOSE_OBJ: {
+            m_uiCurObjId = PWE::get()->genID();
+            ostringstream obName;
+            obName << m_sCurClassName << m_uiCurObjId;
+            m_pCurData = &ObjectFactory::get()->initObject(m_sCurClassName, obName.str());
+            m_pCurData->setAttribute("id", m_uiCurObjId);
+            printf("%s id = %d\n",obName.str().c_str(), m_pCurData->getAttribute("id", 0));
+
+            pushState(ED_STATE_CREATE_OBJECT);
+            break;
+          }
+        case ED_HUD_OP_ATTR: {
+            switch(m_eCurAttrType) {
+            case ATYPE_RESOURCE_ID: {
+                pushState(ED_STATE_LIST_TEXTURES);
+                break;
+              }
+            case ATYPE_UINT:
+            case ATYPE_OBJECT_ID: {
+                m_pEditorCursor->setText("");
+                pushState(ED_STATE_ENTER_UINT);
+                break;
+              }
+            case ATYPE_INT: {
+                m_pEditorCursor->setText("");
+                pushState(ED_STATE_ENTER_INT);
+                break;
+              }
+            case ATYPE_FLOAT: {
+                m_pEditorCursor->setText("");
+                pushState(ED_STATE_ENTER_FLOAT);
+                break;
+              }
+            case ATYPE_POINT: {
+                pushState(ED_STATE_SELECT_POINT);
+                break;
+              }
+            case ATYPE_RECT: {
+                pushState(ED_STATE_LIST_TEXTURES);
+                break;
+              }
+            case ATYPE_BOX: {
+                pushState(ED_STATE_SELECT_VOLUME);
+                break;
+              }
+            case ATYPE_COLOR: {
+                m_pEditorCursor->setText("");
+                pushState(ED_STATE_ENTER_COLOR);
+                break;
+              }
+            case ATYPE_STRING: {
+                m_pEditorCursor->setText("");
+                pushState(ED_STATE_ENTER_STRING);
+                break;
+              }
+            default:
+                break;
+            }
+            break;
+          }
+        case ED_HUD_OP_NEW_TEXTURE:
+            m_pEditorCursor->setText("res/");
+            pushState(ED_STATE_NEW_TEXTURE);
             break;
         case ED_HUD_OP_NEW_AREA:
             PWE::get()->generateArea(m_uiCurAreaId);
@@ -86,6 +243,10 @@ EditorManager::update(uint time) {
         case ED_HUD_OP_DOWN_AREA:
         case ED_HUD_OP_GO_TO_AREA:
             initAreaListPanel(m_uiAreaFirst);
+            break;
+        case ED_HUD_OP_UP:
+        case ED_HUD_OP_DOWN:
+            (this->*initListPanelFunc)(m_uiObjFirst);
             break;
         default:
             break;
@@ -111,48 +272,6 @@ EditorManager::update(uint time) {
         m_pEditorCursor->update(time);
     }
 
-#if 0
-    switch(m_eNewState) {
-    case ED_STATE_NORMAL:
-        prepState();
-        initMainHud();
-        break;
-    case ED_STATE_SELECT:
-        prepState();
-        initCreateObjectHud();
-        break;
-    case ED_STATE_LOAD_FILE:
-        prepState();
-        initLoadFileHud();
-        break;
-    case ED_STATE_LOADING_FILE: {
-        m_eNewState = ED_STATE_NORMAL;
-        PWE *we = PWE::get();
-        we->cleanArea(ED_AREA_0);
-        ObjectFactory::get()->read(m_pEditorCursor->getText());
-        list<uint> lsAreas;
-        we->getAreas(lsAreas);
-        we->setCurrentArea(ED_AREA_0);
-        m_uiSwitchedAreaId = ED_AREA_0;
-        break;
-      }
-    case ED_STATE_SAVE_FILE:
-        prepState();
-        initSaveFileHud();
-        break;
-    case ED_STATE_LIST_OBJECTS:
-        prepState();
-        initListObjectHud();
-        break;
-    default:    //do nothing
-        break;
-    }
-
-    if(m_pEditorCursor != NULL) {
-        m_pEditorCursor->update(time);
-    }
-    m_eNewState = ED_NUM_STATES;
-#endif
     return false;
 }
 
@@ -171,6 +290,27 @@ EditorManager::callBack(uint cID, void *data, uint eventId) {
         m_pEditorCursor->moveToArea(uiAreaId);
         break;
       }
+    case ED_HUD_OP_CHOOSE_OBJ: {
+        uint uiClassId = m_uiObjFirst + cID - m_uiHudObjButtonIdStart;
+        m_sCurClassName = *m_vClasses[uiClassId];
+        break;
+      }
+    case ED_HUD_OP_ATTR: {
+        uint uiAttrId = m_uiObjFirst + cID - m_uiHudObjButtonIdStart;
+        list<ObjectFactory::AttributeInfo>::iterator iter = m_pCurData->m_lsAttributeInfo.begin();
+        for(int i = 0; i < uiAttrId; ++i) {
+            ++iter; //Skip uiAttrId attributes
+        }
+        m_sCurKey = iter->m_sAttributeKey;
+        m_eCurAttrType = iter->m_eType;
+        //Now handle specific attributes
+        break;
+      }
+    case ED_HUD_OP_CHOOSE_TEXTURE: {
+        uint uiTexId = m_uiObjFirst + cID - m_uiHudObjButtonIdStart;
+        m_pCurData->setAttribute(m_sCurKey, uiTexId);
+        break;
+      }
     case ED_HUD_OP_UP_AREA:
         if(m_uiAreaFirst > 0) {
             m_uiAreaFirst--;
@@ -181,72 +321,26 @@ EditorManager::callBack(uint cID, void *data, uint eventId) {
             m_uiAreaFirst++;
         }
         break;
+    case ED_HUD_OP_UP:
+        if(m_uiObjFirst > 0) {
+            m_uiObjFirst--;
+        }
+        break;
+    case ED_HUD_OP_DOWN:
+        if(m_uiObjFirst < m_uiObjMax) {
+            m_uiObjFirst++;
+        }
+        break;
     default:
         break;
     }
     m_qEvents.push(eventId);
-#if 0
-    switch(eventId) {
-    case ED_HUD_NEW:
-        m_eNewState = ED_STATE_SELECT;//ED_STATE_LIST_OBJECTS;
-        break;
-    case ED_HUD_LIST_OBJECTS:
-        m_eNewState = ED_STATE_SELECT;
-        break;
-    case ED_HUD_CREATE: {
-        m_eNewState = ED_STATE_NORMAL;
-        uint id = PWE::get()->genID();
-        ostringstream s;
-        s << Wall::getClassName() << id;
-        ObjectFactory::get()->initObject(Wall::getClassName(), s.str())
-            .setAttribute("id", id)
-            .setAttribute("tex.north", IMG_NONE)
-            .setAttribute("tex.south", IMG_WALL_SIDE)
-            .setAttribute("tex.east", IMG_WALL_SIDE)
-            .setAttribute("tex.west", IMG_WALL_SIDE)
-            .setAttribute("tex.up", IMG_WALL_TOP)
-            .setAttribute("tex.down", IMG_NONE)
-            //.setAttribute("cr", Color(0x0, 0x0, 0xFF))
-            .setAttribute("vol", m_pEditorCursor->getVolume())
-        ;
-        PWE::get()->add(ObjectFactory::get()->createFromAttributes());
-        //Wall *wall = new Wall(PWE::get()->genID(), IMG_WALL_TOP, IMG_WALL_BOTTOM, IMG_WALL_SIDE, m_pEditorCursor->getVolume());
-        //PWE::get()->add(wall);
-        break;
-    }
-    case ED_HUD_CANCEL:
-        m_eNewState = ED_STATE_NORMAL;
-        break;
-    case ED_LOAD:
-        m_eNewState = ED_STATE_LOAD_FILE;
-        break;
-    case ED_SAVE:
-        m_eNewState = ED_STATE_SAVE_FILE;
-        break;
-    case ED_SAVE_FILE: {
-        boost::property_tree::ptree pt;
-        PWE::get()->write(pt, "areas");
-        write_info(m_pEditorCursor->getText(), pt);
-        m_eNewState = ED_STATE_NORMAL;
-        break;
-    }
-    case ED_LOAD_FILE:
-        m_eNewState = ED_STATE_LOADING_FILE;
-        /*
-        ObjectFactory::get()->read(((string*)data)->c_str());
-        PWE::get()->setCurrentArea(ED_AREA_0);
-        */
-        break;
-
-    default:
-        break;
-    }
-#endif
 }
 
 
 void
 EditorManager::pushState(EditorState eState) {
+    printf("State %d pushed\n", eState);
     cleanState(m_skState.top());
     m_skState.push(eState);
     initState(m_skState.top());
@@ -254,6 +348,7 @@ EditorManager::pushState(EditorState eState) {
 
 void
 EditorManager::popState() {
+    printf("State %d popped\n", m_skState.top());
     cleanState(m_skState.top());
     m_skState.pop();
     initState(m_skState.top());
@@ -262,6 +357,12 @@ EditorManager::popState() {
 void
 EditorManager::cleanState(EditorState eState) {
     switch(eState) {
+    case ED_STATE_ENTER_UINT:
+    case ED_STATE_ENTER_INT:
+    case ED_STATE_ENTER_FLOAT:
+    case ED_STATE_ENTER_STRING:
+    case ED_STATE_ENTER_COLOR:
+    case ED_STATE_NEW_TEXTURE:
     case ED_STATE_NAME_AREA:
     case ED_STATE_SAVE_FILE:
     case ED_STATE_LOAD_FILE:
@@ -269,6 +370,11 @@ EditorManager::cleanState(EditorState eState) {
             ->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE)
             ->clear();
         //Also clear the right pane
+    case ED_STATE_SELECT_VOLUME:
+    case ED_STATE_SELECT_POINT:
+    case ED_STATE_LIST_TEXTURES:
+    case ED_STATE_CREATE_OBJECT:
+    case ED_STATE_LIST_OBJECTS:
     case ED_STATE_MAIN:
         D3RE::get()->getHudContainer()
             ->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)
@@ -287,13 +393,49 @@ EditorManager::initState(EditorState eState) {
         initMainHud();
         break;
     case ED_STATE_SAVE_FILE:
-        initSaveHud();
+        initEnterTextHud("Enter filename:", "Save it!");
         break;
     case ED_STATE_LOAD_FILE:
-        initLoadHud();
+        initEnterTextHud("Enter filename:", "Load it!");
         break;
     case ED_STATE_NAME_AREA:
-        initRenameAreaHud();
+        initEnterTextHud("Enter area name:", "Set name!");
+        break;
+    case ED_STATE_LIST_OBJECTS:
+        initNewObjHud();
+        initListPanelFunc = &EditorManager::initClassListPanel;
+        break;
+    case ED_STATE_CREATE_OBJECT:
+        initCreateObjHud();
+        initListPanelFunc = &EditorManager::initAttributeListPanel;
+        break;
+    case ED_STATE_LIST_TEXTURES:
+        initTextureHud();
+        initListPanelFunc = &EditorManager::initTextureListPanel;
+        break;
+    case ED_STATE_ENTER_UINT:
+        initEnterTextHud("Enter unsigned integer:", "Done");
+        break;
+    case ED_STATE_ENTER_INT:
+        initEnterTextHud("Enter signed integer:", "Done");
+        break;
+    case ED_STATE_ENTER_FLOAT:
+        initEnterTextHud("Enter floating point number:", "Done");
+        break;
+    case ED_STATE_ENTER_STRING:
+        initEnterTextHud("Enter string:", "Done", false);
+        break;
+    case ED_STATE_ENTER_COLOR:
+        initEnterTextHud("Enter an rgb color (ex: \"255 255 255\"):", "Done");
+        break;
+    case ED_STATE_NEW_TEXTURE:
+        initEnterTextHud("Enter texture file:", "Done");
+        break;
+    case ED_STATE_SELECT_VOLUME:
+        initSelectionHud(EDC_STATE_SELECT_VOL);
+        break;
+    case ED_STATE_SELECT_POINT:
+        initSelectionHud(EDC_STATE_MOVE);
         break;
     default:
         break;
@@ -336,36 +478,15 @@ EditorManager::initMainHud() {
 }
 
 void
-EditorManager::initLoadHud() {
+EditorManager::initEnterTextHud(const std::string &slabel, const std::string &finalizeLabel, bool isField) {
     ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
     ContainerRenderModel *mpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE);
 
     int i = 0;
     EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
-        *finalize  = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, "Load it!", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    D3HudRenderModel *label = new D3HudRenderModel("Enter filename:", Rect(0,0,SCREEN_WIDTH - BUTTON_WIDTH*2,BUTTON_HEIGHT));
-    D3HudRenderModel *text = new D3HudRenderModel("", Rect(0,BUTTON_HEIGHT,SCREEN_WIDTH - BUTTON_WIDTH*2,SCREEN_HEIGHT));
-
-    rpanel->add(ED_HUD_LOAD_CANCEL, cancel);
-    rpanel->add(ED_HUD_LOAD_LOAD, finalize);
-    mpanel->add(ED_HUD_FIELD_LABEL, label);
-    mpanel->add(ED_HUD_FIELD_TEXT, text);
-
-    if(m_pEditorCursor) {
-        m_pEditorCursor->setState(EDC_STATE_TYPE_FIELD);
-    }
-}
-
-void
-EditorManager::initSaveHud() {
-    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
-    ContainerRenderModel *mpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE);
-
-    int i = 0;
-    EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
-        *finalize  = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, "Save it!", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    D3HudRenderModel *label = new D3HudRenderModel("Enter filename:", Rect(0,0,SCREEN_WIDTH - BUTTON_WIDTH*2,BUTTON_HEIGHT));
-    D3HudRenderModel *text = new D3HudRenderModel("", Rect(0,BUTTON_HEIGHT,SCREEN_WIDTH - BUTTON_WIDTH*2,SCREEN_HEIGHT));
+        *finalize  = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, finalizeLabel, Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    D3HudRenderModel *label = new D3HudRenderModel(UNUSED_TEXTURE_ID, Rect(0,0,SCREEN_WIDTH - BUTTON_WIDTH*2,BUTTON_HEIGHT), slabel, Point());
+    D3HudRenderModel *text = new D3HudRenderModel(UNUSED_TEXTURE_ID, Rect(0,BUTTON_HEIGHT,SCREEN_WIDTH - BUTTON_WIDTH*2,SCREEN_HEIGHT), "", Point());
 
     rpanel->add(ED_HUD_SAVE_CANCEL, cancel);
     rpanel->add(ED_HUD_SAVE_SAVE, finalize);
@@ -373,32 +494,13 @@ EditorManager::initSaveHud() {
     mpanel->add(ED_HUD_FIELD_TEXT, text);
 
     if(m_pEditorCursor) {
-        m_pEditorCursor->setState(EDC_STATE_TYPE_FIELD);
+
+        m_pEditorCursor->setState(isField ? EDC_STATE_TYPE_FIELD : EDC_STATE_TYPE);
     }
 }
 
 
-void
-EditorManager::initRenameAreaHud() {
-    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
-    ContainerRenderModel *mpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE);
-
-    int i = 0;
-    EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
-        *finalize  = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, "Set name!", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    D3HudRenderModel *label = new D3HudRenderModel("Enter area name:", Rect(0,0,SCREEN_WIDTH - BUTTON_WIDTH*2,BUTTON_HEIGHT));
-    D3HudRenderModel *text = new D3HudRenderModel("", Rect(0,BUTTON_HEIGHT,SCREEN_WIDTH - BUTTON_WIDTH*2,SCREEN_HEIGHT));
-
-    rpanel->add(ED_HUD_SAVE_CANCEL, cancel);
-    rpanel->add(ED_HUD_SAVE_SAVE, finalize);
-    mpanel->add(ED_HUD_FIELD_LABEL, label);
-    mpanel->add(ED_HUD_FIELD_TEXT, text);
-
-    if(m_pEditorCursor) {
-        m_pEditorCursor->setState(EDC_STATE_TYPE_FIELD);
-    }
-}
-
+#define MAX_LIST_SIZE 10
 void
 EditorManager::initAreaPanel() {
     ContainerRenderModel *lpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_LEFT_PANE);
@@ -428,7 +530,7 @@ EditorManager::initAreaListPanel(uint uiAreaFirst) {
     PWE::get()->getAreas(m_vAreas);
 
     uint i = 0;
-    for(vector<uint>::iterator iter = m_vAreas.begin() + uiAreaFirst; iter < m_vAreas.end(); ++iter) {
+    for(vector<uint>::iterator iter = m_vAreas.begin() + uiAreaFirst; iter < m_vAreas.end() && i < MAX_LIST_SIZE; ++iter) {
         string name;
         if((*iter) == m_uiSwitchedAreaId) {
             name = "#00FF00#" + PWE::get()->getAreaName(*iter);
@@ -444,147 +546,220 @@ EditorManager::initAreaListPanel(uint uiAreaFirst) {
     }
 }
 
+void
+EditorManager::initNewObjHud() {
+    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    m_uiObjFirst = 0;
+
+    int i = 0;
+    EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *upArea     = new EditorHudButton(rpanel, ED_HUD_OP_UP, "UP", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *downArea   = new EditorHudButton(rpanel, ED_HUD_OP_DOWN, "DOWN", Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT, 0.f), BUTTON_TEXT_SIZE);
+    ContainerRenderModel *lspanel = new ContainerRenderModel(Rect(0.f, BUTTON_HEIGHT * i, BUTTON_WIDTH, SCREEN_HEIGHT - BUTTON_HEIGHT * (i + 1)), Point(SCREEN_WIDTH - BUTTON_WIDTH, 0.f, 0.f));
+
+    rpanel->add(ED_HUD_NEW_OBJ_CANCEL, cancel);
+    rpanel->add(ED_HUD_NEW_OBJ_UP, upArea);
+    rpanel->add(ED_HUD_NEW_OBJ_DOWN, downArea);
+    rpanel->add(ED_HUD_NEW_OBJ_LIST_PANE, lspanel);
+
+    initClassListPanel(m_uiObjFirst);
+}
 
 void
 EditorManager::initClassListPanel(uint uiStart) {
     ContainerRenderModel *lspanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)->get<ContainerRenderModel*>(ED_HUD_NEW_OBJ_LIST_PANE);
+    lspanel->clear();
 
     //Get available classes
-    vector<const string *> vClasses;
     vector<const string *>::iterator iter;
+    m_vClasses.clear();
 
-    ObjectFactory::get()->getClassList(vClasses);
-    
+    ObjectFactory::get()->getClassList(m_vClasses);
+    m_uiObjMax = m_vClasses.size() - 1;
+
     //Display available classes
     uint i = 0;
-    for(iter = vClasses.begin() + uiStart; iter != vClasses.end(); ++iter) {
-        EditorHudButton *classButton = new EditorHudButton(lspanel, ED_HUD_OP_NEW_OBJ, **iter, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+    for(iter = m_vClasses.begin() + uiStart; iter != m_vClasses.end() && i < MAX_LIST_SIZE + 1; ++iter) {
+        EditorHudButton *classButton = new EditorHudButton(lspanel, ED_HUD_OP_CHOOSE_OBJ, **iter, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
         lspanel->add(i, classButton);
         if(i == 0) {
-            m_uiHudObjButtonIdStart = area->getID();
+            m_uiHudObjButtonIdStart = classButton->getID();
         }
         i++;
         printf("Found class: %s\n", (*iter)->c_str());
     }
 }
 
-#if 0
-
 void
-EditorManager::initConstHud() {
-    //These hud elements are always there.
-    D3HudRenderModel *posText = new D3HudRenderModel("(?,?,?)", Rect(0,0,BUTTON_WIDTH,BUTTON_HEIGHT));
-    D3RE::get()->addHudElement(ED_HUD_CURSOR_POS, posText);
-}
-void
-EditorManager::initMainHud() {
-    initConstHud();
+EditorManager::initCreateObjHud() {
+    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    m_uiObjFirst = 0;
 
-    //Create HUD objects
-    D3RE *re = D3RE::get();
-    uint w = re->getScreenWidth();
+    int i = 0;
+    EditorHudButton *cancel   = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL,   "Cancel",        Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *finalize = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, "Create it!",    Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *upArea   = new EditorHudButton(rpanel, ED_HUD_OP_UP,       "UP",            Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *downArea = new EditorHudButton(rpanel, ED_HUD_OP_DOWN,     "DOWN",          Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT, 0.f), BUTTON_TEXT_SIZE);
+    ContainerRenderModel *lspanel = new ContainerRenderModel(Rect(0.f, BUTTON_HEIGHT * i, BUTTON_WIDTH, SCREEN_HEIGHT - BUTTON_HEIGHT * (i + 1)), Point(SCREEN_WIDTH - BUTTON_WIDTH, 0.f, 0.f));
 
-    EditorHudButton *btn;
-    btn = new EditorHudButton(ED_HUD_NEW, "#000000#New...", Point(w - BUTTON_WIDTH,0,0));
-    re->addHudElement(ED_HUD_NEW, btn);
+    rpanel->add(ED_HUD_NEW_OBJ_CANCEL, cancel);
+    rpanel->add(ED_HUD_NEW_OBJ_MAKE, finalize);
+    rpanel->add(ED_HUD_NEW_OBJ_UP, upArea);
+    rpanel->add(ED_HUD_NEW_OBJ_DOWN, downArea);
+    rpanel->add(ED_HUD_NEW_OBJ_LIST_PANE, lspanel);
 
-    btn = new EditorHudButton(ED_LOAD, "#000000#Load file", Point(w - BUTTON_WIDTH,BUTTON_HEIGHT,0));
-    re->addHudElement(ED_LOAD, btn);
+    initAttributeListPanel(m_uiObjFirst);
 
-    btn = new EditorHudButton(ED_SAVE, "#000000#Save file", Point(w - BUTTON_WIDTH,BUTTON_HEIGHT*2,0));
-    re->addHudElement(ED_SAVE, btn);
-}
-
-
-void
-EditorManager::initCreateObjectHud() {
-    initConstHud();
-
-
-    //Create HUD objects
-    D3RE *re = D3RE::get();
-    uint w = re->getScreenWidth();
-    EditorHudButton *btn;
-    btn = new EditorHudButton(ED_HUD_CREATE, "#000000#Create it!", Point(w - BUTTON_WIDTH,0,0));
-    re->addHudElement(ED_HUD_CREATE, btn);
-
-    btn = new EditorHudButton(ED_HUD_CANCEL, "#000000#Cancel", Point(w - BUTTON_WIDTH,BUTTON_HEIGHT,0));
-    re->addHudElement(ED_HUD_CANCEL, btn);
-}
-
-
-void
-EditorManager::initLoadFileHud() {
-    initConstHud();
-
-    //Create HUD objects
-    D3RE *re = D3RE::get();
-    uint w = re->getScreenWidth();
-    EditorHudButton *btn;
-    btn = new EditorHudButton(ED_LOAD_FILE, "#000000#Load", Point(w - BUTTON_WIDTH,0,0));
-    re->addHudElement(ED_LOAD_FILE, btn);
-
-    btn = new EditorHudButton(ED_HUD_CANCEL, "#000000#Cancel", Point(w - BUTTON_WIDTH,BUTTON_HEIGHT,0));
-    re->addHudElement(ED_HUD_CANCEL, btn);
-
-    D3HudRenderModel *msg = new D3HudRenderModel("Enter filename:", Rect(0,SCREEN_HEIGHT / 2 - BUTTON_HEIGHT,BUTTON_WIDTH,BUTTON_HEIGHT));
-    D3RE::get()->addHudElement(ED_MESSAGE, msg);
-    D3HudRenderModel *label = new D3HudRenderModel(".info", Rect(0,SCREEN_HEIGHT / 2,BUTTON_WIDTH,BUTTON_HEIGHT));
-    D3RE::get()->addHudElement(ED_TEXT, label);
-}
-
-void
-EditorManager::initSaveFileHud() {
-    initConstHud();
-
-    //Create HUD objects
-    D3RE *re = D3RE::get();
-    uint w = re->getScreenWidth();
-    EditorHudButton *btn;
-    btn = new EditorHudButton(ED_SAVE_FILE, "#000000#Save", Point(w - BUTTON_WIDTH,0,0));
-    re->addHudElement(ED_SAVE_FILE, btn);
-
-    btn = new EditorHudButton(ED_HUD_CANCEL, "#000000#Cancel", Point(w - BUTTON_WIDTH,BUTTON_HEIGHT,0));
-    re->addHudElement(ED_HUD_CANCEL, btn);
-
-    D3HudRenderModel *msg = new D3HudRenderModel("Enter filename:", Rect(0,SCREEN_HEIGHT / 2 - BUTTON_HEIGHT,BUTTON_WIDTH,BUTTON_HEIGHT));
-    D3RE::get()->addHudElement(ED_MESSAGE, msg);
-    D3HudRenderModel *label = new D3HudRenderModel(".info", Rect(0,SCREEN_HEIGHT / 2,BUTTON_WIDTH,BUTTON_HEIGHT));
-    D3RE::get()->addHudElement(ED_TEXT, label);
-}
-
-void
-EditorManager::initListObjectHud() {
-    initConstHud();
-
-    //Create HUD objects
-    D3RE *re = D3RE::get();
-    uint w = re->getScreenWidth();
-    EditorHudButton *btn;
-    list<const string *> lsClasses;
-    list<const string *>::iterator iter;
-
-    ObjectFactory::get()->getClassList(lsClasses);
-    uint i = 1;
-    for(iter = lsClasses.begin(); iter != lsClasses.end(); ++iter) {
-        btn = new EditorHudButton(ED_HUD_LIST_OBJECTS + i, **iter, Point(w - BUTTON_WIDTH, i * BUTTON_HEIGHT,0));
-        re->addHudElement(ED_HUD_LIST_OBJECTS + i, btn);
-        i++;
-        printf("Found class: %s\n", (*iter)->c_str());
-    }
-
-    btn = new EditorHudButton(ED_HUD_CANCEL, "#000000#Cancel", Point(w - BUTTON_WIDTH,0,0));
-    re->addHudElement(ED_HUD_CANCEL, btn);
-
-}
-
-void
-EditorManager::prepState() {
-    m_eState = m_eNewState;
-    D3RE::get()->clearHud();
     if(m_pEditorCursor) {
-        m_pEditorCursor->prepState(m_eState);
+        m_pEditorCursor->setState(EDC_STATE_MOVE);
     }
 }
-#endif
+
+void
+EditorManager::initAttributeListPanel(uint uiStart) {
+    ContainerRenderModel *lspanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)->get<ContainerRenderModel*>(ED_HUD_NEW_OBJ_LIST_PANE);
+    lspanel->clear();
+
+    //Get available attributes
+    m_uiObjMax = m_pCurData->m_lsAttributeInfo.size() - 1;
+
+    list<ObjectFactory::AttributeInfo>::iterator iter = m_pCurData->m_lsAttributeInfo.begin();
+    for(int i = 0; i < uiStart; ++i) {
+        ++iter; //Skip uiStart attributes
+    }
+
+    //Iterate through the attributes, handling each type appropriately
+    uint i = 0;
+    EditorHudButton *attrButton;
+    for(; iter != m_pCurData->m_lsAttributeInfo.end() && i < MAX_LIST_SIZE; ++iter) {
+        ostringstream attrName;
+        switch(iter->m_eType) {
+        case ATYPE_INT:
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            printf("int\n");
+            break;
+        case ATYPE_UINT:
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            printf("uint\n");
+            break;
+        case ATYPE_FLOAT:
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            printf("float\n");
+            break;
+        case ATYPE_POINT: {
+            attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, Point());
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            printf("point\n");
+            break;
+          }
+        case ATYPE_RECT: {
+            attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, Rect());
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            printf("rect\n");
+            break;
+          }
+        case ATYPE_BOX: {
+            attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, Box());
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            printf("box\n");
+            break;
+          }
+        case ATYPE_COLOR: {
+            Color cr = m_pCurData->getAttribute(iter->m_sAttributeKey, Color(0xFF,0xFF,0xFF));
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            D3HudRenderModel *tex = new D3HudRenderModel(1, Rect(BUTTON_WIDTH - TILE_SIZE, BUTTON_HEIGHT * i, TILE_SIZE, TILE_SIZE));
+            tex->setImageColor(cr);
+            lspanel->add(i * 2 + 1, tex);
+            printf("color\n");
+            break;
+          }
+        case ATYPE_STRING:
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            printf("string\n");
+            break;
+        case ATYPE_RESOURCE_ID: {
+            uint texId = m_pCurData->getAttribute(iter->m_sAttributeKey, (uint)0);
+            attrName << iter->m_sAttributeName << " = " << texId;
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            D3HudRenderModel *tex = new D3HudRenderModel(texId, Rect(BUTTON_WIDTH - TILE_SIZE, BUTTON_HEIGHT * i, TILE_SIZE, TILE_SIZE));
+            lspanel->add(i * 2 + 1, tex);
+            printf("resource id\n");
+            break;
+          }
+        case ATYPE_OBJECT_ID: {
+            attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, 0);
+            attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            printf("object id\n");
+            break;
+          }
+        default:
+            printf("ERROR %s %d: Unknown attribute type %d\n", __FILE__, __LINE__, iter->m_eType);
+            break;
+        }
+        lspanel->add(i * 2, attrButton);    //allows space for additional displays
+        if(i == 0) {
+            m_uiHudObjButtonIdStart = attrButton->getID();
+        }
+        i++;
+    }
+}
+
+
+void
+EditorManager::initTextureHud() {
+    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    m_uiObjFirst = 0;
+
+    int i = 0;
+    EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *up     = new EditorHudButton(rpanel, ED_HUD_OP_UP, "UP", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *down   = new EditorHudButton(rpanel, ED_HUD_OP_DOWN, "DOWN", Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT, 0.f), BUTTON_TEXT_SIZE);
+    ContainerRenderModel *lspanel = new ContainerRenderModel(Rect(0.f, BUTTON_HEIGHT * i, BUTTON_WIDTH, SCREEN_HEIGHT - BUTTON_HEIGHT * (i + 1)), Point(SCREEN_WIDTH - BUTTON_WIDTH, 0.f, 0.f));
+
+    rpanel->add(ED_HUD_NEW_OBJ_CANCEL, cancel);
+    rpanel->add(ED_HUD_NEW_OBJ_UP, up);
+    rpanel->add(ED_HUD_NEW_OBJ_DOWN, down);
+    rpanel->add(ED_HUD_NEW_OBJ_LIST_PANE, lspanel);
+
+    initTextureListPanel(m_uiObjFirst);
+}
+
+void
+EditorManager::initTextureListPanel(uint uiStart) {
+    ContainerRenderModel *lspanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)->get<ContainerRenderModel*>(ED_HUD_NEW_OBJ_LIST_PANE);
+    lspanel->clear();
+
+    //Get available classes
+    D3RE *re = D3RE::get();
+    m_uiObjMax = re->getNumImages() - 1;
+
+    //Display available classes
+    uint i = 0;
+    for(uint img = uiStart; img <= m_uiObjMax && i < MAX_LIST_SIZE; ++img) {
+        EditorHudButton *texButton = new EditorHudButton(lspanel, ED_HUD_OP_CHOOSE_TEXTURE, "", Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+        D3HudRenderModel *tex = new D3HudRenderModel(img, Rect(BUTTON_WIDTH / 2 - TILE_SIZE / 2, BUTTON_HEIGHT * i, TILE_SIZE, TILE_SIZE));
+        lspanel->add(i * 2, texButton);
+        lspanel->add(i * 2 + 1, tex);
+        if(i == 0) {
+            m_uiHudObjButtonIdStart = texButton->getID();
+        }
+        i++;
+    }
+}
+
+void
+EditorManager::initSelectionHud(EditorCursorState eState) {
+    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    printf("Size = %d\n", rpanel->getNumModels());
+    int i = 0;
+    EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *finalize = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, "Select", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    rpanel->add(ED_HUD_SEL_CANCEL, cancel);
+    rpanel->add(ED_HUD_SEL_FINALIZE, finalize);
+
+    if(m_pEditorCursor != NULL) {
+        m_pEditorCursor->setState(eState);
+    }
+}
+
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Editor" />
+	<ActiveTarget name="Debug" />
 	<File name="bae\BasicAudioEngine.cpp" open="0" top="0" tabpos="5">
 		<Cursor position="3623" topLine="118" />
 	</File>
@@ -8,31 +8,31 @@
 		<Cursor position="174" topLine="0" />
 	</File>
 	<File name="d3re\ContainerRenderModel.h" open="0" top="0" tabpos="0">
-		<Cursor position="1152" topLine="30" />
+		<Cursor position="1946" topLine="64" />
 	</File>
 	<File name="d3re\D3HudRenderModel.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="1518" topLine="51" />
+		<Cursor position="3514" topLine="111" />
 	</File>
-	<File name="d3re\D3HudRenderModel.h" open="1" top="0" tabpos="5">
-		<Cursor position="1193" topLine="20" />
+	<File name="d3re\D3HudRenderModel.h" open="0" top="0" tabpos="5">
+		<Cursor position="407" topLine="0" />
 	</File>
 	<File name="d3re\D3PrismRenderModel.cpp" open="0" top="0" tabpos="7">
-		<Cursor position="760" topLine="24" />
+		<Cursor position="2854" topLine="76" />
 	</File>
 	<File name="d3re\D3PrismRenderModel.h" open="0" top="0" tabpos="0">
 		<Cursor position="493" topLine="9" />
 	</File>
-	<File name="d3re\D3RenderEngine.cpp" open="1" top="0" tabpos="4">
-		<Cursor position="8851" topLine="286" />
+	<File name="d3re\D3RenderEngine.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
 	</File>
-	<File name="d3re\D3RenderEngine.h" open="1" top="0" tabpos="3">
-		<Cursor position="125" topLine="41" />
+	<File name="d3re\D3RenderEngine.h" open="0" top="0" tabpos="1">
+		<Cursor position="453" topLine="64" />
 	</File>
-	<File name="d3re\D3SpriteRenderModel.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="753" topLine="25" />
+	<File name="d3re\D3SpriteRenderModel.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="1461" topLine="33" />
 	</File>
-	<File name="d3re\D3SpriteRenderModel.h" open="0" top="0" tabpos="0">
-		<Cursor position="529" topLine="8" />
+	<File name="d3re\D3SpriteRenderModel.h" open="0" top="0" tabpos="3">
+		<Cursor position="739" topLine="8" />
 	</File>
 	<File name="d3re\TextRenderer.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="5122" topLine="157" />
@@ -49,17 +49,17 @@
 	<File name="editor\EditorCursor.h" open="0" top="0" tabpos="0">
 		<Cursor position="143" topLine="0" />
 	</File>
-	<File name="editor\EditorHudButton.h" open="1" top="1" tabpos="7">
-		<Cursor position="1041" topLine="17" />
+	<File name="editor\EditorHudButton.h" open="0" top="0" tabpos="6">
+		<Cursor position="2073" topLine="47" />
 	</File>
 	<File name="editor\EditorManager.cpp" open="0" top="0" tabpos="11">
-		<Cursor position="1308" topLine="26" />
+		<Cursor position="375" topLine="0" />
 	</File>
 	<File name="editor\EditorManager.h" open="0" top="0" tabpos="0">
-		<Cursor position="2345" topLine="55" />
+		<Cursor position="2317" topLine="64" />
 	</File>
 	<File name="editor\SelectionRenderModel.h" open="0" top="0" tabpos="0">
-		<Cursor position="198" topLine="1" />
+		<Cursor position="1093" topLine="32" />
 	</File>
 	<File name="editor\editor.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="2211" topLine="76" />
@@ -67,11 +67,11 @@
 	<File name="editor\editor_defs.h" open="0" top="0" tabpos="0">
 		<Cursor position="1584" topLine="59" />
 	</File>
-	<File name="game\ObjectFactory.cpp" open="0" top="0" tabpos="7">
-		<Cursor position="2691" topLine="90" />
+	<File name="game\ObjectFactory.cpp" open="0" top="0" tabpos="4">
+		<Cursor position="2481" topLine="70" />
 	</File>
-	<File name="game\ObjectFactory.h" open="0" top="0" tabpos="6">
-		<Cursor position="3282" topLine="70" />
+	<File name="game\ObjectFactory.h" open="0" top="0" tabpos="3">
+		<Cursor position="3103" topLine="68" />
 	</File>
 	<File name="game\Player.cpp" open="0" top="0" tabpos="6">
 		<Cursor position="539" topLine="2" />
@@ -79,8 +79,8 @@
 	<File name="game\Player.h" open="0" top="0" tabpos="5">
 		<Cursor position="938" topLine="19" />
 	</File>
-	<File name="game\game.cpp" open="0" top="0" tabpos="11">
-		<Cursor position="2211" topLine="98" />
+	<File name="game\game.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="3017" topLine="115" />
 	</File>
 	<File name="game\game.h" open="0" top="0" tabpos="3">
 		<Cursor position="415" topLine="0" />
@@ -88,8 +88,11 @@
 	<File name="game\game_defs.h" open="0" top="0" tabpos="3">
 		<Cursor position="996" topLine="42" />
 	</File>
-	<File name="game\registration.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="810" topLine="4" />
+	<File name="game\registration.cpp" open="0" top="0" tabpos="5">
+		<Cursor position="301" topLine="0" />
+	</File>
+	<File name="game\world\AreaLinkObject.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="906" topLine="0" />
 	</File>
 	<File name="game\world\SimplePhysicsObject.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="1596" topLine="26" />
@@ -110,7 +113,7 @@
 		<Cursor position="104" topLine="0" />
 	</File>
 	<File name="mge\Clock.h" open="0" top="0" tabpos="0">
-		<Cursor position="216" topLine="20" />
+		<Cursor position="730" topLine="21" />
 	</File>
 	<File name="mge\Event.h" open="0" top="0" tabpos="0">
 		<Cursor position="715" topLine="14" />
@@ -122,7 +125,7 @@
 		<Cursor position="1227" topLine="33" />
 	</File>
 	<File name="mge\ModularEngine.cpp" open="0" top="0" tabpos="7">
-		<Cursor position="5533" topLine="202" />
+		<Cursor position="135" topLine="0" />
 	</File>
 	<File name="mge\ModularEngine.h" open="0" top="0" tabpos="6">
 		<Cursor position="590" topLine="23" />
@@ -143,15 +146,15 @@
 		<Cursor position="126" topLine="0" />
 	</File>
 	<File name="mge\defs.cpp" open="0" top="0" tabpos="0">
-		<Cursor position="1073" topLine="30" />
+		<Cursor position="3412" topLine="131" />
 	</File>
-	<File name="mge\defs.h" open="0" top="0" tabpos="2">
-		<Cursor position="2255" topLine="79" />
+	<File name="mge\defs.h" open="0" top="0" tabpos="6">
+		<Cursor position="2756" topLine="94" />
 	</File>
-	<File name="pwe\PartitionedWorldEngine.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="5321" topLine="143" />
+	<File name="pwe\PartitionedWorldEngine.cpp" open="0" top="0" tabpos="7">
+		<Cursor position="1402" topLine="38" />
 	</File>
-	<File name="pwe\PartitionedWorldEngine.h" open="1" top="0" tabpos="1">
+	<File name="pwe\PartitionedWorldEngine.h" open="0" top="0" tabpos="1">
 		<Cursor position="1017" topLine="31" />
 	</File>
 	<File name="tpe\TimePhysicsEngine.cpp" open="0" top="0" tabpos="0">

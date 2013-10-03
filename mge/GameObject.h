@@ -9,15 +9,16 @@
 #include "mge/defs.h"
 #include "mge/PhysicsModel.h"
 #include "mge/RenderModel.h"
+#include "mge/Event.h"
 #include <boost/property_tree/ptree.hpp>
 
-class GameObject {
+class GameObject : public Listener {
 public:
     //Destructor
     virtual ~GameObject() {}
 
     //General
-    virtual uint getID() = 0;
+    //virtual uint getID() = 0;
     virtual bool update(uint time) = 0; //Returns true if the object should be deleted after this turn
     virtual bool getFlag(uint flag) = 0;
     virtual void setFlag(uint flag, bool value) = 0;

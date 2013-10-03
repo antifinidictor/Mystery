@@ -38,6 +38,9 @@ public:
     void setColor(const Color &cr) { m_pRenderModel->setColor(cr); }
     Color &getColor() { return m_pRenderModel->getColor(); }
 
+    //Listener
+    virtual void callBack(uint uiID, void *data, uint id) {}
+
 private:
     uint m_uiID;
     uint m_uiFlags;

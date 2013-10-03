@@ -7,6 +7,7 @@
 #include <string>
 using namespace std;
 
+#define UNUSED_TEXTURE_ID 0xFFFFFFFF
 
 EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
     m_uiId = uiId;
@@ -24,10 +25,10 @@ EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
     m_fDeltaPitch = m_fDeltaZoom = 0.f;
 
     PWE *we = PWE::get();
-    we->addListener(this, ON_BUTTON_INPUT, m_uiAreaId);
-    we->addListener(this, PWE_ON_AREA_SWITCH, m_uiAreaId);
+    //we->addListener(this, ON_BUTTON_INPUT, m_uiAreaId);
+    //we->addListener(this, PWE_ON_AREA_SWITCH, m_uiAreaId);
 
-    D3HudRenderModel *posText = new D3HudRenderModel("(?,?,?)", Rect(0,0,BUTTON_WIDTH,BUTTON_HEIGHT));
+    D3HudRenderModel *posText = new D3HudRenderModel(UNUSED_TEXTURE_ID, Rect(0,0,BUTTON_WIDTH,BUTTON_HEIGHT), "(?,?,?)", Point());
     D3RE::get()->getHudContainer()->add(ED_HUD_CURSOR_POS, posText);
     m_eState = EDC_STATE_MOVE;
 }
@@ -84,6 +85,12 @@ EditorCursor::callBack(uint cID, void *data, uint eventId) {
         EditorManager::get()->setEditorCursor(this);
         break;
       }
+    case PWE_ON_REMOVED_FROM_AREA:
+        PWE::get()->removeListener(getID(), ON_BUTTON_INPUT, *((uint*)data));
+        break;
+    case PWE_ON_ADDED_TO_AREA:
+        PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
+        break;
     case ON_BUTTON_INPUT: {
         switch(m_eState) {
         case EDC_STATE_STATIC: {
@@ -171,14 +178,14 @@ EditorCursor::setState(EditorCursorState eState) {
 void
 EditorCursor::moveToArea(uint uiAreaTo) {
     PWE *we = PWE::get();
-    we->removeListener(this->getID(), ON_BUTTON_INPUT, m_uiAreaId);
-    we->removeListener(this->getID(), PWE_ON_AREA_SWITCH, m_uiAreaId);
+    //we->removeListener(this->getID(), ON_BUTTON_INPUT, m_uiAreaId);
+    //we->removeListener(this->getID(), PWE_ON_AREA_SWITCH, m_uiAreaId);
 
     we->moveObjectToArea(getID(), m_uiAreaId, uiAreaTo);
 
     m_uiAreaId = uiAreaTo;
-    we->addListener(this, ON_BUTTON_INPUT, m_uiAreaId);
-    we->addListener(this, PWE_ON_AREA_SWITCH, m_uiAreaId);
+    //we->addListener(this, ON_BUTTON_INPUT, m_uiAreaId);
+    //we->addListener(this, PWE_ON_AREA_SWITCH, m_uiAreaId);
 
     //Handle any other state-change stuff here
 }
@@ -199,6 +206,7 @@ EditorCursor::moveUpdate() {
     Point ptTileShift = toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2));
     m_ptTilePos += Point(ptTileShift);
     m_pRenderModel->moveBy(ptTileShift);
+    m_pRenderModel->movePosition(m_ptDeltaPos);
 
     //Update the camera
     D3RE::get()->adjustCamAngle(m_fDeltaPitch);
@@ -230,6 +238,7 @@ EditorCursor::selectVolumeUpdate() {
        (m_ptTilePos.z < m_ptInitSelectPos.z ? (m_ptInitSelectPos.z - m_ptTilePos.z) : (m_ptTilePos.z - m_ptInitSelectPos.z)) + TILE_SIZE
     );
     m_pRenderModel->setVolume(bxVolume);
+    m_pRenderModel->setPosition(bxCenter(bxVolume));
 
     std::ostringstream posText;
     posText << "#FF0000#(" << m_ptTilePos.x << "," << m_ptTilePos.y << ","
@@ -237,6 +246,8 @@ EditorCursor::selectVolumeUpdate() {
             << "," << bxVolume.l << ")";
     D3HudRenderModel *cpos = D3RE::get()->getHudContainer()->get<D3HudRenderModel*>(ED_HUD_CURSOR_POS);
     cpos->updateText(posText.str());
+    
+    D3RE::get()->moveScreenTo(m_pPhysicsModel->getPosition());
 }
 
 void
@@ -364,7 +375,7 @@ EditorCursor::typeOnKeyPress(InputData *data) {
     if(data->getInputState(ED_IN_COLON) && data->hasChanged(ED_IN_COLON)) {
         m_sInput.append(1, ':');
     }
-    if(data->getInputState(ED_IN_BACKSPACE) && data->hasChanged(ED_IN_BACKSPACE)) {
+    if(data->getInputState(ED_IN_BACKSPACE) && data->hasChanged(ED_IN_BACKSPACE) && m_sInput.size() > 0) {
         m_sInput.resize(m_sInput.size() - 1);
     }
     if(data->getInputState(ED_IN_ENTER) && data->hasChanged(ED_IN_ENTER)) {

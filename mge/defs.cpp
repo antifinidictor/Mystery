@@ -114,6 +114,12 @@ Vec3f::Vec3f(const tBox &bx) {
     z = bx.z;
 }
 
+std::ostream&
+operator <<(std::ostream& stream, const Vec3f& v) {
+    stream << "(" << v.x << "," << v.y << "," << v.z << ")";
+    return stream;
+}
+
 //<: Ordering operator.  If pt1 < pt2, pt1 should be rendered before pt2.
 bool Vec3f::operator<(const Point &pt) const {
     return  order(*this, pt) < 0;
@@ -122,6 +128,20 @@ bool Vec3f::operator<(const Point &pt) const {
 //Box
 tRect::operator tBox() {
     return tBox(x, y, 0, w, h, 0);
+}
+
+
+std::ostream&
+operator <<(std::ostream& stream, const Rect& rc) {
+    stream << "(" << rc.x << "," << rc.y << ":" << rc.w << "," << rc.h << ")";
+    return stream;
+}
+
+
+std::ostream&
+operator <<(std::ostream& stream, const Box& bx) {
+    stream << "(" << bx.x << "," << bx.y << "," << bx.z << ":" << bx.w << "," << bx.h << "," << bx.l << ")";
+    return stream;
 }
 
 /* Function definitions from STD_Defs.h */

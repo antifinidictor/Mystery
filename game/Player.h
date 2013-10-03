@@ -9,7 +9,7 @@
 #include "pwe/PartitionedWorldEngine.h"
 #include "tpe/TimePhysicsEngine.h"
 
-class Player : public GameObject, public Listener
+class Player : public GameObject
 {
 public:
     Player(uint uiId, const Point &ptPos);

@@ -60,10 +60,10 @@ ObjectFactory::createFromTree(const boost::property_tree::ptree &pt, const std::
 }
 
 void
-ObjectFactory::getClassList(list<const std::string *> &lsClasses) {
+ObjectFactory::getClassList(vector<const std::string *> &vClasses) {
     map<std::string, ClassFactory>::iterator iter;
     for(iter = m_mRegisteredObjects.begin(); iter != m_mRegisteredObjects.end(); ++iter) {
-        lsClasses.push_back(&iter->second.data.m_sClassName);
+        vClasses.push_back(&iter->second.data.m_sClassName);
     }
 }
 
@@ -180,5 +180,69 @@ ObjectFactory::FactoryData &
 ObjectFactory::FactoryData::setAttribute(const std::string &key, const std::string &value) {
     m_pt.put(m_sObjName + "." + key, value);
     return *this;
+}
+
+int
+ObjectFactory::FactoryData::getAttribute(const std::string &key, int defaultValue) {
+    return m_pt.get(m_sObjName + "." + key, defaultValue);
+}
+
+uint
+ObjectFactory::FactoryData::getAttribute(const std::string &key, uint defaultValue) {
+    return m_pt.get(m_sObjName + "." + key, defaultValue);
+}
+
+float
+ObjectFactory::FactoryData::getAttribute(const std::string &key, float defaultValue) {
+    return m_pt.get(m_sObjName + "." + key, defaultValue);
+}
+
+const Point
+ObjectFactory::FactoryData::getAttribute(const std::string &key, const Point &defaultValue) {
+    Point value = Point(
+        getAttribute(key + ".x", defaultValue.x),
+        getAttribute(key + ".y", defaultValue.y),
+        getAttribute(key + ".z", defaultValue.z)
+    );
+    return value;
+}
+
+const Rect
+ObjectFactory::FactoryData::getAttribute(const std::string &key, const Rect &defaultValue) {
+    Rect value = Rect(
+        getAttribute(key + ".x", defaultValue.x),
+        getAttribute(key + ".y", defaultValue.y),
+        getAttribute(key + ".w", defaultValue.w),
+        getAttribute(key + ".h", defaultValue.h)
+    );
+    return value;
+}
+
+const Box
+ObjectFactory::FactoryData::getAttribute(const std::string &key, const Box &defaultValue) {
+    Box value = Box(
+        getAttribute(key + ".x", defaultValue.x),
+        getAttribute(key + ".y", defaultValue.y),
+        getAttribute(key + ".z", defaultValue.z),
+        getAttribute(key + ".w", defaultValue.w),
+        getAttribute(key + ".h", defaultValue.h),
+        getAttribute(key + ".l", defaultValue.l)
+    );
+    return value;
+}
+
+const Color
+ObjectFactory::FactoryData::getAttribute(const std::string &key, const Color &defaultValue) {
+    Color value = Color(
+        getAttribute(key + ".r", defaultValue.r),
+        getAttribute(key + ".g", defaultValue.g),
+        getAttribute(key + ".b", defaultValue.b)
+    );
+    return value;
+}
+
+const std::string
+ObjectFactory::FactoryData::getAttribute(const std::string &key, const std::string &defaultValue) {
+    return m_pt.get(m_sObjName + "." + key, defaultValue);
 }
 

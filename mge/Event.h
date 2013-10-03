@@ -18,7 +18,7 @@ public:
 	virtual ~Listener() {}
 
 	//Abstract methods
-	virtual void callBack(uint cID, void *data, uint id) = 0;
+	virtual void callBack(uint uiID, void *data, uint id) = 0;
 	virtual uint getID() = 0;
 
 	//Accessor methods

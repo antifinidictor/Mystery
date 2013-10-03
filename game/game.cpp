@@ -76,34 +76,6 @@ int getSDLVideoFlags() {
     return SDL_OPENGL | SDL_HWSURFACE;// | SDL_NOFRAME | SDL_FULLSCREEN;
 }
 
-void goToGamePage(uint buttonID, uint eventID) {
-    if(eventID == ON_ACTIVATE) {
-        PWE::get()->setCurrentArea(GM_MAIN_GAME);
-    }
-}
-
-void goToHomePage(uint buttonID, uint eventID) {
-    if(eventID == ON_ACTIVATE) {
-        PWE::get()->setCurrentArea(GM_START_PAGE);
-    }
-}
-
-void resetGamePage(uint buttonID, uint eventID) {
-    if(eventID == ON_ACTIVATE) {
-        PWE *we = PWE::get();
-        we->cleanArea(GM_MAIN_GAME);
-        buildWorld();
-        we->setCurrentArea(GM_MAIN_GAME);
-    }
-}
-
-/*
-GameObject*
-readEmpty(const boost::property_tree::ptree &pt, const std::string &keyBase) {
-    return NULL;
-}
-*/
-
 void initWorld() {
     //Perform last-minute setup of the world engine
     PartitionedWorldEngine *we = PWE::get();
@@ -126,27 +98,34 @@ void initWorld() {
     mge->mapInput(SDLK_h,     IN_BREAK);
 
     //Load image resources
+    ObjectFactory::get()->read("res/game.info");
+
+    PWE::get()->setCurrentArea(0);
+    /*
     D3RE::get()->createImage(IMG_PLAYER,   "res/Magus.png", 8, 4);
     D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3);
     D3RE::get()->createImage(IMG_BLOCK,    "res/world/block.png");
     D3RE::get()->createImage(IMG_WALL_TOP, "res/world/wallTop.png");
     D3RE::get()->createImage(IMG_WALL_BOTTOM, "res/world/wallBottom.png");
     D3RE::get()->createImage(IMG_WALL_SIDE, "res/world/wallSide.png");
+    */
+
 
     //Load audio resources
     BAE::get()->loadSound(AUD_STEP, "res/audio/step.wav");
 
     //Other singleton initializations
     TextRenderer::init();
-
+/*
     //Initialize world areas
     for(uint ui = 0; ui < GM_NUM_AREAS; ++ui) {
         we->generateArea(ui);
     }
+*/
 
     D3RE::get()->setBackgroundColor(Color(0x9a,0xd7,0xfb));
 
-    buildWorld();
+    //buildWorld();
 }
 
 void buildRoom(Box bxVol) {

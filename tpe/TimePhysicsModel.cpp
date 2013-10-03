@@ -41,13 +41,13 @@ void TimePhysicsModel::update(uint uiDeltaTime) {
     m_ptVelocity.y = m_ptAcceleration.y * dt + m_ptVelocity.y * m_fFrictionAffect;
     m_ptVelocity.z = m_ptAcceleration.z * dt + m_ptVelocity.z * m_fFrictionAffect;
     moveBy(m_ptLastMotion);
-    
+
     //Reset values changed each turn
     m_ptAcceleration = Point();
 }
 
 void TimePhysicsModel::handleCollisionEvent(HandleCollisionData *dat) {
     if(m_pListener) {
-        m_pListener->callBack(0, dat, ON_COLLISION);
+        m_pListener->callBack(0, dat, TPE_ON_COLLISION);
     }
 }

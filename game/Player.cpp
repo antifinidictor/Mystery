@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "bae/BasicAudioEngine.h"
+#include "tpe/TimePhysicsEngine.h"
 
 Player::Player(uint uiId, const Point &ptPos) {
     Image *img = D3RE::get()->getImage(IMG_PLAYER);
@@ -18,7 +19,7 @@ Player::Player(uint uiId, const Point &ptPos) {
     state = timer = 0;
     m_iDirection = SOUTH;
 
-    PWE::get()->addListener(this, ON_BUTTON_INPUT);
+    //PWE::get()->addListener(this, ON_BUTTON_INPUT);
 }
 
 Player::~Player() {
@@ -91,10 +92,16 @@ bool Player::update(uint time) {
 
 void Player::callBack(uint cID, void *data, uint id) {
     switch(id) {
+    case PWE_ON_ADDED_TO_AREA:
+        PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
+        break;
+    case PWE_ON_REMOVED_FROM_AREA:
+        PWE::get()->removeListener(getID(), ON_BUTTON_INPUT, *((uint*)data));
+        break;
     case ON_BUTTON_INPUT:
         handleButton((InputData*)data);
         break;
-    case ON_COLLISION:
+    case TPE_ON_COLLISION:
         handleCollision((HandleCollisionData*)data);
         break;
     default:

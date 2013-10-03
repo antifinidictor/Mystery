@@ -64,11 +64,11 @@ D3RenderEngine::render() {
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    //prepCamera();
-    for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
-            it != m_mObjsOnScreen.end(); ++it) {
-        if(!it->second->getFlag(D3RE_INVISIBLE)) {
-            it->second->getRenderModel()->render(this);
+    prepCamera();
+    for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
+            it != m_lsObjsOnScreen.end(); ++it) {
+        if(!(*it)->getFlag(D3RE_INVISIBLE)) {
+            (*it)->getRenderModel()->render(this);
         }
     }
 
@@ -94,9 +94,17 @@ D3RenderEngine::manageObjOnScreen(GameObject *obj) {
 
 void
 D3RenderEngine::addInOrder(GameObject *obj) {
-    float distance = -dist(obj->getPhysicsModel()->getPosition(), m_ptCamPos);
-    m_mObjsOnScreen[distance] = obj;
+    list<GameObject*>::iterator it;
     obj->setFlag(D3RE_ON_SCREEN, true);
+    for(it = m_lsObjsOnScreen.begin(); it != m_lsObjsOnScreen.end(); ++it) {
+        if(comesBefore(obj, *it)) {
+            m_lsObjsOnScreen.insert(it, obj);
+            return;
+        }
+    }
+
+    //Does not come before any objects on screen
+    m_lsObjsOnScreen.push_back(obj);
 }
 
 void
@@ -108,10 +116,10 @@ D3RenderEngine::resort(GameObject *obj) {
 
 void
 D3RenderEngine::remove(GameObject *obj) {
-    for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
-            it != m_mObjsOnScreen.end(); ++it) {
-        if(obj->getID() == it->second->getID()) {
-            m_mObjsOnScreen.erase(it);
+    for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
+            it != m_lsObjsOnScreen.end(); ++it) {
+        if(obj->getID() == (*it)->getID()) {
+            m_lsObjsOnScreen.erase(it);
             obj->setFlag(D3RE_ON_SCREEN, false);
             return;
         }
@@ -120,11 +128,11 @@ D3RenderEngine::remove(GameObject *obj) {
 
 void
 D3RenderEngine::clearScreen() {
-    for(map<float, GameObject *>::iterator it = m_mObjsOnScreen.begin();
-            it != m_mObjsOnScreen.end(); ++it) {
-        it->second->setFlag(D3RE_ON_SCREEN, false);
+    for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
+            it != m_lsObjsOnScreen.end(); ++it) {
+        (*it)->setFlag(D3RE_ON_SCREEN, false);
     }
-    m_mObjsOnScreen.clear();
+    m_lsObjsOnScreen.clear();
 }
 
 void
@@ -297,7 +305,7 @@ D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase
         uint uiId = atoi(v.first.data());
         uint framesW = pt.get(key + ".framesW", 1);
         uint framesH = pt.get(key + ".framesH", 1);
-        createImage(uiId, filename.c_str(), framesW, framesH);
+        createImage(uiId, filename.c_str(), framesH, framesW);
     }
     } catch(exception e) {
         printf("Could not read resources\n");
@@ -336,4 +344,22 @@ D3RenderEngine::enableGuiMode() {
         glOrtho(0.0f, m_uiWidth, m_uiHeight, 0.0f, -1.0f, 1.0f);
     }
 }
+
+bool
+D3RenderEngine::comesBefore(GameObject *obj1, GameObject *obj2) {
+    Box bx1 = obj1->getPhysicsModel()->getCollisionVolume();
+    Box bx2 = obj2->getPhysicsModel()->getCollisionVolume();
+    float top1 = bx1.y + bx1.h,
+          top2 = bx2.y + bx2.h,
+          front1 = bx1.z + bx1.l,
+          front2 = bx2.z + bx2.l,
+          right1 = bx1.x + bx1.w;
+    return (top1 < bx2.y) ||
+           (top1 >= bx2.y && bx1.y <= top2 &&
+            front1 < bx2.z) ||
+           (top1 >= bx2.y && bx1.y <= top2 &&
+            front1 >= bx2.z && bx1.z <= front2 &&
+            right1 < bx2.x);
+}
+
 

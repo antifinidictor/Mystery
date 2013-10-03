@@ -25,7 +25,7 @@ D3SpriteRenderModel::~D3SpriteRenderModel() {
 
 void
 D3SpriteRenderModel::render(RenderEngine *re) {
-    D3RE::get()->prepCamera();
+    glPushMatrix();
     Color worldColor = D3RE::get()->getWorldColor();
     Color ourColor = mix(2, &worldColor, &m_crColor);
 
@@ -63,6 +63,7 @@ D3SpriteRenderModel::render(RenderEngine *re) {
         glVertex3f(0.f, 0.f, 0.f);
     glEnd();
     //glDepthMask(GL_TRUE);
+    glPopMatrix();
 }
 
 Rect

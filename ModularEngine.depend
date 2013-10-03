@@ -1462,13 +1462,14 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1380320364 source:k:\projects\games\mge\mystery\game\player.cpp
+1380783886 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
+	"tpe/TimePhysicsEngine.h"
 
 1379962800 AudioEngine.h"
 
-1380133545 k:\projects\games\mge\mystery\game\player.h
+1380782398 k:\projects\games\mge\mystery\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1527,7 +1528,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1380171936 source:k:\projects\games\mge\mystery\game\game.cpp
+1380783538 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	<gl/gl.h>
@@ -1588,17 +1589,18 @@
 	"mge/Clock.h"
 	"mge/Event.h"
 
-1380278228 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
+1380769853 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
 	"ModularEngine.h"
 	"defs.h"
 
-1380261275 k:\projects\games\mge\mystery\mge\defs.h
+1380783015 k:\projects\games\mge\mystery\mge\defs.h
 	<math.h>
 	<stdio.h>
 	<stdarg.h>
 	<vector>
+	<ostream>
 
-1380262653 source:k:\projects\games\mge\mystery\mge\defs.cpp
+1380602478 source:k:\projects\games\mge\mystery\mge\defs.cpp
 	"defs.h"
 
 1376280198 source:k:\projects\games\mge\mystery\ore\edgerendermodel.cpp
@@ -1638,14 +1640,14 @@
 	"mge/GameObject.h"
 	"mge/PhysicsModel.h"
 
-1380565318 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
+1380784784 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
 	"PartitionedWorldEngine.h"
 	"mge/ModularEngine.h"
 	"game/ObjectFactory.h"
 	<list>
 	<boost/foreach.hpp>
 
-1380561261 k:\projects\games\mge\mystery\pwe\partitionedworldengine.h
+1380783062 k:\projects\games\mge\mystery\pwe\partitionedworldengine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -1661,7 +1663,7 @@
 	"mge/RenderModel.h"
 	"tpe/TimePhysicsModel.h"
 
-1361184427 source:k:\projects\games\mge\mystery\tpe\timephysicsmodel.cpp
+1380782854 source:k:\projects\games\mge\mystery\tpe\timephysicsmodel.cpp
 	"TimePhysicsModel.h"
 	"TimePhysicsEngine.h"
 
@@ -1669,18 +1671,19 @@
 	"mge/PhysicsModel.h"
 	"mge/Event.h"
 
-1376364687 k:\projects\games\mge\mystery\tpe\timephysicsengine.h
+1380782815 k:\projects\games\mge\mystery\tpe\timephysicsengine.h
 	<list>
 	"mge/PhysicsEngine.h"
 	"TimePhysicsModel.h"
 
 1380093195 k:\projects\games\mge\mystery\\mge\audioengine.h
 
-1380261275 k:\projects\games\mge\mystery\\mge\defs.h
+1380783015 k:\projects\games\mge\mystery\\mge\defs.h
 	<math.h>
 	<stdio.h>
 	<stdarg.h>
 	<vector>
+	<ostream>
 
 1364354715 k:\projects\games\mge\mystery\\game\clickable.h
 	"mge/defs.h"
@@ -1690,10 +1693,11 @@
 	"tpe/TimePhysicsModel.h"
 	"game/GameDefs.h"
 
-1380140396 k:\projects\games\mge\mystery\\mge\gameobject.h
+1380782186 k:\projects\games\mge\mystery\\mge\gameobject.h
 	"mge/defs.h"
 	"mge/PhysicsModel.h"
 	"mge/RenderModel.h"
+	"mge/Event.h"
 	<boost/property_tree/ptree.hpp>
 
 1379965669 perty_tree/xml_parser.hpp>
@@ -1704,7 +1708,7 @@
 1380093053 k:\projects\games\mge\mystery\\mge\rendermodel.h
 	"mge/defs.h"
 
-1380093200 k:\projects\games\mge\mystery\\mge\event.h
+1380660160 k:\projects\games\mge\mystery\\mge\event.h
 	"defs.h"
 
 1376284084 k:\projects\games\mge\mystery\\ore\orderedrendermodel.h
@@ -1742,7 +1746,7 @@
 	"OrderedRenderModel.h"
 	"StripRenderModel.h"
 
-1380561261 k:\projects\games\mge\mystery\\pwe\partitionedworldengine.h
+1380783062 k:\projects\games\mge\mystery\\pwe\partitionedworldengine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -1781,7 +1785,7 @@
 	"ore/OrderedRenderModel.h"
 	"tpe/TimePhysicsModel.h"
 
-1376364687 k:\projects\games\mge\mystery\\tpe\timephysicsengine.h
+1380782815 k:\projects\games\mge\mystery\\tpe\timephysicsengine.h
 	<list>
 	"mge/PhysicsEngine.h"
 	"TimePhysicsModel.h"
@@ -1807,7 +1811,7 @@
 	<map>
 	"mge/defs.h"
 
-1380133545 k:\projects\games\mge\mystery\\game\player.h
+1380782398 k:\projects\games\mge\mystery\\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1839,7 +1843,7 @@
 	"mge/Clock.h"
 	"mge/Event.h"
 
-1344921654 k:\projects\games\mge\mystery\\mge\clock.h
+1380769817 k:\projects\games\mge\mystery\\mge\clock.h
 	"SDL.h"
 	"mge/defs.h"
 
@@ -1990,7 +1994,7 @@
 	"mge/defs.h"
 	<string>
 
-1380501539 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
+1380654606 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
 	"d3re.h"
 	"SDL.h"
 	<gl/gl.h>
@@ -2007,8 +2011,8 @@
 
 1379928505 nderModel.h"
 
-1380268295 k:\projects\games\mge\mystery\d3re\d3renderengine.h
-	<map>
+1380653435 k:\projects\games\mge\mystery\d3re\d3renderengine.h
+	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
 	<boost/foreach.hpp>
@@ -2022,7 +2026,7 @@
 	"mge/defs.h"
 	"mge/Image.h"
 
-1380320140 source:k:\projects\games\mge\mystery\d3re\d3spriterendermodel.cpp
+1380654633 source:k:\projects\games\mge\mystery\d3re\d3spriterendermodel.cpp
 	"d3re.h"
 	"mge/GameObject.h"
 
@@ -2041,8 +2045,8 @@
 	"D3PrismRenderModel.h"
 	"TextRenderer.h"
 
-1380268295 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
-	<map>
+1380653435 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
+	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
 	<boost/foreach.hpp>
@@ -2066,17 +2070,17 @@
 	"mge/defs.h"
 	"mge/Image.h"
 
-1379928357 source:k:\projects\games\mge\mystery\d3re\d3prismrendermodel.cpp
+1380651559 source:k:\projects\games\mge\mystery\d3re\d3prismrendermodel.cpp
 	"d3re.h"
 	"mge/GameObject.h"
 
-1380133647 k:\projects\games\mge\mystery\\game\world\simplephysicsobject.h
+1380782439 k:\projects\games\mge\mystery\\game\world\simplephysicsobject.h
 	"mge/GameObject.h"
 	"tpe/TimePhysicsModel.h"
 	"d3re/d3re.h"
 	"game/game_defs.h"
 
-1380133635 k:\projects\games\mge\mystery\\game\world\wall.h
+1380782315 k:\projects\games\mge\mystery\\game\world\wall.h
 	"mge/GameObject.h"
 	"d3re/d3re.h"
 	"tpe/tpe.h"
@@ -2089,7 +2093,7 @@
 1380134889 source:k:\projects\games\mge\mystery\game\world\wall.cpp
 	"Wall.h"
 
-1380133635 k:\projects\games\mge\mystery\game\world\wall.h
+1380782315 k:\projects\games\mge\mystery\game\world\wall.h
 	"mge/GameObject.h"
 	"d3re/d3re.h"
 	"tpe/tpe.h"
@@ -7764,7 +7768,7 @@
 1380134610 source:k:\projects\games\mge\mystery\game\world\simplephysicsobject.cpp
 	"SimplePhysicsObject.h"
 
-1380133647 k:\projects\games\mge\mystery\game\world\simplephysicsobject.h
+1380782439 k:\projects\games\mge\mystery\game\world\simplephysicsobject.h
 	"mge/GameObject.h"
 	"tpe/TimePhysicsModel.h"
 	"d3re/d3re.h"
@@ -7785,13 +7789,13 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1380095353 k:\projects\games\mge\mystery\\editor\selectionrendermodel.h
+1380621364 k:\projects\games\mge\mystery\\editor\selectionrendermodel.h
 	"d3re/d3re.h"
 
-1380562103 k:\projects\games\mge\mystery\\editor\editor_defs.h
+1380624938 k:\projects\games\mge\mystery\\editor\editor_defs.h
 	"game/game_defs.h"
 
-1380319460 source:k:\projects\games\mge\mystery\editor\editor.cpp
+1380603337 source:k:\projects\games\mge\mystery\editor\editor.cpp
 	"game/game.h"
 	<SDL.h>
 	<gl/gl.h>
@@ -7810,7 +7814,7 @@
 
 1376281503 k:\projects\games\mge\mystery\\game\game.h
 
-1380565539 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
+1380652546 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
 	"EditorManager.h"
 	"EditorCursor.h"
 	"EditorHudButton.h"
@@ -7819,10 +7823,13 @@
 	"game/ObjectFactory.h"
 	<boost/property_tree/xml_parser.hpp>
 	<boost/property_tree/info_parser.hpp>
+	<boost/lexical_cast.hpp>
+	<boost/tokenizer.hpp>
 
-1380565486 k:\projects\games\mge\mystery\editor\editormanager.h
+1380782391 k:\projects\games\mge\mystery\editor\editormanager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
+	"game/ObjectFactory.h"
 	<stack>
 	<queue>
 
@@ -7835,9 +7842,10 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1380565486 k:\projects\games\mge\mystery\\editor\editormanager.h
+1380782391 k:\projects\games\mge\mystery\\editor\editormanager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
+	"game/ObjectFactory.h"
 	<stack>
 	<queue>
 
@@ -7855,39 +7863,42 @@
 	"mge/defs.h"
 	<string>
 
-1380560642 k:\projects\games\mge\mystery\editor\editorhudbutton.h
+1380784114 k:\projects\games\mge\mystery\editor\editorhudbutton.h
 	"d3re/d3re.h"
 	"editor/editor_defs.h"
 	"editor/EditorManager.h"
 	"mge/ModularEngine.h"
 
-1380280397 source:k:\projects\games\mge\mystery\game\objectfactory.cpp
+1380601410 source:k:\projects\games\mge\mystery\game\objectfactory.cpp
 	"ObjectFactory.h"
 	"d3re/d3re.h"
 	"pwe/PartitionedWorldEngine.h"
 	<boost/property_tree/xml_parser.hpp>
 	<boost/property_tree/info_parser.hpp>
 
-1380280124 k:\projects\games\mge\mystery\game\objectfactory.h
+1380601493 k:\projects\games\mge\mystery\game\objectfactory.h
 	"game_defs.h"
 	<map>
 	<list>
+	<vector>
 	<boost/property_tree/ptree.hpp>
 
 1380089077 k:\projects\games\mge\mystery\game\game_defs.h
 	"mge/defs.h"
 
-1380280124 k:\projects\games\mge\mystery\\game\objectfactory.h
+1380601493 k:\projects\games\mge\mystery\\game\objectfactory.h
 	"game_defs.h"
 	<map>
 	<list>
+	<vector>
 	<boost/property_tree/ptree.hpp>
 
-1380134920 source:k:\projects\games\mge\mystery\game\registration.cpp
+1380660329 source:k:\projects\games\mge\mystery\game\registration.cpp
 	"game/ObjectFactory.h"
 	"game/Player.h"
 	"game/world/SimplePhysicsObject.h"
 	"game/world/Wall.h"
+	"game/world/AreaLinkObject.h"
 
 1362873305 c:\libs\boost\boost_1_54_0\boost\foreach.hpp
 	<cstddef>
@@ -8044,20 +8055,20 @@
 	<boost/range/end.hpp>
 	<boost/range/reverse_iterator.hpp>
 
-1380559922 k:\projects\games\mge\mystery\d3re\containerrendermodel.h
+1380622971 k:\projects\games\mge\mystery\d3re\containerrendermodel.h
 	<map>
 	"mge/RenderModel.h"
 
-1380559922 k:\projects\games\mge\mystery\\d3re\containerrendermodel.h
+1380622971 k:\projects\games\mge\mystery\\d3re\containerrendermodel.h
 	<map>
 	"mge/RenderModel.h"
 
-1380563937 source:k:\projects\games\mge\mystery\editor\editorcursor.cpp
+1380783988 source:k:\projects\games\mge\mystery\editor\editorcursor.cpp
 	"EditorCursor.h"
 	"EditorManager.h"
 	<string>
 
-1380561993 k:\projects\games\mge\mystery\editor\editorcursor.h
+1380782369 k:\projects\games\mge\mystery\editor\editorcursor.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -8066,7 +8077,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1380561993 k:\projects\games\mge\mystery\\editor\editorcursor.h
+1380782369 k:\projects\games\mge\mystery\\editor\editorcursor.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -8074,4 +8085,578 @@
 	"d3re/d3re.h"
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
+
+1367954687 c:\libs\boost\boost_1_54_0\boost\lexical_cast.hpp
+	<boost/config.hpp>
+	<climits>
+	<cstddef>
+	<string>
+	<cstring>
+	<cstdio>
+	<typeinfo>
+	<exception>
+	<boost/limits.hpp>
+	<boost/mpl/if.hpp>
+	<boost/throw_exception.hpp>
+	<boost/type_traits/ice.hpp>
+	<boost/type_traits/is_pointer.hpp>
+	<boost/static_assert.hpp>
+	<boost/detail/lcast_precision.hpp>
+	<boost/detail/workaround.hpp>
+	<locale>
+	<strstream>
+	<sstream>
+	<cmath>
+	<istream>
+	<array>
+	<boost/array.hpp>
+	<boost/numeric/conversion/cast.hpp>
+	<boost/type_traits/make_unsigned.hpp>
+	<boost/type_traits/is_signed.hpp>
+	<boost/type_traits/is_integral.hpp>
+	<boost/type_traits/is_arithmetic.hpp>
+	<boost/type_traits/remove_pointer.hpp>
+	<boost/type_traits/has_left_shift.hpp>
+	<boost/type_traits/has_right_shift.hpp>
+	<boost/math/special_functions/sign.hpp>
+	<boost/math/special_functions/fpclassify.hpp>
+	<boost/range/iterator_range_core.hpp>
+	<boost/container/container_fwd.hpp>
+	<boost/integer.hpp>
+	<cwchar>
+
+1266168681 c:\libs\boost\boost_1_54_0\boost\detail\lcast_precision.hpp
+	<climits>
+	<ios>
+	<limits>
+	<boost/config.hpp>
+	<boost/integer_traits.hpp>
+	<boost/mpl/if.hpp>
+	<boost/type_traits/is_abstract.hpp>
+	<boost/assert.hpp>
+	<boost/static_assert.hpp>
+
+1362873305 c:\libs\boost\boost_1_54_0\boost\integer_traits.hpp
+	<boost/config.hpp>
+	<boost/limits.hpp>
+	<limits.h>
+	<wchar.h>
+
+1362873305 c:\libs\boost\boost_1_54_0\boost\array.hpp
+	<boost/detail/workaround.hpp>
+	<cstddef>
+	<stdexcept>
+	<boost/assert.hpp>
+	<boost/swap.hpp>
+	<boost/detail/iterator.hpp>
+	<boost/throw_exception.hpp>
+	<boost/functional/hash_fwd.hpp>
+	<algorithm>
+	<boost/config.hpp>
+
+1236811869 c:\libs\boost\boost_1_54_0\boost\functional\hash_fwd.hpp
+	<boost/functional/hash/hash_fwd.hpp>
+
+1236811869 c:\libs\boost\boost_1_54_0\boost\functional\hash\hash_fwd.hpp
+	<boost/config.hpp>
+	<cstddef>
+	<boost/detail/workaround.hpp>
+
+1317922037 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\cast.hpp
+	<boost/detail/workaround.hpp>
+	<boost/numeric/conversion/detail/old_numeric_cast.hpp>
+	<boost/type.hpp>
+	<boost/numeric/conversion/converter.hpp>
+	<boost/numeric/conversion/numeric_cast_traits.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\old_numeric_cast.hpp
+	<boost/config.hpp>
+	<cassert>
+	<typeinfo>
+	<boost/type.hpp>
+	<boost/limits.hpp>
+	<boost/numeric/conversion/converter_policies.hpp>
+
+1331368296 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\converter_policies.hpp
+	<typeinfo>
+	<boost/config/no_tr1/cmath.hpp>
+	<boost/throw_exception.hpp>
+	<functional>
+	"boost/type_traits/is_arithmetic.hpp"
+	"boost/mpl/if.hpp"
+	"boost/mpl/integral_c.hpp"
+
+1221823449 c:\libs\boost\boost_1_54_0\boost\config\no_tr1\cmath.hpp
+	<cmath>
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\converter.hpp
+	"boost/numeric/conversion/conversion_traits.hpp"
+	"boost/numeric/conversion/converter_policies.hpp"
+	"boost/numeric/conversion/detail/converter.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\conversion_traits.hpp
+	"boost/numeric/conversion/detail/conversion_traits.hpp"
+	"boost/detail/workaround.hpp"
+	"boost/config.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\conversion_traits.hpp
+	"boost/type_traits/is_arithmetic.hpp"
+	"boost/type_traits/is_same.hpp"
+	"boost/type_traits/remove_cv.hpp"
+	"boost/numeric/conversion/detail/meta.hpp"
+	"boost/numeric/conversion/detail/int_float_mixture.hpp"
+	"boost/numeric/conversion/detail/sign_mixture.hpp"
+	"boost/numeric/conversion/detail/udt_builtin_mixture.hpp"
+	"boost/numeric/conversion/detail/is_subranged.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\meta.hpp
+	"boost/type_traits/remove_cv.hpp"
+	"boost/mpl/if.hpp"
+	"boost/mpl/eval_if.hpp"
+	"boost/mpl/equal_to.hpp"
+	"boost/mpl/not.hpp"
+	"boost/mpl/and.hpp"
+	"boost/mpl/bool.hpp"
+	"boost/mpl/identity.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\int_float_mixture.hpp
+	"boost/config.hpp"
+	"boost/limits.hpp"
+	"boost/numeric/conversion/int_float_mixture_enum.hpp"
+	"boost/numeric/conversion/detail/meta.hpp"
+	"boost/mpl/integral_c.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\int_float_mixture_enum.hpp
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\sign_mixture.hpp
+	"boost/config.hpp"
+	"boost/limits.hpp"
+	"boost/numeric/conversion/sign_mixture_enum.hpp"
+	"boost/numeric/conversion/detail/meta.hpp"
+	"boost/mpl/integral_c.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\sign_mixture_enum.hpp
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\udt_builtin_mixture.hpp
+	"boost/type_traits/is_arithmetic.hpp"
+	"boost/numeric/conversion/udt_builtin_mixture_enum.hpp"
+	"boost/numeric/conversion/detail/meta.hpp"
+	"boost/mpl/integral_c.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\udt_builtin_mixture_enum.hpp
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\is_subranged.hpp
+	"boost/config.hpp"
+	"boost/limits.hpp"
+	"boost/mpl/int.hpp"
+	"boost/mpl/multiplies.hpp"
+	"boost/mpl/less.hpp"
+	"boost/mpl/equal_to.hpp"
+	"boost/type_traits/is_same.hpp"
+	"boost/numeric/conversion/detail/meta.hpp"
+	"boost/numeric/conversion/detail/int_float_mixture.hpp"
+	"boost/numeric/conversion/detail/sign_mixture.hpp"
+	"boost/numeric/conversion/detail/udt_builtin_mixture.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\converter.hpp
+	<functional>
+	"boost/numeric/conversion/detail/meta.hpp"
+	"boost/numeric/conversion/detail/conversion_traits.hpp"
+	"boost/numeric/conversion/bounds.hpp"
+	"boost/type_traits/is_same.hpp"
+	"boost/mpl/integral_c.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\bounds.hpp
+	"boost/numeric/conversion/detail/bounds.hpp"
+
+1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\bounds.hpp
+	"boost/limits.hpp"
+	"boost/config.hpp"
+	"boost/mpl/if.hpp"
+
+1317922037 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\numeric_cast_traits.hpp
+	<boost/numeric/conversion/converter_policies.hpp>
+	<boost/cstdint.hpp>
+	<boost/numeric/conversion/detail/numeric_cast_traits.hpp>
+
+1362873305 c:\libs\boost\boost_1_54_0\boost\cstdint.hpp
+	<boost/config.hpp>
+	<inttypes.h>
+	<inttypes.h>
+	<stdint.h>
+	<inttypes.h>
+	<boost/limits.hpp>
+	<limits.h>
+	<limits.h>
+
+1328150572 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\numeric_cast_traits.hpp
+	<boost/numeric/conversion/detail/preprocessed/numeric_cast_traits_common.hpp>
+	<boost/numeric/conversion/detail/preprocessed/numeric_cast_traits_long_long.hpp>
+	<boost/preprocessor/seq/elem.hpp>
+	<boost/preprocessor/seq/size.hpp>
+	<boost/preprocessor/iteration/iterate.hpp>
+
+1328150572 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\preprocessed\numeric_cast_traits_common.hpp
+
+1328150572 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\preprocessed\numeric_cast_traits_long_long.hpp
+
+1366015628 c:\libs\boost\boost_1_54_0\boost\math\special_functions\sign.hpp
+	<boost/math/tools/config.hpp>
+	<boost/math/special_functions/math_fwd.hpp>
+	<boost/math/special_functions/detail/fp_traits.hpp>
+
+1366015628 c:\libs\boost\boost_1_54_0\boost\math\tools\config.hpp
+	<boost/config.hpp>
+	<boost/cstdint.hpp>
+	<boost/detail/workaround.hpp>
+	<algorithm>
+	<boost/config/no_tr1/cmath.hpp>
+	<climits>
+	<cfloat>
+	<math.h>
+	<boost/math/tools/user.hpp>
+	<float.h>
+	"boost/type.hpp"
+	"boost/non_type.hpp"
+	<boost/detail/fenv.hpp>
+	<iostream>
+	<iomanip>
+	<typeinfo>
+
+1216139427 c:\libs\boost\boost_1_54_0\boost\math\tools\user.hpp
+
+1369483871 c:\libs\boost\boost_1_54_0\boost\detail\fenv.hpp
+	<boost/config.hpp>
+	<features.h>
+	<bits/fenv.h>
+	<stdio.h>
+	<fenv.h>
+
+1366015628 c:\libs\boost\boost_1_54_0\boost\math\special_functions\math_fwd.hpp
+	<boost/math/special_functions/detail/round_fwd.hpp>
+	<boost/math/tools/promotion.hpp>
+	<boost/math/policies/policy.hpp>
+	<boost/mpl/comparison.hpp>
+	<boost/config/no_tr1/complex.hpp>
+
+1366015628 c:\libs\boost\boost_1_54_0\boost\math\special_functions\detail\round_fwd.hpp
+	<boost/config.hpp>
+	<boost/math/tools/promotion.hpp>
+
+1294511586 c:\libs\boost\boost_1_54_0\boost\math\tools\promotion.hpp
+	<boost/math/tools/config.hpp>
+	<boost/type_traits/is_floating_point.hpp>
+	<boost/type_traits/is_integral.hpp>
+	<boost/type_traits/is_convertible.hpp>
+	<boost/type_traits/is_same.hpp>
+	<boost/type_traits/remove_cv.hpp>
+	<boost/mpl/if.hpp>
+	<boost/mpl/and.hpp>
+	<boost/mpl/or.hpp>
+	<boost/mpl/not.hpp>
+	<boost/static_assert.hpp>
+
+1366015628 c:\libs\boost\boost_1_54_0\boost\math\policies\policy.hpp
+	<boost/mpl/list.hpp>
+	<boost/mpl/contains.hpp>
+	<boost/mpl/if.hpp>
+	<boost/mpl/find_if.hpp>
+	<boost/mpl/remove_if.hpp>
+	<boost/mpl/vector.hpp>
+	<boost/mpl/push_back.hpp>
+	<boost/mpl/at.hpp>
+	<boost/mpl/size.hpp>
+	<boost/mpl/comparison.hpp>
+	<boost/type_traits/is_same.hpp>
+	<boost/static_assert.hpp>
+	<boost/assert.hpp>
+	<boost/math/tools/config.hpp>
+	<limits>
+	<limits.h>
+	<stdlib.h>
+	<stddef.h>
+	<math.h>
+
+1223705942 c:\libs\boost\boost_1_54_0\boost\mpl\list.hpp
+	<boost/mpl/limits/list.hpp>
+	<boost/mpl/aux_/na.hpp>
+	<boost/mpl/aux_/config/preprocessor.hpp>
+	<boost/preprocessor/inc.hpp>
+	<boost/preprocessor/cat.hpp>
+	<boost/preprocessor/stringize.hpp>
+	<boost/mpl/aux_/config/use_preprocessed.hpp>
+	<boost/mpl/aux_/include_preprocessed.hpp>
+	<boost/mpl/limits/list.hpp>
+	<boost/mpl/aux_/sequence_wrapper.hpp>
+
+1223705942 c:\libs\boost\boost_1_54_0\boost\mpl\limits\list.hpp
+
+1223705942 c:\libs\boost\boost_1_54_0\boost\mpl\remove_if.hpp
+	<boost/mpl/fold.hpp>
+	<boost/mpl/reverse_fold.hpp>
+	<boost/mpl/eval_if.hpp>
+	<boost/mpl/identity.hpp>
+	<boost/mpl/protect.hpp>
+	<boost/mpl/lambda.hpp>
+	<boost/mpl/apply.hpp>
+	<boost/mpl/aux_/inserter_algorithm.hpp>
+
+1129739920 c:\libs\boost\boost_1_54_0\boost\config\no_tr1\complex.hpp
+	<complex>
+
+1325506901 c:\libs\boost\boost_1_54_0\boost\math\special_functions\detail\fp_traits.hpp
+	<cstring>
+	<boost/assert.hpp>
+	<boost/cstdint.hpp>
+	<boost/detail/endian.hpp>
+	<boost/static_assert.hpp>
+	<boost/type_traits/is_floating_point.hpp>
+
+1369567150 c:\libs\boost\boost_1_54_0\boost\detail\endian.hpp
+	<endian.h>
+	<machine/endian.h>
+	<sys/endian.h>
+	"machine/_types.h"
+
+1369394271 c:\libs\boost\boost_1_54_0\boost\math\special_functions\fpclassify.hpp
+	<math.h>
+	<boost/config/no_tr1/cmath.hpp>
+	<boost/limits.hpp>
+	<boost/math/tools/real_cast.hpp>
+	<boost/type_traits/is_floating_point.hpp>
+	<boost/math/special_functions/math_fwd.hpp>
+	<boost/math/special_functions/detail/fp_traits.hpp>
+	<float.h>
+
+1216139427 c:\libs\boost\boost_1_54_0\boost\math\tools\real_cast.hpp
+
+1371522127 c:\libs\boost\boost_1_54_0\boost\range\iterator_range_core.hpp
+	<boost/config.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/assert.hpp>
+	<boost/iterator/iterator_traits.hpp>
+	<boost/iterator/iterator_facade.hpp>
+	<boost/mpl/or.hpp>
+	<boost/type_traits/is_abstract.hpp>
+	<boost/type_traits/is_array.hpp>
+	<boost/type_traits/is_pointer.hpp>
+	<boost/range/functions.hpp>
+	<boost/range/iterator.hpp>
+	<boost/range/difference_type.hpp>
+	<boost/range/algorithm/equal.hpp>
+	<boost/range/detail/safe_bool.hpp>
+	<boost/utility/enable_if.hpp>
+	<iterator>
+	<algorithm>
+	<cstddef>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\functions.hpp
+	<boost/range/begin.hpp>
+	<boost/range/end.hpp>
+	<boost/range/size.hpp>
+	<boost/range/distance.hpp>
+	<boost/range/empty.hpp>
+	<boost/range/rbegin.hpp>
+	<boost/range/rend.hpp>
+
+1339196394 c:\libs\boost\boost_1_54_0\boost\range\size.hpp
+	<boost/range/config.hpp>
+	<boost/range/begin.hpp>
+	<boost/range/end.hpp>
+	<boost/range/size_type.hpp>
+	<boost/assert.hpp>
+
+1339196394 c:\libs\boost\boost_1_54_0\boost\range\size_type.hpp
+	<boost/range/config.hpp>
+	<boost/range/difference_type.hpp>
+	<boost/range/detail/size_type.hpp>
+	<boost/utility/enable_if.hpp>
+	<boost/type_traits/make_unsigned.hpp>
+	<boost/type_traits/remove_const.hpp>
+	<cstddef>
+	<utility>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\difference_type.hpp
+	<boost/range/config.hpp>
+	<boost/range/iterator.hpp>
+	<boost/iterator/iterator_traits.hpp>
+
+1339196394 c:\libs\boost\boost_1_54_0\boost\range\detail\size_type.hpp
+	<boost/range/detail/common.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\range\distance.hpp
+	<boost/range/begin.hpp>
+	<boost/range/end.hpp>
+	<boost/range/difference_type.hpp>
+
+1359173619 c:\libs\boost\boost_1_54_0\boost\range\empty.hpp
+	<boost/range/config.hpp>
+	<boost/range/begin.hpp>
+	<boost/range/end.hpp>
+
+1339196394 c:\libs\boost\boost_1_54_0\boost\range\algorithm\equal.hpp
+	<boost/config.hpp>
+	<boost/range/concepts.hpp>
+	<iterator>
+
+1371522127 c:\libs\boost\boost_1_54_0\boost\range\concepts.hpp
+	<boost/concept_check.hpp>
+	<boost/iterator/iterator_concepts.hpp>
+	<boost/range/begin.hpp>
+	<boost/range/end.hpp>
+	<boost/range/iterator.hpp>
+	<boost/range/value_type.hpp>
+	<boost/range/detail/misc_concept.hpp>
+
+1362873305 c:\libs\boost\boost_1_54_0\boost\concept_check.hpp
+	<boost/concept/assert.hpp>
+	<boost/iterator.hpp>
+	<boost/type_traits/conversion_traits.hpp>
+	<utility>
+	<boost/type_traits/is_same.hpp>
+	<boost/type_traits/is_void.hpp>
+	<boost/mpl/assert.hpp>
+	<boost/mpl/bool.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/detail/iterator.hpp>
+	<boost/concept/usage.hpp>
+	<boost/concept/detail/concept_def.hpp>
+	<boost/concept/detail/concept_undef.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\concept\assert.hpp
+	<boost/config.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/concept/detail/msvc.hpp>
+	<boost/concept/detail/borland.hpp>
+	<boost/concept/detail/general.hpp>
+
+1276025473 c:\libs\boost\boost_1_54_0\boost\concept\detail\msvc.hpp
+	<boost/preprocessor/cat.hpp>
+	<boost/concept/detail/backward_compatibility.hpp>
+	<boost/concept/detail/has_constraints.hpp>
+	<boost/mpl/if.hpp>
+
+1300882849 c:\libs\boost\boost_1_54_0\boost\concept\detail\backward_compatibility.hpp
+
+1276025473 c:\libs\boost\boost_1_54_0\boost\concept\detail\has_constraints.hpp
+	<boost/mpl/bool.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/concept/detail/backward_compatibility.hpp>
+
+1276025473 c:\libs\boost\boost_1_54_0\boost\concept\detail\borland.hpp
+	<boost/preprocessor/cat.hpp>
+	<boost/concept/detail/backward_compatibility.hpp>
+
+1276025473 c:\libs\boost\boost_1_54_0\boost\concept\detail\general.hpp
+	<boost/preprocessor/cat.hpp>
+	<boost/concept/detail/backward_compatibility.hpp>
+	<boost/concept/detail/has_constraints.hpp>
+	<boost/mpl/if.hpp>
+
+1215771279 c:\libs\boost\boost_1_54_0\boost\type_traits\conversion_traits.hpp
+	<boost/type_traits/is_convertible.hpp>
+
+1276025473 c:\libs\boost\boost_1_54_0\boost\concept\usage.hpp
+	<boost/concept/assert.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/concept/detail/backward_compatibility.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\concept\detail\concept_def.hpp
+	<boost/preprocessor/seq/for_each_i.hpp>
+	<boost/preprocessor/seq/enum.hpp>
+	<boost/preprocessor/comma_if.hpp>
+	<boost/preprocessor/cat.hpp>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\concept\detail\concept_undef.hpp
+
+1196017639 c:\libs\boost\boost_1_54_0\boost\iterator\iterator_concepts.hpp
+	<boost/concept_check.hpp>
+	<boost/iterator/iterator_categories.hpp>
+	<boost/detail/iterator.hpp>
+	<boost/type_traits/is_same.hpp>
+	<boost/type_traits/is_integral.hpp>
+	<boost/mpl/bool.hpp>
+	<boost/mpl/if.hpp>
+	<boost/mpl/and.hpp>
+	<boost/mpl/or.hpp>
+	<boost/static_assert.hpp>
+	<boost/limits.hpp>
+	<boost/config.hpp>
+	<algorithm>
+	<boost/concept/detail/concept_def.hpp>
+	<boost/concept/detail/concept_undef.hpp>
+
+1306525527 c:\libs\boost\boost_1_54_0\boost\range\detail\misc_concept.hpp
+	<boost/concept_check.hpp>
+
+1294644902 c:\libs\boost\boost_1_54_0\boost\range\detail\safe_bool.hpp
+	<boost/config.hpp>
+	<boost/range/config.hpp>
+
+1349091124 c:\libs\boost\boost_1_54_0\boost\container\container_fwd.hpp
+	<utility>
+	<memory>
+	<functional>
+	<iosfwd>
+	<string>
+
+1362873305 c:\libs\boost\boost_1_54_0\boost\integer.hpp
+	<boost/integer_fwd.hpp>
+	<boost/integer_traits.hpp>
+	<boost/limits.hpp>
+	<boost/cstdint.hpp>
+	<boost/static_assert.hpp>
+
+1362873305 c:\libs\boost\boost_1_54_0\boost\integer_fwd.hpp
+	<climits>
+	<cstddef>
+	<boost/config.hpp>
+	<boost/limits.hpp>
+	<boost/cstdint.hpp>
+
+1221706094 c:\libs\boost\boost_1_54_0\boost\tokenizer.hpp
+	<boost/token_iterator.hpp>
+
+1196017639 c:\libs\boost\boost_1_54_0\boost\token_iterator.hpp
+	<boost/assert.hpp>
+	<boost/iterator/iterator_adaptor.hpp>
+	<boost/iterator/detail/minimum_category.hpp>
+	<boost/token_functions.hpp>
+	<utility>
+
+1206222355 c:\libs\boost\boost_1_54_0\boost\iterator\detail\minimum_category.hpp
+	<boost/type_traits/is_convertible.hpp>
+	<boost/type_traits/is_same.hpp>
+	<boost/mpl/aux_/lambda_support.hpp>
+
+1362873305 c:\libs\boost\boost_1_54_0\boost\token_functions.hpp
+	<vector>
+	<stdexcept>
+	<string>
+	<cctype>
+	<algorithm>
+	<boost/config.hpp>
+	<boost/assert.hpp>
+	<boost/detail/workaround.hpp>
+	<boost/mpl/if.hpp>
+	<cwctype>
+
+1380782404 k:\projects\games\mge\mystery\\game\world\arealinkobject.h
+	"mge/GameObject.h"
+	"mge/Event.h"
+	"tpe/TimePhysicsModel.h"
+	"d3re/d3re.h"
+	"game/game_defs.h"
+
+1380782848 source:k:\projects\games\mge\mystery\game\world\arealinkobject.cpp
+	"AreaLinkObject.h"
+	"tpe/TimePhysicsEngine.h"
+	"pwe/PartitionedWorldEngine.h"
+
+1380782404 k:\projects\games\mge\mystery\game\world\arealinkobject.h
+	"mge/GameObject.h"
+	"mge/Event.h"
+	"tpe/TimePhysicsModel.h"
+	"d3re/d3re.h"
+	"game/game_defs.h"
 

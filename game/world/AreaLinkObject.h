@@ -1,59 +1,50 @@
-#ifndef WALL_H
-#define WALL_H
+/*
+ * AreaLinkObject
+ * Objects that simply obey the laws of physics.  Nothing more.
+ */
+
+#ifndef AREA_LINK_OBJECT_H
+#define AREA_LINK_OBJECT_H
 
 #include "mge/GameObject.h"
+#include "mge/Event.h"
+#include "tpe/TimePhysicsModel.h"
 #include "d3re/d3re.h"
-#include "tpe/tpe.h"
 #include "game/game_defs.h"
 
-enum WallVisibleFaces {
-    WALL_NONE  =  0x0,
-    WALL_NORTH =  0x1,
-    WALL_SOUTH =  0x2,
-    WALL_EAST  =  0x4,
-    WALL_WEST  =  0x8,
-    WALL_UP    = 0x10,
-    WALL_DOWN  = 0x20,
-    WALL_DEFAULT = 0x1E,
-    WALL_ALL   = 0x3F
-};
-
-class Wall : public GameObject
-{
+class AreaLinkObject : public GameObject {
 public:
-    Wall(uint uiId, uint texTopId, uint texBottomId, uint texSideId, Box bxVolume, uint visibleFaces = WALL_DEFAULT);
-    virtual ~Wall();
+    AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPos, const Box &bxTriggerVolume);
+    virtual ~AreaLinkObject();
 
     //File i/o
     static GameObject* read(const boost::property_tree::ptree &pt, const std::string &keyBase);
     virtual void write(boost::property_tree::ptree &pt, const std::string &keyBase);
 
     //General
-    virtual uint getID() { return m_uiId; }
+    virtual uint getID() { return m_uiID; }
     virtual bool update(uint time)              { return false; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
     virtual uint getType() { return TYPE_GENERAL; }
     virtual const std::string getClass()        { return getClassName(); }
-    static const std::string getClassName()     { return "Wall"; }
+    static const std::string getClassName()     { return "AreaLinkObject"; }
+
+    //Listener
+	virtual void callBack(uint uiID, void *data, uint eventId);
 
     //Models
     virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }
     virtual PhysicsModel *getPhysicsModel() { return m_pPhysicsModel; }
 
-    //Misc
-    void setColor(const Color &cr) { m_pRenderModel->setColor(cr); }
-    Color &getColor() { return m_pRenderModel->getColor(); }
-
-    //Listener
-    virtual void callBack(uint uiID, void *data, uint id) {}
-
 private:
-    uint m_uiId;
+    uint m_uiID;
     uint m_uiFlags;
+    uint m_uiDestAreaId;
+    Point m_ptDestPos;
 
     D3PrismRenderModel *m_pRenderModel;
-    TimePhysicsModel   *m_pPhysicsModel;
+    TimePhysicsModel  *m_pPhysicsModel;
 };
 
-#endif // WALL_H
+#endif

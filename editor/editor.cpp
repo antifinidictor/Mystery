@@ -114,6 +114,7 @@ void initWorld() {
     mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
 
     //Load image resources (required by editor)
+    D3RE::get()->createImage(IMG_NONE,     "res/gui/noImage.png");
     D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3);
     D3RE::get()->createImage(IMG_BUTTON,   "res/gui/button.png", 3, 1);
 

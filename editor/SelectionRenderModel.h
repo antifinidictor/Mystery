@@ -18,6 +18,11 @@ public:
 
     virtual void render(RenderEngine *re) {
         D3RE::get()->drawBox(m_bxVolume, m_crColor);
+
+        glBegin(GL_LINES);
+            glVertex3f(m_ptPos.x, m_bxVolume.y, m_ptPos.z);
+            glVertex3f(m_ptPos.x, m_ptPos.y, m_ptPos.z);
+        glEnd();
     }
 
     virtual void moveBy(Point ptShift) {
@@ -33,11 +38,19 @@ public:
     virtual Rect getDrawArea() { return m_bxVolume; }
 
     Box getVolume() { return m_bxVolume; }
-    
+
     void setVolume(const Box &bx) {
         m_bxVolume = bx;
     }
-    
+
+    void setPosition(const Point &pt) {
+        m_ptPos = pt;
+    }
+
+    void movePosition(const Point &pt) {
+        m_ptPos += pt;
+    }
+
     void expandVolume(const Point &pt) {
         m_bxVolume.w += pt.x;
         m_bxVolume.h += pt.y;
@@ -55,13 +68,14 @@ public:
             m_bxVolume.h += TILE_SIZE;
         }
     }
-    
+
     void setColor(const Color &cr) {
         m_crColor = cr;
     }
 private:
     Color m_crColor;
     Box m_bxVolume;
+    Point m_ptPos;
 };
 
 #endif //SELECTION_RENDER_MODEL_H

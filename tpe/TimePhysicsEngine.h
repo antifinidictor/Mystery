@@ -17,6 +17,11 @@ enum TpeFlags{
     TPE_NUM_FLAGS
 };
 
+enum TpeEvents {
+    TPE_ON_COLLISION = PHYSICS_EVENTS_BEGIN,
+    TPE_NUM_EVENTS
+};
+
 struct HandleCollisionData {
     GameObject *obj;
     int iDirection;

@@ -75,6 +75,8 @@ public:
         }
     }
 
+    uint getNumModels() { return m_mModels.size(); }
+
     virtual Rect getDrawArea() { return m_rcTotalArea; }
 
 private:

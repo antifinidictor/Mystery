@@ -317,6 +317,7 @@ PartitionedWorldEngine::read(boost::property_tree::ptree &pt, const std::string 
         key = keyBase + "." + a.first.data();
         uint id = pt.get(key, 0);
         readArea(id, pt, key);
+        setAreaName(id, a.first.data());
     }
     } catch(exception &e) {
         printf("Could not read objects: %s\n", e.what());
@@ -463,7 +464,9 @@ PartitionedWorldEngine::removeFromNow(uint uiObjId, uint uiAreaId) {
 
     itObj = itArea->second.m_mCurArea.find(uiObjId);
     if(itObj != itArea->second.m_mCurArea.end()) {
+        GameObject *obj = itObj->second;
         itArea->second.m_mCurArea.erase(itObj);
+        obj->callBack(0, &uiAreaId, PWE_ON_REMOVED_FROM_AREA);
     } else {
         printf("ERROR %s %d: Tried to erase nonexistent object %d\n", __FILE__, __LINE__, uiObjId);
         return;
@@ -494,6 +497,7 @@ PartitionedWorldEngine::addToNow(GameObject *obj, uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea != m_mWorld.end()) {
         itArea->second.m_mCurArea[obj->getID()] = obj;
+        obj->callBack(0, &uiAreaId, PWE_ON_ADDED_TO_AREA);
     } else {
         printf("ERROR %s %d: Tried to add object to nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;

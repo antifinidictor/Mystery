@@ -12,8 +12,8 @@ resources
     }
     3 res/Magus.png
     {
-        framesW 8
-        framesH 4
+        framesW 4
+        framesH 8
     }
     4 res/world/block.png
     {
@@ -38,7 +38,7 @@ resources
 }
 areas
 {
-    Area0 0
+    main 0
     {
         Wall
         {
@@ -63,7 +63,7 @@ areas
                 tex
                 {
                     north 0
-                    south 7
+                    south 0
                     east 7
                     west 7
                     up 5
@@ -212,7 +212,7 @@ areas
             }
         }
     }
-    Area1 1
+    basic 1
     {
         Wall
         {

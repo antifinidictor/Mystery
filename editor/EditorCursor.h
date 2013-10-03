@@ -15,7 +15,7 @@
 #include "pwe/PartitionedWorldEngine.h"
 #include "tpe/tpe.h"
 
-class EditorCursor : public GameObject, public Listener
+class EditorCursor : public GameObject
 {
 public:
     EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos);
@@ -46,6 +46,7 @@ public:
     void moveToArea(uint uiAreaTo);
 
     Box getVolume() { return m_pRenderModel->getVolume(); }
+    Point getPosition() { return m_pPhysicsModel->getPosition(); }
     std::string getText() { return m_sInput; }
     void clearText() { m_sInput.clear(); }
     void setText(const std::string &s) { m_sInput = s; }
@@ -57,7 +58,7 @@ private:
     void selectVolumeUpdate();
     void selectRectUpdate();
     void typeUpdate();
-    
+
     //state-specific input handling functions
     void staticOnKeyPress(InputData *data);
     void moveOnKeyPress(InputData *data);
@@ -70,14 +71,14 @@ private:
     uint m_uiId, m_uiFlags, m_uiAreaId;
     SelectionRenderModel *m_pRenderModel;
     AbstractTimePhysicsModel *m_pPhysicsModel;
-    
+
     //state info
     EditorCursorState m_eState;
 
     //text input state info
     std::string m_sInput;
     uint m_uiBlinkTimer;
-    
+
     //Camera and world position info
     Point m_ptTilePos, m_ptInitSelectPos;
     Point m_ptDeltaPos;

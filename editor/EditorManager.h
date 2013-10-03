@@ -9,12 +9,13 @@
 
 #include "pwe/PartitionedWorldEngine.h"
 #include "editor/editor_defs.h"
+#include "game/ObjectFactory.h"
 #include <stack>
 #include <queue>
 
 class EditorCursor;
 
-class EditorManager : public GameObject, public Listener {
+class EditorManager : public GameObject {
 public:
     static void init() { m_pInstance = new EditorManager(PWE::get()->genID()); }
     static EditorManager *get() { return m_pInstance; }
@@ -51,15 +52,22 @@ private:
 
     void initHud();
     void initMainHud();
-    void initLoadHud();
-    void initSaveHud();
-    void initRenameAreaHud();
-    
+    void initEnterTextHud(const std::string &label, const std::string &finalizeLabel, bool isField = true);
+
     void initAreaPanel();
     void initAreaListPanel(uint uiAreaFirst);
 
-    void initClassListPanel();
+    void initNewObjHud();
+    void initClassListPanel(uint uiStart);
 
+    void initCreateObjHud();
+    void initAttributeListPanel(uint uiStart);
+
+
+    void initTextureHud();
+    void initTextureListPanel(uint uiStart);
+
+    void initSelectionHud(EditorCursorState eState);
 /*
     void prepState();
 
@@ -78,17 +86,30 @@ private:
     std::stack<EditorState> m_skState;
     std::queue<uint> m_qEvents;
     std::vector<uint> m_vAreas;
-    
+
     //Area list
     uint m_uiHudAreaButtonIdStart;
     uint m_uiAreaFirst;
     uint m_uiCurAreaId;
     uint m_uiSwitchedAreaId;
-    
-    //Right-panel list (classes, textures, etc)
-    uint m_uiHudObjButtonIdStart //start of obj ids;
+
+    //Right-panel list (classes, attribues, textures, etc)
+    uint m_uiHudObjButtonIdStart; //start of obj ids;
     uint m_uiObjFirst;  //first item in the list
-    
+    uint m_uiObjMax;
+    void (EditorManager::*initListPanelFunc)(uint uiFirst);
+
+    //Class and Attribute list properties
+    std::vector<const std::string*> m_vClasses;
+    std::string m_sCurClassName;
+    ObjectFactory::FactoryData *m_pCurData;
+    uint m_uiCurObjId;
+    std::string m_sCurKey;
+    AttributeType m_eCurAttrType;
+
+    std::string m_sFile;
+
+    uint m_uiCurImageId;
 
     static const float BUTTON_TEXT_SIZE = 0.8f;
 };

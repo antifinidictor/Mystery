@@ -44,9 +44,18 @@ enum EditorState {
     ED_STATE_MAIN,
     ED_STATE_LOAD_FILE,
     ED_STATE_SAVE_FILE,
-    ED_STATE_SELECT,
     ED_STATE_LIST_OBJECTS,
+    ED_STATE_CREATE_OBJECT,
     ED_STATE_NAME_AREA,
+    ED_STATE_LIST_TEXTURES,
+    ED_STATE_ENTER_UINT,
+    ED_STATE_ENTER_INT,
+    ED_STATE_ENTER_FLOAT,
+    ED_STATE_ENTER_STRING,
+    ED_STATE_ENTER_COLOR,
+    ED_STATE_SELECT_VOLUME,
+    ED_STATE_SELECT_POINT,
+    ED_STATE_NEW_TEXTURE,
     ED_NUM_STATES
 };
 
@@ -98,13 +107,19 @@ enum EditorHudSaveWorldIds {
 //Object creation panel
 enum EditorHudNewObjIds {
     ED_HUD_NEW_OBJ_CANCEL,
+    ED_HUD_NEW_OBJ_MAKE,
     ED_HUD_NEW_OBJ_UP,
     ED_HUD_NEW_OBJ_DOWN,
     ED_HUD_NEW_OBJ_LIST_PANE,
     ED_HUD_NUM_NEW_OBJ_IDS
 };
 
-//Texture loading panel
+//
+enum EditorHudSelectionIds {
+    ED_HUD_SEL_CANCEL,
+    ED_HUD_SEL_FINALIZE,
+    ED_HUD_NUM_SEL
+};
 
 //Area panel
 enum EditorHudAreaIds {
@@ -132,12 +147,16 @@ enum EditorHudOps {
     ED_HUD_OP_NEW_AREA,     //Create new area
     ED_HUD_OP_RENAME_AREA,  //New HUD area name
     ED_HUD_OP_GO_TO_AREA,   //Go to existing area
-    ED_HUD_OP_NEW_OBJ,      //Create new object
+    ED_HUD_OP_NEW_OBJ,      //List new object classes
+    ED_HUD_OP_CHOOSE_OBJ,   //Desired class chosen
     ED_HUD_OP_NEW_TEXTURE,  //Create new texture
     ED_HUD_OP_UP,           //Go up one HUD display section
     ED_HUD_OP_DOWN,         //Go down one HUD display section
     ED_HUD_OP_UP_AREA,      //Go up one HUD display section
     ED_HUD_OP_DOWN_AREA,    //Go down one HUD display section
+    //The following ops get attributes
+    ED_HUD_OP_ATTR,
+    ED_HUD_OP_CHOOSE_TEXTURE,
     ED_HUD_NUM_OPS
 };
 

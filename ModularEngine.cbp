@@ -108,6 +108,8 @@
 		<Unit filename="game\game.h" />
 		<Unit filename="game\game_defs.h" />
 		<Unit filename="game\registration.cpp" />
+		<Unit filename="game\world\AreaLinkObject.cpp" />
+		<Unit filename="game\world\AreaLinkObject.h" />
 		<Unit filename="game\world\SimplePhysicsObject.cpp" />
 		<Unit filename="game\world\SimplePhysicsObject.h" />
 		<Unit filename="game\world\Wall.cpp" />

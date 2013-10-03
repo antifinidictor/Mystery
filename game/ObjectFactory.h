@@ -9,6 +9,7 @@
 #include "game_defs.h"
 #include <map>
 #include <list>
+#include <vector>
 #include <boost/property_tree/ptree.hpp>
 
 class GameObject;
@@ -65,6 +66,16 @@ public:
         FactoryData &setAttribute(const std::string &key, const Color &value);
         FactoryData &setAttribute(const std::string &key, const std::string &value);
 
+
+        int getAttribute(const std::string &key, int defaultValue);
+        uint getAttribute(const std::string &key, uint defaultValue);
+        float getAttribute(const std::string &key, float defaultValue);
+        const Point getAttribute(const std::string &key, const Point & defaultValue);
+        const Rect getAttribute(const std::string &key, const Rect & defaultValue);
+        const Box getAttribute(const std::string &key, const Box & defaultValue);
+        const Color getAttribute(const std::string &key, const Color & defaultValue);
+        const std::string getAttribute(const std::string &key, const std::string &defaultValue);
+
         std::string m_sClassName;
         std::list<AttributeInfo> m_lsAttributeInfo;
 
@@ -79,7 +90,7 @@ public:
 
     //Registering classes: Probably do this in the game defs file
     FactoryData &registerClass(const std::string &className, ReadFuncPtr readFunc);   //returns true if the class was registered/had not been registered before
-    void getClassList(std::list<const std::string *> &lsClasses);    //Populates the list with class names
+    void getClassList(std::vector<const std::string *> &lsClasses);    //Populates the list with class names
 
     //Creating objects from scratch
     FactoryData &initObject(const std::string &className, const std::string &objName);

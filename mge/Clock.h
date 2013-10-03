@@ -21,7 +21,6 @@ private:
 		   m_uiTotalTicks;	//Total times update was called (used for average)
 	float  m_fRate;			//Rate at which in-game time flows
 
-public:
 	//Constructor(s)/Destructor
 	Clock() {
 		m_uiCurTime = 0;
@@ -30,6 +29,13 @@ public:
 		m_uiTotalTicks = 1;	//Otherwise divide by 0 error, I think
 	}
 	virtual ~Clock() {}	/* Nothing to clear at the moment. */
+
+	static Clock *m_pInstance;
+
+public:
+    static void init()  { m_pInstance = new Clock(); }
+    static Clock *get() { return m_pInstance; }
+    static void clean() { delete m_pInstance; }
 
 	//General Methods
 	void update() {

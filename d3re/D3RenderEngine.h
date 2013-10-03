@@ -5,7 +5,7 @@
 #ifndef D3_RENDER_ENGINE_H
 #define D3_RENDER_ENGINE_H
 
-#include <map>
+#include <list>
 #include <vector>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/foreach.hpp>
@@ -66,6 +66,8 @@ public:
     void write(boost::property_tree::ptree &pt, const std::string &keyBase);
     void read(boost::property_tree::ptree &pt, const std::string &keyBase);
 
+    uint getNumImages() { return m_vImages.size(); }
+
 private:
     D3RenderEngine();
     virtual ~D3RenderEngine();
@@ -77,13 +79,15 @@ private:
     void addInOrder(GameObject *obj);
     void resort(GameObject *obj);
 
+    bool comesBefore(GameObject *obj1, GameObject *obj2);
+
     static D3RenderEngine *re;
     Point m_ptPos, m_ptCamPos;
     Color m_crWorld;
     float m_fCamDist, m_fCamAngle;
     uint m_uiWidth, m_uiHeight;
 
-    std::map<float, GameObject *> m_mObjsOnScreen;
+    std::list<GameObject *> m_lsObjsOnScreen;
     std::vector<Image*> m_vImages;
     ContainerRenderModel *m_pHudContainer;
     bool m_bGuiMode;

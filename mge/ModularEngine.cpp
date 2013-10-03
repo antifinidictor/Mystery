@@ -4,6 +4,7 @@
 using namespace std;
 
 ModularEngine *ModularEngine::mge;
+Clock *Clock::m_pInstance;
 
 //Static methods
 void ModularEngine::init(int iSDLVideoFlags) {
@@ -40,11 +41,12 @@ ModularEngine::ModularEngine(int iSDLVideoFlags) {
 	}
 
     m_bIsRunning = true;
-    ck = new Clock();
+    Clock::init();
+    ck = Clock::get();
 }
 
 ModularEngine::~ModularEngine() {
-    delete ck;
+    Clock::clean();
     IMG_Quit();
 	m_mInputMap.clear();
 	SDL_Quit();

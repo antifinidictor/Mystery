@@ -7,6 +7,7 @@
 #include "game/Player.h"
 #include "game/world/SimplePhysicsObject.h"
 #include "game/world/Wall.h"
+#include "game/world/AreaLinkObject.h"
 
 void registerClasses() {
     ObjectFactory *fac = ObjectFactory::get();
@@ -19,7 +20,7 @@ void registerClasses() {
         .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
         .registerAttribute("Texture", "tex", ATYPE_RESOURCE_ID)
         .registerAttribute("Volume", "vol", ATYPE_BOX)
-        .registerAttribute("Color", "cr", ATYPE_BOX)
+        .registerAttribute("Color", "cr", ATYPE_COLOR)
     ;
 
     fac->registerClass(Wall::getClassName(), Wall::read)
@@ -31,6 +32,13 @@ void registerClasses() {
         .registerAttribute("Top Texture",   "tex.up",    ATYPE_RESOURCE_ID)
         .registerAttribute("Bottom Texture", "tex.down", ATYPE_RESOURCE_ID)
         .registerAttribute("Volume", "vol", ATYPE_BOX)
-        .registerAttribute("Color", "cr", ATYPE_BOX)
+        .registerAttribute("Color", "cr", ATYPE_COLOR)
+    ;
+
+    fac->registerClass(AreaLinkObject::getClassName(), AreaLinkObject::read)
+        .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
+        .registerAttribute("Dest Area ID", "destAreaId", ATYPE_OBJECT_ID)
+        .registerAttribute("Dest Position", "dest", ATYPE_POINT)
+        .registerAttribute("Trigger Volume", "vol", ATYPE_BOX)
     ;
 }

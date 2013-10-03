@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <vector>
+#include <ostream>
 
 typedef unsigned int uint;
 
@@ -100,13 +101,18 @@ enum MouseInputID {
     MIN_NUM_MOUSE_INPUTS
 };
 
+enum EventIdAllocs {
+    MGE_EVENTS_BEGIN        = 0x00,
+    AUDIO_EVENTS_BEGIN      = 0x20,
+    WORLD_EVENTS_BEGIN      = 0x40,
+    PHYSICS_EVENTS_BEGIN    = 0x60,
+    RENDER_EVENTS_BEGIN     = 0x80,
+    GAME_EVENTS_BEGIN       = 0x100
+};
+
 enum EventID {      //EventIDs: Add to the World object to listen to them.  Feel free to add to this list.
-	ON_MOUSE_MOVE,      //Called when mouse moves.  WARNING: Mouse position may not be accurate if object is not on screen!
-	ON_BUTTON_INPUT,	//Called on every registered key press or mouse click
-	ON_COLLISION,       //Called when the EventHandler registers a collision
-    ON_SELECT,
-    ON_DESELECT,
-    ON_ACTIVATE,
+	ON_MOUSE_MOVE = MGE_EVENTS_BEGIN, //Called when mouse moves.  WARNING: Mouse position may not be accurate if object is not on screen!
+	ON_BUTTON_INPUT,	        //Called on every registered key press or mouse click
     NUM_EVENT_IDS
 };
 
@@ -197,6 +203,7 @@ typedef struct Vec3f {
     float magnitude() {
         return sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
     }
+    friend std::ostream& operator<< (std::ostream& stream, const Vec3f& v);
 
 	//Nonconstant operators
 	void operator*=(const float val) { x *= val; y *= val; z *= val; }
@@ -219,6 +226,7 @@ typedef struct tRect {
 	tRect() { x = y = 0.0F; w = h = 0; }
 	tRect(float fx, float fy, int iw, int ih) { x = fx; y = fy; w = iw; h = ih; }
 	operator tBox();
+    friend std::ostream& operator<< (std::ostream& stream, const tRect& rc);
 	void operator+=(const Vec3f &pt) { x += pt.x; y += pt.y; }
 	void operator-=(const Vec3f &pt) { x -= pt.x; y -= pt.y; }
 	void operator=(const tRect &rc) { x = rc.x; y = rc.y; w = rc.w; h = rc.h; }
@@ -234,6 +242,7 @@ typedef struct tBox {
 	tBox() { x = y = z = 0.0F; w = l = h = 0; }
 	tBox(float fx, float fy, float fz, int iw, int ih, int il) { x = fx; y = fy; z = fz; w = iw; l = il; h = ih; }
 
+    friend std::ostream& operator<< (std::ostream& stream, const tBox& bx);
 	//Constant operators
 	tBox operator+(const Vec3f &pt) const {  //positive translation
         return tBox(x + pt.x, y + pt.y, z + pt.z, w, h, l);
