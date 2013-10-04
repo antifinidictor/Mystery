@@ -118,6 +118,9 @@ enum EditorHudNewObjIds {
 enum EditorHudSelectionIds {
     ED_HUD_SEL_CANCEL,
     ED_HUD_SEL_FINALIZE,
+    ED_HUD_SEL_SNAP_X,
+    ED_HUD_SEL_SNAP_Y,
+    ED_HUD_SEL_SNAP_Z,
     ED_HUD_NUM_SEL
 };
 
@@ -157,6 +160,10 @@ enum EditorHudOps {
     //The following ops get attributes
     ED_HUD_OP_ATTR,
     ED_HUD_OP_CHOOSE_TEXTURE,
+    //The following snap the position
+    ED_HUD_OP_SNAP_X,
+    ED_HUD_OP_SNAP_Y,
+    ED_HUD_OP_SNAP_Z,
     ED_HUD_NUM_OPS
 };
 

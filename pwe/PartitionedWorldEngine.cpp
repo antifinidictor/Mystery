@@ -30,6 +30,48 @@ PartitionedWorldEngine::~PartitionedWorldEngine() {
     cleanAllAreas();
 }
 
+
+uint
+PartitionedWorldEngine::genID() {
+    uint id;
+    if(m_lsFreeIds.size() > 0) {
+        id = m_lsFreeIds.back();
+        m_lsFreeIds.pop_front();
+    } else {
+        id = m_uiNextID++;
+        //m_lsFreeIds.push_front(id);
+    }
+    return id;
+}
+
+void
+PartitionedWorldEngine::freeID(uint id) {
+    m_lsFreeIds.push_front(id);
+}
+
+uint
+PartitionedWorldEngine::reserveID(uint id) {
+    if(id >= m_uiNextID) {
+        while(id > m_uiNextID) {
+            m_lsFreeIds.push_front(m_uiNextID++);
+        }
+        m_uiNextID++;   //This id is not actually free
+    } else {
+        //Verify ID is actually free!
+        for(list<uint>::iterator iter = m_lsFreeIds.begin(); iter != m_lsFreeIds.end(); ++iter) {
+            if(*iter == id) {
+                m_lsFreeIds.erase(iter);
+                return id;
+            }
+        }
+        uint id2 = genID();
+        printf("WARNING %s %d: ID %d already in use! Replacing with %d, which will break references to this object!\n",
+               __FILE__, __LINE__, id, id2);
+       id = id2;
+    }
+    return id;
+}
+
 void
 PartitionedWorldEngine::update(uint time) {
     list<GameObject*> lsHasMoved;
@@ -497,7 +539,7 @@ PartitionedWorldEngine::addToNow(GameObject *obj, uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea != m_mWorld.end()) {
         itArea->second.m_mCurArea[obj->getID()] = obj;
-        obj->callBack(0, &uiAreaId, PWE_ON_ADDED_TO_AREA);
+        obj->callBack(getID(), &uiAreaId, PWE_ON_ADDED_TO_AREA);
     } else {
         printf("ERROR %s %d: Tried to add object to nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;

@@ -50,6 +50,9 @@ public:
     std::string getText() { return m_sInput; }
     void clearText() { m_sInput.clear(); }
     void setText(const std::string &s) { m_sInput = s; }
+    void snapX();
+    void snapY();
+    void snapZ();
 
 private:
     //state-specific update functions
@@ -67,8 +70,10 @@ private:
     void typeOnKeyPress(InputData *data);
 
     Point toTile(const Point &pt);
+    Point getTileShift();
 
-    uint m_uiId, m_uiFlags, m_uiAreaId;
+    uint m_uiId, m_uiFlags;
+    uint m_uiAreaId;
     SelectionRenderModel *m_pRenderModel;
     AbstractTimePhysicsModel *m_pPhysicsModel;
 

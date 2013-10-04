@@ -18,5 +18,6 @@ void cleanAudioEngine();
 int getSDLVideoFlags();
 
 void initWorld();
+void cleanWorld();
 
 #endif

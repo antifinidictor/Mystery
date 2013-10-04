@@ -18,6 +18,9 @@ int main(int argc, char *argv[])
 	//Run the game
 	ModularEngine::get()->run();
 
+    //Clean the parts of the game not cleaned by the engines
+    cleanWorld();
+
     cleanPhysicsEngine();
     cleanRenderEngine();
     cleanAudioEngine();

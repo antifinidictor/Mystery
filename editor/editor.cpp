@@ -30,9 +30,6 @@ using namespace std;
 //Engine initialization, cleanup
 WorldEngine   *createWorldEngine() {
     PWE::init();
-    ObjectFactory::init();
-    EditorManager::init();
-    PWE::get()->setManager(EditorManager::get());
     return PWE::get();
 }
 
@@ -55,8 +52,6 @@ AudioEngine   *createAudioEngine() {
 
 void cleanWorldEngine() {
     PWE::clean();
-    ObjectFactory::clean();
-    EditorManager::clean();
 }
 
 void cleanPhysicsEngine() {
@@ -81,6 +76,10 @@ void initWorld() {
     PartitionedWorldEngine *we = PWE::get();
     we->setPhysicsEngine(TimePhysicsEngine::get());
     we->setRenderEngine(D3RE::get());
+
+    ObjectFactory::init();
+    EditorManager::init();
+    we->setManager(EditorManager::get());
 
     registerClasses();
 
@@ -145,3 +144,7 @@ void initWorld() {
     we->add(ed);
 }
 
+void cleanWorld() {
+    ObjectFactory::clean();
+    EditorManager::clean();
+}

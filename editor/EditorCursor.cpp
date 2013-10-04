@@ -24,7 +24,7 @@ EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
     m_ptDeltaPos = Point();
     m_fDeltaPitch = m_fDeltaZoom = 0.f;
 
-    PWE *we = PWE::get();
+    //PWE *we = PWE::get();
     //we->addListener(this, ON_BUTTON_INPUT, m_uiAreaId);
     //we->addListener(this, PWE_ON_AREA_SWITCH, m_uiAreaId);
 
@@ -197,16 +197,39 @@ EditorCursor::staticUpdate() {
     //TODO: Anything here?
 }
 
+#define HALF_TILE_SIZE (TILE_SIZE / 2)
+
+void
+EditorCursor::snapX() {
+    Point ptPos = m_pPhysicsModel->getPosition();
+    float delta = (((int)ptPos.x) / HALF_TILE_SIZE) * HALF_TILE_SIZE - ptPos.x;
+    m_pPhysicsModel->moveBy(Point(delta,0.f,0.f));
+}
+
+void
+EditorCursor::snapY() {
+    Point ptPos = m_pPhysicsModel->getPosition();
+    float delta = (((int)ptPos.y) / HALF_TILE_SIZE) * HALF_TILE_SIZE - ptPos.y;
+    m_pPhysicsModel->moveBy(Point(0.f,delta,0.f));
+}
+
+void
+EditorCursor::snapZ() {
+    Point ptPos = m_pPhysicsModel->getPosition();
+    float delta = (((int)ptPos.z) / HALF_TILE_SIZE) * HALF_TILE_SIZE - ptPos.z;
+    m_pPhysicsModel->moveBy(Point(0.f,0.f,delta));
+}
+
 void
 EditorCursor::moveUpdate() {
     //Move the cursor
     m_pPhysicsModel->moveBy(m_ptDeltaPos);
 
     //Tile size jump?
-    Point ptTileShift = toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2));
+    Point ptTileShift = getTileShift();//toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2));
     m_ptTilePos += Point(ptTileShift);
     m_pRenderModel->moveBy(ptTileShift);
-    m_pRenderModel->movePosition(m_ptDeltaPos);
+    m_pRenderModel->setPosition(m_pPhysicsModel->getPosition());
 
     //Update the camera
     D3RE::get()->adjustCamAngle(m_fDeltaPitch);
@@ -216,8 +239,9 @@ EditorCursor::moveUpdate() {
 
     //Update HUD display of the position
     std::ostringstream posText;
+    Point pt = m_pPhysicsModel->getPosition();
     posText << "#0000FF#(" << m_ptTilePos.x << "," << m_ptTilePos.y << ","
-            << m_ptTilePos.z << ")";
+            << m_ptTilePos.z << ")\n(" << pt.x << "," << pt.y << "," << pt.z << ")";
     D3RE::get()->getHudContainer()->get<D3HudRenderModel*>(ED_HUD_CURSOR_POS)->updateText(posText.str());
 }
 
@@ -227,7 +251,7 @@ EditorCursor::selectVolumeUpdate() {
     m_pPhysicsModel->moveBy(m_ptDeltaPos);
 
     //Tile size jump?
-    Point ptTileShift = toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2));
+    Point ptTileShift = getTileShift();//toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2));
     m_ptTilePos += Point(ptTileShift);
     Box bxVolume = Box(
         m_ptTilePos.x < m_ptInitSelectPos.x ? m_ptTilePos.x : m_ptInitSelectPos.x,
@@ -246,7 +270,7 @@ EditorCursor::selectVolumeUpdate() {
             << "," << bxVolume.l << ")";
     D3HudRenderModel *cpos = D3RE::get()->getHudContainer()->get<D3HudRenderModel*>(ED_HUD_CURSOR_POS);
     cpos->updateText(posText.str());
-    
+
     D3RE::get()->moveScreenTo(m_pPhysicsModel->getPosition());
 }
 
@@ -399,4 +423,33 @@ EditorCursor::toTile(const Point &pt) {
     return res;
 }
 
+Point
+EditorCursor::getTileShift() {
+    Point ptPos = m_pPhysicsModel->getPosition();
+    Point ptShift;
+    if(ptPos.x < m_ptTilePos.x) {
+        ptShift.x = -TILE_SIZE;
+    } else if(ptPos.x > m_ptTilePos.x + TILE_SIZE) {
+        ptShift.x = TILE_SIZE;
+    } else {
+        ptShift.x = 0.f;
+    }
+
+    if(ptPos.y < m_ptTilePos.y) {
+        ptShift.y = -TILE_SIZE;
+    } else if(ptPos.y > m_ptTilePos.y + TILE_SIZE) {
+        ptShift.y = TILE_SIZE;
+    } else {
+        ptShift.y = 0.f;
+    }
+
+    if(ptPos.z < m_ptTilePos.z) {
+        ptShift.z = -TILE_SIZE;
+    } else if(ptPos.z > m_ptTilePos.z + TILE_SIZE) {
+        ptShift.z = TILE_SIZE;
+    } else {
+        ptShift.z = 0.f;
+    }
+    return ptShift;
+}
 

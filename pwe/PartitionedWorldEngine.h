@@ -36,8 +36,9 @@ public:
 
     virtual void setPhysicsEngine(PhysicsEngine *pe) { this->pe = pe; }
     virtual void setRenderEngine(RenderEngine *re)   { this->re = re; }
-    virtual uint genID() { return m_uiNextID++; }
-    virtual void free(uint id) {}
+    virtual uint genID();
+    virtual void freeID(uint id);
+    virtual uint reserveID(uint id);
 
     virtual void update(uint time);
     virtual void add(GameObject *obj);      //Adds object to current area
@@ -122,6 +123,8 @@ private:
     std::list<std::pair<uint,uint> > m_lsObjsToRemove;
     std::list<std::pair<uint,uint> > m_lsObjsToDelete;
     std::list<std::pair<GameObject*,uint> > m_lsObjsToAdd;
+
+    std::list<uint> m_lsFreeIds;
 
     GameObject *m_pManagerObject;   //This object performs management functions
 

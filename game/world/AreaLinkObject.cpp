@@ -7,6 +7,9 @@
 #include "pwe/PartitionedWorldEngine.h"
 
 AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPos, const Box &bxTriggerVolume) {
+    m_uiID = id;
+    m_uiFlags = 0;
+
     m_pRenderModel = new D3PrismRenderModel(this, Box(-bxTriggerVolume.w / 2, -bxTriggerVolume.h / 2, -bxTriggerVolume.l / 2,
                                                        bxTriggerVolume.w,      bxTriggerVolume.h,      bxTriggerVolume.l));
     //Prism render model because in the editor, it will look like a volume
@@ -20,23 +23,22 @@ AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPo
     m_pPhysicsModel = new TimePhysicsModel(bxTriggerVolume);
     m_pPhysicsModel->setListener(this);
 
-    m_uiID = id;
     m_uiDestAreaId = uiDestAreaId;
     m_ptDestPos = ptDestPos;
-    m_uiFlags = 0;
 
     setFlag(TPE_STATIC, true);
     setFlag(TPE_PASSABLE, true);
 }
 
 AreaLinkObject::~AreaLinkObject() {
+    PWE::get()->freeID(getID());
     delete m_pRenderModel;
     delete m_pPhysicsModel;
 }
 
 GameObject*
 AreaLinkObject::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
-    uint uiId = pt.get(keyBase + ".id", 0);
+    uint uiId = PWE::get()->reserveID(pt.get(keyBase + ".id", 0));
     uint uiAreaId = pt.get(keyBase + ".destAreaId", 0);
     Box bxVolume;
     bxVolume.x = pt.get(keyBase + ".vol.x", 0.f);
@@ -80,7 +82,6 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
         Point ptPosDelta = m_ptDestPos - hcd->obj->getPhysicsModel()->getPosition();
         hcd->obj->moveBy(ptPosDelta);
         we->moveObjectToArea(hcd->obj->getID(), we->getCurrentArea(), m_uiDestAreaId);
-        we->setCurrentArea(m_uiDestAreaId);
         break;
       }
     default:

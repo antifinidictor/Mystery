@@ -48,7 +48,8 @@ bool
 EditorManager::update(uint time) {
     //Handle events
     while(!m_qEvents.empty()) {
-        switch(m_qEvents.front()) {
+        uint eventId = m_qEvents.front();
+        switch(eventId) {
         case ED_HUD_OP_FINALIZE: {
             //Do some additional stuff here before popping the state
             switch(m_skState.top()) {
@@ -173,6 +174,15 @@ EditorManager::update(uint time) {
             pushState(ED_STATE_CREATE_OBJECT);
             break;
           }
+        case ED_HUD_OP_SNAP_X:
+            m_pEditorCursor->snapX();
+            break;
+        case ED_HUD_OP_SNAP_Y:
+            m_pEditorCursor->snapY();
+            break;
+        case ED_HUD_OP_SNAP_Z:
+            m_pEditorCursor->snapZ();
+            break;
         case ED_HUD_OP_ATTR: {
             switch(m_eCurAttrType) {
             case ATYPE_RESOURCE_ID: {
@@ -298,7 +308,7 @@ EditorManager::callBack(uint cID, void *data, uint eventId) {
     case ED_HUD_OP_ATTR: {
         uint uiAttrId = m_uiObjFirst + cID - m_uiHudObjButtonIdStart;
         list<ObjectFactory::AttributeInfo>::iterator iter = m_pCurData->m_lsAttributeInfo.begin();
-        for(int i = 0; i < uiAttrId; ++i) {
+        for(uint i = 0; i < uiAttrId; ++i) {
             ++iter; //Skip uiAttrId attributes
         }
         m_sCurKey = iter->m_sAttributeKey;
@@ -624,7 +634,7 @@ EditorManager::initAttributeListPanel(uint uiStart) {
     m_uiObjMax = m_pCurData->m_lsAttributeInfo.size() - 1;
 
     list<ObjectFactory::AttributeInfo>::iterator iter = m_pCurData->m_lsAttributeInfo.begin();
-    for(int i = 0; i < uiStart; ++i) {
+    for(uint i = 0; i < uiStart; ++i) {
         ++iter; //Skip uiStart attributes
     }
 
@@ -754,8 +764,14 @@ EditorManager::initSelectionHud(EditorCursorState eState) {
     int i = 0;
     EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
     EditorHudButton *finalize = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, "Select", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *snapX = new EditorHudButton(rpanel, ED_HUD_OP_SNAP_X, "Snap X", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *snapY = new EditorHudButton(rpanel, ED_HUD_OP_SNAP_Y, "Snap Y", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    EditorHudButton *snapZ = new EditorHudButton(rpanel, ED_HUD_OP_SNAP_Z, "Snap Z", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
     rpanel->add(ED_HUD_SEL_CANCEL, cancel);
     rpanel->add(ED_HUD_SEL_FINALIZE, finalize);
+    rpanel->add(ED_HUD_SEL_SNAP_X, snapX);
+    rpanel->add(ED_HUD_SEL_SNAP_Y, snapY);
+    rpanel->add(ED_HUD_SEL_SNAP_Z, snapZ);
 
     if(m_pEditorCursor != NULL) {
         m_pEditorCursor->setState(eState);

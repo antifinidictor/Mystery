@@ -23,13 +23,14 @@ Player::Player(uint uiId, const Point &ptPos) {
 }
 
 Player::~Player() {
+    PWE::get()->freeID(getID());
     delete m_pPhysicsModel;
     delete m_pRenderModel;
 }
 
 GameObject*
 Player::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
-    uint id = pt.get(keyBase + ".id", 0);
+    uint id = PWE::get()->reserveID(pt.get(keyBase + ".id", 0));
     float x = pt.get(keyBase + ".pos.x", 0.f);
     float y = pt.get(keyBase + ".pos.y", 0.f);
     float z = pt.get(keyBase + ".pos.z", 0.f);
@@ -42,7 +43,7 @@ Player::read(const boost::property_tree::ptree &pt, const std::string &keyBase) 
 void
 Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     Point ptPos = m_pPhysicsModel->getPosition();
-    pt.put(keyBase + ".id", m_uiId);
+    pt.put(keyBase + ".id", getID());
     pt.put(keyBase + ".pos.x", ptPos.x);
     pt.put(keyBase + ".pos.y", ptPos.y);
     pt.put(keyBase + ".pos.z", ptPos.z);
@@ -94,6 +95,7 @@ void Player::callBack(uint cID, void *data, uint id) {
     switch(id) {
     case PWE_ON_ADDED_TO_AREA:
         PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
+        PWE::get()->setCurrentArea(*((uint*)data));
         break;
     case PWE_ON_REMOVED_FROM_AREA:
         PWE::get()->removeListener(getID(), ON_BUTTON_INPUT, *((uint*)data));

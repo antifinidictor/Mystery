@@ -3,8 +3,12 @@
  */
 
 #include "SimplePhysicsObject.h"
+#include "pwe/PartitionedWorldEngine.h"
 
 SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume) {
+    m_uiID = id;
+    m_uiFlags = 0;
+
     Image *img = D3RE::get()->getImage(texId);
     m_pRenderModel = new D3PrismRenderModel(this, Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                                                        bxVolume.w,      bxVolume.h,      bxVolume.l));
@@ -18,18 +22,17 @@ SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume) {
 
     m_pPhysicsModel = new TimePhysicsModel(bxVolume);
 
-    m_uiID = id;
-    m_uiFlags = 0;
 }
 
 SimplePhysicsObject::~SimplePhysicsObject() {
+    PWE::get()->freeID(getID());
     delete m_pRenderModel;
     delete m_pPhysicsModel;
 }
 
 GameObject*
 SimplePhysicsObject::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
-    uint uiId = pt.get(keyBase + ".id", 0);
+    uint uiId = PWE::get()->reserveID(pt.get(keyBase + ".id", 0));
     uint uiTexId = pt.get(keyBase + ".tex", 0);
     Box bxVolume;
     bxVolume.x = pt.get(keyBase + ".vol.x", 0.f);

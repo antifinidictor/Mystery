@@ -1,4 +1,5 @@
 #include "Wall.h"
+#include "pwe/PartitionedWorldEngine.h"
 
 Wall::Wall(uint uiId, uint texTopId, uint texBottomId, uint texSideId, Box bxVolume, uint visibleFaces) {
     m_uiId = uiId;
@@ -20,13 +21,14 @@ Wall::Wall(uint uiId, uint texTopId, uint texBottomId, uint texSideId, Box bxVol
 }
 
 Wall::~Wall() {
+    PWE::get()->freeID(getID());
     delete m_pRenderModel;
     delete m_pPhysicsModel;
 }
 
 GameObject*
 Wall::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
-    uint uiId = pt.get(keyBase + ".id", 0);
+    uint uiId = PWE::get()->reserveID(pt.get(keyBase + ".id", 0));
     Box bxVolume;
     bxVolume.x = pt.get(keyBase + ".vol.x", 0.f);
     bxVolume.y = pt.get(keyBase + ".vol.y", 0.f);

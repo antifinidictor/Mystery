@@ -33,7 +33,6 @@ void buildWorld();
 //Engine initialization, cleanup
 WorldEngine   *createWorldEngine() {
     PWE::init();
-    ObjectFactory::init();
     return PWE::get();
 }
 
@@ -56,7 +55,6 @@ AudioEngine   *createAudioEngine() {
 
 void cleanWorldEngine() {
     PWE::clean();
-    ObjectFactory::clean();
 }
 
 void cleanPhysicsEngine() {
@@ -81,6 +79,8 @@ void initWorld() {
     PartitionedWorldEngine *we = PWE::get();
     we->setPhysicsEngine(TimePhysicsEngine::get());
     we->setRenderEngine(D3RE::get());
+
+    ObjectFactory::init();
 
     registerClasses();
 
@@ -126,6 +126,11 @@ void initWorld() {
     D3RE::get()->setBackgroundColor(Color(0x9a,0xd7,0xfb));
 
     //buildWorld();
+}
+
+
+void cleanWorld() {
+    ObjectFactory::clean();
 }
 
 void buildRoom(Box bxVol) {
@@ -185,3 +190,4 @@ void buildWorld() {
     Player *player = new Player(we->genID(), Point());
     we->add(player);
 }
+

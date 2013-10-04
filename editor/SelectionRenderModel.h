@@ -16,12 +16,23 @@ public:
 
     virtual ~SelectionRenderModel() {}
 
+#define CROSS_RAD 2.5f
+
     virtual void render(RenderEngine *re) {
+        //Volume
         D3RE::get()->drawBox(m_bxVolume, m_crColor);
 
         glBegin(GL_LINES);
+            //Vertical line
             glVertex3f(m_ptPos.x, m_bxVolume.y, m_ptPos.z);
             glVertex3f(m_ptPos.x, m_ptPos.y, m_ptPos.z);
+
+            //Cross
+            glVertex3f(m_ptPos.x - CROSS_RAD, m_ptPos.y, m_ptPos.z + CROSS_RAD);
+            glVertex3f(m_ptPos.x + CROSS_RAD, m_ptPos.y, m_ptPos.z - CROSS_RAD);
+
+            glVertex3f(m_ptPos.x - CROSS_RAD, m_ptPos.y, m_ptPos.z - CROSS_RAD);
+            glVertex3f(m_ptPos.x + CROSS_RAD, m_ptPos.y, m_ptPos.z + CROSS_RAD);
         glEnd();
     }
 

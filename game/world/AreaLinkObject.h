@@ -23,9 +23,9 @@ public:
 
     //General
     virtual uint getID() { return m_uiID; }
-    virtual bool update(uint time)              { return false; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
+    virtual bool update(uint time)              { return false; }
     virtual uint getType() { return TYPE_GENERAL; }
     virtual const std::string getClass()        { return getClassName(); }
     static const std::string getClassName()     { return "AreaLinkObject"; }
@@ -38,8 +38,7 @@ public:
     virtual PhysicsModel *getPhysicsModel() { return m_pPhysicsModel; }
 
 private:
-    uint m_uiID;
-    uint m_uiFlags;
+    uint m_uiID, m_uiFlags;
     uint m_uiDestAreaId;
     Point m_ptDestPos;
 

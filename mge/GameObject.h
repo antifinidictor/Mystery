@@ -10,18 +10,20 @@
 #include "mge/PhysicsModel.h"
 #include "mge/RenderModel.h"
 #include "mge/Event.h"
+#include "mge/ModularEngine.h"
 #include <boost/property_tree/ptree.hpp>
 
 class GameObject : public Listener {
 public:
     //Destructor
-    virtual ~GameObject() {}
+    virtual ~GameObject() {
+    }
 
     //General
     //virtual uint getID() = 0;
-    virtual bool update(uint time) = 0; //Returns true if the object should be deleted after this turn
     virtual bool getFlag(uint flag) = 0;
     virtual void setFlag(uint flag, bool value) = 0;
+    virtual bool update(uint time) = 0; //Returns true if the object should be deleted after this turn
     virtual uint getType() = 0;         //Returns some identifier indicating the object's class
     virtual const std::string getClass() = 0;   //Returns the human-readable class name
     virtual const std::string getName() {

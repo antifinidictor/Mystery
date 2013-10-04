@@ -45,6 +45,10 @@ public:
 	void setPhysicsEngine(PhysicsEngine *pe)    { this->pe = pe; }
 	void setRenderEngine(RenderEngine *re)      { this->re = re; }
 	void setAudioEngine(AudioEngine *ae)        { this->ae = ae; }
+	WorldEngine   *getWorldEngine()  { return we; }
+	PhysicsEngine *getPhysicsEngine() { return pe; }
+	RenderEngine  *getRenderEngine() { return re; }
+	AudioEngine   *getAudioEngine()  { return ae; }
 
     //Input adjustment
     void mapInput(int iSdlInputName, int iGameInputName);
