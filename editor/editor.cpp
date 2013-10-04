@@ -139,7 +139,7 @@ void initWorld() {
     D3RE::get()->setBackgroundColor(Color(0x0,0x0,0x0));
 
     //Create first editor object for initial area
-    EditorCursor *ed = new EditorCursor(we->genID(), ED_AREA_0, Point());
+    EditorCursor *ed = new EditorCursor(we->genId(), ED_AREA_0, Point());
     EditorManager::get()->setEditorCursor(ed);
     we->add(ed);
 }

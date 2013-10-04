@@ -50,6 +50,7 @@ D3RenderEngine::D3RenderEngine() {
     m_ptPos = Point();
     updateCamPos();
     m_crWorld = Color(0xFF, 0xFF, 0xFF);
+    m_fColorWeight = 0.5f;
     m_bGuiMode = false;
 
     m_pHudContainer = new ContainerRenderModel(Rect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT));
@@ -118,7 +119,7 @@ void
 D3RenderEngine::remove(GameObject *obj) {
     for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
             it != m_lsObjsOnScreen.end(); ++it) {
-        if(obj->getID() == (*it)->getID()) {
+        if(obj->getId() == (*it)->getId()) {
             m_lsObjsOnScreen.erase(it);
             obj->setFlag(D3RE_ON_SCREEN, false);
             return;

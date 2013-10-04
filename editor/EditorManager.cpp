@@ -12,6 +12,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
 
+uint EditorHudButton::s_uiHudId = 0;
+
 using namespace std;
 using namespace boost;
 
@@ -27,7 +29,7 @@ EditorManager::EditorManager(uint uiId) {
     m_skState.push(ED_STATE_INIT);
     m_uiCurAreaId = 1;
     m_uiAreaFirst = 0;
-    m_uiSwitchedAreaId = 0;
+    m_uiCurAreaId = 0;
     m_uiObjFirst = 0;
     m_uiHudObjButtonIdStart = 0;
     m_uiHudAreaButtonIdStart = 0;
@@ -67,9 +69,9 @@ EditorManager::update(uint time) {
             case ED_STATE_NAME_AREA:
                 PWE::get()->setAreaName(PWE::get()->getCurrentArea(), m_pEditorCursor->getText());
                 initAreaListPanel(m_uiAreaFirst);
-                m_uiCurAreaId = m_vAreas.size();
                 break;
             case ED_STATE_CREATE_OBJECT: {
+                PWE::get()->freeId(m_uiCurObjId);   //The object will attempt to reserve it in a minute
                 GameObject *obj = ObjectFactory::get()->createFromAttributes();
                 PWE::get()->add(obj);
                 break;
@@ -164,7 +166,7 @@ EditorManager::update(uint time) {
             pushState(ED_STATE_LIST_OBJECTS);
             break;
         case ED_HUD_OP_CHOOSE_OBJ: {
-            m_uiCurObjId = PWE::get()->genID();
+            m_uiCurObjId = PWE::get()->genId();
             ostringstream obName;
             obName << m_sCurClassName << m_uiCurObjId;
             m_pCurData = &ObjectFactory::get()->initObject(m_sCurClassName, obName.str());
@@ -236,15 +238,15 @@ EditorManager::update(uint time) {
             m_pEditorCursor->setText("res/");
             pushState(ED_STATE_NEW_TEXTURE);
             break;
-        case ED_HUD_OP_NEW_AREA:
-            PWE::get()->generateArea(m_uiCurAreaId);
-            PWE::get()->setCurrentArea(m_uiCurAreaId);
-            m_uiSwitchedAreaId = m_uiCurAreaId;
-            m_pEditorCursor->moveToArea(m_uiCurAreaId);
-            m_pEditorCursor->setText(PWE::get()->getAreaName(m_uiCurAreaId));
-            m_uiCurAreaId++;
+        case ED_HUD_OP_NEW_AREA: {
+            uint uiAreaId = PWE::get()->generateArea();
+            PWE::get()->setCurrentArea(uiAreaId);
+            m_uiCurAreaId = uiAreaId;
+            m_pEditorCursor->moveToArea(uiAreaId);
+            m_pEditorCursor->setText(PWE::get()->getAreaName(uiAreaId));
             pushState(ED_STATE_NAME_AREA);
             break;
+        }
         case ED_HUD_OP_RENAME_AREA:
             m_pEditorCursor->setText(PWE::get()->getAreaName(PWE::get()->getCurrentArea()));
             pushState(ED_STATE_NAME_AREA);
@@ -296,7 +298,7 @@ EditorManager::callBack(uint cID, void *data, uint eventId) {
         //Get the actual area in question
         uint uiAreaId = m_uiAreaFirst + cID - m_uiHudAreaButtonIdStart;
         PWE::get()->setCurrentArea(uiAreaId);
-        m_uiSwitchedAreaId = uiAreaId;
+        m_uiCurAreaId = uiAreaId;
         m_pEditorCursor->moveToArea(uiAreaId);
         break;
       }
@@ -350,7 +352,6 @@ EditorManager::callBack(uint cID, void *data, uint eventId) {
 
 void
 EditorManager::pushState(EditorState eState) {
-    printf("State %d pushed\n", eState);
     cleanState(m_skState.top());
     m_skState.push(eState);
     initState(m_skState.top());
@@ -358,7 +359,6 @@ EditorManager::pushState(EditorState eState) {
 
 void
 EditorManager::popState() {
-    printf("State %d popped\n", m_skState.top());
     cleanState(m_skState.top());
     m_skState.pop();
     initState(m_skState.top());
@@ -541,16 +541,16 @@ EditorManager::initAreaListPanel(uint uiAreaFirst) {
 
     uint i = 0;
     for(vector<uint>::iterator iter = m_vAreas.begin() + uiAreaFirst; iter < m_vAreas.end() && i < MAX_LIST_SIZE; ++iter) {
-        string name;
-        if((*iter) == m_uiSwitchedAreaId) {
-            name = "#00FF00#" + PWE::get()->getAreaName(*iter);
+        ostringstream name;
+        if((*iter) == m_uiCurAreaId) {
+            name << "#00FF00#" << *iter << " " << PWE::get()->getAreaName(*iter);
         } else {
-            name = PWE::get()->getAreaName(*iter);
+            name << *iter << " " << PWE::get()->getAreaName(*iter);
         }
-        EditorHudButton *area = new EditorHudButton(lspanel, ED_HUD_OP_GO_TO_AREA, name, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+        EditorHudButton *area = new EditorHudButton(lspanel, ED_HUD_OP_GO_TO_AREA, name.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
         lspanel->add(i, area);
         if(i == 0) {
-            m_uiHudAreaButtonIdStart = area->getID();
+            m_uiHudAreaButtonIdStart = area->getHudID();
         }
         ++i;
     }
@@ -593,10 +593,9 @@ EditorManager::initClassListPanel(uint uiStart) {
         EditorHudButton *classButton = new EditorHudButton(lspanel, ED_HUD_OP_CHOOSE_OBJ, **iter, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
         lspanel->add(i, classButton);
         if(i == 0) {
-            m_uiHudObjButtonIdStart = classButton->getID();
+            m_uiHudObjButtonIdStart = classButton->getHudID();
         }
         i++;
-        printf("Found class: %s\n", (*iter)->c_str());
     }
 }
 
@@ -646,32 +645,26 @@ EditorManager::initAttributeListPanel(uint uiStart) {
         switch(iter->m_eType) {
         case ATYPE_INT:
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            printf("int\n");
             break;
         case ATYPE_UINT:
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            printf("uint\n");
             break;
         case ATYPE_FLOAT:
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            printf("float\n");
             break;
         case ATYPE_POINT: {
             attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, Point());
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            printf("point\n");
             break;
           }
         case ATYPE_RECT: {
             attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, Rect());
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            printf("rect\n");
             break;
           }
         case ATYPE_BOX: {
             attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, Box());
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            printf("box\n");
             break;
           }
         case ATYPE_COLOR: {
@@ -680,12 +673,10 @@ EditorManager::initAttributeListPanel(uint uiStart) {
             D3HudRenderModel *tex = new D3HudRenderModel(1, Rect(BUTTON_WIDTH - TILE_SIZE, BUTTON_HEIGHT * i, TILE_SIZE, TILE_SIZE));
             tex->setImageColor(cr);
             lspanel->add(i * 2 + 1, tex);
-            printf("color\n");
             break;
           }
         case ATYPE_STRING:
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            printf("string\n");
             break;
         case ATYPE_RESOURCE_ID: {
             uint texId = m_pCurData->getAttribute(iter->m_sAttributeKey, (uint)0);
@@ -693,13 +684,11 @@ EditorManager::initAttributeListPanel(uint uiStart) {
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             D3HudRenderModel *tex = new D3HudRenderModel(texId, Rect(BUTTON_WIDTH - TILE_SIZE, BUTTON_HEIGHT * i, TILE_SIZE, TILE_SIZE));
             lspanel->add(i * 2 + 1, tex);
-            printf("resource id\n");
             break;
           }
         case ATYPE_OBJECT_ID: {
             attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, 0);
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            printf("object id\n");
             break;
           }
         default:
@@ -708,7 +697,7 @@ EditorManager::initAttributeListPanel(uint uiStart) {
         }
         lspanel->add(i * 2, attrButton);    //allows space for additional displays
         if(i == 0) {
-            m_uiHudObjButtonIdStart = attrButton->getID();
+            m_uiHudObjButtonIdStart = attrButton->getHudID();
         }
         i++;
     }
@@ -751,7 +740,7 @@ EditorManager::initTextureListPanel(uint uiStart) {
         lspanel->add(i * 2, texButton);
         lspanel->add(i * 2 + 1, tex);
         if(i == 0) {
-            m_uiHudObjButtonIdStart = texButton->getID();
+            m_uiHudObjButtonIdStart = texButton->getHudID();
         }
         i++;
     }
@@ -760,7 +749,6 @@ EditorManager::initTextureListPanel(uint uiStart) {
 void
 EditorManager::initSelectionHud(EditorCursorState eState) {
     ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
-    printf("Size = %d\n", rpanel->getNumModels());
     int i = 0;
     EditorHudButton *cancel = new EditorHudButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
     EditorHudButton *finalize = new EditorHudButton(rpanel, ED_HUD_OP_FINALIZE, "Select", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);

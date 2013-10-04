@@ -36,9 +36,10 @@ public:
 
     virtual void setPhysicsEngine(PhysicsEngine *pe) { this->pe = pe; }
     virtual void setRenderEngine(RenderEngine *re)   { this->re = re; }
-    virtual uint genID();
-    virtual void freeID(uint id);
-    virtual uint reserveID(uint id);
+    virtual uint genId();
+    virtual uint peekId();  //Gets a new id while allowing it to remain free: Use if the ID will be reserved later
+    virtual void freeId(uint id);
+    virtual uint reserveId(uint id);
 
     virtual void update(uint time);
     virtual void add(GameObject *obj);      //Adds object to current area
@@ -48,15 +49,16 @@ public:
     GameObject *findIn(uint uiObjId, uint uiAreaId);
 
     //Specific to the partitioned world engine
-    void generateArea(uint uiAreaId);                   //generates a new area and returns its id
-    void setCurrentArea(uint uiAreaID);                 //Queue a set to the current area
+    uint generateArea();                                //generates a new area and returns its id
+    void generateArea(uint uiAreaId);                   //generates a new area with the requested id
+    void setCurrentArea(uint uiAreaId);                 //Queue a set to the current area
     uint getCurrentArea() { return m_uiCurArea; }
-    void setEffectiveArea(uint uiAreaID) { m_uiEffectiveArea = uiAreaID; }  //Set when adding objects to some area not currently set
+    void setEffectiveArea(uint uiAreaId) { m_uiEffectiveArea = uiAreaId; }  //Set when adding objects to some area not currently set
     void restoreEffectiveArea() { m_uiEffectiveArea = m_uiCurArea; }        //Unset when finished adding objects to a non-current area
-    void moveObjectToArea(uint uiObjID, uint uiStartAreaID, uint uiEndAreaID);
-    void addTo(GameObject *obj, uint uiAreaID);         //Adds object to specified area
-    void removeFrom(uint uiObjID, uint uiAreaID);       //Removes object from specified area and the screen
-    void cleanArea(uint uiAreaID);                      //Removes all objects from the specified area and deletes them.  Do NOT use on the current area!
+    void moveObjectToArea(uint uiObjId, uint uiStartAreaId, uint uiEndAreaId);
+    void addTo(GameObject *obj, uint uiAreaId);         //Adds object to specified area
+    void removeFrom(uint uiObjId, uint uiAreaId);       //Removes object from specified area and the screen
+    void cleanArea(uint uiAreaId);                      //Removes all objects from the specified area and deletes them.  Do NOT use on the current area!
 
     const std::string getAreaName(uint uiAreaId);
     void setAreaName(uint uiAreaId, const std::string &name);
@@ -68,15 +70,15 @@ public:
     void getAreas(std::vector<uint> &vAreas); //Populates the list with a list of areas
 
     //Listener
-    virtual uint getID() { return ID_WORLD_ENGINE; }
-	virtual void callBack(uint cID, void *data, uint id);
+    virtual uint getId() { return ID_WORLD_ENGINE; }
+	virtual void callBack(uint cId, void *data, uint id);
 
     //Event Handler
-    virtual void addListener(Listener *pListener, uint eventID, char* triggerData = 0) { addListener(pListener, eventID, m_uiEffectiveArea, triggerData); }
-    virtual bool removeListener(uint uiListenerID, uint eventID) { return removeListener(uiListenerID, eventID, m_uiEffectiveArea); }
+    virtual void addListener(Listener *pListener, uint eventId, char* triggerData = 0) { addListener(pListener, eventId, m_uiEffectiveArea, triggerData); }
+    virtual bool removeListener(uint uiListenerId, uint eventId) { return removeListener(uiListenerId, eventId, m_uiEffectiveArea); }
 
-    void addListener(Listener *pListener, uint eventID, uint uiAreaID, char* triggerData = 0);
-    bool removeListener(uint uiListenerID, uint eventID, uint uiAreaID);
+    void addListener(Listener *pListener, uint eventId, uint uiAreaId, char* triggerData = 0);
+    bool removeListener(uint uiListenerId, uint eventId, uint uiAreaId);
 
     void setState(WorldState eState) { m_eNextState = eState; }
     void setManager(GameObject *obj) { m_pManagerObject = obj; }
@@ -128,7 +130,8 @@ private:
 
     GameObject *m_pManagerObject;   //This object performs management functions
 
-    uint m_uiNextID;
+    uint m_uiNextId;
+    uint m_uiNextAreaId;
 
     M_Area *m_pCurArea;
     WorldState m_eState, m_eNextState;

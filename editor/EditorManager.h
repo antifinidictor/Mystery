@@ -17,7 +17,7 @@ class EditorCursor;
 
 class EditorManager : public GameObject {
 public:
-    static void init() { m_pInstance = new EditorManager(PWE::get()->genID()); }
+    static void init() { m_pInstance = new EditorManager(PWE::get()->genId()); }
     static EditorManager *get() { return m_pInstance; }
     static void clean() { delete m_pInstance; }
 
@@ -25,7 +25,7 @@ public:
 
     virtual bool update(uint time);
 
-    virtual uint getID()                        { return m_uiId; }
+    virtual uint getId()                        { return m_uiId; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
     virtual uint getType()                      { return ED_TYPE_EDITOR_OBJECT; }
@@ -91,7 +91,6 @@ private:
     uint m_uiHudAreaButtonIdStart;
     uint m_uiAreaFirst;
     uint m_uiCurAreaId;
-    uint m_uiSwitchedAreaId;
 
     //Right-panel list (classes, attribues, textures, etc)
     uint m_uiHudObjButtonIdStart; //start of obj ids;

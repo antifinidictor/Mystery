@@ -20,7 +20,7 @@ public:
     }
 
     //General
-    //virtual uint getID() = 0;
+    //virtual uint getId() = 0;
     virtual bool getFlag(uint flag) = 0;
     virtual void setFlag(uint flag, bool value) = 0;
     virtual bool update(uint time) = 0; //Returns true if the object should be deleted after this turn
@@ -28,7 +28,7 @@ public:
     virtual const std::string getClass() = 0;   //Returns the human-readable class name
     virtual const std::string getName() {
         std::ostringstream name;
-        name << getClass() << getID();
+        name << getClass() << getId();
         return name.str();
     }
     virtual void moveBy(Point ptShift) {

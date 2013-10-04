@@ -22,7 +22,7 @@ public:
     //General
     virtual bool update(uint time);
 
-    virtual uint getID()                        { return m_uiId; }
+    virtual uint getId()                        { return m_uiId; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
     virtual uint getType()                      { return TYPE_PLAYER; }

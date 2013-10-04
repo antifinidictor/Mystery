@@ -27,7 +27,10 @@ void
 D3SpriteRenderModel::render(RenderEngine *re) {
     glPushMatrix();
     Color worldColor = D3RE::get()->getWorldColor();
-    Color ourColor = mix(2, &worldColor, &m_crColor);
+    float fWeight = D3RE::get()->getColorWeight();
+    Color ourColor = Color(m_crColor.r * (1 - fWeight) + worldColor.r * fWeight,
+                           m_crColor.g * (1 - fWeight) + worldColor.g * fWeight,
+                           m_crColor.b * (1 - fWeight) + worldColor.b * fWeight);
 
     Image *pImage = D3RE::get()->getImage(m_uiImageId);
     if(pImage == NULL) return;

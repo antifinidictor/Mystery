@@ -167,20 +167,20 @@ void ModularEngine::handleButton(SDL_Event *pEvent, bool bDown) {
 }
 
 void ModularEngine::informListeners(uint id) {
-	list<Listener*>::iterator iter;
+	map<uint, Listener*>::iterator iter;
 	switch(id) {
 	case ON_MOUSE_MOVE:
-		for( iter = m_lsMouseMoveList.begin();
-			iter != m_lsMouseMoveList.end();
+		for( iter = m_mMouseMoveListeners.begin();
+			iter != m_mMouseMoveListeners.end();
 			++iter ) {
-			(*iter)->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
+			iter->second->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
 		}
 		break;
 	case ON_BUTTON_INPUT:
-		for( iter = m_lsButtonInputList.begin();
-			iter != m_lsButtonInputList.end();
+		for( iter = m_mButtonInputListeners.begin();
+			iter != m_mButtonInputListeners.end();
 			++iter ) {
-			(*iter)->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
+			iter->second->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
 		}
 		break;
 	default:
@@ -191,10 +191,10 @@ void ModularEngine::informListeners(uint id) {
 void ModularEngine::addListener(Listener *pListener, uint id, char* triggerData) {
 	switch(id) {
 	case ON_MOUSE_MOVE:
-		m_lsMouseMoveList.push_back(pListener);
+		m_mMouseMoveListeners[pListener->getId()] = pListener;
 		break;
 	case ON_BUTTON_INPUT:
-		m_lsButtonInputList.push_back(pListener);
+		m_mButtonInputListeners[pListener->getId()] = pListener;
 		break;
 	default:
 		cout << "Unsupported event handle " << id << ".\n";
@@ -202,33 +202,16 @@ void ModularEngine::addListener(Listener *pListener, uint id, char* triggerData)
 }
 
 bool ModularEngine::removeListener(uint uiListenerID, uint id) {
-	list<Listener*>::iterator iter;
+	map<uint, Listener*>::iterator iter;
 	switch(id) {
 	case ON_MOUSE_MOVE:
-		for( iter = m_lsMouseMoveList.begin();
-			iter != m_lsMouseMoveList.end();
-			++iter ) {
-			if( (*iter)->getID() == uiListenerID ) {
-				m_lsMouseMoveList.erase(iter);
-				return true;
-			}
-		}
-		break;
+	    return (m_mMouseMoveListeners.erase(uiListenerID) > 0);
 	case ON_BUTTON_INPUT:
-		for( iter = m_lsButtonInputList.begin();
-			iter != m_lsButtonInputList.end();
-			++iter ) {
-			if( (*iter)->getID() == uiListenerID ) {
-				m_lsButtonInputList.erase(iter);
-				return true;
-			}
-		}
-		break;
+	    return (m_mButtonInputListeners.erase(uiListenerID) > 0);
 	default:
 		cout << "Unsupported event handle " << id << ".\n";
 		return false;
 	}
-	return false;
 }
 
 void ModularEngine::mapInput(int iSdlInputName, int iGameInputName) {

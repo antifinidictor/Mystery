@@ -38,8 +38,8 @@ EditorCursor::~EditorCursor() {
     delete m_pRenderModel;
 
     PWE *we = PWE::get();
-    we->removeListener(this->getID(), ON_BUTTON_INPUT, m_uiAreaId);
-    we->removeListener(this->getID(), PWE_ON_AREA_SWITCH, m_uiAreaId);
+    we->removeListener(this->getId(), ON_BUTTON_INPUT, m_uiAreaId);
+    we->removeListener(this->getId(), PWE_ON_AREA_SWITCH, m_uiAreaId);
 }
 
 
@@ -86,7 +86,7 @@ EditorCursor::callBack(uint cID, void *data, uint eventId) {
         break;
       }
     case PWE_ON_REMOVED_FROM_AREA:
-        PWE::get()->removeListener(getID(), ON_BUTTON_INPUT, *((uint*)data));
+        PWE::get()->removeListener(getId(), ON_BUTTON_INPUT, *((uint*)data));
         break;
     case PWE_ON_ADDED_TO_AREA:
         PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
@@ -178,10 +178,10 @@ EditorCursor::setState(EditorCursorState eState) {
 void
 EditorCursor::moveToArea(uint uiAreaTo) {
     PWE *we = PWE::get();
-    //we->removeListener(this->getID(), ON_BUTTON_INPUT, m_uiAreaId);
-    //we->removeListener(this->getID(), PWE_ON_AREA_SWITCH, m_uiAreaId);
+    //we->removeListener(this->getId(), ON_BUTTON_INPUT, m_uiAreaId);
+    //we->removeListener(this->getId(), PWE_ON_AREA_SWITCH, m_uiAreaId);
 
-    we->moveObjectToArea(getID(), m_uiAreaId, uiAreaTo);
+    we->moveObjectToArea(getId(), m_uiAreaId, uiAreaTo);
 
     m_uiAreaId = uiAreaTo;
     //we->addListener(this, ON_BUTTON_INPUT, m_uiAreaId);
@@ -404,7 +404,7 @@ EditorCursor::typeOnKeyPress(InputData *data) {
     }
     if(data->getInputState(ED_IN_ENTER) && data->hasChanged(ED_IN_ENTER)) {
         if(m_eState == EDC_STATE_TYPE_FIELD) {
-            EditorManager::get()->callBack(this->getID(), NULL, ED_HUD_OP_FINALIZE);
+            EditorManager::get()->callBack(this->getId(), NULL, ED_HUD_OP_FINALIZE);
         } else {
             m_sInput.append(1, '\n');
         }

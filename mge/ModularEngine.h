@@ -37,7 +37,7 @@ public:
     //From EventHandler
 	virtual void addListener(Listener *pListener, uint id, char* triggerData = NULL);
 	virtual bool removeListener(uint uiListenerID, uint eventID);	//Returns true if object found
-	virtual uint getID() { return 0; }
+	virtual uint getId() { return 0; }
 	virtual void informListeners(uint id);
 
 	//Getter/setter methods
@@ -71,8 +71,8 @@ private:
     //Input handling
     InputData m_sInputData;
 	std::map<int, int> m_mInputMap;	//Maps SDL constants to InputIDs
-	std::list<Listener*> m_lsButtonInputList;
-	std::list<Listener*> m_lsMouseMoveList;
+	std::map<uint, Listener*> m_mButtonInputListeners;
+	std::map<uint, Listener*> m_mMouseMoveListeners;
 
     //General
 	bool m_bIsRunning;

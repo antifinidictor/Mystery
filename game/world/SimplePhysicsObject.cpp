@@ -25,14 +25,14 @@ SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume) {
 }
 
 SimplePhysicsObject::~SimplePhysicsObject() {
-    PWE::get()->freeID(getID());
+    PWE::get()->freeId(getId());
     delete m_pRenderModel;
     delete m_pPhysicsModel;
 }
 
 GameObject*
 SimplePhysicsObject::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
-    uint uiId = PWE::get()->reserveID(pt.get(keyBase + ".id", 0));
+    uint uiId = PWE::get()->reserveId(pt.get(keyBase + ".id", 0));
     uint uiTexId = pt.get(keyBase + ".tex", 0);
     Box bxVolume;
     bxVolume.x = pt.get(keyBase + ".vol.x", 0.f);
@@ -52,7 +52,7 @@ SimplePhysicsObject::read(const boost::property_tree::ptree &pt, const std::stri
 
 void
 SimplePhysicsObject::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
-    pt.put(keyBase + ".id", getID());
+    pt.put(keyBase + ".id", getId());
     pt.put(keyBase + ".tex", m_pRenderModel->getTexture(SOUTH));
     Box bxVolume = m_pPhysicsModel->getCollisionVolume();
     pt.put(keyBase + ".vol.x", bxVolume.x);

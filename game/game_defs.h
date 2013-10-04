@@ -16,6 +16,7 @@ enum GAME_AREA {
 enum OBJECT_TYPES {
     TYPE_PLAYER,
     TYPE_GENERAL,
+    TYPE_MANAGER,
     NUM_TYPES
 };
 
@@ -59,9 +60,19 @@ enum InputID {
     IN_NUM_BOOL_INPUTS
 };
 
-enum WorldEvent {
-    ON_WORLD_CHANGE = IN_NUM_BOOL_INPUTS,    //When an area-of-effect event occurs
+enum GameEvent {
+    ON_AREA_FADE_OUT = GAME_EVENTS_BEGIN,    //When an area-of-effect event occurs
+    ON_AREA_FADE_IN,
     NUM_WORLD_EVENTS
+};
+
+
+enum GameManagerState {
+    GM_START,
+    GM_NORMAL,
+    GM_FADE_OUT,    //Fading between areas
+    GM_FADE_IN,
+    GM_NUM_STATES
 };
 
 #endif

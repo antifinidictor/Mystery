@@ -24,6 +24,7 @@
 #include "game/world/SimplePhysicsObject.h"
 #include "game/world/Wall.h"
 #include "game/ObjectFactory.h"
+#include "game/GameManager.h"
 
 using namespace std;
 
@@ -81,6 +82,8 @@ void initWorld() {
     we->setRenderEngine(D3RE::get());
 
     ObjectFactory::init();
+    GameManager::init();
+    we->setManager(GameManager::get());
 
     registerClasses();
 
@@ -131,6 +134,7 @@ void initWorld() {
 
 void cleanWorld() {
     ObjectFactory::clean();
+    GameManager::clean();
 }
 
 void buildRoom(Box bxVol) {
@@ -151,15 +155,15 @@ void buildRoom(Box bxVol) {
           width = TILE_SIZE;
 
 
-    Wall *wallNorth = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+    Wall *wallNorth = new Wall(we->genId(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
                                Box(minEast, minDown, maxNorth, minWest - minEast, height, width), WALL_SOUTH);
-    Wall *wallWest  = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+    Wall *wallWest  = new Wall(we->genId(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
                                Box(maxEast, minDown, minNorth, width, height, minSouth - minNorth), WALL_EAST);
-    Wall *wallSouth = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+    Wall *wallSouth = new Wall(we->genId(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
                                Box(minEast, minDown, minSouth, minWest - minEast, height, width), WALL_NORTH);
-    Wall *wallEast  = new Wall(we->genID(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
+    Wall *wallEast  = new Wall(we->genId(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
                                Box(minWest, minDown, minNorth, width, height, minSouth - minNorth), WALL_WEST);
-    Wall *wallFloor = new Wall(we->genID(), IMG_WALL_TOP, IMG_NONE, IMG_NONE,
+    Wall *wallFloor = new Wall(we->genId(), IMG_WALL_TOP, IMG_NONE, IMG_NONE,
                                Box(minEast, maxDown, minNorth, minWest - minEast, minDown - maxDown, minSouth - minNorth), WALL_UP);
     we->add(wallNorth);
     we->add(wallSouth);
@@ -177,17 +181,17 @@ void buildWorld() {
 
     buildRoom(Box(-128, 0, -256, 256, TILE_SIZE * 2, 512));
 
-    SimplePhysicsObject *block = new SimplePhysicsObject(we->genID(), IMG_BLOCK, Box(-32,0,0,32,32,32));
+    SimplePhysicsObject *block = new SimplePhysicsObject(we->genId(), IMG_BLOCK, Box(-32,0,0,32,32,32));
     we->add(block);
 
 /*
-    Wall *wall0 = new Wall(we->genID(), IMG_WALL_TOP, IMG_WALL_BOTTOM, IMG_WALL_SIDE,
+    Wall *wall0 = new Wall(we->genId(), IMG_WALL_TOP, IMG_WALL_BOTTOM, IMG_WALL_SIDE,
                           Box(50, -32, 50, 128, 32, 128), WALL_SOUTH | WALL_NORTH | WALL_WEST | WALL_EAST | WALL_DOWN);
     wall0->setColor(Color(0, 0, 0xFF));
     we->add(wall0);
 */
 
-    Player *player = new Player(we->genID(), Point());
+    Player *player = new Player(we->genId(), Point());
     we->add(player);
 }
 

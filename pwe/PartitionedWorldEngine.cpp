@@ -12,7 +12,8 @@ using namespace std;
 PartitionedWorldEngine *PartitionedWorldEngine::pwe;
 
 PartitionedWorldEngine::PartitionedWorldEngine() {
-    m_uiNextID = ID_FIRST_UNUSED;   //The first few ids are reserved for the engines
+    m_uiNextId = ID_FIRST_UNUSED;   //The first few ids are reserved for the engines
+    m_uiNextAreaId = 1;
     m_uiCurArea = m_uiNextArea = m_uiEffectiveArea = 0;
     pe = NULL;
     re = NULL;
@@ -32,40 +33,49 @@ PartitionedWorldEngine::~PartitionedWorldEngine() {
 
 
 uint
-PartitionedWorldEngine::genID() {
+PartitionedWorldEngine::genId() {
     uint id;
     if(m_lsFreeIds.size() > 0) {
         id = m_lsFreeIds.back();
-        m_lsFreeIds.pop_front();
+        m_lsFreeIds.pop_back();
     } else {
-        id = m_uiNextID++;
-        //m_lsFreeIds.push_front(id);
+        id = m_uiNextId++;
+    }
+    return id;
+}
+uint
+PartitionedWorldEngine::peekId() {
+    uint id;
+    if(m_lsFreeIds.size() > 0) {
+        id = m_lsFreeIds.back();
+    } else {
+        id = m_uiNextId;
     }
     return id;
 }
 
 void
-PartitionedWorldEngine::freeID(uint id) {
+PartitionedWorldEngine::freeId(uint id) {
     m_lsFreeIds.push_front(id);
 }
 
 uint
-PartitionedWorldEngine::reserveID(uint id) {
-    if(id >= m_uiNextID) {
-        while(id > m_uiNextID) {
-            m_lsFreeIds.push_front(m_uiNextID++);
+PartitionedWorldEngine::reserveId(uint id) {
+    if(id >= m_uiNextId) {
+        while(id > m_uiNextId) {
+            m_lsFreeIds.push_front(m_uiNextId++);
         }
-        m_uiNextID++;   //This id is not actually free
+        m_uiNextId++;   //This id is not actually free
     } else {
-        //Verify ID is actually free!
+        //Verify Id is actually free!
         for(list<uint>::iterator iter = m_lsFreeIds.begin(); iter != m_lsFreeIds.end(); ++iter) {
             if(*iter == id) {
                 m_lsFreeIds.erase(iter);
                 return id;
             }
         }
-        uint id2 = genID();
-        printf("WARNING %s %d: ID %d already in use! Replacing with %d, which will break references to this object!\n",
+        uint id2 = genId();
+        printf("WARNING %s %d: Id %d already in use! Replacing with %d, which will break references to this object!\n",
                __FILE__, __LINE__, id, id2);
        id = id2;
     }
@@ -130,7 +140,7 @@ PartitionedWorldEngine::update(uint time) {
                 mv != lsHasMoved.end(); ++mv) {
             for(map<uint, GameObject*>::iterator it = m_pCurArea->m_mCurArea.begin();
                     it != m_pCurArea->m_mCurArea.end(); ++it) {
-                if(it->second->getID() == (*mv)->getID()) {
+                if(it->second->getId() == (*mv)->getId()) {
                     break;
                 }
                 pe->applyPhysics(it->second, *mv);
@@ -217,16 +227,26 @@ PartitionedWorldEngine::findIn(uint uiObjId, uint uiAreaId) {
     }
 }
 
+uint
+PartitionedWorldEngine::generateArea() {
+    generateArea(m_uiNextAreaId);
+    return m_uiNextAreaId - 1;
+}
+
 void
 PartitionedWorldEngine::generateArea(uint uiAreaId) {
+    while(uiAreaId >= m_uiNextAreaId) {
+        m_uiNextAreaId++;
+    }
+
     std::ostringstream name;
     name << "Area" << uiAreaId;
     m_mWorld[uiAreaId] = M_Area(name.str());
 }
 
 void
-PartitionedWorldEngine::setCurrentArea(uint uiAreaID) {
-    m_uiNextArea = uiAreaID;
+PartitionedWorldEngine::setCurrentArea(uint uiAreaId) {
+    m_uiNextArea = uiAreaId;
 
     //Call immediately if the first update has not yet occurred
     if(m_bFirstRun) {
@@ -257,25 +277,25 @@ PartitionedWorldEngine::setCurrentArea() {
 }
 
 void
-PartitionedWorldEngine::moveObjectToArea(uint uiObjID, uint uiStartAreaID, uint uiEndAreaID) {
-    GameObject *obj = findIn(uiObjID, uiStartAreaID);
-    removeFrom(uiObjID, uiStartAreaID);
-    addTo(obj, uiEndAreaID);
+PartitionedWorldEngine::moveObjectToArea(uint uiObjId, uint uiStartAreaId, uint uiEndAreaId) {
+    GameObject *obj = findIn(uiObjId, uiStartAreaId);
+    removeFrom(uiObjId, uiStartAreaId);
+    addTo(obj, uiEndAreaId);
 }
 
 void
-PartitionedWorldEngine::addTo(GameObject *obj, uint uiAreaID) {
-    m_lsObjsToAdd.push_back(pair<GameObject*,uint>(obj, uiAreaID));
+PartitionedWorldEngine::addTo(GameObject *obj, uint uiAreaId) {
+    m_lsObjsToAdd.push_back(pair<GameObject*,uint>(obj, uiAreaId));
 }
 
 void
-PartitionedWorldEngine::removeFrom(uint uiObjID, uint uiAreaID) {
-    m_lsObjsToRemove.push_back(pair<uint,uint>(uiObjID, uiAreaID));
+PartitionedWorldEngine::removeFrom(uint uiObjId, uint uiAreaId) {
+    m_lsObjsToRemove.push_back(pair<uint,uint>(uiObjId, uiAreaId));
 }
 
 void
-PartitionedWorldEngine::cleanArea(uint uiAreaID) {
-    m_lsAreasToClean.push_back(uiAreaID);
+PartitionedWorldEngine::cleanArea(uint uiAreaId) {
+    m_lsAreasToClean.push_back(uiAreaId);
 }
 
 const std::string
@@ -376,22 +396,22 @@ PartitionedWorldEngine::getAreas(std::vector<uint> &vAreas) {
 
 //Event Handler
 void
-PartitionedWorldEngine::addListener(Listener *pListener, uint id, uint uiAreaID, char* triggerData) {
-    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaID);
+PartitionedWorldEngine::addListener(Listener *pListener, uint id, uint uiAreaId, char* triggerData) {
+    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to add listener to nonexistent area %d\n", __FILE__, __LINE__, uiAreaID);
+        printf("ERROR %s %d: Tried to add listener to nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;
     }
 
 	switch(id) {
 	case ON_MOUSE_MOVE:
-		itArea->second.m_mMouseMoveListeners[pListener->getID()] = pListener;
+		itArea->second.m_mMouseMoveListeners[pListener->getId()] = pListener;
 		break;
 	case ON_BUTTON_INPUT:
-		itArea->second.m_mButtonInputListeners[pListener->getID()] = pListener;
+		itArea->second.m_mButtonInputListeners[pListener->getId()] = pListener;
 		break;
     case PWE_ON_AREA_SWITCH:
-        itArea->second.m_mAreaChangeListeners[pListener->getID()] = pListener;
+        itArea->second.m_mAreaChangeListeners[pListener->getId()] = pListener;
         break;
 	default:
 		printf("Unsupported event handle %d.\n", id);
@@ -399,7 +419,7 @@ PartitionedWorldEngine::addListener(Listener *pListener, uint id, uint uiAreaID,
 }
 
 bool
-PartitionedWorldEngine::removeListener(uint uiListenerID, uint eventID, uint uiAreaId) {
+PartitionedWorldEngine::removeListener(uint uiListenerId, uint eventId, uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
 	map<uint, Listener*>::iterator iter;
     if(itArea == m_mWorld.end()) {
@@ -407,37 +427,37 @@ PartitionedWorldEngine::removeListener(uint uiListenerID, uint eventID, uint uiA
         return false;
     }
 
-	switch(eventID) {
+	switch(eventId) {
 	case ON_MOUSE_MOVE:
-        iter = itArea->second.m_mMouseMoveListeners.find(uiListenerID);
+        iter = itArea->second.m_mMouseMoveListeners.find(uiListenerId);
         if(iter != itArea->second.m_mMouseMoveListeners.end()) {
             itArea->second.m_mMouseMoveListeners.erase(iter);
             return true;
         }
 		break;
 	case ON_BUTTON_INPUT:
-        iter = itArea->second.m_mButtonInputListeners.find(uiListenerID);
+        iter = itArea->second.m_mButtonInputListeners.find(uiListenerId);
         if(iter != itArea->second.m_mButtonInputListeners.end()) {
             itArea->second.m_mButtonInputListeners.erase(iter);
             return true;
         }
 		break;
     case PWE_ON_AREA_SWITCH:
-        iter = itArea->second.m_mAreaChangeListeners.find(uiListenerID);
+        iter = itArea->second.m_mAreaChangeListeners.find(uiListenerId);
         if(iter != itArea->second.m_mAreaChangeListeners.end()) {
             itArea->second.m_mAreaChangeListeners.erase(iter);
             return true;
         }
         break;
 	default:
-		printf("Unsupported event handle %d.\n", eventID);
+		printf("Unsupported event handle %d.\n", eventId);
 		return false;
 	}
 	return false;
 }
 
 void
-PartitionedWorldEngine::callBack(uint cID, void *data, uint id) {
+PartitionedWorldEngine::callBack(uint cId, void *data, uint id) {
     if(m_pCurArea == NULL) { return; }
 
     //Pass directly on to the current list of listeners
@@ -538,8 +558,8 @@ void
 PartitionedWorldEngine::addToNow(GameObject *obj, uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea != m_mWorld.end()) {
-        itArea->second.m_mCurArea[obj->getID()] = obj;
-        obj->callBack(getID(), &uiAreaId, PWE_ON_ADDED_TO_AREA);
+        itArea->second.m_mCurArea[obj->getId()] = obj;
+        obj->callBack(getId(), &uiAreaId, PWE_ON_ADDED_TO_AREA);
     } else {
         printf("ERROR %s %d: Tried to add object to nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;

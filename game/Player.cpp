@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "bae/BasicAudioEngine.h"
 #include "tpe/TimePhysicsEngine.h"
+#include "GameManager.h"
 
 Player::Player(uint uiId, const Point &ptPos) {
     Image *img = D3RE::get()->getImage(IMG_PLAYER);
@@ -23,14 +24,14 @@ Player::Player(uint uiId, const Point &ptPos) {
 }
 
 Player::~Player() {
-    PWE::get()->freeID(getID());
+    PWE::get()->freeId(getId());
     delete m_pPhysicsModel;
     delete m_pRenderModel;
 }
 
 GameObject*
 Player::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
-    uint id = PWE::get()->reserveID(pt.get(keyBase + ".id", 0));
+    uint id = PWE::get()->reserveId(pt.get(keyBase + ".id", 0));
     float x = pt.get(keyBase + ".pos.x", 0.f);
     float y = pt.get(keyBase + ".pos.y", 0.f);
     float z = pt.get(keyBase + ".pos.z", 0.f);
@@ -43,7 +44,7 @@ Player::read(const boost::property_tree::ptree &pt, const std::string &keyBase) 
 void
 Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     Point ptPos = m_pPhysicsModel->getPosition();
-    pt.put(keyBase + ".id", getID());
+    pt.put(keyBase + ".id", getId());
     pt.put(keyBase + ".pos.x", ptPos.x);
     pt.put(keyBase + ".pos.y", ptPos.y);
     pt.put(keyBase + ".pos.z", ptPos.z);
@@ -95,10 +96,13 @@ void Player::callBack(uint cID, void *data, uint id) {
     switch(id) {
     case PWE_ON_ADDED_TO_AREA:
         PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
-        PWE::get()->setCurrentArea(*((uint*)data));
+        //PWE::get()->setCurrentArea(*((uint*)data));
+        GameManager::get()->callBack(getId(), data, ON_AREA_FADE_IN);
+        dx = dy = 0;
         break;
     case PWE_ON_REMOVED_FROM_AREA:
-        PWE::get()->removeListener(getID(), ON_BUTTON_INPUT, *((uint*)data));
+        PWE::get()->removeListener(getId(), ON_BUTTON_INPUT, *((uint*)data));
+        //GameManager::get()->callBack(getID(), data, ON_AREA_FADE_OUT);
         break;
     case ON_BUTTON_INPUT:
         handleButton((InputData*)data);

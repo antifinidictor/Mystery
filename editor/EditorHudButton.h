@@ -19,7 +19,8 @@ public:
                            Point(5,5,0),
                            textSize)
     {
-        m_uiId = PWE::get()->genID();
+        m_uiId = PWE::get()->genId();   //For listener use
+        m_uiHudId = s_uiHudId++;    //Ensures consecutive IDs for Editor use
         m_uiEventId = uiEventId;
         m_pParent = parent;
 
@@ -31,10 +32,13 @@ public:
     virtual ~EditorHudButton() {
         MGE::get()->removeListener(m_uiId, ON_MOUSE_MOVE);
         MGE::get()->removeListener(m_uiId, ON_BUTTON_INPUT);
+        PWE::get()->freeId(m_uiId);
     }
 
+    uint getHudID() { return m_uiHudId; }
+
     //From listener
-    virtual uint getID() { return m_uiId; }
+    virtual uint getId() { return m_uiId; }
     virtual void callBack(uint cID, void *data, uint eventId) {
         switch(eventId) {
         case ON_BUTTON_INPUT:
@@ -63,7 +67,7 @@ private:
                 setFrameH(HUD_BUTTON_SELECT);
                 if(data->hasChanged(IN_SELECT)) {
                     m_sText = getText();
-                    EditorManager::get()->callBack(m_uiId, &m_sText, m_uiEventId);
+                    EditorManager::get()->callBack(m_uiHudId, &m_sText, m_uiEventId);
                 }
             }
         } else {
@@ -73,7 +77,8 @@ private:
 
     RenderModel *m_pParent;
 
-    uint m_uiId, m_uiEventId;
+    uint m_uiId, m_uiEventId, m_uiHudId;
+    static uint s_uiHudId;
     std::string m_sText;
 };
 

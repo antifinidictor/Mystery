@@ -29,7 +29,7 @@ public:
     virtual void write(boost::property_tree::ptree &pt, const std::string &keyBase);
 
     //General
-    virtual uint getID() { return m_uiId; }
+    virtual uint getId() { return m_uiId; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
     virtual bool update(uint time)              { return false; }

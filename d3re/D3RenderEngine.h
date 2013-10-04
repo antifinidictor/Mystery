@@ -44,7 +44,10 @@ public:
     void   freeImage(uint id);
 
     const Color& getWorldColor() const { return m_crWorld; }
+    float getColorWeight() { return m_fColorWeight; }
     void setWorldColor(const Color &cr) { m_crWorld = cr; }
+    void setColorWeight(float fWeight) { m_fColorWeight = fWeight; }
+    void setBackgroundColor(const Color &cr);
 
     void adjustCamDist(float delta);
     void adjustCamAngle(float delta);
@@ -56,7 +59,6 @@ public:
 
     void drawBox(const Box &bxVolume, const Color &cr = Color(0xFF, 0xFF, 0xFF));
 
-    void setBackgroundColor(const Color &cr);
 
     ContainerRenderModel *getHudContainer() { return m_pHudContainer; }
 
@@ -84,6 +86,7 @@ private:
     static D3RenderEngine *re;
     Point m_ptPos, m_ptCamPos;
     Color m_crWorld;
+    float m_fColorWeight;
     float m_fCamDist, m_fCamAngle;
     uint m_uiWidth, m_uiHeight;
 

@@ -26,7 +26,7 @@ TextRenderer::TextRenderer() {
 
 */
 ///*  New font
-    #define SPACE_WIDTH 8.0f
+    #define SPACE_WIDTH 6.0f
                 //A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z
     char t[78] = {14,13,14,15,12,12,14,14,6, 6, 14,12,16,14,15,12,15,14,12,14,14,14,18,14,14,14,
                 //a  b  c  d  e  f  g  h  i  j  k  l  m  n  o  p  q  r  s  t  u  v  w  x  y  z

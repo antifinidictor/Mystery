@@ -31,14 +31,14 @@ AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPo
 }
 
 AreaLinkObject::~AreaLinkObject() {
-    PWE::get()->freeID(getID());
+    PWE::get()->freeId(getId());
     delete m_pRenderModel;
     delete m_pPhysicsModel;
 }
 
 GameObject*
 AreaLinkObject::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
-    uint uiId = PWE::get()->reserveID(pt.get(keyBase + ".id", 0));
+    uint uiId = PWE::get()->reserveId(pt.get(keyBase + ".id", 0));
     uint uiAreaId = pt.get(keyBase + ".destAreaId", 0);
     Box bxVolume;
     bxVolume.x = pt.get(keyBase + ".vol.x", 0.f);
@@ -57,7 +57,7 @@ AreaLinkObject::read(const boost::property_tree::ptree &pt, const std::string &k
 
 void
 AreaLinkObject::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
-    pt.put(keyBase + ".id", getID());
+    pt.put(keyBase + ".id", getId());
     pt.put(keyBase + ".destAreaId", m_uiDestAreaId);
     Box bxVolume = m_pPhysicsModel->getCollisionVolume();
     pt.put(keyBase + ".vol.x", bxVolume.x);
@@ -81,7 +81,7 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
         PWE *we = PWE::get();
         Point ptPosDelta = m_ptDestPos - hcd->obj->getPhysicsModel()->getPosition();
         hcd->obj->moveBy(ptPosDelta);
-        we->moveObjectToArea(hcd->obj->getID(), we->getCurrentArea(), m_uiDestAreaId);
+        we->moveObjectToArea(hcd->obj->getId(), we->getCurrentArea(), m_uiDestAreaId);
         break;
       }
     default:
