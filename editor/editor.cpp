@@ -23,7 +23,7 @@
 #include "editor/EditorCursor.h"
 #include "editor/EditorManager.h"
 #include "game/ObjectFactory.h"
-#include "game/ObjectFactory.h"
+#include "game/GameManager.h"
 
 using namespace std;
 
@@ -78,6 +78,7 @@ void initWorld() {
     we->setRenderEngine(D3RE::get());
 
     ObjectFactory::init();
+    GameManager::init();
     EditorManager::init();
     we->setManager(EditorManager::get());
 
@@ -146,5 +147,6 @@ void initWorld() {
 
 void cleanWorld() {
     ObjectFactory::clean();
+    GameManager::clean();
     EditorManager::clean();
 }
