@@ -14,7 +14,7 @@
 #include "pwe/PartitionedWorldEngine.h"
 #include "tpe/TimePhysicsEngine.h"
 
-#define FADE_TIME_STEP 0.01f
+#define FADE_TIME_STEP 0.02f
 #define DEFAULT_WEIGHT 0.5f
 #define FADE_WEIGHT 1.f
 

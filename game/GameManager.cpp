@@ -10,10 +10,9 @@ GameManager::GameManager(uint uiId) {
     m_skState.push(GM_START);
     m_fFadeTimer = 0.f;
     m_uiNextArea = 0;
-    Color m_crWorld = Color(0xFF,0xFF,0xFF);
-    Color m_crBackground = Color(0x9a,0xd7,0xfb);
-    
-    
+    m_crWorld = Color(0xFF,0xFF,0xFF);
+    m_crBackground = Color(0x9a,0xd7,0xfb);
+
     D3RE::get()->setWorldColor(m_crWorld);
     D3RE::get()->setBackgroundColor(m_crBackground);
     D3RE::get()->setColorWeight(DEFAULT_WEIGHT);

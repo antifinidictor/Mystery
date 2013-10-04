@@ -1394,12 +1394,12 @@
 	<map>
 	"mge/defs.h"
 
-1380873563 source:k:\projects\games\mge\mystery\game\gamemanager.cpp
+1380874509 source:k:\projects\games\mge\mystery\game\gamemanager.cpp
 	"GameManager.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/TimePhysicsEngine.h"
 
-1380873457 k:\projects\games\mge\mystery\game\gamemanager.h
+1380874700 k:\projects\games\mge\mystery\game\gamemanager.h
 	<stack>
 	"mge/GameObject.h"
 	"mge/Event.h"
@@ -1882,7 +1882,7 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1380873457 k:\projects\games\mge\mystery\\game\gamemanager.h
+1380874700 k:\projects\games\mge\mystery\\game\gamemanager.h
 	<stack>
 	"mge/GameObject.h"
 	"mge/Event.h"
@@ -7824,7 +7824,7 @@
 
 1380857466 k:\projects\games\mge\mystery\\game\game.h
 
-1380868523 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
+1380870003 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
 	"EditorManager.h"
 	"EditorCursor.h"
 	"EditorHudButton.h"
