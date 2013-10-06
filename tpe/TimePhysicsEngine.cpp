@@ -211,7 +211,7 @@ TimePhysicsEngine::applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractT
         float bforce = (MAX_B_FORCE * percentImmersed + MIN_B_FORCE * (1.f - percentImmersed)) * fGravForce;
         tpmObj->applyForce(Point(0.f, bforce, 0.f));
     } else {    //Sink slowly
-        tpmObj->applyForce(Point(0.f, fGravForce * MIN_B_FORCE, 0.f));
+        //tpmObj->applyForce(Point(0.f, fGravForce / 2.f, 0.f));
     }
 }
 

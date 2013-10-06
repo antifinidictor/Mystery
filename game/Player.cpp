@@ -3,7 +3,7 @@
 #include "tpe/TimePhysicsEngine.h"
 #include "GameManager.h"
 
-#define DENSITY 1000.f  //1000kg/m^3 ~ density of water
+#define DENSITY 900.f  //1000kg/m^3 ~ density of water
 #define WALK_FORCE 500.f
 
 Player::Player(uint uiId, const Point &ptPos) {
@@ -14,7 +14,7 @@ Player::Player(uint uiId, const Point &ptPos) {
     m_uiFlags = 0;
 
     Rect rcDrawArea = Rect(-w / 2, -h / 2, w, h);
-    Box bxVolume = Box(ptPos.x - w / 4, ptPos.y, ptPos.z - h / 4, w / 2, h, h / 2);
+    Box bxVolume = Box(ptPos.x - w / 3, ptPos.y, ptPos.z - h / 4, 2 * w / 3, h, h / 2);
     m_pPhysicsModel = new TimePhysicsModel(bxVolume, DENSITY);
     m_pRenderModel  = new D3SpriteRenderModel(this, IMG_PLAYER, rcDrawArea);
 
@@ -23,6 +23,8 @@ Player::Player(uint uiId, const Point &ptPos) {
     state = timer = 0;
     m_iDirection = SOUTH;
     m_bFirst = true;
+    m_uiAnimFrameStart = 1;
+    m_pPhysicsModel->setListener(this);
 
     //PWE::get()->addListener(this, ON_BUTTON_INPUT);
 }
@@ -83,12 +85,13 @@ bool Player::update(uint time) {
     } else {
         if(timer < 0) {
             timer = 20;
-            state = ((state) % 4) + 1;
-            m_pRenderModel->setFrameH(state);
+            state = ((state + 1) % 4);
+            m_pRenderModel->setFrameH(state + m_uiAnimFrameStart);
         } else {
             --timer;
         }
     }
+    m_uiAnimFrameStart = 1;
     Point ptPos = m_pPhysicsModel->getPosition();
     D3RE::get()->moveScreenTo(ptPos);
     m_bFirst = false;
@@ -166,7 +169,9 @@ void Player::handleButton(InputData* data) {
 }
 
 void Player::handleCollision(HandleCollisionData *data) {
-
+    if(data->iDirection != UP && data->iDirection != DOWN) {
+        m_uiAnimFrameStart = 8;
+    }
 }
 
 

@@ -1595,7 +1595,7 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1381081046 source:k:\projects\games\mge\mystery\game\player.cpp
+1381087310 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/TimePhysicsEngine.h"
@@ -1603,7 +1603,7 @@
 
 1379968751 AudioEngine.h"
 
-1380866707 k:\projects\games\mge\mystery\game\player.h
+1381084766 k:\projects\games\mge\mystery\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1794,7 +1794,7 @@
 	"mge/GameObject.h"
 	"mge/Event.h"
 
-1381081802 source:k:\projects\games\mge\mystery\tpe\timephysicsengine.cpp
+1381087183 source:k:\projects\games\mge\mystery\tpe\timephysicsengine.cpp
 	"mge/GameObject.h"
 	"mge/RenderModel.h"
 	"tpe/tpe.h"
@@ -1951,7 +1951,7 @@
 	<map>
 	"mge/defs.h"
 
-1381083123 k:\projects\games\mge\mystery\\game\player.h
+1381084766 k:\projects\games\mge\mystery\\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -8155,7 +8155,7 @@
 	"boost/property_tree/detail/info_parser_utils.hpp"
 	<string>
 
-1381019232 source:k:\projects\games\mge\mystery\game\world\simplephysicsobject.cpp
+1381086094 source:k:\projects\games\mge\mystery\game\world\simplephysicsobject.cpp
 	"SimplePhysicsObject.h"
 	"pwe/PartitionedWorldEngine.h"
 
@@ -8188,11 +8188,10 @@
 1380813584 k:\projects\games\mge\mystery\\editor\editor_defs.h
 	"game/game_defs.h"
 
-1380866739 source:k:\projects\games\mge\mystery\editor\editor.cpp
+1380938935 source:k:\projects\games\mge\mystery\editor\editor.cpp
 	"game/game.h"
 	<SDL.h>
-	<gl/gl.h>
-	<gl/glu.h>
+	"pgl.h"
 	<fstream>
 	"mge/ModularEngine.h"
 	"pwe/PartitionedWorldEngine.h"
@@ -8203,7 +8202,7 @@
 	"editor/EditorCursor.h"
 	"editor/EditorManager.h"
 	"game/ObjectFactory.h"
-	"game/ObjectFactory.h"
+	"game/GameManager.h"
 
 1380868492 ctFactory.h"
 
@@ -8292,12 +8291,13 @@
 	<vector>
 	<boost/property_tree/ptree.hpp>
 
-1381006431 source:k:\projects\games\mge\mystery\game\registration.cpp
+1381086262 source:k:\projects\games\mge\mystery\game\registration.cpp
 	"game/ObjectFactory.h"
 	"game/Player.h"
 	"game/world/SimplePhysicsObject.h"
 	"game/world/Wall.h"
 	"game/world/AreaLinkObject.h"
+	"game/world/Water.h"
 
 1380660329 d/AreaLinkObject.h"
 
@@ -14451,4 +14451,20 @@
 1379912678 k:\projects\games\mge\mystery\tpe\tpe.h
 	"TimePhysicsEngine.h"
 	"TimePhysicsModel.h"
+
+1381086122 k:\projects\games\mge\mystery\\game\world\water.h
+	"mge/GameObject.h"
+	"tpe/tpe.h"
+	"d3re/d3re.h"
+	"game/game_defs.h"
+
+1381087169 source:k:\projects\games\mge\mystery\game\world\water.cpp
+	"Water.h"
+	"pwe/PartitionedWorldEngine.h"
+
+1381086122 k:\projects\games\mge\mystery\game\world\water.h
+	"mge/GameObject.h"
+	"tpe/tpe.h"
+	"d3re/d3re.h"
+	"game/game_defs.h"
 

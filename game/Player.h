@@ -48,6 +48,7 @@ private:
     int m_iDirection;
     int timer, state;
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas
+    uint m_uiAnimFrameStart;
     bool m_bFirst;
 };
 

@@ -202,6 +202,8 @@
 		<Unit filename="game/world/SimplePhysicsObject.h" />
 		<Unit filename="game/world/Wall.cpp" />
 		<Unit filename="game/world/Wall.h" />
+		<Unit filename="game/world/Water.cpp" />
+		<Unit filename="game/world/Water.h" />
 		<Unit filename="linux/pgl.h">
 			<Option target="LinuxDebug" />
 			<Option target="LinuxEditor" />
