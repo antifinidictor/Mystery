@@ -4,6 +4,8 @@
 #define DEFAULT_TIME_DIVISOR 10.f
 #define DEFAULT_FRICTION_COEFFICIENT 0.5f
 
+using namespace std;
+
 TimePhysicsModel::TimePhysicsModel(Box bxVolume, float fDensity) {
     m_bxVolume = bxVolume;
     m_pListener = NULL;
@@ -16,10 +18,27 @@ TimePhysicsModel::TimePhysicsModel(Box bxVolume, float fDensity) {
     m_fVolume = PX3_TO_M3(bxVolume.w * bxVolume.h * bxVolume.l);
     m_fMass = m_fVolume * fDensity;
     m_bWasPushed = false;
+    m_pObjImOn = NULL;
+}
+
+TimePhysicsModel::~TimePhysicsModel() {
+    list<AbstractTimePhysicsModel*>::iterator iter;
+    for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
+        (*iter)->setSurface(NULL);
+    }
+    m_lsObjsOnMe.clear();
+    if(m_pObjImOn != NULL) {
+        m_pObjImOn->removeSurfaceObj(this);
+    }
 }
 
 void TimePhysicsModel::moveBy(Point ptShift) {
     m_bxVolume += ptShift;
+
+    list<AbstractTimePhysicsModel*>::iterator iter;
+    for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
+        // (*iter)->moveBy(ptShift);    //TODO: Why doesn't this work?
+    }
 }
 
 //F = ma
@@ -49,5 +68,21 @@ void TimePhysicsModel::update(uint uiDeltaTime) {
 void TimePhysicsModel::handleCollisionEvent(HandleCollisionData *dat) {
     if(m_pListener) {
         m_pListener->callBack(0, dat, TPE_ON_COLLISION);
+    }
+}
+
+
+void
+TimePhysicsModel::addSurfaceObj(AbstractTimePhysicsModel *mdl) {
+    m_lsObjsOnMe.push_back(mdl);
+}
+
+void
+TimePhysicsModel::removeSurfaceObj(AbstractTimePhysicsModel *mdl) {
+    list<AbstractTimePhysicsModel*>::iterator iter;
+    for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
+        if(*iter == mdl) {
+            m_lsObjsOnMe.erase(iter);
+        }
     }
 }

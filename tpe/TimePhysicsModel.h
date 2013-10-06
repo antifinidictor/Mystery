@@ -30,6 +30,11 @@ public:
     virtual void handleCollisionEvent(HandleCollisionData *dat) = 0;
     virtual float getDensity() = 0;
     virtual float getVolume() = 0;
+
+    virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl) = 0;
+    virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl) = 0;
+    virtual void setSurface(AbstractTimePhysicsModel *mdl) = 0;
+    virtual AbstractTimePhysicsModel* getSurface() = 0;
 };
 
 /*
@@ -39,7 +44,7 @@ public:
 class TimePhysicsModel : public AbstractTimePhysicsModel {
 public:
     TimePhysicsModel(Box bxVolume, float fDensity = 1000.f);   //Density in kg/m^3
-    virtual ~TimePhysicsModel() {}
+    virtual ~TimePhysicsModel();
 
     virtual Point getPosition() { return bxCenter(m_bxVolume); }//Point(m_bxVolume); }
     virtual Point getCenter() { return bxCenter(m_bxVolume); }
@@ -62,6 +67,11 @@ public:
     virtual float getDensity() { return m_fMass / m_fVolume; }
     virtual float getVolume()  { return m_fVolume; }
 
+    virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl);
+    virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl);
+    virtual void setSurface(AbstractTimePhysicsModel *mdl) { m_pObjImOn = mdl; }
+    virtual AbstractTimePhysicsModel* getSurface() { return m_pObjImOn; }
+
 private:
     //Time physics model
     Point m_ptAcceleration,
@@ -76,6 +86,9 @@ private:
     //Listener
     Listener *m_pListener;
     bool m_bWasPushed;
+
+    std::list<AbstractTimePhysicsModel*> m_lsObjsOnMe;
+    AbstractTimePhysicsModel *m_pObjImOn;
 };
 
 /*
@@ -106,6 +119,12 @@ public:
     virtual void setWasPushed(bool pushed) { }
     virtual float getDensity() { return 1000.f; }
     virtual float getVolume()  { return 1.f; }
+
+    virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl) {}
+    virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl) {}
+    virtual void setSurface(AbstractTimePhysicsModel *mdl) {}
+    virtual AbstractTimePhysicsModel* getSurface() { return NULL; }
+
 private:
     Point m_ptPosition;
 };

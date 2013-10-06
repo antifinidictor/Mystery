@@ -47,8 +47,9 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     tmdl->setWasPushed(false);
 
     hasMoved = hasMoved || tmdl->getLastVelocity() != Point();
-    //Object automatically falls if it doesn't collide with a surface next turn
-    if(!obj->getFlag(TPE_PASSABLE) && hasMoved && !obj->getFlag(TPE_STATIC)) {
+    bool bCanFall = !obj->getFlag(TPE_PASSABLE) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC);
+    bool bHasLeftSurface = hasMoved && (tmdl->getSurface() == NULL || isNotInArea(tmdl->getCollisionVolume(), tmdl->getSurface()->getCollisionVolume()));
+    if(bCanFall && bHasLeftSurface) {
         obj->setFlag(TPE_FALLING, true);
     }
     return (hasMoved);
@@ -150,6 +151,8 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
             if(!bNoCollide) {
                 obj2->setFlag(TPE_FALLING, false);
                 tpm2->clearVerticalVelocity();
+                tpm2->setSurface(tpm1);
+                tpm1->addSurfaceObj(tpm2);
             }
         } else {
             iDir1 = DOWN;
@@ -157,14 +160,16 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
             if(!bNoCollide) {
                 obj1->setFlag(TPE_FALLING, false);
                 tpm1->clearVerticalVelocity();
+                tpm1->setSurface(tpm2);
+                tpm2->addSurfaceObj(tpm1);
             }
         }
         bApplyForce = false;
     }
     if(obj1->getFlag(TPE_LIQUID) && !obj2->getFlag(TPE_LIQUID)) {
-        applyBouyantForce(tpm2, tpm1, bx2, bx1);
+        applyBuoyantForce(tpm2, tpm1, bx2, bx1);
     } else if(obj2->getFlag(TPE_LIQUID) && !obj1->getFlag(TPE_LIQUID)) {
-        applyBouyantForce(tpm1, tpm2, bx1, bx2);
+        applyBuoyantForce(tpm1, tpm2, bx1, bx2);
     }
 
     //Only move the objects if they aren't passable.  We needed some of
@@ -196,7 +201,7 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
 #define MIN_B_FORCE (2.f - MAX_B_FORCE) //ensures objects always are half-immersed
 
 void
-TimePhysicsEngine::applyBouyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid) {
+TimePhysicsEngine::applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid) {
     float fGravForce = GRAV_ACCEL * tpmObj->getMass();
     if(tpmLiquid->getDensity() > tpmObj->getDensity()) {    //Float
         //Percent of object underwater
@@ -206,4 +211,12 @@ TimePhysicsEngine::applyBouyantForce(AbstractTimePhysicsModel *tpmObj, AbstractT
     } else {    //Sink slowly
         tpmObj->applyForce(Point(0.f, fGravForce * MIN_B_FORCE, 0.f));
     }
+}
+
+bool
+TimePhysicsEngine::isNotInArea(const Box &bxObj, const Box &bxBounds) {
+    return  ((bxObj.x) < (bxBounds.x)) ||
+            ((bxObj.x + bxObj.w) > (bxBounds.x + bxBounds.w)) ||
+            ((bxObj.z) < (bxBounds.z)) ||
+            ((bxObj.z + bxObj.l) > (bxBounds.z + bxBounds.l));
 }

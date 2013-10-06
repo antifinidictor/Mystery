@@ -57,7 +57,9 @@ private:
     TimePhysicsEngine();
     virtual ~TimePhysicsEngine();
 
-    void applyBouyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid);
+
+    void applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid);
+    bool isNotInArea(const Box &bxObj, const Box &bxBounds);
 
     static TimePhysicsEngine *tpe;
 
