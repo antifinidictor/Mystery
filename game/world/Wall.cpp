@@ -15,7 +15,7 @@ Wall::Wall(uint uiId, uint texTopId, uint texBottomId, uint texSideId, Box bxVol
     m_pRenderModel->setTexture(UP,    ((visibleFaces & WALL_UP)    ? texTopId  : IMG_NONE));
     m_pRenderModel->setTexture(DOWN,  ((visibleFaces & WALL_DOWN)  ? texBottomId : IMG_NONE));
 
-    m_pPhysicsModel = new TimePhysicsModel(bxVolume);
+    m_pPhysicsModel = new TimePhysicsModel(bxVolume, DENSITY_STONE);
 
     setFlag(TPE_STATIC, true);
 }

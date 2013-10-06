@@ -7,13 +7,13 @@
 #define SIMPLE_PHYSICS_OBJECT_H
 
 #include "mge/GameObject.h"
-#include "tpe/TimePhysicsModel.h"
+#include "tpe/tpe.h"
 #include "d3re/d3re.h"
 #include "game/game_defs.h"
 
 class SimplePhysicsObject : public GameObject {
 public:
-    SimplePhysicsObject(uint id, uint texId, Box bxVolume);
+    SimplePhysicsObject(uint id, uint texId, Box bxVolume, float fDensity = DENSITY_WOOD);      //Approx. density of granite
 
     virtual ~SimplePhysicsObject();
 

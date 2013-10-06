@@ -5,8 +5,7 @@
 #include "d3re.h"
 
 #include "SDL.h"
-#include <gl/gl.h>
-#include <gl/glu.h>
+#include "pgl.h"
 
 #include "mge/GameObject.h"
 #include "game/game_defs.h"

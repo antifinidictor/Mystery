@@ -3,8 +3,8 @@
 
 //SDL includes
 #include <SDL.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+#include "pgl.h"
+
 //#include <SDL_mixer.h>
 //#include <SDL_opengl.h>
 //#include "SDL_image.h"

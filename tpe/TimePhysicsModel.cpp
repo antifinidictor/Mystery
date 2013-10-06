@@ -1,11 +1,10 @@
 
-#include "TimePhysicsModel.h"
-#include "TimePhysicsEngine.h"
+#include "tpe.h"
 
 #define DEFAULT_TIME_DIVISOR 10.f
 #define DEFAULT_FRICTION_COEFFICIENT 0.5f
 
-TimePhysicsModel::TimePhysicsModel(Box bxVolume, float fMass) {
+TimePhysicsModel::TimePhysicsModel(Box bxVolume, float fDensity) {
     m_bxVolume = bxVolume;
     m_pListener = NULL;
     m_ptAcceleration = Point();
@@ -14,7 +13,8 @@ TimePhysicsModel::TimePhysicsModel(Box bxVolume, float fMass) {
     m_fFrictionEffect = DEFAULT_FRICTION_COEFFICIENT;
     m_fFrictionAffect = DEFAULT_FRICTION_COEFFICIENT;
     m_fTimeDivisor = DEFAULT_TIME_DIVISOR;
-    m_fMass = fMass;
+    m_fVolume = PX3_TO_M3(bxVolume.w * bxVolume.h * bxVolume.l);
+    m_fMass = m_fVolume * fDensity;
     m_bWasPushed = false;
 }
 
@@ -24,8 +24,8 @@ void TimePhysicsModel::moveBy(Point ptShift) {
 
 //F = ma
 //a_new = F / m
-void TimePhysicsModel::applyForce(Point ptAcceleration) {
-    m_ptAcceleration += ptAcceleration;
+void TimePhysicsModel::applyForce(Point ptForce) {
+    m_ptAcceleration += ptForce / m_fMass;
 }
 
 

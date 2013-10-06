@@ -48,6 +48,7 @@ GameManager::update(uint time) {
             fadeArea();
             m_fFadeTimer += FADE_TIME_STEP;
         } else {
+            m_fFadeTimer = 1.f;
             m_skState.pop();
             m_skState.push(GM_FADE_IN);
             PWE::get()->setCurrentArea(m_uiNextArea);
@@ -58,6 +59,7 @@ GameManager::update(uint time) {
             fadeArea();
             m_fFadeTimer -= FADE_TIME_STEP;
         } else {
+            m_fFadeTimer = 0.f;
             m_skState.pop();
         }
         break;

@@ -21,6 +21,7 @@ void registerClasses() {
         .registerAttribute("Texture", "tex", ATYPE_RESOURCE_ID)
         .registerAttribute("Volume", "vol", ATYPE_BOX)
         .registerAttribute("Color", "cr", ATYPE_COLOR)
+        .registerAttribute("Density", "density", ATYPE_FLOAT)
     ;
 
     fac->registerClass(Wall::getClassName(), Wall::read)

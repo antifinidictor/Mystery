@@ -5,6 +5,15 @@
 #include "mge/PhysicsEngine.h"
 #include "TimePhysicsModel.h"
 
+//convert a volume from px to meters
+#define PX3_TO_M3(vol) (vol / 4096.f)   //16^3 = 4096, 16px to a meter
+
+//Some rock densities: http://geology.about.com/cs/rock_types/a/aarockspecgrav.htm
+//Some wood densities: http://www.engineeringtoolbox.com/wood-density-d_40.html
+#define DENSITY_STONE   2600.f  //Granite
+#define DENSITY_WATER   1000.f
+#define DENSITY_WOOD    740.f   //American Red Oak
+
 class GameObject;
 class PhysicsModel;
 class AbstractTimePhysicsModel;
@@ -14,6 +23,7 @@ enum TpeFlags{
     TPE_PASSABLE,                       //True if the object cannot be collided with
     TPE_FLOATING,                       //True if the object is not subject to gravity
     TPE_FALLING,                        //Set to true every turn the object moves, unless a surface is found
+    TPE_LIQUID,                         //True if this object can apply a bouyant force
     TPE_NUM_FLAGS
 };
 
@@ -46,6 +56,8 @@ public:
 private:
     TimePhysicsEngine();
     virtual ~TimePhysicsEngine();
+
+    void applyBouyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid);
 
     static TimePhysicsEngine *tpe;
 

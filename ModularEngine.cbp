@@ -7,34 +7,122 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/ModularEngine" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option output="bin/Windows/Debug/WizardGame" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Windows/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="K:/projects/games/mge/Mystery/windows" />
 				</Compiler>
+				<Linker>
+					<Add library="mingw32" />
+					<Add library="SDLmain" />
+					<Add library="SDL_image" />
+					<Add library="SDL_mixer" />
+					<Add library="SDL.dll" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="dxguid" />
+				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/ModularEngine" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+				<Option output="bin/Windows/Release/WizardGame" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Windows/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="K:/projects/games/mge/Mystery/windows" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="mingw32" />
+					<Add library="SDLmain" />
+					<Add library="SDL_image" />
+					<Add library="SDL_mixer" />
+					<Add library="SDL.dll" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="dxguid" />
 				</Linker>
 			</Target>
 			<Target title="Editor">
-				<Option output="bin/Editor/Editor" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Editor/" />
+				<Option output="bin/Windows/Editor/Editor" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Windows/Editor/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="K:/projects/games/mge/Mystery/windows" />
 				</Compiler>
+				<Linker>
+					<Add library="mingw32" />
+					<Add library="SDLmain" />
+					<Add library="SDL_image" />
+					<Add library="SDL_mixer" />
+					<Add library="SDL.dll" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="dxguid" />
+				</Linker>
+			</Target>
+			<Target title="LinuxDebug">
+				<Option platforms="Unix;" />
+				<Option output="bin/Linux/Debug/WizardGame" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Linux/Debug" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="K:/projects/games/mge/Mystery/windows" />
+				</Compiler>
+				<Linker>
+					<Add library="mingw32" />
+					<Add library="SDLmain" />
+					<Add library="SDL_image" />
+					<Add library="SDL_mixer" />
+					<Add library="SDL.dll" />
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winmm" />
+					<Add library="dxguid" />
+				</Linker>
+			</Target>
+			<Target title="LinuxEditor">
+				<Option platforms="Unix;" />
+				<Option output="bin/Linux/Editor/Editor" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Linux/Editor" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="/media/DATA/projects/games/mge/Mystery/" />
+					<Add directory="/usr/include/SDL" />
+					<Add directory="/usr/include/GL" />
+					<Add directory="K:/projects/games/mge/Mystery/linux" />
+				</Compiler>
+				<Linker>
+					<Add library="SDLmain" />
+					<Add library="SDL_image" />
+					<Add library="SDL_mixer" />
+					<Add library="GL" />
+					<Add library="GLU" />
+					<Add directory="/media/DATA/projects/games/mge/Mystery/lib" />
+				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
@@ -45,17 +133,6 @@
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --cflags` `sdl-config --libs`" />
-			<Add library="mingw32" />
-			<Add library="SDLmain" />
-			<Add library="SDL_image" />
-			<Add library="SDL_mixer" />
-			<Add library="SDL.dll" />
-			<Add library="opengl32" />
-			<Add library="glu32" />
-			<Add library="user32" />
-			<Add library="gdi32" />
-			<Add library="winmm" />
-			<Add library="dxguid" />
 			<Add directory="$(#boost.lib)" />
 			<Add directory="K:/projects/games/mge/Mystery/lib" />
 		</Linker>
@@ -75,27 +152,35 @@
 		<Unit filename="d3re/d3re.h" />
 		<Unit filename="editor/EditorCursor.cpp">
 			<Option target="Editor" />
+			<Option target="LinuxEditor" />
 		</Unit>
 		<Unit filename="editor/EditorCursor.h">
 			<Option target="Editor" />
+			<Option target="LinuxEditor" />
 		</Unit>
 		<Unit filename="editor/EditorHudButton.h">
 			<Option target="Editor" />
+			<Option target="LinuxEditor" />
 		</Unit>
 		<Unit filename="editor/EditorManager.cpp">
 			<Option target="Editor" />
+			<Option target="LinuxEditor" />
 		</Unit>
 		<Unit filename="editor/EditorManager.h">
 			<Option target="Editor" />
+			<Option target="LinuxEditor" />
 		</Unit>
 		<Unit filename="editor/SelectionRenderModel.h">
 			<Option target="Editor" />
+			<Option target="LinuxEditor" />
 		</Unit>
 		<Unit filename="editor/editor.cpp">
 			<Option target="Editor" />
+			<Option target="LinuxEditor" />
 		</Unit>
 		<Unit filename="editor/editor_defs.h">
 			<Option target="Editor" />
+			<Option target="LinuxEditor" />
 		</Unit>
 		<Unit filename="game/GameManager.cpp" />
 		<Unit filename="game/GameManager.h" />
@@ -106,6 +191,7 @@
 		<Unit filename="game/game.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
+			<Option target="LinuxDebug" />
 		</Unit>
 		<Unit filename="game/game.h" />
 		<Unit filename="game/game_defs.h" />
@@ -116,6 +202,10 @@
 		<Unit filename="game/world/SimplePhysicsObject.h" />
 		<Unit filename="game/world/Wall.cpp" />
 		<Unit filename="game/world/Wall.h" />
+		<Unit filename="linux/pgl.h">
+			<Option target="LinuxDebug" />
+			<Option target="LinuxEditor" />
+		</Unit>
 		<Unit filename="main.cpp" />
 		<Unit filename="mge/AudioEngine.h" />
 		<Unit filename="mge/Clock.h" />
@@ -138,6 +228,11 @@
 		<Unit filename="tpe/TimePhysicsModel.cpp" />
 		<Unit filename="tpe/TimePhysicsModel.h" />
 		<Unit filename="tpe/tpe.h" />
+		<Unit filename="windows/pgl.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Editor" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />

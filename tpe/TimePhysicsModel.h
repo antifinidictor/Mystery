@@ -8,6 +8,7 @@
 
 #include "mge/PhysicsModel.h"
 #include "mge/Event.h"
+#include <list>
 
 struct HandleCollisionData;
 
@@ -27,6 +28,8 @@ public:
     virtual void setWasPushed(bool pushed) = 0;
     virtual void update(uint time) = 0;
     virtual void handleCollisionEvent(HandleCollisionData *dat) = 0;
+    virtual float getDensity() = 0;
+    virtual float getVolume() = 0;
 };
 
 /*
@@ -35,7 +38,7 @@ public:
  */
 class TimePhysicsModel : public AbstractTimePhysicsModel {
 public:
-    TimePhysicsModel(Box bxVolume, float fMass = 1.f);
+    TimePhysicsModel(Box bxVolume, float fDensity = 1000.f);   //Density in kg/m^3
     virtual ~TimePhysicsModel() {}
 
     virtual Point getPosition() { return bxCenter(m_bxVolume); }//Point(m_bxVolume); }
@@ -56,6 +59,9 @@ public:
     virtual bool wasPushed() { return m_bWasPushed; }
     virtual void setWasPushed(bool pushed) { m_bWasPushed = pushed; }
 
+    virtual float getDensity() { return m_fMass / m_fVolume; }
+    virtual float getVolume()  { return m_fVolume; }
+
 private:
     //Time physics model
     Point m_ptAcceleration,
@@ -65,7 +71,7 @@ private:
     float m_fFrictionEffect,
           m_fFrictionAffect;
     float m_fTimeDivisor;
-    float m_fMass;
+    float m_fMass, m_fVolume;
 
     //Listener
     Listener *m_pListener;
@@ -98,6 +104,8 @@ public:
     virtual void clearVerticalVelocity() { }
     virtual bool wasPushed() { return false; }
     virtual void setWasPushed(bool pushed) { }
+    virtual float getDensity() { return 1000.f; }
+    virtual float getVolume()  { return 1.f; }
 private:
     Point m_ptPosition;
 };

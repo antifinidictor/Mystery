@@ -1,7 +1,9 @@
-#include "tpe/TimePhysicsEngine.h"
+
 #include "mge/GameObject.h"
 #include "mge/RenderModel.h"
-#include "tpe/TimePhysicsModel.h"
+#include "tpe/tpe.h"
+
+#define GRAV_ACCEL 3.f
 
 using namespace std;
 
@@ -34,8 +36,9 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     */
 
     //Apply gravity
+    uint id = obj->getId();
     if(obj->getFlag(TPE_FALLING) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC)) {
-        tmdl->applyForce(Point(0,-3,0));
+        tmdl->applyForce(Point(0,-GRAV_ACCEL * tmdl->getMass(),0));
     }
 
     //Apply general physics updates to object
@@ -48,7 +51,6 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     if(!obj->getFlag(TPE_PASSABLE) && hasMoved && !obj->getFlag(TPE_STATIC)) {
         obj->setFlag(TPE_FALLING, true);
     }
-
     return (hasMoved);
 }
 
@@ -80,6 +82,13 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
     //Now determine the smallest magnitude, and calculate the shifts.
     Point ptObj1Shift, ptObj2Shift;
     int iDir1, iDir2;
+
+    //Ratio determining share of shift
+    float fMassRatio1 = tpm2->getMass() / (tpm1->getMass() + tpm2->getMass()),
+          fMassRatio2 = tpm1->getMass() / (tpm1->getMass() + tpm2->getMass());
+    bool bNoCollide = obj1->getFlag(TPE_PASSABLE) || obj1->getFlag(TPE_LIQUID) ||
+                      obj2->getFlag(TPE_PASSABLE) || obj2->getFlag(TPE_LIQUID);
+
     if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
         //Shift by X
         if(obj1->getFlag(TPE_STATIC)) {
@@ -90,8 +99,8 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
             ptObj2Shift = Point();
 
         } else {    //Split evenly
-            ptObj1Shift = Point(fXShift / 2, 0, 0);
-            ptObj2Shift = Point(-fXShift / 2, 0, 0);
+            ptObj1Shift = Point(fXShift * fMassRatio1, 0, 0);
+            ptObj2Shift = Point(-fXShift * fMassRatio2, 0, 0);
         }
 
         if(fXShift < 0) {
@@ -111,8 +120,8 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
             ptObj2Shift = Point();
 
         } else {    //Split evenly
-            ptObj1Shift = Point(0, 0, fZShift / 2);
-            ptObj2Shift = Point(0, 0, -fZShift / 2);
+            ptObj1Shift = Point(0, 0, fZShift * fMassRatio1);
+            ptObj2Shift = Point(0, 0, -fZShift * fMassRatio2);
         }
 
         if(fZShift < 0) {
@@ -131,31 +140,36 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
             ptObj1Shift = Point(0, fYShift, 0);
             ptObj2Shift = Point();
         } else {    //Split evenly
-            ptObj1Shift = Point(0, fYShift / 2, 0);
-            ptObj2Shift = Point(0, -fYShift / 2, 0);
+            ptObj1Shift = Point(0, fYShift * fMassRatio1, 0);
+            ptObj2Shift = Point(0, -fYShift * fMassRatio2, 0);
         }
 
         if(bx2.y < bx1.y/*fZShift < 0*/) {
             iDir1 = UP;
             iDir2 = DOWN;
-            if(!obj1->getFlag(TPE_PASSABLE) && !obj2->getFlag(TPE_PASSABLE)) {
+            if(!bNoCollide) {
                 obj2->setFlag(TPE_FALLING, false);
                 tpm2->clearVerticalVelocity();
             }
         } else {
             iDir1 = DOWN;
             iDir2 = UP;
-            if(!obj1->getFlag(TPE_PASSABLE) && !obj2->getFlag(TPE_PASSABLE)) {
+            if(!bNoCollide) {
                 obj1->setFlag(TPE_FALLING, false);
                 tpm1->clearVerticalVelocity();
             }
         }
         bApplyForce = false;
     }
+    if(obj1->getFlag(TPE_LIQUID) && !obj2->getFlag(TPE_LIQUID)) {
+        applyBouyantForce(tpm2, tpm1, bx2, bx1);
+    } else if(obj2->getFlag(TPE_LIQUID) && !obj1->getFlag(TPE_LIQUID)) {
+        applyBouyantForce(tpm1, tpm2, bx1, bx2);
+    }
 
     //Only move the objects if they aren't passable.  We needed some of
     // the earlier calculations to handle collision events
-    if(!obj1->getFlag(TPE_PASSABLE) && !obj2->getFlag(TPE_PASSABLE) && !(obj1->getFlag(TPE_STATIC) && obj2->getFlag(TPE_STATIC))) {
+    if(!bNoCollide && !(obj1->getFlag(TPE_STATIC) && obj2->getFlag(TPE_STATIC))) {
         //Move the objects
         obj1->getRenderModel()->moveBy(ptObj1Shift);
         obj2->getRenderModel()->moveBy(ptObj2Shift);
@@ -178,55 +192,18 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
     tpm2->handleCollisionEvent(&sData2);
 }
 
-#if 0
-void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
-    //We need to find the point from the two last velocities and current
-    // position that the two objects do not collide and have not passed
-    TimePhysicsModel *tpm1 = dynamic_cast<TimePhysicsModel*>(obj1->getPhysicsModel()),
-                      *tpm2 = dynamic_cast<TimePhysicsModel*>(obj2->getPhysicsModel());
-    if(tpm1 == NULL || tpm2 == NULL) return;    //no collision for NULL physics
+#define MAX_B_FORCE 1.5f
+#define MIN_B_FORCE (2.f - MAX_B_FORCE) //ensures objects always are half-immersed
 
-    if(!bxIntersects(tpm1->m_bxVolume, tpm2->m_bxVolume)) return;   //no collision
-
-    Point v1 = tpm1->getLastVelocity(),
-          v2 = tpm2->getLastVelocity();
-    Rect rc1 = tpm1->getCollisionVolume(),
-         rc2 = tpm2->getCollisionVolume();
-
-    //Calculate time of travel.  The correct value will be the smallest
-    // nonnegative option
-    float time_x1 = (rc1.x - (rc2.x + rc2.w)) / (v1.x - v2.x),
-          time_x2 = ((rc1.x + rc1.w) - rc2.x) / (v1.x - v2.x),
-          time_x  = (time_x1 < 0) ? time_x2 : time_x1;
-    float time_y1 = (rc1.y - (rc2.y + rc2.l)) / (v1.y - v2.y),
-          time_y2 = ((rc1.y + rc1.l) - rc2.y) / (v1.y - v2.y),
-          time_y  = (time_y1 < 0) ? time_y2 : time_y1;
-
-    //Get the correct velocity.  We only want to move in the collision
-    // direction so objects can slide past each other
-    Point vb1, vb2;
-    if(time_x < time_y) {
-        vb1 = Point(v1.x * -time_x, 0, 0);
-        vb2 = Point(v2.x * -time_x, 0, 0);
-        //tpm1->m_ptVelocity = Point(tpm1->m_ptVelocity.x / 2, tpm1->m_ptVelocity.y, tpm1->m_ptVelocity.z);
-        //tpm2->m_ptVelocity = Point(tpm2->m_ptVelocity.x / 2, tpm2->m_ptVelocity.y, tpm2->m_ptVelocity.z);
-    } else {
-        vb1 = Point(0, v1.y * -time_y, 0);
-        vb2 = Point(0, v2.y * -time_y, 0);
-        //tpm1->m_ptVelocity = Point(tpm1->m_ptVelocity.x, tpm1->m_ptVelocity.y / 2, tpm1->m_ptVelocity.z);
-        //tpm2->m_ptVelocity = Point(tpm2->m_ptVelocity.x, tpm2->m_ptVelocity.y / 2, tpm2->m_ptVelocity.z);
+void
+TimePhysicsEngine::applyBouyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid) {
+    float fGravForce = GRAV_ACCEL * tpmObj->getMass();
+    if(tpmLiquid->getDensity() > tpmObj->getDensity()) {    //Float
+        //Percent of object underwater
+        float percentImmersed = ((bxObj.y + bxObj.h) < bxLiquid.y) ? (1.f) : ((bxLiquid.y + bxLiquid.h) - bxObj.y) / bxObj.h;
+        float bforce = (MAX_B_FORCE * percentImmersed + MIN_B_FORCE * (1.f - percentImmersed)) * fGravForce;
+        tpmObj->applyForce(Point(0.f, bforce, 0.f));
+    } else {    //Sink slowly
+        tpmObj->applyForce(Point(0.f, fGravForce * MIN_B_FORCE, 0.f));
     }
-
-    //Move the objects
-    obj1->getRenderModel()->moveBy(vb1);
-    obj2->getRenderModel()->moveBy(vb2);
-    tpm1->moveBy(vb1);
-    tpm2->moveBy(vb2);
-
-    //Handle collision events
-    HandleCollisionData sData1(bm2, iDir1),
-                        sData2(bm1, iDir2);
-    tpm1->handleCollisionEvent(&sData1);
-    tpm2->handleCollisionEvent(&sData2);
 }
-#endif

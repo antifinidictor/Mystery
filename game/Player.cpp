@@ -3,6 +3,9 @@
 #include "tpe/TimePhysicsEngine.h"
 #include "GameManager.h"
 
+#define DENSITY 1000.f  //1000kg/m^3 ~ density of water
+#define WALK_FORCE 500.f
+
 Player::Player(uint uiId, const Point &ptPos) {
     Image *img = D3RE::get()->getImage(IMG_PLAYER);
     int w = img->w / img->m_iNumFramesW,
@@ -12,7 +15,7 @@ Player::Player(uint uiId, const Point &ptPos) {
 
     Rect rcDrawArea = Rect(-w / 2, -h / 2, w, h);
     Box bxVolume = Box(ptPos.x - w / 4, ptPos.y, ptPos.z - h / 4, w / 2, h, h / 2);
-    m_pPhysicsModel = new TimePhysicsModel(bxVolume);
+    m_pPhysicsModel = new TimePhysicsModel(bxVolume, DENSITY);
     m_pRenderModel  = new D3SpriteRenderModel(this, IMG_PLAYER, rcDrawArea);
 
     dx = dy = 0;
@@ -54,9 +57,9 @@ Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 }
 
 bool Player::update(uint time) {
-    Point mov = Point(dx,0,dy);
+    Point mov = Point(dx, 0 ,dy);
     mov.normalize();
-    m_pPhysicsModel->applyForce(mov);
+    m_pPhysicsModel->applyForce(mov * WALK_FORCE);
 
     //Camera adjustment
     D3RE::get()->adjustCamAngle(m_fDeltaPitch);

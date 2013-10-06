@@ -5,7 +5,9 @@
 #include "SimplePhysicsObject.h"
 #include "pwe/PartitionedWorldEngine.h"
 
-SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume) {
+#define DENSITY 1.f
+
+SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume, float fDensity) {
     m_uiID = id;
     m_uiFlags = 0;
 
@@ -20,7 +22,7 @@ SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume) {
     m_pRenderModel->setTexture(UP,    img->m_uiID);
     m_pRenderModel->setTexture(DOWN,  IMG_NONE);//img->m_uiID);
 
-    m_pPhysicsModel = new TimePhysicsModel(bxVolume);
+    m_pPhysicsModel = new TimePhysicsModel(bxVolume, fDensity);
 
 }
 
@@ -41,7 +43,8 @@ SimplePhysicsObject::read(const boost::property_tree::ptree &pt, const std::stri
     bxVolume.w = pt.get(keyBase + ".vol.w", 0);
     bxVolume.h = pt.get(keyBase + ".vol.h", 0);
     bxVolume.l = pt.get(keyBase + ".vol.l", 0);
-    SimplePhysicsObject *obj = new SimplePhysicsObject(uiId, uiTexId, bxVolume);
+    float fDensity = pt.get(keyBase + ".density", DENSITY_WOOD);
+    SimplePhysicsObject *obj = new SimplePhysicsObject(uiId, uiTexId, bxVolume, fDensity);
     Color cr;
     cr.r = pt.get(keyBase + ".cr.r", 0xFF);
     cr.g = pt.get(keyBase + ".cr.g", 0xFF);
@@ -65,5 +68,6 @@ SimplePhysicsObject::write(boost::property_tree::ptree &pt, const std::string &k
     pt.put(keyBase + ".cr.r", cr.r);
     pt.put(keyBase + ".cr.g", cr.g);
     pt.put(keyBase + ".cr.b", cr.b);
+    pt.put(keyBase + ".density", m_pPhysicsModel->getDensity());
 }
 

@@ -121,9 +121,9 @@ enum EventID {      //EventIDs: Add to the World object to listen to them.  Feel
  */
 enum ObjFlags {
     WORLD_FLAGS_BEGIN =   0x00,
-    PHYSICS_FLAGS_BEGIN = 0x04,
-    RENDER_FLAGS_BEGIN =  0x08,
-    GAME_FLAGS_BEGIN =    0x10
+    PHYSICS_FLAGS_BEGIN = 0x08,
+    RENDER_FLAGS_BEGIN =  0x10,
+    GAME_FLAGS_BEGIN =    0x80
 };
 
 /*
