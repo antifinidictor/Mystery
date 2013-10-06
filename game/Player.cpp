@@ -22,6 +22,7 @@ Player::Player(uint uiId, const Point &ptPos) {
     m_fDeltaPitch = m_fDeltaZoom = 0.f;
     state = timer = 0;
     m_iDirection = SOUTH;
+    m_bFirst = true;
 
     //PWE::get()->addListener(this, ON_BUTTON_INPUT);
 }
@@ -90,7 +91,7 @@ bool Player::update(uint time) {
     }
     Point ptPos = m_pPhysicsModel->getPosition();
     D3RE::get()->moveScreenTo(ptPos);
-
+    m_bFirst = false;
     return false;
 }
 
@@ -100,11 +101,14 @@ void Player::callBack(uint cID, void *data, uint id) {
     case PWE_ON_ADDED_TO_AREA:
         PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
         //PWE::get()->setCurrentArea(*((uint*)data));
-        GameManager::get()->callBack(getId(), data, ON_AREA_FADE_IN);
+        if(!m_bFirst) {
+            GameManager::get()->callBack(getId(), data, ON_AREA_FADE_IN);
+        }
         dx = dy = 0;
         break;
     case PWE_ON_REMOVED_FROM_AREA:
         PWE::get()->removeListener(getId(), ON_BUTTON_INPUT, *((uint*)data));
+        m_pPhysicsModel->setSurface(NULL);
         //GameManager::get()->callBack(getID(), data, ON_AREA_FADE_OUT);
         break;
     case ON_BUTTON_INPUT:

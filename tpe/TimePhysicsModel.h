@@ -60,7 +60,7 @@ public:
     virtual void mulTimeDivisor(float fTimeEffect) { m_fTimeDivisor *= fTimeEffect; }
     virtual float getMass() { return m_fMass; }
     virtual void setListener(Listener *pListener) { m_pListener = pListener; }
-    virtual void clearVerticalVelocity() { m_ptVelocity.z = 0.f; }
+    virtual void clearVerticalVelocity() { m_ptVelocity.y = 0.f; }
     virtual bool wasPushed() { return m_bWasPushed; }
     virtual void setWasPushed(bool pushed) { m_bWasPushed = pushed; }
 
@@ -69,7 +69,7 @@ public:
 
     virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl);
     virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl);
-    virtual void setSurface(AbstractTimePhysicsModel *mdl) { m_pObjImOn = mdl; }
+    virtual void setSurface(AbstractTimePhysicsModel *mdl);
     virtual AbstractTimePhysicsModel* getSurface() { return m_pObjImOn; }
 
 private:
@@ -86,7 +86,7 @@ private:
     //Listener
     Listener *m_pListener;
     bool m_bWasPushed;
-
+    bool m_bIsCleaning; //Don't do some ops when cleaning up
     std::list<AbstractTimePhysicsModel*> m_lsObjsOnMe;
     AbstractTimePhysicsModel *m_pObjImOn;
 };

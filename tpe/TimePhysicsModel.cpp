@@ -19,10 +19,12 @@ TimePhysicsModel::TimePhysicsModel(Box bxVolume, float fDensity) {
     m_fMass = m_fVolume * fDensity;
     m_bWasPushed = false;
     m_pObjImOn = NULL;
+    m_bIsCleaning = false;
 }
 
 TimePhysicsModel::~TimePhysicsModel() {
     list<AbstractTimePhysicsModel*>::iterator iter;
+    m_bIsCleaning = true;
     for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
         (*iter)->setSurface(NULL);
     }
@@ -37,7 +39,7 @@ void TimePhysicsModel::moveBy(Point ptShift) {
 
     list<AbstractTimePhysicsModel*>::iterator iter;
     for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
-        // (*iter)->moveBy(ptShift);    //TODO: Why doesn't this work?
+        (*iter)->moveBy(ptShift);    //TODO: Why doesn't this work?
     }
 }
 
@@ -71,18 +73,39 @@ void TimePhysicsModel::handleCollisionEvent(HandleCollisionData *dat) {
     }
 }
 
-
 void
 TimePhysicsModel::addSurfaceObj(AbstractTimePhysicsModel *mdl) {
+    if(m_bIsCleaning) return;
+
     m_lsObjsOnMe.push_back(mdl);
+    printf("\tAdded obj %x to %x, size is %d\n", mdl, this, m_lsObjsOnMe.size());
 }
 
 void
 TimePhysicsModel::removeSurfaceObj(AbstractTimePhysicsModel *mdl) {
+    if(m_bIsCleaning) return;
+
     list<AbstractTimePhysicsModel*>::iterator iter;
+    printf("\tRemoving obj %x from %x, size is %d\n", mdl, this, m_lsObjsOnMe.size());
     for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
         if(*iter == mdl) {
             m_lsObjsOnMe.erase(iter);
+            printf("\t(Removed obj %x from %x, size is %d)\n", mdl, this, m_lsObjsOnMe.size());
+            break;
+        }
+    }
+}
+
+void
+TimePhysicsModel::setSurface(AbstractTimePhysicsModel *mdl) {
+    if(m_pObjImOn != mdl) {
+        printf("Setting surface of %x from %x to %x\n", this, m_pObjImOn, mdl);
+        if(m_pObjImOn != NULL) {
+            m_pObjImOn->removeSurfaceObj(this);
+        }
+        m_pObjImOn = mdl;
+        if(m_pObjImOn != NULL) {
+            m_pObjImOn->addSurfaceObj(this);
         }
     }
 }

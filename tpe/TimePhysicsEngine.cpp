@@ -48,7 +48,11 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
 
     hasMoved = hasMoved || tmdl->getLastVelocity() != Point();
     bool bCanFall = !obj->getFlag(TPE_PASSABLE) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC);
-    bool bHasLeftSurface = hasMoved && (tmdl->getSurface() == NULL || isNotInArea(tmdl->getCollisionVolume(), tmdl->getSurface()->getCollisionVolume()));
+    bool bIsOnSurface = tmdl->getSurface() != NULL;
+    bool bHasLeftSurface = hasMoved && (!bIsOnSurface || isNotInArea(tmdl->getCollisionVolume(), tmdl->getSurface()->getCollisionVolume()));
+    if(bIsOnSurface && bHasLeftSurface) {
+        tmdl->setSurface(NULL);
+    }
     if(bCanFall && bHasLeftSurface) {
         obj->setFlag(TPE_FALLING, true);
     }
@@ -149,19 +153,17 @@ void TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
             iDir1 = UP;
             iDir2 = DOWN;
             if(!bNoCollide) {
-                obj2->setFlag(TPE_FALLING, false);
-                tpm2->clearVerticalVelocity();
-                tpm2->setSurface(tpm1);
-                tpm1->addSurfaceObj(tpm2);
+                obj1->setFlag(TPE_FALLING, false);
+                tpm1->clearVerticalVelocity();
+                tpm1->setSurface(tpm2);
             }
         } else {
             iDir1 = DOWN;
             iDir2 = UP;
             if(!bNoCollide) {
-                obj1->setFlag(TPE_FALLING, false);
-                tpm1->clearVerticalVelocity();
-                tpm1->setSurface(tpm2);
-                tpm2->addSurfaceObj(tpm1);
+                obj2->setFlag(TPE_FALLING, false);
+                tpm2->clearVerticalVelocity();
+                tpm2->setSurface(tpm1);
             }
         }
         bApplyForce = false;
@@ -219,4 +221,13 @@ TimePhysicsEngine::isNotInArea(const Box &bxObj, const Box &bxBounds) {
             ((bxObj.x + bxObj.w) > (bxBounds.x + bxBounds.w)) ||
             ((bxObj.z) < (bxBounds.z)) ||
             ((bxObj.z + bxObj.l) > (bxBounds.z + bxBounds.l));
+}
+
+#define EQUALITY_WIDTH 0.01f
+
+bool
+TimePhysicsEngine::isOnSurface(const Box &bxObj, const Box &bxSurface) {
+    return !isNotInArea(bxObj, bxSurface) &&
+        bxObj.y >= (bxSurface.y + bxSurface.h - EQUALITY_WIDTH) &&
+        bxObj.y <= (bxSurface.y + bxSurface.h + EQUALITY_WIDTH);
 }

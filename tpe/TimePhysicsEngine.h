@@ -60,6 +60,7 @@ private:
 
     void applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid);
     bool isNotInArea(const Box &bxObj, const Box &bxBounds);
+    bool isOnSurface(const Box &bxObj, const Box &bxSurface);
 
     static TimePhysicsEngine *tpe;
 

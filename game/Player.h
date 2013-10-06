@@ -48,6 +48,7 @@ private:
     int m_iDirection;
     int timer, state;
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas
+    bool m_bFirst;
 };
 
 #endif // PLAYER_H
