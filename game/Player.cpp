@@ -25,6 +25,7 @@ Player::Player(uint uiId, const Point &ptPos) {
     m_bFirst = true;
     m_uiAnimFrameStart = 1;
     m_pPhysicsModel->setListener(this);
+    m_bMouseDown = false;
 
     //PWE::get()->addListener(this, ON_BUTTON_INPUT);
 }
@@ -60,23 +61,48 @@ Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 }
 
 bool Player::update(uint time) {
-    Point mov = Point(dx, 0 ,dy);
-    mov.normalize();
+    Point mov;
+    if(m_bMouseDown) {
+        mov = D3RE::get()->getMousePos() - m_pPhysicsModel->getPosition();
+        mov.y = 0.f;
+        dx = mov.x;
+        dy = mov.z;
+
+        //Distance from mouse has some effect on speed
+        float scale = mov.magnitude() / 100.f;
+        if(scale > 1.f) scale = 1.f;
+        mov.normalize();
+        mov *= scale;
+
+        float theta = atan2(dx, dy);
+        if(theta > 3 * M_PI / 4.f || theta < -3 * M_PI / 4.f) {
+            m_iDirection = NORTH;
+        } else if(theta > M_PI / 4.f && theta < 3 * M_PI / 4.f) {
+            m_iDirection = EAST;
+        } else if(theta > -M_PI / 4.f && theta < M_PI / 4.f) {
+            m_iDirection = SOUTH;
+        } else {
+            m_iDirection = WEST;
+        }
+    } else {
+        mov = Point(dx, 0 ,dy);
+        mov.normalize();
+        if(dx > 0 && dy == 0) {
+            m_iDirection = EAST;
+        } else if(dx < 0 && dy == 0) {
+            m_iDirection = WEST;
+        } else if(dx == 0 && dy > 0) {
+            m_iDirection = SOUTH;
+        } else if(dx == 0 && dy < 0) {
+            m_iDirection = NORTH;
+        }
+    }
     m_pPhysicsModel->applyForce(mov * WALK_FORCE);
 
     //Camera adjustment
     D3RE::get()->adjustCamAngle(m_fDeltaPitch);
     D3RE::get()->adjustCamDist(m_fDeltaZoom);
 
-    if(dx > 0 && dy == 0) {
-        m_iDirection = EAST;
-    } else if(dx < 0 && dy == 0) {
-        m_iDirection = WEST;
-    } else if(dx == 0 && dy > 0) {
-        m_iDirection = SOUTH;
-    } else if(dx == 0 && dy < 0) {
-        m_iDirection = NORTH;
-    }
     m_pRenderModel->setFrameW(m_iDirection);
 
     if(dx == 0 && dy == 0) {
@@ -108,6 +134,7 @@ void Player::callBack(uint cID, void *data, uint id) {
             GameManager::get()->callBack(getId(), data, ON_AREA_FADE_IN);
         }
         dx = dy = 0;
+        m_bMouseDown = false;
         break;
     case PWE_ON_REMOVED_FROM_AREA:
         PWE::get()->removeListener(getId(), ON_BUTTON_INPUT, *((uint*)data));
@@ -126,6 +153,12 @@ void Player::callBack(uint cID, void *data, uint id) {
 }
 
 void Player::handleButton(InputData* data) {
+    m_bMouseDown = data->getInputState(IN_SELECT);
+    if(!m_bMouseDown) {
+        dx = 0;
+        dy = 0;
+    }
+
     if(data->getInputState(IN_CTRL)) {
         if(data->getInputState(IN_NORTH)) {
             m_fDeltaPitch = M_PI / 100;
@@ -166,6 +199,7 @@ void Player::handleButton(InputData* data) {
     } else {
         dx = 0;
     }
+
 }
 
 void Player::handleCollision(HandleCollisionData *data) {

@@ -50,6 +50,7 @@ private:
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas
     uint m_uiAnimFrameStart;
     bool m_bFirst;
+    bool m_bMouseDown;
 };
 
 #endif // PLAYER_H

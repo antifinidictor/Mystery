@@ -13,6 +13,7 @@
 #include "mge/RenderEngine.h"
 #include "mge/Image.h"
 #include "mge/defs.h"
+#include "mge/Event.h"
 
 #include "ContainerRenderModel.h"
 
@@ -24,7 +25,7 @@ enum RenderFlags {
     D3RE_NUM_FLAGS
 };
 
-class D3RenderEngine : public RenderEngine {
+class D3RenderEngine : public RenderEngine, public Listener {
 public:
     static void init()  { re = new D3RenderEngine(); }
     static void clean() { delete re; }
@@ -59,6 +60,8 @@ public:
 
     void drawBox(const Box &bxVolume, const Color &cr = Color(0xFF, 0xFF, 0xFF));
 
+    void drawCircle(const Point &ptCenter, float radius, const Color &cr = Color(0xFF, 0xFF, 0xFF));
+
 
     ContainerRenderModel *getHudContainer() { return m_pHudContainer; }
 
@@ -69,6 +72,11 @@ public:
     void read(boost::property_tree::ptree &pt, const std::string &keyBase);
 
     uint getNumImages() { return m_vImages.size(); }
+
+	virtual void callBack(uint uiEventHandlerId, void *data, uint uiEventId);
+	virtual uint getId() { return ID_RENDER_ENGINE; }
+
+	Point getMousePos() { return m_ptMouseInWorld; }
 
 private:
     D3RenderEngine();
@@ -82,6 +90,7 @@ private:
     void resort(GameObject *obj);
 
     bool comesBefore(GameObject *obj1, GameObject *obj2);
+    void updateMousePos(int x, int y);
 
     static D3RenderEngine *re;
     Point m_ptPos, m_ptCamPos;
@@ -94,6 +103,9 @@ private:
     std::vector<Image*> m_vImages;
     ContainerRenderModel *m_pHudContainer;
     bool m_bGuiMode;
+
+    Point m_ptMouseInWorld;
+    Vec3f m_v3MouseRay;
 };
 
 typedef D3RenderEngine D3RE;
