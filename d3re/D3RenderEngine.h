@@ -78,6 +78,9 @@ public:
 
 	Point getMousePos() { return m_ptMouseInWorld; }
 
+	void setDrawCollisions(bool enable) { m_bDrawCollisions = enable; }
+	bool getDrawCollisions() { return m_bDrawCollisions; }
+
 private:
     D3RenderEngine();
     virtual ~D3RenderEngine();
@@ -103,6 +106,7 @@ private:
     std::vector<Image*> m_vImages;
     ContainerRenderModel *m_pHudContainer;
     bool m_bGuiMode;
+    bool m_bDrawCollisions;
 
     Point m_ptMouseInWorld;
     Vec3f m_v3MouseRay;

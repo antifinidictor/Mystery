@@ -51,6 +51,7 @@ D3RenderEngine::D3RenderEngine() {
     m_crWorld = Color(0xFF, 0xFF, 0xFF);
     m_fColorWeight = 0.5f;
     m_bGuiMode = false;
+    m_bDrawCollisions = false;
 
     m_ptMouseInWorld = Point(-SCREEN_WIDTH / 2, 0.f, -SCREEN_HEIGHT / 2);
     m_v3MouseRay = Vec3f();

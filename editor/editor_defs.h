@@ -17,7 +17,7 @@ enum EditorTypes {
 };
 
 enum EditorKeys {
-    ED_IN_SPACE = NUM_WORLD_EVENTS,
+    ED_IN_SPACE = NUM_GAME_EVENTS,
     ED_IN_PERIOD,
     ED_IN_UNDERSCORE,
     ED_IN_BACKSPACE,

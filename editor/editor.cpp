@@ -112,6 +112,7 @@ void initWorld() {
 
     // Selection
     mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
+    mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
 
     //Load image resources (required by editor)
     D3RE::get()->createImage(IMG_NONE,     "res/gui/noImage.png");

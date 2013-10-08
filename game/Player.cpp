@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "bae/BasicAudioEngine.h"
-#include "tpe/TimePhysicsEngine.h"
+#include "tpe/tpe.h"
 #include "GameManager.h"
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
@@ -13,9 +13,10 @@ Player::Player(uint uiId, const Point &ptPos) {
     m_uiId = uiId;
     m_uiFlags = 0;
 
-    Rect rcDrawArea = Rect(-w / 2, -h / 2, w, h);
-    Box bxVolume = Box(ptPos.x - w / 3, ptPos.y, ptPos.z - h / 4, 2 * w / 3, h, h / 2);
-    m_pPhysicsModel = new TimePhysicsModel(bxVolume, DENSITY);
+    Rect rcDrawArea = Rect(-w / 2, 0, w, h);
+    Box bxVolume = Box(-w / 3, 0, -h / 4, 2 * w / 3, 3 * h / 4, h / 2);
+    m_pPhysicsModel = new TimePhysicsModel(ptPos, DENSITY);
+    m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pRenderModel  = new D3SpriteRenderModel(this, IMG_PLAYER, rcDrawArea);
 
     dx = dy = 0;
@@ -26,6 +27,7 @@ Player::Player(uint uiId, const Point &ptPos) {
     m_uiAnimFrameStart = 1;
     m_pPhysicsModel->setListener(this);
     m_bMouseDown = false;
+
 
     //PWE::get()->addListener(this, ON_BUTTON_INPUT);
 }
@@ -157,6 +159,11 @@ void Player::handleButton(InputData* data) {
     if(!m_bMouseDown) {
         dx = 0;
         dy = 0;
+    }
+
+    if(!data->getInputState(IN_TOGGLE_DEBUG_MODE) && data->hasChanged(IN_TOGGLE_DEBUG_MODE)) {
+        //Debug stuff
+        D3RE::get()->setDrawCollisions(!D3RE::get()->getDrawCollisions());
     }
 
     if(data->getInputState(IN_CTRL)) {

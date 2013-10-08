@@ -6,8 +6,9 @@
 
 using namespace std;
 
-TimePhysicsModel::TimePhysicsModel(Box bxVolume, float fDensity) {
-    m_bxVolume = bxVolume;
+TimePhysicsModel::TimePhysicsModel(Point ptPos, float fDensity) {
+    m_bxVolume = Box();
+    m_ptPos = ptPos;
     m_pListener = NULL;
     m_ptAcceleration = Point();
     m_ptVelocity = Point();
@@ -15,27 +16,35 @@ TimePhysicsModel::TimePhysicsModel(Box bxVolume, float fDensity) {
     m_fFrictionEffect = DEFAULT_FRICTION_COEFFICIENT;
     m_fFrictionAffect = DEFAULT_FRICTION_COEFFICIENT;
     m_fTimeDivisor = DEFAULT_TIME_DIVISOR;
-    m_fVolume = PX3_TO_M3(bxVolume.w * bxVolume.h * bxVolume.l);
-    m_fMass = m_fVolume * fDensity;
+    m_fDensity = fDensity;
+    m_fMass = 0.f;
     m_bWasPushed = false;
     m_pObjImOn = NULL;
     m_bIsCleaning = false;
 }
 
 TimePhysicsModel::~TimePhysicsModel() {
-    list<AbstractTimePhysicsModel*>::iterator iter;
+    list<AbstractTimePhysicsModel*>::iterator itSurf;
     m_bIsCleaning = true;
-    for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
-        (*iter)->setSurface(NULL);
+    for(itSurf = m_lsObjsOnMe.begin(); itSurf != m_lsObjsOnMe.end(); ++itSurf) {
+        (*itSurf)->setSurface(NULL);
     }
     m_lsObjsOnMe.clear();
     if(m_pObjImOn != NULL) {
         m_pObjImOn->removeSurfaceObj(this);
     }
+
+    vector<CollisionModel*>::iterator itColl;
+    for(itColl = m_vCollisions.begin(); itColl != m_vCollisions.end(); ++itColl) {
+        if((*itColl) != NULL) {
+            delete *itColl;
+        }
+    }
+    m_vCollisions.clear();
 }
 
 void TimePhysicsModel::moveBy(Point ptShift) {
-    m_bxVolume += ptShift;
+    m_ptPos += ptShift;
 
     list<AbstractTimePhysicsModel*>::iterator iter;
     for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
@@ -78,7 +87,6 @@ TimePhysicsModel::addSurfaceObj(AbstractTimePhysicsModel *mdl) {
     if(m_bIsCleaning) return;
 
     m_lsObjsOnMe.push_back(mdl);
-    printf("\tAdded obj %x to %x, size is %d\n", mdl, this, m_lsObjsOnMe.size());
 }
 
 void
@@ -86,11 +94,9 @@ TimePhysicsModel::removeSurfaceObj(AbstractTimePhysicsModel *mdl) {
     if(m_bIsCleaning) return;
 
     list<AbstractTimePhysicsModel*>::iterator iter;
-    printf("\tRemoving obj %x from %x, size is %d\n", mdl, this, m_lsObjsOnMe.size());
     for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
         if(*iter == mdl) {
             m_lsObjsOnMe.erase(iter);
-            printf("\t(Removed obj %x from %x, size is %d)\n", mdl, this, m_lsObjsOnMe.size());
             break;
         }
     }
@@ -99,7 +105,6 @@ TimePhysicsModel::removeSurfaceObj(AbstractTimePhysicsModel *mdl) {
 void
 TimePhysicsModel::setSurface(AbstractTimePhysicsModel *mdl) {
     if(m_pObjImOn != mdl) {
-        printf("Setting surface of %x from %x to %x\n", this, m_pObjImOn, mdl);
         if(m_pObjImOn != NULL) {
             m_pObjImOn->removeSurfaceObj(this);
         }
@@ -108,4 +113,45 @@ TimePhysicsModel::setSurface(AbstractTimePhysicsModel *mdl) {
             m_pObjImOn->addSurfaceObj(this);
         }
     }
+}
+
+
+uint
+TimePhysicsModel::addCollisionModel(CollisionModel* mdl) {
+    m_vCollisions.push_back(mdl);
+    m_bxVolume += mdl->getBounds();
+    m_fMass += m_fDensity * mdl->getVolume();
+    return m_vCollisions.size() - 1;
+}
+
+void
+TimePhysicsModel::removeCollisionModel(uint id) {
+    if(id < m_vCollisions.size()) {
+        delete m_vCollisions[id];
+        m_vCollisions[id] = NULL;
+    }
+
+    //Recalculate total volume
+    m_bxVolume = Box();
+    m_fMass = 0.f;
+    vector<CollisionModel*>::iterator iter;
+    for(iter = m_vCollisions.begin(); iter != m_vCollisions.end(); ++iter) {
+        if((*iter) != NULL) {
+            m_bxVolume += (*iter)->getBounds();
+            m_fMass += m_fDensity * (*iter)->getVolume();
+        }
+    }
+}
+CollisionModel*
+TimePhysicsModel::getCollisionModel(uint id) {
+    if(id < m_vCollisions.size()) {
+        return m_vCollisions[id];
+    }
+    return NULL;
+}
+
+template<class CM>
+CM*
+TimePhysicsModel::getCollisionModel(uint id) {
+    return dynamic_cast<CM*>(getCollisionModel(id));
 }

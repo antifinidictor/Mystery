@@ -3,15 +3,15 @@
  */
 
 #include "AreaLinkObject.h"
-#include "tpe/TimePhysicsEngine.h"
+#include "tpe/tpe.h"
 #include "pwe/PartitionedWorldEngine.h"
 
 AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPos, const Box &bxTriggerVolume) {
     m_uiID = id;
     m_uiFlags = 0;
-
-    m_pRenderModel = new D3PrismRenderModel(this, Box(-bxTriggerVolume.w / 2, -bxTriggerVolume.h / 2, -bxTriggerVolume.l / 2,
-                                                       bxTriggerVolume.w,      bxTriggerVolume.h,      bxTriggerVolume.l));
+    Box bxRelativeVol =Box(-bxTriggerVolume.w / 2, -bxTriggerVolume.h / 2, -bxTriggerVolume.l / 2,
+                            bxTriggerVolume.w,      bxTriggerVolume.h,      bxTriggerVolume.l);
+    m_pRenderModel = new D3PrismRenderModel(this, bxRelativeVol);
     //Prism render model because in the editor, it will look like a volume
     m_pRenderModel->setTexture(NORTH, IMG_NONE);
     m_pRenderModel->setTexture(SOUTH, IMG_NONE);
@@ -20,7 +20,8 @@ AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPo
     m_pRenderModel->setTexture(UP,    IMG_NONE);
     m_pRenderModel->setTexture(DOWN,  IMG_NONE);
 
-    m_pPhysicsModel = new TimePhysicsModel(bxTriggerVolume);
+    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxTriggerVolume));
+    m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
     m_pPhysicsModel->setListener(this);
 
     m_uiDestAreaId = uiDestAreaId;

@@ -99,6 +99,7 @@ void initWorld() {
     mge->mapInput(SDLK_LCTRL, IN_CTRL);
     mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
     mge->mapInput(SDLK_h,     IN_BREAK);
+    mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
 
     //Load image resources
     ObjectFactory::get()->read("res/game.info");

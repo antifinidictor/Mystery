@@ -6,5 +6,6 @@
 
 #include "TimePhysicsEngine.h"
 #include "TimePhysicsModel.h"
+#include "CollisionModel.h"
 
 #endif

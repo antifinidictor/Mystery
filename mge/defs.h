@@ -244,6 +244,16 @@ typedef struct tBox {
 
     friend std::ostream& operator<< (std::ostream& stream, const tBox& bx);
 	//Constant operators
+	tBox operator+(const tBox &bx) const {  //positive translation
+	    tBox res;
+	    res.x = bx.x < x ? bx.x : x;
+	    res.y = bx.y < y ? bx.y : y;
+	    res.z = bx.z < z ? bx.z : z;
+	    res.w = bx.x + bx.w > x + w ? bx.x + bx.w - res.x : x + w - res.x;
+	    res.h = bx.y + bx.h > x + w ? bx.y + bx.h - res.y : y + h - res.y;
+	    res.l = bx.z + bx.l > x + w ? bx.z + bx.l - res.z : z + l - res.z;
+	    return res;
+	}
 	tBox operator+(const Vec3f &pt) const {  //positive translation
         return tBox(x + pt.x, y + pt.y, z + pt.z, w, h, l);
 	}
@@ -268,6 +278,7 @@ typedef struct tBox {
     }
 
 	//Nonconstant operators
+	void operator+=(const tBox &bx) { *this = *this + bx; }   //Less efficient, but necessary
 	void operator+=(const Vec3f &pt) { x += pt.x; y += pt.y; z += pt.z; }
 	void operator-=(const Vec3f &pt) { x -= pt.x; y -= pt.y; z -= pt.z; }
 	void operator=(const tBox &bx) { x = bx.x; y = bx.y; z = bx.z; w = bx.w; l = bx.l; h = bx.h; }
@@ -309,6 +320,7 @@ Rect  rcIntersection(const Rect &rc1, const Rect &rc2);
 double dist(const PT &ptHere, const PT &ptThere);
 bool equal(PT &pt1, PT &pt2, float offset);
 float dot(PT &pt1, PT &pt2);
+PT cross(const PT &pt1, const PT &pt2);
 int order(const PT &pt1, const PT &pt2);    //FIXME: Obsolete
 
 #endif

@@ -26,6 +26,12 @@ D3SpriteRenderModel::~D3SpriteRenderModel() {
 void
 D3SpriteRenderModel::render(RenderEngine *re) {
     glPushMatrix();
+
+    //Render collision box
+    if(D3RE::get()->getDrawCollisions()) {
+        D3RE::get()->drawBox(m_pParent->getPhysicsModel()->getCollisionVolume(), m_crColor);
+    }
+
     Color worldColor = D3RE::get()->getWorldColor();
     float fWeight = D3RE::get()->getColorWeight();
     Color ourColor = Color(m_crColor.r * (1 - fWeight) + worldColor.r * fWeight,

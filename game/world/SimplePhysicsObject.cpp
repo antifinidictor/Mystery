@@ -10,9 +10,10 @@ SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume, floa
     m_uiID = id;
     m_uiFlags = 0;
 
+    Box bxRelativeVol =Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
+                            bxVolume.w,      bxVolume.h,      bxVolume.l);
     Image *img = D3RE::get()->getImage(texId);
-    m_pRenderModel = new D3PrismRenderModel(this, Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
-                                                       bxVolume.w,      bxVolume.h,      bxVolume.l));
+    m_pRenderModel = new D3PrismRenderModel(this, bxRelativeVol);
     //Hidden faces not rendered
     m_pRenderModel->setTexture(NORTH, IMG_NONE);//img->m_uiID);
     m_pRenderModel->setTexture(SOUTH, img->m_uiID);
@@ -21,8 +22,8 @@ SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume, floa
     m_pRenderModel->setTexture(UP,    img->m_uiID);
     m_pRenderModel->setTexture(DOWN,  IMG_NONE);//img->m_uiID);
 
-    m_pPhysicsModel = new TimePhysicsModel(bxVolume, fDensity);
-
+    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
+    m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
 }
 
 SimplePhysicsObject::~SimplePhysicsObject() {

@@ -17,6 +17,7 @@ enum OBJECT_TYPES {
     TYPE_PLAYER,
     TYPE_GENERAL,
     TYPE_MANAGER,
+    TYPE_ELEMENTAL_VOLUME,
     NUM_TYPES
 };
 
@@ -52,6 +53,7 @@ enum InputID {
     IN_SOUTH,
     IN_WEST,
     IN_SELECT,
+    IN_TOGGLE_DEBUG_MODE,
     IN_SHIFT,   //Modify key #1
     IN_CTRL,    //Modify key #2
     IN_CAST,    //Cast spell
@@ -61,9 +63,13 @@ enum InputID {
 };
 
 enum GameEvent {
-    ON_AREA_FADE_OUT = GAME_EVENTS_BEGIN,    //When an area-of-effect event occurs
+    ON_AREA_FADE_OUT = GAME_EVENTS_BEGIN,    //When an area starts fading out
     ON_AREA_FADE_IN,
-    NUM_WORLD_EVENTS
+    ON_SPELL_DIVIDE_CAST,   //Spell that divides an element amount BETWEEN two selected volumes
+    ON_SPELL_SOURCE_CAST,   //Spell that causes an element to flow from one point to another WITHIN a volume (called once for source, once for sink)
+    ON_SPELL_FLOW_CAST,     //Spell that causes a flow within the specified volume
+    ON_SPELL_CANCEL,        //Spell cancelled
+    NUM_GAME_EVENTS
 };
 
 

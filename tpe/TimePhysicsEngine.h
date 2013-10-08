@@ -5,9 +5,6 @@
 #include "mge/PhysicsEngine.h"
 #include "TimePhysicsModel.h"
 
-//convert a volume from px to meters
-#define PX3_TO_M3(vol) (vol / 4096.f)   //16^3 = 4096, 16px to a meter
-
 //Some rock densities: http://geology.about.com/cs/rock_types/a/aarockspecgrav.htm
 //Some wood densities: http://www.engineeringtoolbox.com/wood-density-d_40.html
 #define DENSITY_STONE   2600.f  //Granite
