@@ -47,7 +47,8 @@ const int SCREEN_WIDTH = 640;
 #define TRUE 1
 #define FALSE 0
 
-#define TILE_SIZE 32
+#define TEXTURE_TILE_SIZE 32
+#define WORLD_TILE_SIZE 1.f
 
 //Macros
 #define GET_FLAG(flags, flag)             ((flags >> flag) & 0x1)
@@ -236,11 +237,11 @@ typedef struct tBox {
 	float x;
 	float y;
 	float z;
-	int w;
-	int h;
-	int l;
+	float w;
+	float h;
+	float l;
 	tBox() { x = y = z = 0.0F; w = l = h = 0; }
-	tBox(float fx, float fy, float fz, int iw, int ih, int il) { x = fx; y = fy; z = fz; w = iw; l = il; h = ih; }
+	tBox(float fx, float fy, float fz, float fw, float fh, float fl) { x = fx; y = fy; z = fz; w = fw; l = fl; h = fh; }
 
     friend std::ostream& operator<< (std::ostream& stream, const tBox& bx);
 	//Constant operators

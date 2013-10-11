@@ -8,6 +8,7 @@
 using namespace std;
 
 #define UNUSED_TEXTURE_ID 0xFFFFFFFF
+#define MOVE_SPEED 0.03 //in meters
 
 EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
     m_uiId = uiId;
@@ -17,7 +18,7 @@ EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
 
     m_ptTilePos = toTile(ptPos);
 
-    Box bxVolume = Box(m_ptTilePos.x, m_ptTilePos.y, m_ptTilePos.z, TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    Box bxVolume = Box(m_ptTilePos.x, m_ptTilePos.y, m_ptTilePos.z, WORLD_TILE_SIZE, WORLD_TILE_SIZE, WORLD_TILE_SIZE);
     m_pPhysicsModel = new NullTimePhysicsModel(bxVolume);
     m_pRenderModel  = new SelectionRenderModel(bxVolume, Color(0x0, 0x0, 0xFF));
 
@@ -149,12 +150,12 @@ EditorCursor::setState(EditorCursorState eState) {
     m_eState = eState;
     switch(m_eState) {
     case EDC_STATE_STATIC: {
-        m_pRenderModel->setVolume(Box(m_ptTilePos.x, m_ptTilePos.y, m_ptTilePos.z, TILE_SIZE, TILE_SIZE, TILE_SIZE));
+        m_pRenderModel->setVolume(Box(m_ptTilePos.x, m_ptTilePos.y, m_ptTilePos.z, WORLD_TILE_SIZE, WORLD_TILE_SIZE, WORLD_TILE_SIZE));
         m_pRenderModel->setColor(Color(0x0,0x0,0xFF));
         break;
       }
     case EDC_STATE_MOVE: {
-        m_pRenderModel->setVolume(Box(m_ptTilePos.x, m_ptTilePos.y, m_ptTilePos.z, TILE_SIZE, TILE_SIZE, TILE_SIZE));
+        m_pRenderModel->setVolume(Box(m_ptTilePos.x, m_ptTilePos.y, m_ptTilePos.z, WORLD_TILE_SIZE, WORLD_TILE_SIZE, WORLD_TILE_SIZE));
         m_pRenderModel->setColor(Color(0x0,0x0,0xFF));
         break;
       }
@@ -197,26 +198,26 @@ EditorCursor::staticUpdate() {
     //TODO: Anything here?
 }
 
-#define HALF_TILE_SIZE (TILE_SIZE / 2)
+#define HALF_WORLD_TILE_SIZE (WORLD_TILE_SIZE / 2)
 
 void
 EditorCursor::snapX() {
     Point ptPos = m_pPhysicsModel->getPosition();
-    float delta = (((int)ptPos.x) / HALF_TILE_SIZE) * HALF_TILE_SIZE - ptPos.x;
+    float delta = (((int)ptPos.x) / HALF_WORLD_TILE_SIZE) * HALF_WORLD_TILE_SIZE - ptPos.x;
     m_pPhysicsModel->moveBy(Point(delta,0.f,0.f));
 }
 
 void
 EditorCursor::snapY() {
     Point ptPos = m_pPhysicsModel->getPosition();
-    float delta = (((int)ptPos.y) / HALF_TILE_SIZE) * HALF_TILE_SIZE - ptPos.y;
+    float delta = (((int)ptPos.y) / HALF_WORLD_TILE_SIZE) * HALF_WORLD_TILE_SIZE - ptPos.y;
     m_pPhysicsModel->moveBy(Point(0.f,delta,0.f));
 }
 
 void
 EditorCursor::snapZ() {
     Point ptPos = m_pPhysicsModel->getPosition();
-    float delta = (((int)ptPos.z) / HALF_TILE_SIZE) * HALF_TILE_SIZE - ptPos.z;
+    float delta = (((int)ptPos.z) / HALF_WORLD_TILE_SIZE) * HALF_WORLD_TILE_SIZE - ptPos.z;
     m_pPhysicsModel->moveBy(Point(0.f,0.f,delta));
 }
 
@@ -226,7 +227,7 @@ EditorCursor::moveUpdate() {
     m_pPhysicsModel->moveBy(m_ptDeltaPos);
 
     //Tile size jump?
-    Point ptTileShift = getTileShift();//toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2));
+    Point ptTileShift = getTileShift();//toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(WORLD_TILE_SIZE / 2, WORLD_TILE_SIZE / 2, WORLD_TILE_SIZE / 2));
     m_ptTilePos += Point(ptTileShift);
     m_pRenderModel->moveBy(ptTileShift);
     m_pRenderModel->setPosition(m_pPhysicsModel->getPosition());
@@ -251,15 +252,15 @@ EditorCursor::selectVolumeUpdate() {
     m_pPhysicsModel->moveBy(m_ptDeltaPos);
 
     //Tile size jump?
-    Point ptTileShift = getTileShift();//toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(TILE_SIZE / 2, TILE_SIZE / 2, TILE_SIZE / 2));
+    Point ptTileShift = getTileShift();//toTile(m_pPhysicsModel->getPosition() - m_ptTilePos - Point(WORLD_TILE_SIZE / 2, WORLD_TILE_SIZE / 2, WORLD_TILE_SIZE / 2));
     m_ptTilePos += Point(ptTileShift);
     Box bxVolume = Box(
         m_ptTilePos.x < m_ptInitSelectPos.x ? m_ptTilePos.x : m_ptInitSelectPos.x,
         m_ptTilePos.y < m_ptInitSelectPos.y ? m_ptTilePos.y : m_ptInitSelectPos.y,
         m_ptTilePos.z < m_ptInitSelectPos.z ? m_ptTilePos.z : m_ptInitSelectPos.z,
-       (m_ptTilePos.x < m_ptInitSelectPos.x ? (m_ptInitSelectPos.x - m_ptTilePos.x) : (m_ptTilePos.x - m_ptInitSelectPos.x)) + TILE_SIZE,
-       (m_ptTilePos.y < m_ptInitSelectPos.y ? (m_ptInitSelectPos.y - m_ptTilePos.y) : (m_ptTilePos.y - m_ptInitSelectPos.y)) + TILE_SIZE,
-       (m_ptTilePos.z < m_ptInitSelectPos.z ? (m_ptInitSelectPos.z - m_ptTilePos.z) : (m_ptTilePos.z - m_ptInitSelectPos.z)) + TILE_SIZE
+       (m_ptTilePos.x < m_ptInitSelectPos.x ? (m_ptInitSelectPos.x - m_ptTilePos.x) : (m_ptTilePos.x - m_ptInitSelectPos.x)) + WORLD_TILE_SIZE,
+       (m_ptTilePos.y < m_ptInitSelectPos.y ? (m_ptInitSelectPos.y - m_ptTilePos.y) : (m_ptTilePos.y - m_ptInitSelectPos.y)) + WORLD_TILE_SIZE,
+       (m_ptTilePos.z < m_ptInitSelectPos.z ? (m_ptInitSelectPos.z - m_ptTilePos.z) : (m_ptTilePos.z - m_ptInitSelectPos.z)) + WORLD_TILE_SIZE
     );
     m_pRenderModel->setVolume(bxVolume);
     m_pRenderModel->setPosition(bxCenter(bxVolume));
@@ -307,9 +308,9 @@ EditorCursor::moveOnKeyPress(InputData *data) {
     m_fDeltaPitch = 0.f;
     if(data->getInputState(IN_SHIFT)) {
         if(data->getInputState(IN_NORTH)) {
-            m_ptDeltaPos.y = 1.f;
+            m_ptDeltaPos.y = MOVE_SPEED;
         } else if(data->getInputState(IN_SOUTH)) {
-            m_ptDeltaPos.y = -1.f;
+            m_ptDeltaPos.y = -MOVE_SPEED;
         } else {
             m_ptDeltaPos.y = 0.f;
         }
@@ -318,18 +319,18 @@ EditorCursor::moveOnKeyPress(InputData *data) {
         m_fDeltaZoom = 0.f;
     } else if(data->getInputState(IN_CTRL)) {
         if(data->getInputState(IN_NORTH)) {
-            m_fDeltaZoom = -1.0f;
+            m_fDeltaZoom = -MOVE_SPEED;
         } else if(data->getInputState(IN_SOUTH)) {
-            m_fDeltaZoom = 1.0f;
+            m_fDeltaZoom = MOVE_SPEED;
         } else {
             m_fDeltaZoom = 0.f;
         }
         m_ptDeltaPos.z = 0;
     } else {
         if(data->getInputState(IN_NORTH)) {
-            m_ptDeltaPos.z = -1;
+            m_ptDeltaPos.z = -MOVE_SPEED;
         } else if(data->getInputState(IN_SOUTH)) {
-            m_ptDeltaPos.z = 1;
+            m_ptDeltaPos.z = MOVE_SPEED;
         } else {
             m_ptDeltaPos.z = 0;
         }
@@ -337,9 +338,9 @@ EditorCursor::moveOnKeyPress(InputData *data) {
     }
 
     if(data->getInputState(IN_WEST)) {
-        m_ptDeltaPos.x = -1;
+        m_ptDeltaPos.x = -MOVE_SPEED;
     } else if(data->getInputState(IN_EAST)) {
-        m_ptDeltaPos.x = 1;
+        m_ptDeltaPos.x = MOVE_SPEED;
     } else {
         m_ptDeltaPos.x = 0;
     }
@@ -415,11 +416,11 @@ EditorCursor::typeOnKeyPress(InputData *data) {
 Point
 EditorCursor::toTile(const Point &pt) {
     Point res = Point(
-        ((int)pt.x) / TILE_SIZE,
-        ((int)pt.y) / TILE_SIZE,
-        ((int)pt.z) / TILE_SIZE
+        ((int)pt.x) / WORLD_TILE_SIZE,
+        ((int)pt.y) / WORLD_TILE_SIZE,
+        ((int)pt.z) / WORLD_TILE_SIZE
     );
-    res *= TILE_SIZE;
+    res *= WORLD_TILE_SIZE;
     return res;
 }
 
@@ -428,25 +429,25 @@ EditorCursor::getTileShift() {
     Point ptPos = m_pPhysicsModel->getPosition();
     Point ptShift;
     if(ptPos.x < m_ptTilePos.x) {
-        ptShift.x = -TILE_SIZE;
-    } else if(ptPos.x > m_ptTilePos.x + TILE_SIZE) {
-        ptShift.x = TILE_SIZE;
+        ptShift.x = -WORLD_TILE_SIZE;
+    } else if(ptPos.x > m_ptTilePos.x + WORLD_TILE_SIZE) {
+        ptShift.x = WORLD_TILE_SIZE;
     } else {
         ptShift.x = 0.f;
     }
 
     if(ptPos.y < m_ptTilePos.y) {
-        ptShift.y = -TILE_SIZE;
-    } else if(ptPos.y > m_ptTilePos.y + TILE_SIZE) {
-        ptShift.y = TILE_SIZE;
+        ptShift.y = -WORLD_TILE_SIZE;
+    } else if(ptPos.y > m_ptTilePos.y + WORLD_TILE_SIZE) {
+        ptShift.y = WORLD_TILE_SIZE;
     } else {
         ptShift.y = 0.f;
     }
 
     if(ptPos.z < m_ptTilePos.z) {
-        ptShift.z = -TILE_SIZE;
-    } else if(ptPos.z > m_ptTilePos.z + TILE_SIZE) {
-        ptShift.z = TILE_SIZE;
+        ptShift.z = -WORLD_TILE_SIZE;
+    } else if(ptPos.z > m_ptTilePos.z + WORLD_TILE_SIZE) {
+        ptShift.z = WORLD_TILE_SIZE;
     } else {
         ptShift.z = 0.f;
     }

@@ -129,8 +129,6 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
     int iDir1, iDir2;
 
     //Ratio determining share of shift
-    float fMassRatio1 = tpm2->getMass() / (tpm1->getMass() + tpm2->getMass()),
-          fMassRatio2 = tpm1->getMass() / (tpm1->getMass() + tpm2->getMass());
     bool bNoCollide = obj1->getFlag(TPE_PASSABLE) || obj1->getFlag(TPE_LIQUID) ||
                       obj2->getFlag(TPE_PASSABLE) || obj2->getFlag(TPE_LIQUID);
 

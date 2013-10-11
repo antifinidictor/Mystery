@@ -16,23 +16,24 @@ public:
 
     virtual ~SelectionRenderModel() {}
 
-#define CROSS_RAD 2.5f
+#define CROSS_RAD 0.10f
 
     virtual void render(RenderEngine *re) {
         //Volume
         D3RE::get()->drawBox(m_bxVolume, m_crColor);
-
+        D3RE::get()->drawCircle(m_ptPos, CROSS_RAD, m_crColor);
         glBegin(GL_LINES);
             //Vertical line
             glVertex3f(m_ptPos.x, m_bxVolume.y, m_ptPos.z);
             glVertex3f(m_ptPos.x, m_ptPos.y, m_ptPos.z);
-
+/*
             //Cross
             glVertex3f(m_ptPos.x - CROSS_RAD, m_ptPos.y, m_ptPos.z + CROSS_RAD);
             glVertex3f(m_ptPos.x + CROSS_RAD, m_ptPos.y, m_ptPos.z - CROSS_RAD);
 
             glVertex3f(m_ptPos.x - CROSS_RAD, m_ptPos.y, m_ptPos.z - CROSS_RAD);
             glVertex3f(m_ptPos.x + CROSS_RAD, m_ptPos.y, m_ptPos.z + CROSS_RAD);
+*/
         glEnd();
     }
 
@@ -66,17 +67,17 @@ public:
         m_bxVolume.w += pt.x;
         m_bxVolume.h += pt.y;
         m_bxVolume.l += pt.z;
-        while (m_bxVolume.w < TILE_SIZE) {
-            m_bxVolume.x -= TILE_SIZE;
-            m_bxVolume.w += TILE_SIZE;
+        while (m_bxVolume.w < WORLD_TILE_SIZE) {
+            m_bxVolume.x -= WORLD_TILE_SIZE;
+            m_bxVolume.w += WORLD_TILE_SIZE;
         }
-        while (m_bxVolume.l < TILE_SIZE) {
-            m_bxVolume.z -= TILE_SIZE;
-            m_bxVolume.l += TILE_SIZE;
+        while (m_bxVolume.l < WORLD_TILE_SIZE) {
+            m_bxVolume.z -= WORLD_TILE_SIZE;
+            m_bxVolume.l += WORLD_TILE_SIZE;
         }
-        while (m_bxVolume.h < TILE_SIZE) {
-            m_bxVolume.y -= TILE_SIZE;
-            m_bxVolume.h += TILE_SIZE;
+        while (m_bxVolume.h < WORLD_TILE_SIZE) {
+            m_bxVolume.y -= WORLD_TILE_SIZE;
+            m_bxVolume.h += WORLD_TILE_SIZE;
         }
     }
 

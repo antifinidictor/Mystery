@@ -12,7 +12,7 @@
 
 using namespace std;
 
-#define CAM_DIST 200.f
+#define CAM_DIST 6.25f  //200.f
 #define CAM_ANGLE (9 * M_PI / 32)
 
 //static members

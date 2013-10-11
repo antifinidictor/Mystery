@@ -670,7 +670,7 @@ EditorManager::initAttributeListPanel(uint uiStart) {
         case ATYPE_COLOR: {
             Color cr = m_pCurData->getAttribute(iter->m_sAttributeKey, Color(0xFF,0xFF,0xFF));
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            D3HudRenderModel *tex = new D3HudRenderModel(1, Rect(BUTTON_WIDTH - TILE_SIZE, BUTTON_HEIGHT * i, TILE_SIZE, TILE_SIZE));
+            D3HudRenderModel *tex = new D3HudRenderModel(1, Rect(BUTTON_WIDTH - TEXTURE_TILE_SIZE, BUTTON_HEIGHT * i, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE));
             tex->setImageColor(cr);
             lspanel->add(i * 2 + 1, tex);
             break;
@@ -682,7 +682,7 @@ EditorManager::initAttributeListPanel(uint uiStart) {
             uint texId = m_pCurData->getAttribute(iter->m_sAttributeKey, (uint)0);
             attrName << iter->m_sAttributeName << " = " << texId;
             attrButton = new EditorHudButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-            D3HudRenderModel *tex = new D3HudRenderModel(texId, Rect(BUTTON_WIDTH - TILE_SIZE, BUTTON_HEIGHT * i, TILE_SIZE, TILE_SIZE));
+            D3HudRenderModel *tex = new D3HudRenderModel(texId, Rect(BUTTON_WIDTH - TEXTURE_TILE_SIZE, BUTTON_HEIGHT * i, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE));
             lspanel->add(i * 2 + 1, tex);
             break;
           }
@@ -736,7 +736,7 @@ EditorManager::initTextureListPanel(uint uiStart) {
     uint i = 0;
     for(uint img = uiStart; img <= m_uiObjMax && i < MAX_LIST_SIZE; ++img) {
         EditorHudButton *texButton = new EditorHudButton(lspanel, ED_HUD_OP_CHOOSE_TEXTURE, "", Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
-        D3HudRenderModel *tex = new D3HudRenderModel(img, Rect(BUTTON_WIDTH / 2 - TILE_SIZE / 2, BUTTON_HEIGHT * i, TILE_SIZE, TILE_SIZE));
+        D3HudRenderModel *tex = new D3HudRenderModel(img, Rect(BUTTON_WIDTH / 2 - TEXTURE_TILE_SIZE / 2, BUTTON_HEIGHT * i, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE));
         lspanel->add(i * 2, texButton);
         lspanel->add(i * 2 + 1, tex);
         if(i == 0) {

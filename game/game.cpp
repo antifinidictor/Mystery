@@ -143,17 +143,17 @@ void buildRoom(Box bxVol) {
 
     //"Mins" are inside the wall, "maxes" are outside the wall
     float minEast = bxVol.x,
-          maxEast = minEast - TILE_SIZE;
+          maxEast = minEast - WORLD_TILE_SIZE;
     float minWest = bxVol.x + bxVol.w,
-          maxWest = minWest + TILE_SIZE;
+          maxWest = minWest + WORLD_TILE_SIZE;
     float minNorth = bxVol.z,
-          maxNorth = minNorth - TILE_SIZE;
+          maxNorth = minNorth - WORLD_TILE_SIZE;
     float minSouth = bxVol.z + bxVol.l,
-          maxSouth = minSouth + TILE_SIZE;
+          maxSouth = minSouth + WORLD_TILE_SIZE;
     float minDown = bxVol.y,
-          maxDown = minDown - TILE_SIZE;
+          maxDown = minDown - WORLD_TILE_SIZE;
     float height = bxVol.h,
-          width = TILE_SIZE;
+          width = WORLD_TILE_SIZE;
 
 
     Wall *wallNorth = new Wall(we->genId(), IMG_NONE, IMG_NONE, IMG_WALL_SIDE,
@@ -180,7 +180,7 @@ void buildWorld() {
     we->setCurrentArea(GM_MAIN_GAME);
     we->setEffectiveArea(GM_MAIN_GAME); //Make sure objects actually get added here
 
-    buildRoom(Box(-128, 0, -256, 256, TILE_SIZE * 2, 512));
+    buildRoom(Box(-128, 0, -256, 256, WORLD_TILE_SIZE * 2, 512));
 
     SimplePhysicsObject *block = new SimplePhysicsObject(we->genId(), IMG_BLOCK, Box(-32,0,0,32,32,32));
     we->add(block);
