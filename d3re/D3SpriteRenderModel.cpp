@@ -48,7 +48,7 @@ D3SpriteRenderModel::render(RenderEngine *re) {
           fTexBottom = m_iFrameH * 1.0F / pImage->m_iNumFramesH + m_iRepsH * 1.0F / pImage->m_iNumFramesH;
 
     Point ptPos = getPosition();
-    glTranslatef((int)(ptPos.x + m_rcDrawArea.x), (int)(ptPos.y + m_rcDrawArea.y), (int)(ptPos.z));
+    glTranslatef((ptPos.x + m_rcDrawArea.x), (ptPos.y + m_rcDrawArea.y), (ptPos.z));
 
     //Bind the texture to which subsequent calls refer to
     glBindTexture( GL_TEXTURE_2D, pImage->m_uiTexture );

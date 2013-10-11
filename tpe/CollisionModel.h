@@ -7,6 +7,7 @@
 
 //convert a volume from px to meters
 #define PX3_TO_M3(vol) (vol / 4096.f)   //16^3 = 4096, 16px to a meter
+#define PX2_TO_M2(area) (area / 256.f)  //16^2 = 256, 16px to a meter
 
 enum CollisionModelType {
     CM_BOX,

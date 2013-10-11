@@ -10,22 +10,23 @@
 #include "game/game_defs.h"
 
 class ForceField;
+class HandleCollisionData;
 
 class ElementalVolume : public GameObject {
 public:
-    ElementalVolume();
+    ElementalVolume(uint uiId);
     virtual ~ElementalVolume();
 
     virtual uint getId() { return m_uiId; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
-    virtual bool update(uint time);
+    virtual bool update(uint time) = 0;
     virtual uint getType() { return TYPE_ELEMENTAL_VOLUME; }
     virtual const std::string getClass()        { return getClassName(); }
     static const std::string getClassName()     { return "ElementalVolume"; }
 
     //Listener
-	virtual void callBack(uint uiEventHandlerId, void *data, uint uiEventId) = 0;
+	virtual void callBack(uint uiEventHandlerId, void *data, uint uiEventId);
 
     //Elemental-specific
     uint addForceField(ForceField *field);
@@ -33,7 +34,10 @@ public:
 
 private:
 
+    void handleCollision(HandleCollisionData *data);
+
     uint m_uiId, m_uiFlags;
+    uint m_uiNextField;
     std::map<uint,ForceField*> m_mForceFields;
 };
 

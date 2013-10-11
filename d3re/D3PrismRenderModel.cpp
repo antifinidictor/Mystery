@@ -41,7 +41,7 @@ D3PrismRenderModel::render(RenderEngine *re) {
                            m_crColor.b * (1 - fWeight) + worldColor.b * fWeight);
 
     Point ptPos = getPosition();
-    glTranslatef((int)(ptPos.x + m_bxVolume.x), (int)(ptPos.y + m_bxVolume.y), (int)(ptPos.z + m_bxVolume.z));
+    glTranslatef((ptPos.x + m_bxVolume.x), (ptPos.y + m_bxVolume.y), (ptPos.z + m_bxVolume.z));
 
     glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);
 

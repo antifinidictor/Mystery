@@ -115,6 +115,11 @@ bool Player::update(uint time) {
             timer = 20;
             state = ((state + 1) % 4);
             m_pRenderModel->setFrameH(state + m_uiAnimFrameStart);
+            /*
+            if(state == 0 || state == 2) {
+                BAE::get()->playSound(AUD_STEP);
+            }
+            */
         } else {
             --timer;
         }

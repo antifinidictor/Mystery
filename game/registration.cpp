@@ -9,6 +9,7 @@
 #include "game/world/Wall.h"
 #include "game/world/AreaLinkObject.h"
 #include "game/world/Water.h"
+#include "game/spells/WaterElementalVolume.h"
 
 void registerClasses() {
     ObjectFactory *fac = ObjectFactory::get();
@@ -26,6 +27,14 @@ void registerClasses() {
     ;
 
     fac->registerClass(Water::getClassName(), Water::read)
+        .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
+        .registerAttribute("Texture", "tex", ATYPE_RESOURCE_ID)
+        .registerAttribute("Volume", "vol", ATYPE_BOX)
+        .registerAttribute("Color", "cr", ATYPE_COLOR)
+        .registerAttribute("Density", "density", ATYPE_FLOAT)
+    ;
+
+    fac->registerClass(WaterElementalVolume::getClassName(), WaterElementalVolume::read)
         .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
         .registerAttribute("Texture", "tex", ATYPE_RESOURCE_ID)
         .registerAttribute("Volume", "vol", ATYPE_BOX)
