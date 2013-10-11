@@ -111,8 +111,8 @@ D3PrismRenderModel::renderFace(uint texId, const Point &tl, const Point &tr, con
     //Tiled texture
     fTexLeft   = 0;
     fTexTop    = 0;
-    fTexRight  = dist(tl, tr) / tex->w;
-    fTexBottom = dist(tl, bl) / tex->h;
+    fTexRight  = dist(tl, tr) / tex->w * TEXTURE_TILE_SIZE;
+    fTexBottom = dist(tl, bl) / tex->h * TEXTURE_TILE_SIZE;
 
     glBindTexture(GL_TEXTURE_2D, tex->m_uiTexture);
 

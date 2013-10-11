@@ -6,8 +6,6 @@
 #define COLLISION_MODEL_H
 
 //convert a volume from px to meters
-#define PX3_TO_M3(vol) (vol / 4096.f)   //16^3 = 4096, 16px to a meter
-#define PX2_TO_M2(area) (area / 256.f)  //16^2 = 256, 16px to a meter
 
 enum CollisionModelType {
     CM_BOX,
@@ -30,7 +28,7 @@ public:
     virtual Box getBounds() { return m_bxBounds; }
     virtual CollisionModelType getType() { return CM_BOX; }
 
-    virtual float getVolume() { return PX3_TO_M3(m_bxBounds.w * m_bxBounds.h * m_bxBounds.l); }
+    virtual float getVolume() { return (m_bxBounds.w * m_bxBounds.h * m_bxBounds.l); }
 
     Box m_bxBounds;
 };

@@ -4,12 +4,12 @@
 #include "GameManager.h"
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
-#define WALK_FORCE 500.f
+#define WALK_FORCE 15.f
 
 Player::Player(uint uiId, const Point &ptPos) {
     Image *img = D3RE::get()->getImage(IMG_PLAYER);
-    int w = img->w / img->m_iNumFramesW,
-        h = img->h / img->m_iNumFramesH;
+    float w = WORLD_TILE_SIZE / 2;    //img->w / img->m_iNumFramesW,
+    float h = WORLD_TILE_SIZE / 2;    //img->h / img->m_iNumFramesH;
     m_uiId = uiId;
     m_uiFlags = 0;
 
