@@ -225,6 +225,7 @@
 		<Unit filename="mge/defs.h" />
 		<Unit filename="pwe/PartitionedWorldEngine.cpp" />
 		<Unit filename="pwe/PartitionedWorldEngine.h" />
+		<Unit filename="tpe/CollisionModel.h" />
 		<Unit filename="tpe/TimePhysicsEngine.cpp" />
 		<Unit filename="tpe/TimePhysicsEngine.h" />
 		<Unit filename="tpe/TimePhysicsModel.cpp" />

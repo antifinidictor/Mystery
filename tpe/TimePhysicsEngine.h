@@ -54,7 +54,14 @@ private:
     TimePhysicsEngine();
     virtual ~TimePhysicsEngine();
 
+    //Primary collision model handlers
+    void boxOnUnknownCollision(GameObject *obj1, GameObject *obj2, uint uiMdl2);
 
+    //Secondary collision model handlers
+    void boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint uiMdl1, uint uiMdl2);
+
+    //Physics collision helpers
+    void splitShift(GameObject *obj1, GameObject *obj2, float fShift, Point *ptShift1, Point *ptShift2);
     void applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid);
     bool isNotInArea(const Box &bxObj, const Box &bxBounds);
     bool isOnSurface(const Box &bxObj, const Box &bxSurface);
