@@ -216,7 +216,7 @@ void Player::handleButton(InputData* data) {
 }
 
 void Player::handleCollision(HandleCollisionData *data) {
-    if(data->iDirection != UP && data->iDirection != DOWN) {
+    if(data->iDirection == m_iDirection) { //!= UP && data->iDirection != DOWN) {
         m_uiAnimFrameStart = 8;
     }
 }

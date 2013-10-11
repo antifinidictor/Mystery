@@ -3,7 +3,7 @@
 #include "mge/RenderModel.h"
 #include "tpe/tpe.h"
 
-#define GRAV_ACCEL 3.f
+#define GRAV_ACCEL 0.1f
 
 using namespace std;
 
@@ -152,11 +152,11 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
         splitShift(obj1, obj2, fZShift, &ptObj1Shift, &ptObj2Shift);
 
         if(fZShift < 0) {
-            iDir1 = NORTH;
-            iDir2 = SOUTH;
-        } else {
             iDir1 = SOUTH;
             iDir2 = NORTH;
+        } else {
+            iDir1 = NORTH;
+            iDir2 = SOUTH;
         }
     } else {
         //Shift by Y
