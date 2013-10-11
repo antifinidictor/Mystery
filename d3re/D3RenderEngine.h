@@ -100,6 +100,7 @@ private:
     Color m_crWorld;
     float m_fColorWeight;
     float m_fCamDist, m_fCamAngle;
+    int m_iMouseX, m_iMouseY;
     uint m_uiWidth, m_uiHeight;
 
     std::list<GameObject *> m_lsObjsOnScreen;

@@ -58,6 +58,7 @@ D3RenderEngine::D3RenderEngine() {
 
     m_pHudContainer = new ContainerRenderModel(Rect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT));
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
+    m_iMouseX = m_iMouseY = 0;
 }
 
 D3RenderEngine::~D3RenderEngine() {
@@ -78,7 +79,16 @@ D3RenderEngine::render() {
         }
     }
 
+    updateMousePos(m_iMouseX, m_iMouseY);
     drawCircle(m_ptMouseInWorld, 0.1f, Color(0x0, 0x0, 0xFF));
+
+    if(m_bDrawCollisions) {
+        glBegin(GL_LINES);
+            glColor3f(1.f, 0.f, 0.f);
+            glVertex3f(m_ptPos.x, m_ptPos.y, m_ptPos.z);
+            glVertex3f(m_ptMouseInWorld.x, m_ptMouseInWorld.y, m_ptMouseInWorld.z);
+        glEnd();
+    }
 
     prepHud();
     m_pHudContainer->render(this);
@@ -234,7 +244,7 @@ void D3RenderEngine::resize(uint width, uint height) {
     } else {
         GLfloat aspect = (GLfloat)width / (GLfloat)height;
         // Enable perspective projection with fovy, aspect, zNear and zFar
-        gluPerspective(45.0f, aspect, 1.f, 1024.0f);
+        gluPerspective(45.0f, aspect, 0.1f, 1.f);
     }
 }
 
@@ -374,9 +384,9 @@ D3RenderEngine::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
         InputData *idat = (InputData*)data;
         //m_ptMouseInWorld.x += idat->getInputState(MIN_MOUSE_REL_X);
         //m_ptMouseInWorld.z += idat->getInputState(MIN_MOUSE_REL_Y);
-        int x = idat->getInputState(MIN_MOUSE_X);
-        int y = idat->getInputState(MIN_MOUSE_Y);
-        updateMousePos(x, y);
+        m_iMouseX = idat->getInputState(MIN_MOUSE_X);
+        m_iMouseY = idat->getInputState(MIN_MOUSE_Y);
+        //updateMousePos(x, y);
         break;
       }
     default:
@@ -403,6 +413,41 @@ D3RenderEngine::comesBefore(GameObject *obj1, GameObject *obj2) {
 
 void
 D3RenderEngine::updateMousePos(int x, int y) {
+#if 0
+    GLint viewport[4];  //x, y, width, height
+    GLdouble matModelView[16];
+    GLdouble matProjection[16];
+    GLdouble winX, winY, depth;
+    GLdouble posX, posY, posZ;
+
+    glGetDoublev(GL_PROJECTION_MATRIX, matModelView);
+    glGetDoublev(GL_MODELVIEW_MATRIX, matProjection);
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    winX = (GLdouble)(x - viewport[2] / 2);
+    winY = (GLdouble)(viewport[3] / 2 - y);
+
+    if(gluProject(winX, winY, 0.1f, matModelView, matProjection, viewport, &posX, &posY, &posZ) == GL_FALSE) {
+        printf("ERROR %s %d: Failed to do mouse near plane\n", __FILE__, __LINE__);
+    }
+    Point ptNear = Point(posX, posY, posZ);
+
+    if(gluProject(winX, winY, 1.f, matModelView, matProjection, viewport, &posX, &posY, &posZ) == GL_FALSE) {
+        printf("ERROR %s %d: Failed to do mouse far plane\n", __FILE__, __LINE__);
+    }
+    Point ptFar = Point(posX, posY, posZ);
+
+    Point ptMouseRay = ptNear - ptFar;
+    if(ptMouseRay.y == 0.f) {
+        ptMouseRay.y = 1.f;
+    }
+    float t = (m_ptPos.y - m_ptCamPos.y) / ptMouseRay.y;
+    m_ptMouseInWorld = ptMouseRay * t + m_ptCamPos;
+
+    glReadPixels( int(winX), int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_DOUBLE, &depth );
+    printf("Our depth = %f (%d:%d,%d:%d)\n",depth,x,viewport[2],y,viewport[3]);
+
+#else
     #define X_SCALE 3.4f / CAM_DIST
     #define Z_SCALE 2.5f / CAM_DIST
     #define SKEW_FACTOR -0.78f / CAM_DIST
@@ -412,38 +457,11 @@ D3RenderEngine::updateMousePos(int x, int y) {
     float zScale = Z_SCALE * m_fCamDist;
     float skewFactor = SKEW_FACTOR * m_fCamDist;
     float xNorm = 2 * (float)(x - SCREEN_WIDTH / 2) / (float)SCREEN_WIDTH;  //Range = -1 to 1
-    float zNorm = 2 * (float)(y - SCREEN_HEIGHT / 2) / (float)SCREEN_HEIGHT;  //Range = -1 to 1
+    float zNorm = 2 * (float)(y - SCREEN_HEIGHT/ 2) / (float)SCREEN_HEIGHT;  //Range = -1 to 1
     m_ptMouseInWorld.x = m_ptPos.x + xScale * xNorm + skewFactor * zNorm * xNorm;
     m_ptMouseInWorld.z = m_ptPos.z + zScale * zNorm;
-    #if 0
-    GLdouble matModelView[16];
-    GLdouble matProjection[16];
-    GLint viewport[4];  //x, y, width, height
 
-    glGetDoublev(GL_PROJECTION_MATRIX, matModelView);
-    glGetDoublev(GL_MODELVIEW_MATRIX, matProjection);
-    glGetIntegerv(GL_VIEWPORT, viewport);
-
-    GLdouble resX, resY, resZ;
-
-    x -= viewport[2] / 2;
-    //y -= viewport[3] / 2;
-    y = viewport[3] - y;
-
-
-    //gluUnProject((GLdouble)x, (GLdouble)y, 0.1f, modelview, projection, viewport, &resX, &resY, &resZ);
-    //Point ptNearPlane = Point((float)resX, (float)resY, (float)resZ);
-
-    gluUnProject((GLdouble)x, (GLdouble)y, 1.f, matModelView, matProjection, viewport, &resX, &resZ, &resY);
-    //Point ptFarPlane =Point((float)resX, (float)resY, (float)resZ);
-
-    //m_v3MouseRay = ptFarPlane - ptNearPlane;
-    m_v3MouseRay = Point((float)resX, (float)resY, (float)resZ);
-
-    //glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z); //Get a single pixel of the depth buffer at the mouse position
-    //gluUnProject((GLdouble)x, (GLdouble)y, z, modelview, projection, viewport, &resX, &resY, &resZ);
-    //m_ptMouseInWorld = Point((float)resX, (float)resY, (float)resZ) + m_ptCamPos;
-    #endif
+#endif
 
 }
 
