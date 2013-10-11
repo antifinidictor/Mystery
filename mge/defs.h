@@ -222,10 +222,10 @@ typedef struct Vec3f {
 typedef struct tRect {
 	float x;
 	float y;
-	int w;
-	int h;
+	float w;
+	float h;
 	tRect() { x = y = 0.0F; w = h = 0; }
-	tRect(float fx, float fy, int iw, int ih) { x = fx; y = fy; w = iw; h = ih; }
+	tRect(float fx, float fy, float fw, float fh) { x = fx; y = fy; w = fw; h = fh; }
 	operator tBox();
     friend std::ostream& operator<< (std::ostream& stream, const tRect& rc);
 	void operator+=(const Vec3f &pt) { x += pt.x; y += pt.y; }
