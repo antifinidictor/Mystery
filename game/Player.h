@@ -44,7 +44,7 @@ private:
     D3SpriteRenderModel *m_pRenderModel;
     TimePhysicsModel   *m_pPhysicsModel;
 
-    int dx, dy;
+    float dx, dy;
     int m_iDirection;
     int timer, state;
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas

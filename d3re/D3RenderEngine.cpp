@@ -78,7 +78,7 @@ D3RenderEngine::render() {
         }
     }
 
-    drawCircle(m_ptMouseInWorld, 2.f, Color(0x0, 0x0, 0xFF));
+    drawCircle(m_ptMouseInWorld, 0.1f, Color(0x0, 0x0, 0xFF));
 
     prepHud();
     m_pHudContainer->render(this);
@@ -403,9 +403,9 @@ D3RenderEngine::comesBefore(GameObject *obj1, GameObject *obj2) {
 
 void
 D3RenderEngine::updateMousePos(int x, int y) {
-    #define X_SCALE 110.f / CAM_DIST
-    #define Z_SCALE 80.f / CAM_DIST
-    #define SKEW_FACTOR -25.f / CAM_DIST
+    #define X_SCALE 3.4f / CAM_DIST
+    #define Z_SCALE 2.5f / CAM_DIST
+    #define SKEW_FACTOR -0.78f / CAM_DIST
 
     //Approx mouse coords
     float xScale = X_SCALE * m_fCamDist;

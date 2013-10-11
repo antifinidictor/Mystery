@@ -72,7 +72,7 @@ bool Player::update(uint time) {
         dy = mov.z;
 
         //Distance from mouse has some effect on speed
-        float scale = mov.magnitude() / 100.f;
+        float scale = mov.magnitude() / 1.f;
         if(scale > 1.f) scale = 1.f;
         mov.normalize();
         mov *= scale;
