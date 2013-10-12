@@ -26,6 +26,9 @@
 #include "game/ObjectFactory.h"
 #include "game/GameManager.h"
 
+//Test includes
+#include "mge/PixelMap.h"
+
 using namespace std;
 
 //Function prototypes
@@ -125,6 +128,18 @@ void initWorld() {
     for(uint ui = 0; ui < GM_NUM_AREAS; ++ui) {
         we->generateArea(ui);
     }
+*/
+/*
+    //PixelMap test
+    PixelMap *pxMap = new PixelMap("res/tests/pixMapColorTest.png", 0);
+    for(uint y = 0; y < pxMap->m_iH; ++y) {
+        for(uint x = 0; x < pxMap->m_iW; ++x) {
+            Color cr = pxMap->m_pData[x][y];
+            printf("(%2x,%2x,%2x) ", cr.r, cr.g, cr.b);
+        }
+        printf("\n");
+    }
+    delete pxMap;
 */
 
     D3RE::get()->setBackgroundColor(Color(0x9a,0xd7,0xfb));
