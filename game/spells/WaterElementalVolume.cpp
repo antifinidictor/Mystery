@@ -6,6 +6,8 @@
 #include "pwe/PartitionedWorldEngine.h"
 #include "tpe/tpe.h"
 #include "ForceField.h"
+#include "game/GameManager.h"
+
 WaterElementalVolume::WaterElementalVolume(uint id, uint texId, Box bxVolume, float fDensity) :
     ElementalVolume(id)
 {
@@ -99,5 +101,13 @@ WaterElementalVolume::write(boost::property_tree::ptree &pt, const std::string &
 
 bool
 WaterElementalVolume::update(uint time) {
+    Point ptMousePos = D3RE::get()->getMousePos();
+    if(ptInXZRect(ptMousePos, m_pPhysicsModel->getCollisionVolume())) {
+        m_pRenderModel->setColor(Color(0x00,0xFF,0xFF));
+        GameManager::get()->addActiveVolume(this);
+    } else {
+        m_pRenderModel->setColor(Color(0x00,0x00,0xFF));
+        GameManager::get()->removeActiveVolume(getId());
+    }
     return false;
 }

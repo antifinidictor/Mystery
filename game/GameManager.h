@@ -5,6 +5,7 @@
 #define GAME_MANAGER_H
 
 #include <stack>
+#include <map>
 
 #include "mge/GameObject.h"
 #include "mge/Event.h"
@@ -17,6 +18,8 @@
 #define FADE_TIME_STEP 0.02f
 #define DEFAULT_WEIGHT 0.5f
 #define FADE_WEIGHT 1.f
+
+class ElementalVolume;
 
 class GameManager : public GameObject
 {
@@ -46,6 +49,11 @@ public:
     //Input
     virtual void callBack(uint uiID, void *data, uint eventId);
 
+    //Other
+    void addActiveVolume(ElementalVolume *ev);
+    void removeActiveVolume(uint id);
+    ElementalVolume *getTopVolume();
+
 private:
     GameManager(uint uiId);
     virtual ~GameManager();
@@ -61,6 +69,7 @@ private:
     Color m_crBackground;
 
     std::stack<GameManagerState> m_skState;
+    std::map<uint, ElementalVolume*> m_mActiveVolumes;
 };
 
 #endif // GAME_MANAGER_H

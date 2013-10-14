@@ -9,6 +9,8 @@
 #include "pwe/PartitionedWorldEngine.h"
 #include "tpe/TimePhysicsEngine.h"
 
+#include "game/spells/Spell.h"
+
 class Player : public GameObject
 {
 public:
@@ -37,8 +39,25 @@ public:
     virtual void callBack(uint cID, void *data, uint id);
 
 private:
-    void handleButton(InputData* data);
+    enum PlayerState {
+        PLAYER_NORMAL,
+        PLAYER_TALKING,
+        PLAYER_CASTING,
+        PLAYER_CASTING_TRANS,
+        NUM_PLAYER_STATES
+    };
+
+    void updateNormal(uint time);
+    void updateCasting(uint time);
+    void updateCastingTrans(uint time);
+    void updateSpells();
+
+    void handleButtonNormal(InputData* data);
+    void handleButtonCasting(InputData *data);
     void handleCollision(HandleCollisionData *data);
+
+    void cleanSpells();
+    void resetSpell(uint uiSpell);
 
     uint m_uiId, m_uiFlags;
     D3SpriteRenderModel *m_pRenderModel;
@@ -51,6 +70,9 @@ private:
     uint m_uiAnimFrameStart;
     bool m_bFirst;
     bool m_bMouseDown;
+    PlayerState m_eState;
+    Spell *m_aSpells[NUM_SPELL_TYPES];
+    uint m_uiCurSpell;
 };
 
 #endif // PLAYER_H

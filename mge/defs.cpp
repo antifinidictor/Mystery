@@ -224,6 +224,13 @@ char ptOutOfBounds(const Point &pt, const Box &bxBounds) {
 }
 
 
+bool ptInXZRect(const PT &pt, const BX &bx) {
+	return	pt.x >= bx.x &&
+			pt.x <= bx.x + bx.w &&
+			pt.z >= bx.z &&
+			pt.z <= bx.z + bx.l;
+}
+
 /*
  * ptInRect()
  * Returns true if the provided point is inside the provided rectangle.

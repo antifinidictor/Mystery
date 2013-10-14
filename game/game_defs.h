@@ -14,8 +14,8 @@ enum GAME_AREA {
 };
 
 enum OBJECT_TYPES {
-    TYPE_PLAYER,
     TYPE_GENERAL,
+    TYPE_PLAYER,
     TYPE_MANAGER,
     TYPE_ELEMENTAL_VOLUME,
     NUM_TYPES
@@ -25,6 +25,7 @@ enum IMAGE_TYPES {
     IMG_NONE,   //Reserved: No image
     IMG_FONT,
     IMG_BUTTON,
+    IMG_MOUSE,
     IMG_PLAYER,
     IMG_BLOCK,
     IMG_WALL_TOP,

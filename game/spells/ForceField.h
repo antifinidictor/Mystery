@@ -21,7 +21,7 @@ public:
 
     virtual Point getForceAt(const Point &pt) {
         Point ptDiff = pt - m_ptSource; //vector from source to point
-        float fSqDist = (ptDiff.x * ptDiff.x + ptDiff.y * ptDiff.y + ptDiff.z * ptDiff.z) / 256.f;
+        float fSqDist = (ptDiff.x * ptDiff.x + ptDiff.y * ptDiff.y + ptDiff.z * ptDiff.z);
         if(fSqDist < 1.f) {
             fSqDist = 1.f;
         }
@@ -44,7 +44,7 @@ public:
 
     virtual Point getForceAt(const Point &pt) {
         Point ptDiff = m_ptSink - pt; //vector from point to sink
-        float fSqDist = (ptDiff.x * ptDiff.x + ptDiff.y * ptDiff.y + ptDiff.z * ptDiff.z) / 256.f;
+        float fSqDist = (ptDiff.x * ptDiff.x + ptDiff.y * ptDiff.y + ptDiff.z * ptDiff.z);
         if(fSqDist < 1.f) {
             fSqDist = 1.f;
         }
@@ -70,7 +70,7 @@ public:
         Point ptDiffPtSink = pt - m_ptSink;
         Point ptDiffPtSource = pt - m_ptSource;
         Point ptDiffSinkSource = m_ptSink - m_ptSource;
-        float fDist = cross(ptDiffPtSource, ptDiffPtSink).magnitude() / ptDiffSinkSource.magnitude() / 16;
+        float fDist = cross(ptDiffPtSource, ptDiffPtSink).magnitude() / ptDiffSinkSource.magnitude();
 
         if(fDist < 1.f) {
             fDist = 1.f;
