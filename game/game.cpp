@@ -97,6 +97,12 @@ void initWorld() {
     mge->mapInput(SDLK_d,     IN_EAST);
     mge->mapInput(SDLK_s,     IN_SOUTH);
     mge->mapInput(SDLK_a,     IN_WEST);
+
+    mge->mapInput(SDLK_UP,    IN_NORTH);
+    mge->mapInput(SDLK_RIGHT, IN_EAST);
+    mge->mapInput(SDLK_DOWN,  IN_SOUTH);
+    mge->mapInput(SDLK_LEFT,  IN_WEST);
+
     mge->mapInput(SDLK_SPACE, IN_CAST);
     mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
     mge->mapInput(SDLK_LCTRL, IN_CTRL);
@@ -129,6 +135,10 @@ void initWorld() {
         we->generateArea(ui);
     }
 */
+
+
+    //Mouse test
+    D3RE::get()->setMouseAnim(0);
 /*
     //PixelMap test
     PixelMap *pxMap = new PixelMap("res/tests/pixMapColorTest.png", 0);

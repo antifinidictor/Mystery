@@ -1,6 +1,9 @@
 #include "GameManager.h"
 #include "bae/BasicAudioEngine.h"
 #include "tpe/TimePhysicsEngine.h"
+#include "game/spells/ElementalVolume.h"
+
+using namespace std;
 
 GameManager *GameManager::m_pInstance;
 
@@ -101,5 +104,35 @@ GameManager::callBack(uint uiId, void *data, uint eventId) {
     default:
         break;
     }
+}
+
+void
+GameManager::addActiveVolume(ElementalVolume *ev) {
+    m_mActiveVolumes[ev->getId()] = ev;
+}
+
+void
+GameManager::removeActiveVolume(uint id) {
+    m_mActiveVolumes.erase(id);
+}
+
+ElementalVolume*
+GameManager::getTopVolume() {
+    if(m_mActiveVolumes.size() < 1) {
+        return NULL;
+    }
+
+    map<uint, ElementalVolume*>::iterator iter;
+    ElementalVolume *ev = m_mActiveVolumes.begin()->second;
+    Box bxVol = ev->getPhysicsModel()->getCollisionVolume();
+    float maxY = bxVol.y + bxVol.h;
+    for(iter = m_mActiveVolumes.begin(); iter != m_mActiveVolumes.end(); ++iter) {
+        bxVol = iter->second->getPhysicsModel()->getCollisionVolume();
+        if(bxVol.y + bxVol.h > maxY) {
+            maxY = bxVol.y + bxVol.h;
+            ev = iter->second;
+        }
+    }
+    return ev;
 }
 

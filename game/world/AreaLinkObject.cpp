@@ -29,6 +29,7 @@ AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPo
 
     setFlag(TPE_STATIC, true);
     setFlag(TPE_PASSABLE, true);
+    setFlag(D3RE_INVISIBLE, true);
 }
 
 AreaLinkObject::~AreaLinkObject() {

@@ -9,12 +9,14 @@
 
 #include "mge/GameObject.h"
 #include "game/game_defs.h"
+#include "D3DummyObject.h"
 
 using namespace std;
 
 #define CAM_DIST 6.25f  //200.f
 #define CAM_ANGLE (9 * M_PI / 32)
-
+#define MAX_MOUSE_TIMER 20
+#define MOUSE_IMG 3
 //static members
 D3RenderEngine *D3RenderEngine::re;
 
@@ -59,11 +61,18 @@ D3RenderEngine::D3RenderEngine() {
     m_pHudContainer = new ContainerRenderModel(Rect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT));
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
     m_iMouseX = m_iMouseY = 0;
+
+    m_uiMouseFrame = 0;
+    m_uiMouseTimer = 0;
+    m_pDummyMouseObj = new D3DummyObject(m_ptMouseInWorld);
+    m_pMouseModel = new D3SpriteRenderModel(m_pDummyMouseObj, MOUSE_IMG, Rect(-0.125f,0.f,0.25f,0.25f));
 }
 
 D3RenderEngine::~D3RenderEngine() {
     MGE::get()->removeListener(getId(), ON_MOUSE_MOVE);
     delete m_pHudContainer;
+    delete m_pDummyMouseObj;
+    delete m_pMouseModel;
 }
 
 void
@@ -72,15 +81,35 @@ D3RenderEngine::render() {
 
 
     prepCamera();
+
+    updateMousePos(m_iMouseX, m_iMouseY);
+    m_ptMouseInWorld.y = -10000.f;
+
     for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
             it != m_lsObjsOnScreen.end(); ++it) {
         if(!(*it)->getFlag(D3RE_INVISIBLE)) {
             (*it)->getRenderModel()->render(this);
+
+            //Mouse on top of item
+            Box bxCVol = (*it)->getPhysicsModel()->getCollisionVolume();
+            if(ptInXZRect(m_ptMouseInWorld, bxCVol) && bxCVol.y + bxCVol.h > m_ptMouseInWorld.y) {
+                m_ptMouseInWorld.y = bxCVol.y + bxCVol.h;
+            }
         }
     }
 
-    updateMousePos(m_iMouseX, m_iMouseY);
-    drawCircle(m_ptMouseInWorld, 0.1f, Color(0x0, 0x0, 0xFF));
+    if(m_uiMouseTimer < MAX_MOUSE_TIMER) {
+        m_uiMouseTimer++;
+    } else {
+        m_uiMouseTimer = 0;
+        m_uiMouseFrame = (m_uiMouseFrame + 1) % 8;
+        m_pMouseModel->setFrameH(m_uiMouseFrame);
+    }
+
+    Point ptMouseObj = m_pDummyMouseObj->getPosition();
+    m_pDummyMouseObj->moveBy(m_ptMouseInWorld - ptMouseObj);
+    m_pMouseModel->render(this);
+    //drawCircle(m_ptMouseInWorld, 0.1f, Color(0x0, 0x0, 0xFF));
 
     if(m_bDrawCollisions) {
         glBegin(GL_LINES);
@@ -409,6 +438,11 @@ D3RenderEngine::comesBefore(GameObject *obj1, GameObject *obj2) {
            (top1 >= bx2.y && bx1.y <= top2 &&
             front1 >= bx2.z && bx1.z <= front2 &&
             right1 < bx2.x);
+}
+
+void
+D3RenderEngine::setMouseAnim(uint uiAnim) {
+    m_pMouseModel->setFrameW(uiAnim);
 }
 
 void

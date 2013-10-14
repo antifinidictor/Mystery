@@ -312,6 +312,7 @@ bool  bxIntersects(const BX &bx1, const BX &bx2);
 char  bxOutOfBounds(const BX &bx, const BX &bxBounds);
 char  ptOutOfBounds(const PT &pt, const BX &bxBounds);
 bool  ptInRect(const PT &pt, const RC &rc);
+bool  ptInXZRect(const PT &pt, const BX &bx);
 PT    bxCenter(const BX &bx);
 Box   bxScaleAboutPt(const BX &bx, const PT &locus, const double scale);
 PT    ptMid(const PT &A, const PT &B);

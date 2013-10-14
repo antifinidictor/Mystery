@@ -111,6 +111,22 @@ PixelMap::PixelMap(const std::string &sFileName, uint uiId) {
 	m_uiId = uiId;
 }
 
+PixelMap::PixelMap(uint w, uint h, uint uiId) {
+    m_iW = w;
+    m_iH = h;
+
+	m_sImageFileName = "";
+	m_uiId = uiId;
+
+    m_pData = (Color**)malloc(sizeof(Color*) * m_iW);
+    for(uint x = 0; x < m_iW; ++x) {
+        m_pData[x] = (Color*)malloc(sizeof(Color) * m_iH);
+        for(uint y = 0; y < m_iH; ++y) {
+            //Fill each pixel
+            m_pData[x][y] = Color();
+        }
+    }
+}
 
 /*
  * Destructor:  Destroys the texture information.

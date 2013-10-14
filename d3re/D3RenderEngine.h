@@ -18,6 +18,8 @@
 #include "ContainerRenderModel.h"
 
 class D3HudRenderModel;
+class D3SpriteRenderModel;
+class D3DummyObject;
 
 enum RenderFlags {
     D3RE_ON_SCREEN = RENDER_FLAGS_BEGIN,
@@ -80,6 +82,7 @@ public:
 
 	void setDrawCollisions(bool enable) { m_bDrawCollisions = enable; }
 	bool getDrawCollisions() { return m_bDrawCollisions; }
+    void setMouseAnim(uint uiAnim);
 
 private:
     D3RenderEngine();
@@ -108,6 +111,11 @@ private:
     ContainerRenderModel *m_pHudContainer;
     bool m_bGuiMode;
     bool m_bDrawCollisions;
+
+    //Mouse animations
+    uint m_uiMouseFrame, m_uiMouseTimer;
+    D3SpriteRenderModel *m_pMouseModel;
+    D3DummyObject *m_pDummyMouseObj;
 
     Point m_ptMouseInWorld;
     Vec3f m_v3MouseRay;
