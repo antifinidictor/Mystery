@@ -31,6 +31,8 @@ public:
     //Elemental-specific
     uint addForceField(ForceField *field);
     void removeForceField(uint id);
+    virtual void setVolume(float fVolume) = 0;
+    virtual float getVolume() = 0;
 
 private:
 

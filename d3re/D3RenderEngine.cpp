@@ -66,6 +66,7 @@ D3RenderEngine::D3RenderEngine() {
     m_uiMouseTimer = 0;
     m_pDummyMouseObj = new D3DummyObject(m_ptMouseInWorld);
     m_pMouseModel = new D3SpriteRenderModel(m_pDummyMouseObj, MOUSE_IMG, Rect(-0.125f,0.f,0.25f,0.25f));
+    m_bDrawRealMouse = true;
 }
 
 D3RenderEngine::~D3RenderEngine() {
@@ -108,7 +109,9 @@ D3RenderEngine::render() {
 
     Point ptMouseObj = m_pDummyMouseObj->getPosition();
     m_pDummyMouseObj->moveBy(m_ptMouseInWorld - ptMouseObj);
-    m_pMouseModel->render(this);
+    if(!m_bDrawRealMouse) {
+        m_pMouseModel->render(this);
+    }
     //drawCircle(m_ptMouseInWorld, 0.1f, Color(0x0, 0x0, 0xFF));
 
     if(m_bDrawCollisions) {
@@ -443,6 +446,19 @@ D3RenderEngine::comesBefore(GameObject *obj1, GameObject *obj2) {
 void
 D3RenderEngine::setMouseAnim(uint uiAnim) {
     m_pMouseModel->setFrameW(uiAnim);
+}
+
+
+void
+D3RenderEngine::showRealMouse() {
+    m_bDrawRealMouse = true;
+    SDL_ShowCursor(TRUE);
+}
+
+void
+D3RenderEngine::hideRealMouse() {
+    m_bDrawRealMouse = false;
+    SDL_ShowCursor(FALSE);
 }
 
 void

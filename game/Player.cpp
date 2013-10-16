@@ -7,6 +7,7 @@
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
 #define WALK_FORCE 1.f
+#define SPELL_DURATION 10000
 
 enum PlayerAnims {
     PANIM_STANDING = 0,
@@ -248,6 +249,7 @@ Player::updateCastingTrans(uint time) {
         if(state > 3) {
             m_eState = PLAYER_NORMAL;
             state = 0;
+            m_uiAnimFrameStart = PANIM_STANDING;
         }
     } else {
         --timer;
@@ -332,17 +334,18 @@ void
 Player::handleButtonCasting(InputData* data) {
     if(!data->getInputState(IN_CAST)) {
         m_eState = PLAYER_NORMAL;
+        m_uiAnimFrameStart = PANIM_WALKING;
         for(uint i = 0; i < NUM_SPELL_TYPES; ++i) {
             if(m_aSpells[i] == NULL) continue;
 
             if(m_aSpells[i]->getStatus() == SPELL_READY) {
                 m_aSpells[i]->activate();
                 m_eState = PLAYER_CASTING_TRANS;
+                m_uiAnimFrameStart = PANIM_THROWING;
             } else if(m_aSpells[i]->getStatus() != SPELL_ACTIVE) {
                 resetSpell(i);
             }
         }
-
         D3RE::get()->setMouseAnim(0);
     }
 
@@ -353,15 +356,15 @@ Player::handleButtonCasting(InputData* data) {
 
     //Switch current spell
     if(data->getInputState(IN_WEST) && data->hasChanged(IN_WEST)) {
-        m_uiCurSpell = (m_uiCurSpell + 1) % (NUM_SPELL_TYPES - 1);
-        D3RE::get()->setMouseAnim(m_uiCurSpell + 1);
-    } else if(data->getInputState(IN_EAST) && data->hasChanged(IN_EAST)) {
         //Modulus behaves strangely for negatives
         if(m_uiCurSpell == 0) {
             m_uiCurSpell = NUM_SPELL_TYPES - 1;
         } else {
             m_uiCurSpell--;
         }
+        D3RE::get()->setMouseAnim(m_uiCurSpell + 1);
+    } else if(data->getInputState(IN_EAST) && data->hasChanged(IN_EAST)) {
+        m_uiCurSpell = (m_uiCurSpell + 1) % (NUM_SPELL_TYPES);
         D3RE::get()->setMouseAnim(m_uiCurSpell + 1);
     }
 }
@@ -385,10 +388,10 @@ Player::resetSpell(uint uiSpell) {
     }
     switch(uiSpell) {
     case SPELL_TYPE_SOURCE_SINK:
-        m_aSpells[SPELL_TYPE_SOURCE_SINK] = new SourceSinkSpell(1000, 0.8f);
+        m_aSpells[SPELL_TYPE_SOURCE_SINK] = new SourceSinkSpell(SPELL_DURATION, 0.8f);
         break;
     case SPELL_TYPE_FLOW:
-        m_aSpells[SPELL_TYPE_FLOW] = new FlowSpell(1000, 0.8f);
+        m_aSpells[SPELL_TYPE_FLOW] = new FlowSpell(SPELL_DURATION, 0.8f);
         break;
     case SPELL_TYPE_DIVIDE:
         m_aSpells[SPELL_TYPE_DIVIDE] = NULL;

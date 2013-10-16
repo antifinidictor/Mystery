@@ -1597,7 +1597,7 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1381741194 source:k:\projects\games\mge\mystery\game\player.cpp
+1381888264 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/tpe.h"
@@ -1667,7 +1667,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1381734558 source:k:\projects\games\mge\mystery\game\game.cpp
+1381742123 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	"pgl.h"
@@ -2145,7 +2145,7 @@
 	"mge/defs.h"
 	<string>
 
-1381606017 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
+1381742082 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
 	"d3re.h"
 	"SDL.h"
 	"pgl.h"
@@ -2164,7 +2164,7 @@
 
 1379928505 nderModel.h"
 
-1381603631 k:\projects\games\mge\mystery\d3re\d3renderengine.h
+1381741926 k:\projects\games\mge\mystery\d3re\d3renderengine.h
 	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
@@ -2199,7 +2199,7 @@
 	"D3PrismRenderModel.h"
 	"TextRenderer.h"
 
-1381603631 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
+1381741926 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
 	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
@@ -8220,7 +8220,7 @@
 
 1380857466 k:\projects\games\mge\mystery\\game\game.h
 
-1381474000 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
+1381483880 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
 	"EditorManager.h"
 	"EditorCursor.h"
 	"EditorHudButton.h"
@@ -8495,7 +8495,7 @@
 	<map>
 	"mge/RenderModel.h"
 
-1381473860 source:k:\projects\games\mge\mystery\editor\editorcursor.cpp
+1381483880 source:k:\projects\games\mge\mystery\editor\editorcursor.cpp
 	"EditorCursor.h"
 	"EditorManager.h"
 	<string>
@@ -14488,7 +14488,7 @@
 	"tpe/tpe.h"
 	"pwe/PartitionedWorldEngine.h"
 
-1381467911 k:\projects\games\mge\mystery\game\spells\elementalvolume.h
+1381782787 k:\projects\games\mge\mystery\game\spells\elementalvolume.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 
@@ -14499,25 +14499,25 @@
 
 1381483880 k:\projects\games\mge\mystery\tpe\collisionmodel.h
 
-1381470086 k:\projects\games\mge\mystery\\game\spells\waterelementalvolume.h
+1381782890 k:\projects\games\mge\mystery\\game\spells\waterelementalvolume.h
 	"ElementalVolume.h"
 	"mge/GameObject.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
 	"game/game_defs.h"
 
-1381467911 k:\projects\games\mge\mystery\\game\spells\elementalvolume.h
+1381782787 k:\projects\games\mge\mystery\\game\spells\elementalvolume.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 
-1381633361 source:k:\projects\games\mge\mystery\game\spells\waterelementalvolume.cpp
+1381779343 source:k:\projects\games\mge\mystery\game\spells\waterelementalvolume.cpp
 	"WaterElementalVolume.h"
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 	"ForceField.h"
 	"game/GameManager.h"
 
-1381470086 k:\projects\games\mge\mystery\game\spells\waterelementalvolume.h
+1381782890 k:\projects\games\mge\mystery\game\spells\waterelementalvolume.h
 	"ElementalVolume.h"
 	"mge/GameObject.h"
 	"tpe/tpe.h"
@@ -14564,23 +14564,23 @@
 
 1381741322 k:\projects\games\mge\mystery\\game\spells\spell.h
 
-1381741231 source:k:\projects\games\mge\mystery\game\spells\sourcesinkspell.cpp
+1381876913 source:k:\projects\games\mge\mystery\game\spells\sourcesinkspell.cpp
 	"SourceSinkSpell.h"
 	"ElementalVolume.h"
 	"game/spells/ForceField.h"
 
-1381741118 k:\projects\games\mge\mystery\game\spells\sourcesinkspell.h
+1381741539 k:\projects\games\mge\mystery\game\spells\sourcesinkspell.h
 	"mge/defs.h"
 	"Spell.h"
 
 1381741322 k:\projects\games\mge\mystery\game\spells\spell.h
 
-1381741118 source:k:\projects\games\mge\mystery\game\spells\flowspell.cpp
+1381876927 source:k:\projects\games\mge\mystery\game\spells\flowspell.cpp
 	"FlowSpell.h"
 	"ElementalVolume.h"
 	"game/spells/ForceField.h"
 
-1381741118 k:\projects\games\mge\mystery\game\spells\flowspell.h
+1381741531 k:\projects\games\mge\mystery\game\spells\flowspell.h
 	"mge/defs.h"
 	"Spell.h"
 	<vector>

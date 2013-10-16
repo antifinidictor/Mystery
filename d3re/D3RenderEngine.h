@@ -84,6 +84,9 @@ public:
 	bool getDrawCollisions() { return m_bDrawCollisions; }
     void setMouseAnim(uint uiAnim);
 
+    void showRealMouse();
+    void hideRealMouse();
+
 private:
     D3RenderEngine();
     virtual ~D3RenderEngine();
@@ -111,6 +114,7 @@ private:
     ContainerRenderModel *m_pHudContainer;
     bool m_bGuiMode;
     bool m_bDrawCollisions;
+    bool m_bDrawRealMouse;
 
     //Mouse animations
     uint m_uiMouseFrame, m_uiMouseTimer;

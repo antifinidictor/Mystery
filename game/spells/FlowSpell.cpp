@@ -65,6 +65,10 @@ FlowSpell::addPoint(ElementalVolume *ev, const Point &pt) {
 bool
 FlowSpell::activate() {
     if(m_eState == FS_STATE_READY) {
+        if(m_ev == NULL) {
+            m_eState = FS_STATE_INVALID;
+            return false;
+        }
         m_eState = FS_STATE_ACTIVATED;
         m_bWasActivated = true;
 

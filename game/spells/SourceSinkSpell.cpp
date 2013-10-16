@@ -49,6 +49,10 @@ SourceSinkSpell::addPoint(ElementalVolume *ev, const Point &pt) {
 bool
 SourceSinkSpell::activate() {
     if(m_eState == SSS_STATE_READY) {
+        if(m_ev == NULL) {
+            m_eState = SSS_STATE_INVALID;
+            return false;
+        }
         m_eState = SSS_STATE_ACTIVATED;
         m_bWasActivated = true;
         m_uiSourceId = m_ev->addForceField(new SourceForceField(m_ptSource, m_fMagnitude));

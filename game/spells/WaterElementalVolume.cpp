@@ -111,3 +111,13 @@ WaterElementalVolume::update(uint time) {
     }
     return false;
 }
+
+
+void
+WaterElementalVolume::setVolume(float fVolume) {
+}
+
+float
+WaterElementalVolume::getVolume() {
+    return m_pPhysicsModel->getVolume();
+}

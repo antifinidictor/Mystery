@@ -153,6 +153,7 @@ void initWorld() {
 */
 
     D3RE::get()->setBackgroundColor(Color(0x9a,0xd7,0xfb));
+    D3RE::get()->hideRealMouse();
 
     //buildWorld();
 }
