@@ -17,6 +17,7 @@ enum OBJECT_TYPES {
     TYPE_GENERAL,
     TYPE_PLAYER,
     TYPE_MANAGER,
+    TYPE_ITEM,
     TYPE_ELEMENTAL_VOLUME,
     NUM_TYPES
 };
@@ -37,6 +38,12 @@ enum IMAGE_TYPES {
 enum SOUND_TYPES {
     AUD_NONE,   //Reserved: No sound
     AUD_STEP,
+    AUD_PICKUP,
+    AUD_LIFT,
+    AUD_DRAG,
+    AUD_CITY_MUSIC,
+    AUD_SCHOOL_MUSIC,
+    AUD_UNDERGROUND_MUSIC,
     NUM_SOUNDS
 };
 
@@ -80,6 +87,40 @@ enum GameManagerState {
     GM_FADE_OUT,    //Fading between areas
     GM_FADE_IN,
     GM_NUM_STATES
+};
+
+enum HudContainers {
+    HUD_TOPBAR,
+    HUD_BOTTOMBAR,
+    NUM_HUD_ELEMENTS
+};
+
+enum TopBarHudElements {
+    MGHUD_LEFT_EDGE,
+    MGHUD_MIDDLE,
+    MGHUD_AREA_NAME,
+    MGHUD_HEALTH_CONTAINER,
+    MGHUD_INVENTORY_CONTAINER,
+    MGHUD_RIGHT_EDGE,
+    NUM_MGHUD_TOP_BAR_ELEMENTS
+};
+
+enum HealthContainerElements {
+    MGHUD_HEALTH_BACKDROP_LEFT_EDGE,
+    MGHUD_HEALTH_BACKDROP_MIDDLE,
+    MGHUD_HEALTH_BACKDROP_RIGHT_EDGE,
+    MGHUD_HEALTH_BAR,
+    MGHUD_HEALTH_VALUE
+};
+
+enum InventoryElements {
+    MGHUD_ELEMENT_BACKDROP_START = 0,
+    MGHUD_ELEMENT_THUMBNAIL_START= 10   //Max 10 items in item bar
+};
+
+enum GameFlags {
+    GAM_CAN_LINK = GAME_FLAGS_BEGIN,
+    NUM_GAME_FLAGS
 };
 
 #endif

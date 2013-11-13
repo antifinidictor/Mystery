@@ -10,6 +10,8 @@
 #include "tpe/TimePhysicsEngine.h"
 
 #include "game/spells/Spell.h"
+#include "game/items/Item.h"
+#include <vector>
 
 class Player : public GameObject
 {
@@ -36,7 +38,7 @@ public:
     virtual PhysicsModel *getPhysicsModel()     { return m_pPhysicsModel; }
 
     //Input
-    virtual void callBack(uint cID, void *data, uint id);
+    virtual void callBack(uint cID, void *data, uint uiEventId);
 
 private:
     enum PlayerState {
@@ -44,13 +46,17 @@ private:
         PLAYER_TALKING,
         PLAYER_CASTING,
         PLAYER_CASTING_TRANS,
+        PLAYER_CLIMBING_TRANS,
         NUM_PLAYER_STATES
     };
 
     void updateNormal(uint time);
     void updateCasting(uint time);
     void updateCastingTrans(uint time);
+    void updateClimbingTrans(uint time);
     void updateSpells();
+    void upateHud();
+    void addHudInventoryItem(Item *item);
 
     void handleButtonNormal(InputData* data);
     void handleButtonCasting(InputData *data);
@@ -73,6 +79,14 @@ private:
     PlayerState m_eState;
     Spell *m_aSpells[NUM_SPELL_TYPES];
     uint m_uiCurSpell;
+    float m_fClimbStepHeight;
+    int m_iCollisionDir;
+
+    std::vector<Item*> m_vInventory;
+    uint m_uiItemAnimCounter;
+
+    uint m_uiHealth;
+    uint m_uiMaxHealth;
 };
 
 #endif // PLAYER_H

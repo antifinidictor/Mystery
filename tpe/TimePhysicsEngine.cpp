@@ -3,7 +3,7 @@
 #include "mge/RenderModel.h"
 #include "tpe/tpe.h"
 
-#define GRAV_ACCEL 0.1f
+#define GRAV_ACCEL 0.05f
 
 using namespace std;
 
@@ -75,6 +75,9 @@ TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
         case CM_BOX:
             boxOnUnknownCollision(obj1, obj2, uiMdl1);
             break;
+        case CM_Y_HEIGHTMAP:
+            hmapOnUnknownCollision(obj1, obj2, uiMdl1);
+            break;
         default:
             break;
         }
@@ -92,6 +95,28 @@ TimePhysicsEngine::boxOnUnknownCollision(GameObject *obj1, GameObject *obj2, uin
         case CM_BOX:
             boxOnBoxCollision(obj1, obj2, uiMdl1, uiMdl2);
             break;
+        case CM_Y_HEIGHTMAP:
+            boxOnHmapCollision(obj1, obj2, uiMdl1, uiMdl2);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void
+TimePhysicsEngine::hmapOnUnknownCollision(GameObject *objHmap, GameObject *obj2, uint uiMdlHmap) {
+    AbstractTimePhysicsModel *tpm2 = (AbstractTimePhysicsModel*)(obj2->getPhysicsModel());
+
+    //Otherwise, iterate through collision models.  Yes, I know it's n^2
+    for(uint uiMdl2 = 0; uiMdl2 < tpm2->getNumModels(); ++uiMdl2) {
+        CollisionModel *mdl2 = tpm2->getCollisionModel(uiMdl2);
+        switch(mdl2->getType()) {
+        case CM_BOX:
+            boxOnHmapCollision(obj2, objHmap, uiMdl2, uiMdlHmap);
+            break;
+        case CM_Y_HEIGHTMAP:
+            //We don't want to handle this case yet
         default:
             break;
         }
@@ -128,7 +153,6 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
     Point ptObj1Shift, ptObj2Shift;
     int iDir1, iDir2;
 
-    //Ratio determining share of shift
     bool bNoCollide = obj1->getFlag(TPE_PASSABLE) || obj1->getFlag(TPE_LIQUID) ||
                       obj2->getFlag(TPE_PASSABLE) || obj2->getFlag(TPE_LIQUID);
 
@@ -183,10 +207,10 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
         }
         bApplyForce = false;
     }
-    if(obj1->getFlag(TPE_LIQUID) && !obj2->getFlag(TPE_LIQUID)) {
-        applyBuoyantForce(tpm2, tpm1, bx2, bx1);
-    } else if(obj2->getFlag(TPE_LIQUID) && !obj1->getFlag(TPE_LIQUID)) {
-        applyBuoyantForce(tpm1, tpm2, bx1, bx2);
+    if(obj1->getFlag(TPE_LIQUID) && !obj2->getFlag(TPE_LIQUID) && !obj2->getFlag(TPE_STATIC)) {
+        applyBuoyantForce(tpm2, tpm1, bx2, bx1.y + bx1.h, bx1.y);
+    } else if(obj2->getFlag(TPE_LIQUID) && !obj1->getFlag(TPE_LIQUID) && !obj1->getFlag(TPE_STATIC)) {
+        applyBuoyantForce(tpm1, tpm2, bx1, bx2.y + bx2.h, bx2.y);
     }
 
     //Only move the objects if they aren't passable.  We needed some of
@@ -208,10 +232,50 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
     }
 
     //Handle collision events
-    HandleCollisionData sData1(obj2, iDir1),
-                        sData2(obj1, iDir2);
+    HandleCollisionData sData1(obj2, iDir1, ptObj1Shift),
+                        sData2(obj1, iDir2, ptObj2Shift);
     tpm1->handleCollisionEvent(&sData1);
     tpm2->handleCollisionEvent(&sData2);
+}
+
+
+void
+TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, uint uiMdlBox, uint uiMdlHmap) {
+    AbstractTimePhysicsModel *tpmBox = (AbstractTimePhysicsModel*)(objBox->getPhysicsModel());
+    AbstractTimePhysicsModel *tpmHmap = (AbstractTimePhysicsModel*)(objHmap->getPhysicsModel());
+    BoxCollisionModel *bmdl = (BoxCollisionModel*)tpmBox->getCollisionModel(uiMdlBox);
+    PixelMapCollisionModel *hmdl = (PixelMapCollisionModel*)tpmHmap->getCollisionModel(uiMdlHmap);
+    Box bx1 = bmdl->getBounds() + tpmBox->getPosition(),
+        bx2 = hmdl->getBounds() + tpmHmap->getPosition();
+    if(!bxIntersects(bx1, bx2)) {
+        return;    //no physics model or no collision
+    }
+
+    //Now, get the position and the y-shift
+    float y = hmdl->getHeightAtPoint(tpmBox->getPosition() - tpmHmap->getPosition()) + tpmHmap->getPosition().y;
+
+    //Shift for a single direction
+    Point ptShiftBox = Point(0.f, y - bx1.y, 0.f);
+
+    bool bNoCollide = objBox->getFlag(TPE_PASSABLE) || objBox->getFlag(TPE_LIQUID) ||
+                      objHmap->getFlag(TPE_PASSABLE) || objHmap->getFlag(TPE_LIQUID);
+
+    if(!bNoCollide && !(objBox->getFlag(TPE_STATIC) && objHmap->getFlag(TPE_STATIC))) {
+        //Move the objects
+        tpmBox->moveBy(ptShiftBox);
+        tpmBox->setWasPushed(!objBox->getFlag(TPE_STATIC));
+    }
+
+
+    if(objHmap->getFlag(TPE_LIQUID) && !objBox->getFlag(TPE_LIQUID) && !objBox->getFlag(TPE_STATIC)) {
+        applyBuoyantForce(tpmBox, tpmHmap, bx1, y, bx2.y);
+    }
+
+    //Handle collision events
+    HandleCollisionData sDataBox(objHmap, UP, ptShiftBox),
+                        sDataHmap(objBox, DOWN, Point());
+    tpmBox->handleCollisionEvent(&sDataBox);
+    tpmHmap->handleCollisionEvent(&sDataHmap);
 }
 
 #define MAX_B_FORCE 1.5f
@@ -238,11 +302,11 @@ TimePhysicsEngine::splitShift(GameObject *obj1, GameObject *obj2, float fShift, 
 }
 
 void
-TimePhysicsEngine::applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid) {
+TimePhysicsEngine::applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, float liquidTop, float liquidBottom) {
     float fGravForce = GRAV_ACCEL * tpmObj->getMass();
     if(tpmLiquid->getDensity() > tpmObj->getDensity()) {    //Float
         //Percent of object underwater
-        float percentImmersed = ((bxObj.y + bxObj.h) < bxLiquid.y) ? (1.f) : ((bxLiquid.y + bxLiquid.h) - bxObj.y) / bxObj.h;
+        float percentImmersed = ((bxObj.y + bxObj.h) < liquidBottom) ? (1.f) : (liquidTop - bxObj.y) / bxObj.h;
         float bforce = (MAX_B_FORCE * percentImmersed + MIN_B_FORCE * (1.f - percentImmersed)) * fGravForce;
         tpmObj->applyForce(Point(0.f, bforce, 0.f));
     } else {    //Sink slowly

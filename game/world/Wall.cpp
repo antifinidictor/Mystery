@@ -35,9 +35,9 @@ Wall::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
     bxVolume.x = pt.get(keyBase + ".vol.x", 0.f);
     bxVolume.y = pt.get(keyBase + ".vol.y", 0.f);
     bxVolume.z = pt.get(keyBase + ".vol.z", 0.f);
-    bxVolume.w = pt.get(keyBase + ".vol.w", 0);
-    bxVolume.h = pt.get(keyBase + ".vol.h", 0);
-    bxVolume.l = pt.get(keyBase + ".vol.l", 0);
+    bxVolume.w = pt.get(keyBase + ".vol.w", 0.f);
+    bxVolume.h = pt.get(keyBase + ".vol.h", 0.f);
+    bxVolume.l = pt.get(keyBase + ".vol.l", 0.f);
 
     //We will set other parameters once the initial wall has been set up
     Wall *wall = new Wall(uiId, IMG_NONE, IMG_NONE, IMG_NONE, bxVolume, 0);

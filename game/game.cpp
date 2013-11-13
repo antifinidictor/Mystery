@@ -9,6 +9,7 @@
 //#include <SDL_opengl.h>
 //#include "SDL_image.h"
 #include <fstream>
+#include <stdlib.h>
 
 //Engine includes
 #include "mge/ModularEngine.h"
@@ -28,11 +29,12 @@
 
 //Test includes
 #include "mge/PixelMap.h"
+#include "game/gui/TextDisplay.h"
 
 using namespace std;
 
-//Function prototypes
-void buildWorld();
+void testTextCb(uint id);
+void testTextCb2(uint id);
 
 //Engine initialization, cleanup
 WorldEngine   *createWorldEngine() {
@@ -79,6 +81,8 @@ int getSDLVideoFlags() {
 }
 
 void initWorld() {
+    srand(time(NULL));
+
     //Perform last-minute setup of the world engine
     PartitionedWorldEngine *we = PWE::get();
     we->setPhysicsEngine(TimePhysicsEngine::get());
@@ -126,6 +130,9 @@ void initWorld() {
 
     //Load audio resources
     BAE::get()->loadSound(AUD_STEP, "res/audio/step.wav");
+    BAE::get()->loadSound(AUD_PICKUP, "res/audio/pickup.wav");
+    BAE::get()->loadSound(AUD_LIFT, "res/audio/liftup.wav");
+    BAE::get()->loadSound(AUD_DRAG, "res/audio/drag.wav");
 
     //Other singleton initializations
     TextRenderer::init();
@@ -156,6 +163,9 @@ void initWorld() {
     D3RE::get()->hideRealMouse();
 
     //buildWorld();
+    //Test text
+    testTextCb(0);
+    testTextCb2(0);
 }
 
 
@@ -164,6 +174,54 @@ void cleanWorld() {
     GameManager::clean();
 }
 
+
+void testTextCb(uint id) {
+    static int curId = 0;
+    std::string s = "?";
+    switch(curId) {
+    case 0:
+        s = "Hello there!";
+        break;
+    case 1:
+        s = "My name is bob!";
+        break;
+    case 2:
+        s = "So is mine!";
+        break;
+    case 3:
+        s = "This message brought to you by Alchemy Industries.  Bringing you the science of the future!";
+        break;
+    default:
+        s = "This is dumb...";
+    }
+    TextDisplay::get()->registerText(s, &testTextCb);
+    curId = (curId + 1) % 5;
+}
+
+void testTextCb2(uint id) {
+    static int curId = 0;
+    std::string s = "?";
+    switch(curId) {
+    case 0:
+        s = "How many conversations does it take to screw in a light bulb?";
+        break;
+    case 1:
+        s = "Uh, one?";
+        break;
+    case 2:
+        s = "Nope!  You're an idiot!";
+        break;
+    case 3:
+        s = "That's not very nice...";
+        break;
+    default:
+        s = "Suck it.";
+    }
+    TextDisplay::get()->registerText(s, &testTextCb2, 0.9f);
+    curId = (curId + 1) % 5;
+}
+
+#if 0
 void buildRoom(Box bxVol) {
     PartitionedWorldEngine *we = PWE::get();
 
@@ -221,4 +279,4 @@ void buildWorld() {
     Player *player = new Player(we->genId(), Point());
     we->add(player);
 }
-
+#endif

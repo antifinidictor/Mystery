@@ -32,9 +32,11 @@ enum TpeEvents {
 struct HandleCollisionData {
     GameObject *obj;
     int iDirection;
-    HandleCollisionData(GameObject *obj, int iDirection) {
+    Point ptShift;
+    HandleCollisionData(GameObject *obj, int iDirection, const Point &ptShift) {
         this->obj = obj;
         this->iDirection = iDirection;
+        this->ptShift = ptShift;
     }
 };
 
@@ -56,13 +58,15 @@ private:
 
     //Primary collision model handlers
     void boxOnUnknownCollision(GameObject *obj1, GameObject *obj2, uint uiMdl2);
+    void hmapOnUnknownCollision(GameObject *objHmap, GameObject *obj2, uint uiMdlHmap);
 
     //Secondary collision model handlers
     void boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint uiMdl1, uint uiMdl2);
+    void boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, uint uiMdlBox, uint uiMdlHmap);
 
     //Physics collision helpers
     void splitShift(GameObject *obj1, GameObject *obj2, float fShift, Point *ptShift1, Point *ptShift2);
-    void applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, const Box &bxLiquid);
+    void applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, float liquidTop, float liquidBottom);
     bool isNotInArea(const Box &bxObj, const Box &bxBounds);
     bool isOnSurface(const Box &bxObj, const Box &bxSurface);
 

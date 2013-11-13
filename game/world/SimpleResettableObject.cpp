@@ -1,12 +1,12 @@
 /*
- * Water
+ * SimpleResettableObject
  */
 
-#include "Water.h"
+#include "SimpleResettableObject.h"
 #include "pwe/PartitionedWorldEngine.h"
 
 
-Water::Water(uint id, uint texId, Box bxVolume, float fDensity) {
+SimpleResettableObject::SimpleResettableObject(uint id, uint texId, Box bxVolume, float fDensity) {
     m_uiID = id;
     m_uiFlags = 0;
 
@@ -25,18 +25,18 @@ Water::Water(uint id, uint texId, Box bxVolume, float fDensity) {
     m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
 
-    setFlag(TPE_LIQUID, true);
-    setFlag(TPE_STATIC, true);
+    m_ptOriginalPosition = m_pPhysicsModel->getPosition();
 }
 
-Water::~Water() {
+SimpleResettableObject::~SimpleResettableObject() {
     PWE::get()->freeId(getId());
+    PWE::get()->removeListener(getId(), PWE_ON_AREA_SWITCH, m_uiArea);
     delete m_pRenderModel;
     delete m_pPhysicsModel;
 }
 
 GameObject*
-Water::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
+SimpleResettableObject::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
     uint uiId = PWE::get()->reserveId(pt.get(keyBase + ".id", 0));
     uint uiTexId = pt.get(keyBase + ".tex", 0);
     Box bxVolume;
@@ -46,18 +46,18 @@ Water::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
     bxVolume.w = pt.get(keyBase + ".vol.w", 0.f);
     bxVolume.h = pt.get(keyBase + ".vol.h", 0.f);
     bxVolume.l = pt.get(keyBase + ".vol.l", 0.f);
-    float fDensity = pt.get(keyBase + ".density", DENSITY_WATER);
-    Water *obj = new Water(uiId, uiTexId, bxVolume, fDensity);
+    float fDensity = pt.get(keyBase + ".density", DENSITY_WOOD);
+    SimpleResettableObject *obj = new SimpleResettableObject(uiId, uiTexId, bxVolume, fDensity);
     Color cr;
-    cr.r = pt.get(keyBase + ".cr.r", 0x0);
-    cr.g = pt.get(keyBase + ".cr.g", 0x0);
+    cr.r = pt.get(keyBase + ".cr.r", 0xFF);
+    cr.g = pt.get(keyBase + ".cr.g", 0xFF);
     cr.b = pt.get(keyBase + ".cr.b", 0xFF);
     obj->m_pRenderModel->setColor(cr);
     return obj;
 }
 
 void
-Water::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
+SimpleResettableObject::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     pt.put(keyBase + ".id", getId());
     pt.put(keyBase + ".tex", m_pRenderModel->getTexture(SOUTH));
     Box bxVolume = m_pPhysicsModel->getCollisionVolume();
@@ -74,3 +74,23 @@ Water::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     pt.put(keyBase + ".density", m_pPhysicsModel->getDensity());
 }
 
+void
+SimpleResettableObject::callBack(uint uiId, void *data, uint uiEventId) {
+    switch(uiEventId) {
+    case PWE_ON_ADDED_TO_AREA:
+        m_uiArea = *(uint*)data;
+        PWE::get()->addListener(this, PWE_ON_AREA_SWITCH, m_uiArea);
+        break;
+    case PWE_ON_AREA_SWITCH:
+        reset();
+        break;
+    default:
+        break;
+    }
+}
+
+
+void
+SimpleResettableObject::reset() {
+    moveBy(m_ptOriginalPosition - m_pPhysicsModel->getPosition());
+}

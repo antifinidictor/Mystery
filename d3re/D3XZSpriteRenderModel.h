@@ -1,17 +1,17 @@
 /*
- * Render model for sprite objects
+ * Render model for sprite objects in the XZ plane
  */
-#ifndef D3_SPRITE_RENDER_MODEL_H
-#define D3_SPRITE_RENDER_MODEL_H
+#ifndef D3_XZ_SPRITE_RENDER_MODEL_H
+#define D3_XZ_SPRITE_RENDER_MODEL_H
 
 #include "mge/RenderModel.h"
 #include "mge/defs.h"
 #include "mge/Image.h"
 
-class D3SpriteRenderModel : public RenderModel {
+class D3XZSpriteRenderModel : public RenderModel {
 public:
-    D3SpriteRenderModel(GameObject *parent, uint uiImageId, Rect rcArea);
-    virtual ~D3SpriteRenderModel();
+    D3XZSpriteRenderModel(GameObject *parent, uint uiImageId, Rect rcArea);
+    virtual ~D3XZSpriteRenderModel();
 
     virtual void render(RenderEngine *re);
     virtual void moveBy(Point ptShift) {}
@@ -24,12 +24,6 @@ public:
     void setFrameH(int fh) { m_iFrameH = fh; }
     void setRepsW(int rw)  { m_iRepsW = rw; }
     void setRepsH(int rh)  { m_iRepsH = rh; }
-
-
-    int getFrameW() { return m_iFrameW; }
-    int getFrameH() { return m_iFrameH; }
-    int getRepsW()  { return m_iRepsW; }
-    int getRepsH()  { return m_iRepsH; }
 
     void setColor(const Color &cr) { m_crColor = cr; }
     Color &getColor() { return m_crColor; }
@@ -46,4 +40,4 @@ private:
     GameObject *m_pParent;
 };
 
-#endif
+#endif //D3_XZ_SPRITE_RENDER_MODEL_H

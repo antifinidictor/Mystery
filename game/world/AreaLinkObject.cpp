@@ -46,9 +46,9 @@ AreaLinkObject::read(const boost::property_tree::ptree &pt, const std::string &k
     bxVolume.x = pt.get(keyBase + ".vol.x", 0.f);
     bxVolume.y = pt.get(keyBase + ".vol.y", 0.f);
     bxVolume.z = pt.get(keyBase + ".vol.z", 0.f);
-    bxVolume.w = pt.get(keyBase + ".vol.w", 0);
-    bxVolume.h = pt.get(keyBase + ".vol.h", 0);
-    bxVolume.l = pt.get(keyBase + ".vol.l", 0);
+    bxVolume.w = pt.get(keyBase + ".vol.w", 0.f);
+    bxVolume.h = pt.get(keyBase + ".vol.h", 0.f);
+    bxVolume.l = pt.get(keyBase + ".vol.l", 0.f);
     Point ptDestPos;
     ptDestPos.x = pt.get(keyBase + ".dest.x", 0.f);
     ptDestPos.y = pt.get(keyBase + ".dest.y", 0.f);
@@ -81,9 +81,11 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
     case TPE_ON_COLLISION: {
         HandleCollisionData *hcd = (HandleCollisionData*)data;
         PWE *we = PWE::get();
-        Point ptPosDelta = m_ptDestPos - hcd->obj->getPhysicsModel()->getPosition();
-        hcd->obj->moveBy(ptPosDelta);
-        we->moveObjectToArea(hcd->obj->getId(), we->getCurrentArea(), m_uiDestAreaId);
+        if(hcd->obj->getFlag(GAM_CAN_LINK)) {
+            Point ptPosDelta = m_ptDestPos - hcd->obj->getPhysicsModel()->getPosition();
+            hcd->obj->moveBy(ptPosDelta);
+            we->moveObjectToArea(hcd->obj->getId(), we->getCurrentArea(), m_uiDestAreaId);
+        }
         break;
       }
     default:

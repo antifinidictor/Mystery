@@ -326,6 +326,10 @@ bool equal(PT &pt1, PT &pt2, float offset) {
 			pt1.z - offset <= pt2.z && pt1.z + offset >= pt2.z;
 }
 
+bool equal(float f1, float f2, float offset) {
+    return f1 - offset <= f2 && f1 + offset >= f2;
+}
+
 float dot(PT &pt1, PT &pt2) {
 	return pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z;
 }

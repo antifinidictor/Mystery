@@ -8,50 +8,27 @@
 #include "ForceField.h"
 #include "game/GameManager.h"
 
-WaterElementalVolume::WaterElementalVolume(uint id, uint texId, Box bxVolume, float fDensity) :
+WaterElementalVolume::WaterElementalVolume(uint id, uint texId, Box bxVolume, float fSwellRes, float fDensity) :
     ElementalVolume(id)
 {
 
     Box bxRelativeVol =Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                             bxVolume.w,      bxVolume.h,      bxVolume.l);
-    Image *img = D3RE::get()->getImage(texId);
-    m_pRenderModel = new D3PrismRenderModel(this, bxRelativeVol);
-    //Hidden faces not rendered
-    m_pRenderModel->setTexture(NORTH, IMG_NONE);//img->m_uiID);
-    m_pRenderModel->setTexture(SOUTH, img->m_uiID);
-    m_pRenderModel->setTexture(EAST,  img->m_uiID);
-    m_pRenderModel->setTexture(WEST,  img->m_uiID);
-    m_pRenderModel->setTexture(UP,    img->m_uiID);
-    m_pRenderModel->setTexture(DOWN,  IMG_NONE);//img->m_uiID);
+    m_fSwellRes = fSwellRes;
+    m_pxMap = new PixelMap(bxVolume.w * m_fSwellRes, bxVolume.l * m_fSwellRes,0);
+    m_pRenderModel = new D3HeightmapRenderModel(this, texId, m_pxMap, bxRelativeVol);
+
+    //Default swell values
+    m_fSwellSize = MAX_COLOR_VAL;
+    m_fSwellSpacingX = bxVolume.w / (m_pxMap->m_uiW - 1) * M_PI / 5.f;
+    m_fSwellSpacingZ = bxVolume.l / (m_pxMap->m_uiH - 1) * M_PI / 5.f;
 
     m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
-    m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
+    m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
     m_pPhysicsModel->setListener(this);
 
     setFlag(TPE_LIQUID, true);
     setFlag(TPE_STATIC, true);
-
-    //Force Field test
-    #if 0
-    Point ptCenter = bxCenter(bxVolume);
-    ForceField *field0 = new SourceForceField(ptCenter, 10000.0f);
-#define FSIZE (20)
-    ForceField *fieldOut = new LineForceField(ptCenter + Point(-FSIZE,0,0), ptCenter + Point(FSIZE,0,0), 100.0f);
-    ForceField *fieldA0 = new LineForceField(ptCenter + Point(FSIZE,0,0), ptCenter + Point(FSIZE,0,FSIZE), 100.0f);
-    ForceField *fieldA1 = new LineForceField(ptCenter + Point(FSIZE,0,FSIZE), ptCenter + Point(-FSIZE,0,FSIZE), 100.0f);
-    ForceField *fieldA2 = new LineForceField(ptCenter + Point(-FSIZE,0,FSIZE), ptCenter + Point(-FSIZE,0,0), 100.0f);
-
-    ForceField *fieldB0 = new LineForceField(ptCenter + Point(FSIZE,0,0), ptCenter + Point(FSIZE,0,FSIZE), 100.0f);
-    ForceField *fieldB1 = new LineForceField(ptCenter + Point(FSIZE,0,-FSIZE), ptCenter + Point(-FSIZE,0,-FSIZE), 100.0f);
-    ForceField *fieldB2 = new LineForceField(ptCenter + Point(-FSIZE,0,-FSIZE), ptCenter + Point(-FSIZE,0,0), 100.0f);
-    addForceField(fieldOut);
-    addForceField(fieldA0);
-    addForceField(fieldA1);
-    addForceField(fieldA2);
-    addForceField(fieldB0);
-    addForceField(fieldB1);
-    addForceField(fieldB2);
-    #endif
 }
 
 WaterElementalVolume::~WaterElementalVolume() {
@@ -67,24 +44,23 @@ WaterElementalVolume::read(const boost::property_tree::ptree &pt, const std::str
     bxVolume.x = pt.get(keyBase + ".vol.x", 0.f);
     bxVolume.y = pt.get(keyBase + ".vol.y", 0.f);
     bxVolume.z = pt.get(keyBase + ".vol.z", 0.f);
-    bxVolume.w = pt.get(keyBase + ".vol.w", 0);
-    bxVolume.h = pt.get(keyBase + ".vol.h", 0);
-    bxVolume.l = pt.get(keyBase + ".vol.l", 0);
+    bxVolume.w = pt.get(keyBase + ".vol.w", 0.f);
+    bxVolume.h = pt.get(keyBase + ".vol.h", 0.f);
+    bxVolume.l = pt.get(keyBase + ".vol.l", 0.f);
     float fDensity = pt.get(keyBase + ".density", DENSITY_WATER);
-    WaterElementalVolume *obj = new WaterElementalVolume(uiId, uiTexId, bxVolume, fDensity);
+    WaterElementalVolume *obj = new WaterElementalVolume(uiId, uiTexId, bxVolume, 1.f, fDensity);
     Color cr;
     cr.r = pt.get(keyBase + ".cr.r", 0x0);
     cr.g = pt.get(keyBase + ".cr.g", 0x0);
     cr.b = pt.get(keyBase + ".cr.b", 0xFF);
     obj->m_pRenderModel->setColor(cr);
-
     return obj;
 }
 
 void
 WaterElementalVolume::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     pt.put(keyBase + ".id", getId());
-    pt.put(keyBase + ".tex", m_pRenderModel->getTexture(SOUTH));
+    pt.put(keyBase + ".tex", m_pRenderModel->getTexture());
     Box bxVolume = m_pPhysicsModel->getCollisionVolume();
     pt.put(keyBase + ".vol.x", bxVolume.x);
     pt.put(keyBase + ".vol.y", bxVolume.y);
@@ -109,6 +85,18 @@ WaterElementalVolume::update(uint time) {
         m_pRenderModel->setColor(Color(0x00,0x00,0xFF));
         GameManager::get()->removeActiveVolume(getId());
     }
+
+    //Update swells
+    float fTime = time / 1000.f;
+    for(uint x = 0; x < m_pxMap->m_uiW; ++x) {
+        for(uint z = 0; z < m_pxMap->m_uiH; ++z) {
+            m_pxMap->m_pData[x][z] = (m_fSwellSize / 2.f)
+                * sin((x + fTime) * M_PI / 5.f)
+                * sin((z + fTime) * M_PI / 5.f)
+                + m_fSwellSize / 2;
+        }
+    }
+
     return false;
 }
 

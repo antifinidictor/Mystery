@@ -9,7 +9,9 @@
 #include "game/world/Wall.h"
 #include "game/world/AreaLinkObject.h"
 #include "game/world/Water.h"
+#include "game/world/SimpleResettableObject.h"
 #include "game/spells/WaterElementalVolume.h"
+#include "game/items/Item.h"
 
 void registerClasses() {
     ObjectFactory *fac = ObjectFactory::get();
@@ -17,6 +19,15 @@ void registerClasses() {
         .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
         .registerAttribute("Position", "pos", ATYPE_POINT)
     ;
+
+    fac->registerClass(SimpleResettableObject::getClassName(), SimpleResettableObject::read)
+        .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
+        .registerAttribute("Texture", "tex", ATYPE_RESOURCE_ID)
+        .registerAttribute("Volume", "vol", ATYPE_BOX)
+        .registerAttribute("Color", "cr", ATYPE_COLOR)
+        .registerAttribute("Density", "density", ATYPE_FLOAT)
+    ;
+
 
     fac->registerClass(SimplePhysicsObject::getClassName(), SimplePhysicsObject::read)
         .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
@@ -59,5 +70,11 @@ void registerClasses() {
         .registerAttribute("Dest Area ID", "destAreaId", ATYPE_OBJECT_ID)
         .registerAttribute("Dest Position", "dest", ATYPE_POINT)
         .registerAttribute("Trigger Volume", "vol", ATYPE_BOX)
+    ;
+
+    fac->registerClass(Item::getClassName(), Item::read)
+        .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
+        .registerAttribute("Item ID", "itemId", ATYPE_UINT)
+        .registerAttribute("Position", "pos", ATYPE_POINT)
     ;
 }

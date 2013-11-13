@@ -285,6 +285,9 @@ typedef struct tBox {
 	void operator=(const tBox &bx) { x = bx.x; y = bx.y; z = bx.z; w = bx.w; l = bx.l; h = bx.h; }
 } Box, BX;
 
+
+#define MAX_COLOR_VAL 0x00FFFFFF
+
 typedef struct tColor {
     unsigned b : 8;
     unsigned g : 8;
@@ -300,6 +303,9 @@ typedef struct tColor {
     }
     tColor() {
         b = g = r = 0;
+    }
+    uint toUint() {
+        return *(uint*)(this) & MAX_COLOR_VAL;
     }
 } Color, CR;
 
@@ -321,6 +327,7 @@ Rect  rcIntersection(const Rect &rc1, const Rect &rc2);
 
 double dist(const PT &ptHere, const PT &ptThere);
 bool equal(PT &pt1, PT &pt2, float offset);
+bool equal(float f1, float f2, float offset=0.001f);
 float dot(PT &pt1, PT &pt2);
 PT cross(const PT &pt1, const PT &pt2);
 int order(const PT &pt1, const PT &pt2);    //FIXME: Obsolete

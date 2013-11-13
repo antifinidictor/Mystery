@@ -244,6 +244,10 @@ char* TextRenderer::splitText(const char *str, float maxw, float size) {
 
 void TextRenderer::splitText(string &str, float maxw, float size) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
+    if(maxw < 0) {
+        printf("ERROR: illegal width %f when splitting text\n", maxw);
+    }
+
 //#if 0
     float xw = 0;
     int lastSpace = 0;
@@ -284,13 +288,13 @@ void TextRenderer::splitText(string &str, float maxw, float size) {
 //#endif
 }
 
-Rect TextRenderer::getArea(const char *str, float x, float y) {
+Rect TextRenderer::getArea(const char *str, float x, float y, float size) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     const float h = pFont->h / pFont->m_iNumFramesH;
 
     float cur_w = 0.f,
           max_w = 0.f,
-          max_h = h;
+          max_h = h * size;
 
     for(int i = 0; str[i] != '\0'; ++i) {
         if(str[i] == '\n') {
@@ -304,7 +308,7 @@ Rect TextRenderer::getArea(const char *str, float x, float y) {
         }
         int iw = char2IndW(str[i]),
             ih = char2IndH(str[i]);
-        cur_w += m_aWidths[iw * pFont->m_iNumFramesH + ih];
+        cur_w += m_aWidths[iw * pFont->m_iNumFramesH + ih] * size;
     }
     if(cur_w > max_w) max_w = cur_w;
 

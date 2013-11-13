@@ -62,8 +62,8 @@ PixelMap::PixelMap(const std::string &sFileName, uint uiId) {
 		}
 
 		//Store the original width and height of the image
-		this->m_iW = pSurface->w;
-		this->m_iH = pSurface->h;
+		this->m_uiW = pSurface->w;
+		this->m_uiH = pSurface->h;
 
         // get the number of channels in the SDL surface
         /*
@@ -87,10 +87,10 @@ PixelMap::PixelMap(const std::string &sFileName, uint uiId) {
         */
 
         //Allocate and fill out the pixel data
-        m_pData = (Color**)malloc(sizeof(Color*) * m_iW);
-        for(uint x = 0; x < m_iW; ++x) {
-            m_pData[x] = (Color*)malloc(sizeof(Color) * m_iH);
-            for(uint y = 0; y < m_iH; ++y) {
+        m_pData = (Color**)malloc(sizeof(Color*) * m_uiW);
+        for(uint x = 0; x < m_uiW; ++x) {
+            m_pData[x] = (Color*)malloc(sizeof(Color) * m_uiH);
+            for(uint y = 0; y < m_uiH; ++y) {
                 //Fill each pixel
                 copyPixel(pSurface, x, y, &m_pData[x][y]);
             }
@@ -112,16 +112,16 @@ PixelMap::PixelMap(const std::string &sFileName, uint uiId) {
 }
 
 PixelMap::PixelMap(uint w, uint h, uint uiId) {
-    m_iW = w;
-    m_iH = h;
+    m_uiW = w;
+    m_uiH = h;
 
 	m_sImageFileName = "";
 	m_uiId = uiId;
 
-    m_pData = (Color**)malloc(sizeof(Color*) * m_iW);
-    for(uint x = 0; x < m_iW; ++x) {
-        m_pData[x] = (Color*)malloc(sizeof(Color) * m_iH);
-        for(uint y = 0; y < m_iH; ++y) {
+    m_pData = (Color**)malloc(sizeof(Color*) * m_uiW);
+    for(uint x = 0; x < m_uiW; ++x) {
+        m_pData[x] = (Color*)malloc(sizeof(Color) * m_uiH);
+        for(uint y = 0; y < m_uiH; ++y) {
             //Fill each pixel
             m_pData[x][y] = Color();
         }
@@ -132,7 +132,7 @@ PixelMap::PixelMap(uint w, uint h, uint uiId) {
  * Destructor:  Destroys the texture information.
  */
 PixelMap::~PixelMap() {
-    for(uint x = 0; x < m_iW; ++x) {
+    for(uint x = 0; x < m_uiW; ++x) {
         free(m_pData[x]);
     }
     free(m_pData);

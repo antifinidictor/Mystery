@@ -200,7 +200,7 @@ D3RenderEngine::moveScreenBy(Point pt) {
 }
 
 Image *
-D3RenderEngine::createImage(uint id, const char *name, int numFramesH, int numFramesW) {
+D3RenderEngine::createImage(uint id, const std::string &fileName, int numFramesH, int numFramesW) {
     if(id < m_vImages.size() && m_vImages[id] != NULL) {
         //TODO: Find out why this doesn't work!
         //delete m_vImages[id];
@@ -209,8 +209,15 @@ D3RenderEngine::createImage(uint id, const char *name, int numFramesH, int numFr
     while(id >= m_vImages.size()) {
         m_vImages.push_back(NULL);
     }
-    m_vImages[id] = new Image(name, id, numFramesH, numFramesW);
+    m_vImages[id] = new Image(fileName, id, numFramesH, numFramesW);
     return m_vImages[id];
+}
+
+
+Image *
+D3RenderEngine::createImage(uint id, const std::string &imageName, const std::string &fileName, int numFramesH, int numFramesW) {
+    m_mImageNameToId[imageName] = id;
+    return createImage(id, fileName, numFramesH, numFramesW);
 }
 
 Image *
@@ -220,6 +227,26 @@ D3RenderEngine::getImage(uint id) {
     }
     //else
     return NULL;
+}
+
+Image *
+D3RenderEngine::getImage(const std::string &imageName) {
+    map<std::string, uint>::iterator iter = m_mImageNameToId.find(imageName);
+    if(iter == m_mImageNameToId.end()) {
+        return NULL;
+    }
+    //else
+    return getImage(iter->second);
+}
+
+
+uint
+D3RenderEngine::getImageId(const std::string &imageName) {
+    map<std::string, uint>::iterator iter = m_mImageNameToId.find(imageName);
+    if(iter == m_mImageNameToId.end()) {
+        return 0;
+    }
+    return iter->second;
 }
 
 void
@@ -356,6 +383,12 @@ D3RenderEngine::write(boost::property_tree::ptree &pt, const std::string &keyBas
         pt.put(key.str() + ".framesW", (*iter)->m_iNumFramesW);
         pt.put(key.str() + ".framesH", (*iter)->m_iNumFramesH);
     }
+    map<std::string, uint>::iterator itNamedImages;
+    for(itNamedImages = m_mImageNameToId.begin(); itNamedImages != m_mImageNameToId.end(); ++itNamedImages) {
+        std::ostringstream key;
+        key << keyBase << "." << itNamedImages->second;
+        pt.put(key.str() + ".name", itNamedImages->first);
+    }
 }
 
 void
@@ -369,7 +402,12 @@ D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase
         uint uiId = atoi(v.first.data());
         uint framesW = pt.get(key + ".framesW", 1);
         uint framesH = pt.get(key + ".framesH", 1);
-        createImage(uiId, filename.c_str(), framesH, framesW);
+        string name = pt.get(key + ".name", "?");
+        if(name.compare("?") == 0) {
+            createImage(uiId, filename, framesH, framesW);
+        } else {
+            createImage(uiId, name, filename, framesH, framesW);
+        }
     }
     } catch(exception e) {
         printf("Could not read resources\n");

@@ -142,6 +142,8 @@
 		<Unit filename="bae/BasicAudioEngine.h" />
 		<Unit filename="d3re/ContainerRenderModel.h" />
 		<Unit filename="d3re/D3DummyObject.h" />
+		<Unit filename="d3re/D3HeightmapRenderModel.cpp" />
+		<Unit filename="d3re/D3HeightmapRenderModel.h" />
 		<Unit filename="d3re/D3HudRenderModel.cpp" />
 		<Unit filename="d3re/D3HudRenderModel.h" />
 		<Unit filename="d3re/D3PrismRenderModel.cpp" />
@@ -150,6 +152,8 @@
 		<Unit filename="d3re/D3RenderEngine.h" />
 		<Unit filename="d3re/D3SpriteRenderModel.cpp" />
 		<Unit filename="d3re/D3SpriteRenderModel.h" />
+		<Unit filename="d3re/D3XZSpriteRenderModel.cpp" />
+		<Unit filename="d3re/D3XZSpriteRenderModel.h" />
 		<Unit filename="d3re/TextRenderer.cpp" />
 		<Unit filename="d3re/TextRenderer.h" />
 		<Unit filename="d3re/d3re.h" />
@@ -191,6 +195,8 @@
 		<Unit filename="game/ObjectFactory.h" />
 		<Unit filename="game/Player.cpp" />
 		<Unit filename="game/Player.h" />
+		<Unit filename="game/alchemy/Alchemy.cpp" />
+		<Unit filename="game/alchemy/Alchemy.h" />
 		<Unit filename="game/game.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
@@ -198,6 +204,10 @@
 		</Unit>
 		<Unit filename="game/game.h" />
 		<Unit filename="game/game_defs.h" />
+		<Unit filename="game/gui/TextDisplay.cpp" />
+		<Unit filename="game/gui/TextDisplay.h" />
+		<Unit filename="game/items/Item.cpp" />
+		<Unit filename="game/items/Item.h" />
 		<Unit filename="game/registration.cpp" />
 		<Unit filename="game/spells/ElementalVolume.cpp" />
 		<Unit filename="game/spells/ElementalVolume.h" />
@@ -213,6 +223,8 @@
 		<Unit filename="game/world/AreaLinkObject.h" />
 		<Unit filename="game/world/SimplePhysicsObject.cpp" />
 		<Unit filename="game/world/SimplePhysicsObject.h" />
+		<Unit filename="game/world/SimpleResettableObject.cpp" />
+		<Unit filename="game/world/SimpleResettableObject.h" />
 		<Unit filename="game/world/Wall.cpp" />
 		<Unit filename="game/world/Wall.h" />
 		<Unit filename="game/world/Water.cpp" />

@@ -527,6 +527,7 @@ PartitionedWorldEngine::removeFromNow(uint uiObjId, uint uiAreaId) {
     itObj = itArea->second.m_mCurArea.find(uiObjId);
     if(itObj != itArea->second.m_mCurArea.end()) {
         GameObject *obj = itObj->second;
+        re->remove(obj);
         itArea->second.m_mCurArea.erase(itObj);
         obj->callBack(0, &uiAreaId, PWE_ON_REMOVED_FROM_AREA);
     } else {

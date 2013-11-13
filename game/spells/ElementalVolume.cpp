@@ -45,7 +45,7 @@ ElementalVolume::handleCollision(HandleCollisionData *data) {
     map<uint,ForceField*>::iterator iter;
     for(iter = m_mForceFields.begin(); iter != m_mForceFields.end(); ++iter) {
         ptForce += iter->second->getForceAt(ptPos);
-
+        ptForce.y = 0.f;
     }
     float mag = ptForce.magnitude();
     printf("Force magnitude = %f\n", mag);

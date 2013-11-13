@@ -16,7 +16,7 @@
 
 class WaterElementalVolume : public ElementalVolume {
 public:
-    WaterElementalVolume(uint id, uint texId, Box bxVolume, float fDensity = DENSITY_WATER);
+    WaterElementalVolume(uint id, uint texId, Box bxVolume, float fSwellRes = 1.f, float fDensity = DENSITY_WATER);
     virtual ~WaterElementalVolume();
 
     //File i/o
@@ -36,8 +36,13 @@ public:
     virtual float getVolume();
 
 private:
-    D3PrismRenderModel *m_pRenderModel;
+    D3HeightmapRenderModel *m_pRenderModel;
     TimePhysicsModel  *m_pPhysicsModel;
+    PixelMap *m_pxMap;
+    float m_fSwellSize;
+    float m_fSwellSpacingX;
+    float m_fSwellSpacingZ;
+    float m_fSwellRes;
     float m_fOriginalVolume;
     float m_fTargetVolume;
 };

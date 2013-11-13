@@ -42,8 +42,11 @@ public:
     virtual void  moveScreenTo(Point pt);
     void moveScreenBy(Point pt);
 
-    Image *createImage(uint id, const char *name, int numFramesH = 1, int numFramesW = 1);
+    Image *createImage(uint id, const std::string &imageName, const std::string &fileName, int numFramesH = 1, int numFramesW = 1);
+    Image *createImage(uint id, const std::string &fileName, int numFramesH = 1, int numFramesW = 1);
     Image *getImage(uint id);
+    Image *getImage(const std::string &imageName);
+    uint getImageId(const std::string &imageName);
     void   freeImage(uint id);
 
     const Color& getWorldColor() const { return m_crWorld; }
@@ -111,6 +114,7 @@ private:
 
     std::list<GameObject *> m_lsObjsOnScreen;
     std::vector<Image*> m_vImages;
+    std::map<std::string, uint> m_mImageNameToId;
     ContainerRenderModel *m_pHudContainer;
     bool m_bGuiMode;
     bool m_bDrawCollisions;

@@ -1,0 +1,110 @@
+/*
+ * Source file for the sprite render model
+ */
+
+#include "d3re.h"
+#include "mge/GameObject.h"
+
+D3HeightmapRenderModel::D3HeightmapRenderModel(GameObject *parent, uint uiTexture, const PixelMap *pxMap, Box bxVolume)
+    : m_uiTexture(uiTexture),
+      m_pxMap(pxMap),
+      m_bxVolume(bxVolume),
+      m_crColor(0xFF, 0xFF, 0xFF),
+      m_pParent(parent)
+{
+}
+
+
+D3HeightmapRenderModel::~D3HeightmapRenderModel() {
+}
+
+void
+D3HeightmapRenderModel::render(RenderEngine *re) {
+    glPushMatrix();
+
+    //Render collision box
+    if(D3RE::get()->getDrawCollisions()) {
+        D3RE::get()->drawBox(m_pParent->getPhysicsModel()->getCollisionVolume(), m_crColor);
+    }
+
+    Image *tex = D3RE::get()->getImage(m_uiTexture);
+    if(tex == NULL) return;
+
+    Color worldColor = D3RE::get()->getWorldColor();
+    float fWeight = D3RE::get()->getColorWeight();
+    Color ourColor = Color(m_crColor.r * (1 - fWeight) + worldColor.r * fWeight,
+                           m_crColor.g * (1 - fWeight) + worldColor.g * fWeight,
+                           m_crColor.b * (1 - fWeight) + worldColor.b * fWeight);
+
+    Point ptPos = getPosition();
+    glTranslatef((ptPos.x + m_bxVolume.x), (ptPos.y + m_bxVolume.y), (ptPos.z + m_bxVolume.z));
+
+    glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);
+
+    glBindTexture(GL_TEXTURE_2D, tex->m_uiTexture);
+
+    //Render heightmap
+    float w = m_bxVolume.w / (m_pxMap->m_uiW - 1);
+    float l = m_bxVolume.l / (m_pxMap->m_uiH - 1);
+    for(uint x = 0; x < m_pxMap->m_uiW - 1; ++x) {
+        glBegin(GL_TRIANGLE_STRIP);
+        for(uint z = 0; z < m_pxMap->m_uiH; z++) {
+            float y0 = (float)m_pxMap->m_pData[x][z].toUint() * (m_bxVolume.h) / MAX_COLOR_VAL;
+            float y1 = (float)m_pxMap->m_pData[x+1][z].toUint() * (m_bxVolume.h) / MAX_COLOR_VAL;
+            //printf("(%f,%f) -> %f, (%f,%f) -> %f");
+            glTexCoord2f(x * w, z * l);
+            glVertex3f(x * w, y0, z * l);
+
+            glTexCoord2f(x * w + w, z * l);
+            glVertex3f(x * w + w, y1, z * l);
+        }
+
+        glTexCoord2f(x * w, (m_pxMap->m_uiH - 1) * l);
+        glVertex3f(x * w, m_bxVolume.y, (m_pxMap->m_uiH - 1) * l);
+
+        glTexCoord2f(x * w + w, (m_pxMap->m_uiH - 1) * l);
+        glVertex3f(x * w + w, m_bxVolume.y, (m_pxMap->m_uiH - 1) * l);
+        glEnd();
+    }
+
+    //Render edges
+    //left edge
+    #if 0
+    for(uint x = 0; x < m_pxMap->m_uiW - 1; ++x) {
+        glBegin(GL_QUAD_STRIP);
+        glEnd();
+    }
+    #endif
+
+    //south edge
+    glBegin(GL_QUAD_STRIP);
+    float x = (m_pxMap->m_uiW - 1) * w;
+    for(uint z = 0; z < m_pxMap->m_uiH; ++z) {
+        float y = (float)m_pxMap->m_pData[m_pxMap->m_uiW - 1][z].toUint() * (m_bxVolume.h) / MAX_COLOR_VAL;
+
+        glTexCoord2f(x, z * l);
+        glVertex3f(x, m_bxVolume.y, z * l);
+
+        glTexCoord2f(x, z * l);
+        glVertex3f(x, y, z * l);
+    }
+    glEnd();
+
+    glPopMatrix();
+}
+
+
+Rect
+D3HeightmapRenderModel::getDrawArea() {
+    Point ptPos = getPosition();
+    return m_bxVolume + ptPos;
+}
+
+Point
+D3HeightmapRenderModel::getPosition() {
+    Point ptPos = Point();
+    if(m_pParent != NULL) {
+        ptPos = m_pParent->getPhysicsModel()->getPosition();
+    }
+    return ptPos;
+}

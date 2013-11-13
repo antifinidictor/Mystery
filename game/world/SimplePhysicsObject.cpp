@@ -40,9 +40,9 @@ SimplePhysicsObject::read(const boost::property_tree::ptree &pt, const std::stri
     bxVolume.x = pt.get(keyBase + ".vol.x", 0.f);
     bxVolume.y = pt.get(keyBase + ".vol.y", 0.f);
     bxVolume.z = pt.get(keyBase + ".vol.z", 0.f);
-    bxVolume.w = pt.get(keyBase + ".vol.w", 0);
-    bxVolume.h = pt.get(keyBase + ".vol.h", 0);
-    bxVolume.l = pt.get(keyBase + ".vol.l", 0);
+    bxVolume.w = pt.get(keyBase + ".vol.w", 0.f);
+    bxVolume.h = pt.get(keyBase + ".vol.h", 0.f);
+    bxVolume.l = pt.get(keyBase + ".vol.l", 0.f);
     float fDensity = pt.get(keyBase + ".density", DENSITY_WOOD);
     SimplePhysicsObject *obj = new SimplePhysicsObject(uiId, uiTexId, bxVolume, fDensity);
     Color cr;

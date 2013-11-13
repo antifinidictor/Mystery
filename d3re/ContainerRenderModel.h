@@ -11,6 +11,8 @@
 
 class RenderEngine;
 
+typedef void (*opOnRenderModel)(uint id, RenderModel *rm);
+
 class ContainerRenderModel : public RenderModel {
 public:
     ContainerRenderModel(Rect rcArea) {

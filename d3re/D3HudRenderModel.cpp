@@ -79,6 +79,19 @@ D3HudRenderModel::getPosition() {
 }
 
 void
+D3HudRenderModel::moveBy(Point ptShift) {
+    m_rcDrawArea.x += ptShift.x;
+    m_rcDrawArea.y += ptShift.y;
+    m_ptTextPos += ptShift;
+    //z coord is discarded
+}
+
+void
+D3HudRenderModel::updateDrawArea(const Rect &rc) {
+    m_rcDrawArea = rc;
+}
+
+void
 D3HudRenderModel::updateText(const std::string &data, float textSize) {
     if(textSize > 0.f) {
         m_fTextSize = textSize;
@@ -131,6 +144,7 @@ D3HudRenderModel::renderText() {
     glPushMatrix();
     std::string splitData = m_sData;
     float margin = m_ptTextPos.x - m_rcDrawArea.x;
+    glColor3f(1.f,1.f,1.f);
     TextRenderer::get()->splitText(splitData, m_rcDrawArea.w - margin * 2, m_fTextSize);
     TextRenderer::get()->render(splitData.c_str(), m_ptTextPos.x, m_ptTextPos.y, m_fTextSize);
     glPopMatrix();

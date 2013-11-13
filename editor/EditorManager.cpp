@@ -132,7 +132,7 @@ EditorManager::update(uint time) {
               }
             case ED_STATE_NEW_TEXTURE: {
                 string s = m_pEditorCursor->getText();
-                D3RE::get()->createImage(m_uiCurImageId++, s.c_str());
+                D3RE::get()->createImage(m_uiCurImageId++, s);
                 break;
               }
             case ED_STATE_SELECT_VOLUME: {

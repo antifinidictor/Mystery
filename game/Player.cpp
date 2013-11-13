@@ -4,21 +4,23 @@
 #include "GameManager.h"
 #include "game/spells/SourceSinkSpell.h"
 #include "game/spells/FlowSpell.h"
+using namespace std;
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
-#define WALK_FORCE 1.f
+#define WALK_FORCE 0.5f
 #define SPELL_DURATION 10000
 
 enum PlayerAnims {
-    PANIM_STANDING = 0,
-    PANIM_WALKING = 1,
-    PANIM_THROWING = 5,
-    PANIM_PUSHING = 8,
+    PANIM_STANDING = 0,     //1 frame
+    PANIM_WALKING = 1,      //4 frames
+    PANIM_THROWING = 5,     //3 frames
+    PANIM_PUSHING = 8,      //4 frames
+    PANIM_CLIMBING = 12,    //8 frames
     NUM_PANIMS
 };
 
 Player::Player(uint uiId, const Point &ptPos) {
-    Image *img = D3RE::get()->getImage(IMG_PLAYER);
+    Image *img = D3RE::get()->getImage("player");
     int iw = img->h / img->m_iNumFramesH;
     float w = WORLD_TILE_SIZE / 2;    //img->w / img->m_iNumFramesW,
     float h = iw / (float)TEXTURE_TILE_SIZE;    //img->h / img->m_iNumFramesH;
@@ -26,10 +28,10 @@ Player::Player(uint uiId, const Point &ptPos) {
     m_uiFlags = 0;
 
     Rect rcDrawArea = Rect(-w / 2, 0, w, h);
-    Box bxVolume = Box(-w / 3, 0, -h / 4, 2 * w / 3, 3 * h / 4, h / 2);
+    Box bxVolume = Box(-w / 3, 0, -w / 8, 2 * w / 3, 3 * h / 4, w / 4);
     m_pPhysicsModel = new TimePhysicsModel(ptPos, DENSITY);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
-    m_pRenderModel  = new D3SpriteRenderModel(this, IMG_PLAYER, rcDrawArea);
+    m_pRenderModel  = new D3SpriteRenderModel(this, img->m_uiID, rcDrawArea);
 
     dx = dy = 0;
     m_fDeltaPitch = m_fDeltaZoom = 0.f;
@@ -39,6 +41,7 @@ Player::Player(uint uiId, const Point &ptPos) {
     m_uiAnimFrameStart = 1;
     m_pPhysicsModel->setListener(this);
     m_bMouseDown = false;
+    m_uiItemAnimCounter = 0;
 
     m_eState = PLAYER_NORMAL;
     //PWE::get()->addListener(this, ON_BUTTON_INPUT);
@@ -48,6 +51,10 @@ Player::Player(uint uiId, const Point &ptPos) {
         resetSpell(i);
     }
     m_uiCurSpell = 0;
+
+    m_uiHealth = 10;
+    m_uiMaxHealth = 20;
+    setFlag(GAM_CAN_LINK, true);
 }
 
 Player::~Player() {
@@ -84,6 +91,7 @@ Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 bool Player::update(uint time) {
     //Currently needs to occur in any state that isn't "paused"
     updateSpells();
+    upateHud();
 
     switch(m_eState) {
     case PLAYER_CASTING:
@@ -95,6 +103,9 @@ bool Player::update(uint time) {
     case PLAYER_CASTING_TRANS:
         updateCastingTrans(time);
         break;
+    case PLAYER_CLIMBING_TRANS:
+        updateClimbingTrans(time);
+        break;
     default:
         //Unhandled state
         break;
@@ -104,8 +115,8 @@ bool Player::update(uint time) {
 }
 
 
-void Player::callBack(uint cID, void *data, uint id) {
-    switch(id) {
+void Player::callBack(uint cID, void *data, uint uiEventId) {
+    switch(uiEventId) {
     case PWE_ON_ADDED_TO_AREA:
         PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
         //PWE::get()->setCurrentArea(*((uint*)data));
@@ -114,6 +125,8 @@ void Player::callBack(uint cID, void *data, uint id) {
         }
         dx = dy = 0;
         m_bMouseDown = false;
+
+        //handleButtonNormal(MGE::get()->getInputState());
         break;
     case PWE_ON_REMOVED_FROM_AREA:
         PWE::get()->removeListener(getId(), ON_BUTTON_INPUT, *((uint*)data));
@@ -201,11 +214,11 @@ Player::updateNormal(uint time) {
             timer = 20;
             state = ((state + 1) % 4);
             m_pRenderModel->setFrameH(state + m_uiAnimFrameStart);
-            /*
+#if 0
             if(state == 0 || state == 2) {
                 BAE::get()->playSound(AUD_STEP);
             }
-            */
+#endif
         } else {
             --timer;
         }
@@ -256,6 +269,48 @@ Player::updateCastingTrans(uint time) {
     }
 }
 
+
+
+void
+Player::updateClimbingTrans(uint time) {
+    if(timer < 0) {
+        timer = 20;
+        state = state + 1;
+        m_pRenderModel->setFrameH(state + m_uiAnimFrameStart);
+
+        if(state > 8) {
+            m_eState = PLAYER_NORMAL;
+            m_pPhysicsModel->setSurface(NULL);
+            state = 0;
+            m_uiAnimFrameStart = PANIM_STANDING;
+            setFlag(TPE_FLOATING, false);
+            setFlag(TPE_STATIC, false);
+            #define CLIMB_SHIFT 0.1F
+            switch(m_iCollisionDir) {
+            case NORTH:
+                moveBy(Point(0.f,0.f,-CLIMB_SHIFT));
+                break;
+            case SOUTH:
+                moveBy(Point(0.f,0.f,CLIMB_SHIFT));
+                break;
+            case EAST:
+                moveBy(Point(CLIMB_SHIFT,0.f,0.f));
+                break;
+            case WEST:
+                moveBy(Point(-CLIMB_SHIFT,0.f,0.f));
+                break;
+            }
+            handleButtonNormal(MGE::get()->getInputState());
+        }
+    } else {
+        --timer;
+    }
+
+    moveBy(Point(0.f,m_fClimbStepHeight,0.f));
+    Point ptPos = m_pPhysicsModel->getPosition();
+    D3RE::get()->moveScreenTo(ptPos);
+}
+
 void
 Player::updateSpells() {
     for(uint i = 0; i < NUM_SPELL_TYPES; ++i) {
@@ -266,6 +321,38 @@ Player::updateSpells() {
                 m_aSpells[i]->update();
             }
         }
+    }
+}
+void
+Player::upateHud() {
+    #define BAR_WIDTH  (TEXTURE_TILE_SIZE * 3.F - 2.f)
+    ContainerRenderModel *topBar = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_TOPBAR);
+    ContainerRenderModel *healthContainer = topBar->get<ContainerRenderModel*>(MGHUD_HEALTH_CONTAINER);
+    D3HudRenderModel *bar = healthContainer->get<D3HudRenderModel*>(MGHUD_HEALTH_BAR);
+    D3HudRenderModel *val = healthContainer->get<D3HudRenderModel*>(MGHUD_HEALTH_VALUE);
+    D3HudRenderModel *area = topBar->get<D3HudRenderModel*>(MGHUD_AREA_NAME);
+
+    ostringstream ss;
+    ss << m_uiHealth;
+    val->updateText(ss.str());
+
+    Rect rcArea = bar->getDrawArea();
+    rcArea.w = BAR_WIDTH * m_uiHealth / m_uiMaxHealth;
+    bar->updateDrawArea(rcArea);
+
+    area->updateText(PWE::get()->getAreaName(PWE::get()->getCurrentArea()));
+
+    if(m_uiItemAnimCounter % 20 == 0) {
+        ContainerRenderModel *inventoryContainer = topBar->get<ContainerRenderModel*>(MGHUD_INVENTORY_CONTAINER);
+        int iFrame = (m_uiItemAnimCounter / 20) % 8;
+        for(uint i = 0; i < m_vInventory.size(); ++i) {
+            inventoryContainer->get<D3HudRenderModel*>(MGHUD_ELEMENT_THUMBNAIL_START + i)->setFrameW(iFrame);
+        }
+        m_uiItemAnimCounter++;
+    } else if(m_uiItemAnimCounter > 160) {
+        m_uiItemAnimCounter = 0;
+    } else {
+        m_uiItemAnimCounter++;
     }
 }
 
@@ -403,9 +490,46 @@ Player::resetSpell(uint uiSpell) {
 
 void
 Player::handleCollision(HandleCollisionData *data) {
-    if(data->iDirection == m_iDirection) { //!= UP && data->iDirection != DOWN) {
-        m_uiAnimFrameStart = PANIM_PUSHING;
+    if(data->obj->getType() == TYPE_ITEM) {
+        Item *item = (Item*)data->obj;
+        PWE::get()->remove(item->getId());
+        addHudInventoryItem(item);
+        BAE::get()->playSound(AUD_PICKUP);
+    } else if(data->iDirection == m_iDirection &&
+              m_eState == PLAYER_NORMAL &&
+              !data->obj->getFlag(TPE_PASSABLE)) {
+        Box tbx = data->obj->getPhysicsModel()->getCollisionVolume();
+        Box mbx = m_pPhysicsModel->getCollisionVolume();
+
+        float shiftMag = data->ptShift.magnitude();
+        float moveMag = m_pPhysicsModel->getLastVelocity().magnitude();
+        if(tbx.y + tbx.h < mbx.y + mbx.h && equal(shiftMag,moveMag)) {
+            BAE::get()->playSound(AUD_LIFT);
+            m_eState = PLAYER_CLIMBING_TRANS;
+            m_uiAnimFrameStart = PANIM_CLIMBING;
+            m_fClimbStepHeight = ((tbx.y + tbx.h) - (mbx.y)) / 160.f;
+            state = 0;
+            setFlag(TPE_FLOATING, true);
+            setFlag(TPE_STATIC, true);
+            m_iCollisionDir = m_iDirection;
+        } else {
+            m_uiAnimFrameStart = PANIM_PUSHING;
+        }
     }
 }
 
+void
+Player::addHudInventoryItem(Item *item) {
+    //Add the item to the inventory
+    const uint index = m_vInventory.size();
+    m_vInventory.push_back(item);
 
+    //Add the item to the HUD
+    ContainerRenderModel *panel = D3RE::get()->getHudContainer()->
+        get<ContainerRenderModel*>(HUD_TOPBAR)->
+        get<ContainerRenderModel*>(MGHUD_INVENTORY_CONTAINER);
+    Rect rcArea = Rect(TEXTURE_TILE_SIZE * index, 0.F, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+    D3HudRenderModel *thumbnail = new D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea);
+    thumbnail->setFrameH(item->getItemId());
+    panel->add(MGHUD_ELEMENT_THUMBNAIL_START + index, thumbnail);
+}

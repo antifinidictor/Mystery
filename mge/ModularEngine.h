@@ -55,6 +55,9 @@ public:
     //Input adjustment
     void mapInput(int iSdlInputName, int iGameInputName);
 
+    //Polling input
+    InputData *getInputState() { return &m_sInputData; }
+
 protected:
 private:
     ModularEngine(int iSDLVideoFlags);

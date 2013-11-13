@@ -16,7 +16,7 @@ public:
     virtual ~D3HudRenderModel();
 
     virtual void render(RenderEngine *re);
-    virtual void moveBy(Point ptShift) {}
+    virtual void moveBy(Point ptShift);
     virtual Point getPosition();
     virtual Rect getDrawArea();
 
@@ -28,6 +28,7 @@ public:
     void setImageColor(const Color &cr) { m_crImageColor = cr; }
     Color &getImageColor() { return m_crImageColor; }
 
+    void updateDrawArea(const Rect &rc);
     void updateText(const std::string &data, float textSize = -1.f);
     std::string getText() { return m_sData; }
 

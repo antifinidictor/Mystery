@@ -58,6 +58,11 @@ private:
     GameManager(uint uiId);
     virtual ~GameManager();
 
+    void initBasicHud();
+    void cleanBasicHud();
+    void initPlayerHud();
+    void cleanPlayerHud();
+
     void fadeArea();
 
     static GameManager *m_pInstance;

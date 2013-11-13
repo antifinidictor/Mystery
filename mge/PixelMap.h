@@ -25,8 +25,8 @@ public:
 
 	//Members
 	std::string m_sImageFileName;
-	int m_iW;
-	int m_iH;
+	uint m_uiW;
+	uint m_uiH;
 	uint m_uiId;
     Color **m_pData;
 };
