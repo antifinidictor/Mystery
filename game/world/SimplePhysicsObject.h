@@ -39,13 +39,14 @@ public:
     Color &getColor() { return m_pRenderModel->getColor(); }
 
     //Listener
-    virtual void callBack(uint uiID, void *data, uint id) {}
+    virtual void callBack(uint uiID, void *data, uint id);
 
 private:
     uint m_uiID, m_uiFlags;
 
     D3PrismRenderModel *m_pRenderModel;
     TimePhysicsModel  *m_pPhysicsModel;
+    bool m_bPlayingSound;
 };
 
 #endif

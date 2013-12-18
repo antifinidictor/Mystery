@@ -16,11 +16,20 @@ using namespace std;
 #define CAM_DIST 6.25f  //200.f
 #define CAM_ANGLE (9 * M_PI / 32)
 #define MAX_MOUSE_TIMER 20
-#define MOUSE_IMG 3
 //static members
 D3RenderEngine *D3RenderEngine::re;
 
 D3RenderEngine::D3RenderEngine() {
+    m_sdlWindow = SDL_CreateWindow("The Child and the Alchemist",
+                          SDL_WINDOWPOS_UNDEFINED,
+                          SDL_WINDOWPOS_UNDEFINED,
+                          SCREEN_WIDTH, SCREEN_HEIGHT,
+                          /*SDL_WINDOW_FULLSCREEN |*/ SDL_WINDOW_OPENGL);
+    m_glContext = SDL_GL_CreateContext(m_sdlWindow);
+    SDL_Surface *icon = SDL_LoadBMP("res/icon.bmp");
+    SDL_SetWindowIcon(m_sdlWindow, icon);
+    SDL_FreeSurface(icon);
+
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );	//This line used to come directly after SDL_Init()
 
 	glEnable( GL_TEXTURE_2D );
@@ -65,7 +74,8 @@ D3RenderEngine::D3RenderEngine() {
     m_uiMouseFrame = 0;
     m_uiMouseTimer = 0;
     m_pDummyMouseObj = new D3DummyObject(m_ptMouseInWorld);
-    m_pMouseModel = new D3SpriteRenderModel(m_pDummyMouseObj, MOUSE_IMG, Rect(-0.125f,0.f,0.25f,0.25f));
+    m_pMouseModel = NULL;
+
     m_bDrawRealMouse = true;
 }
 
@@ -99,17 +109,35 @@ D3RenderEngine::render() {
         }
     }
 
-    if(m_uiMouseTimer < MAX_MOUSE_TIMER) {
-        m_uiMouseTimer++;
-    } else {
-        m_uiMouseTimer = 0;
-        m_uiMouseFrame = (m_uiMouseFrame + 1) % 8;
-        m_pMouseModel->setFrameH(m_uiMouseFrame);
+    glDisable(GL_ALPHA_TEST);
+    for(list<GameObject *>::iterator it = m_lsTransparentObjs.begin();
+            it != m_lsTransparentObjs.end(); ++it) {
+        if(!(*it)->getFlag(D3RE_INVISIBLE)) {
+            (*it)->getRenderModel()->render(this);
+/*
+            //Mouse on top of item
+            Box bxCVol = (*it)->getPhysicsModel()->getCollisionVolume();
+            if(ptInXZRect(m_ptMouseInWorld, bxCVol) && bxCVol.y + bxCVol.h > m_ptMouseInWorld.y) {
+                m_ptMouseInWorld.y = bxCVol.y + bxCVol.h;
+            }
+*/
+        }
+    }
+    glEnable(GL_ALPHA_TEST);
+
+    if(m_pMouseModel) {
+        if(m_uiMouseTimer < MAX_MOUSE_TIMER) {
+            m_uiMouseTimer++;
+        } else {
+            m_uiMouseTimer = 0;
+            m_uiMouseFrame = (m_uiMouseFrame + 1) % 8;
+            m_pMouseModel->setFrameH(m_uiMouseFrame);
+        }
     }
 
     Point ptMouseObj = m_pDummyMouseObj->getPosition();
     m_pDummyMouseObj->moveBy(m_ptMouseInWorld - ptMouseObj);
-    if(!m_bDrawRealMouse) {
+    if(!m_bDrawRealMouse && m_pMouseModel) {
         m_pMouseModel->render(this);
     }
     //drawCircle(m_ptMouseInWorld, 0.1f, Color(0x0, 0x0, 0xFF));
@@ -126,7 +154,7 @@ D3RenderEngine::render() {
     m_pHudContainer->render(this);
 
     //glBindTexture(GL_TEXTURE_2D, 0);
-    SDL_GL_SwapBuffers();   //Should probably be done by the render engine
+    SDL_GL_SwapWindow(m_sdlWindow);
 }
 
 void
@@ -145,16 +173,17 @@ D3RenderEngine::manageObjOnScreen(GameObject *obj) {
 void
 D3RenderEngine::addInOrder(GameObject *obj) {
     list<GameObject*>::iterator it;
+    list<GameObject*> *thisList = (obj->getFlag(D3RE_TRANSPARENT)) ? &m_lsTransparentObjs : &m_lsObjsOnScreen;
     obj->setFlag(D3RE_ON_SCREEN, true);
-    for(it = m_lsObjsOnScreen.begin(); it != m_lsObjsOnScreen.end(); ++it) {
+    for(it = thisList->begin(); it != thisList->end(); ++it) {
         if(comesBefore(obj, *it)) {
-            m_lsObjsOnScreen.insert(it, obj);
+            thisList->insert(it, obj);
             return;
         }
     }
 
     //Does not come before any objects on screen
-    m_lsObjsOnScreen.push_back(obj);
+    thisList->push_back(obj);
 }
 
 void
@@ -166,10 +195,11 @@ D3RenderEngine::resort(GameObject *obj) {
 
 void
 D3RenderEngine::remove(GameObject *obj) {
-    for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
-            it != m_lsObjsOnScreen.end(); ++it) {
+    list<GameObject*> *thisList = (obj->getFlag(D3RE_TRANSPARENT)) ? &m_lsTransparentObjs : &m_lsObjsOnScreen;
+    for(list<GameObject *>::iterator it = thisList->begin();
+            it != thisList->end(); ++it) {
         if(obj->getId() == (*it)->getId()) {
-            m_lsObjsOnScreen.erase(it);
+            thisList->erase(it);
             obj->setFlag(D3RE_ON_SCREEN, false);
             return;
         }
@@ -183,6 +213,11 @@ D3RenderEngine::clearScreen() {
         (*it)->setFlag(D3RE_ON_SCREEN, false);
     }
     m_lsObjsOnScreen.clear();
+    for(list<GameObject *>::iterator it = m_lsTransparentObjs.begin();
+            it != m_lsTransparentObjs.end(); ++it) {
+        (*it)->setFlag(D3RE_ON_SCREEN, false);
+    }
+    m_lsTransparentObjs.clear();
 }
 
 void
@@ -412,6 +447,9 @@ D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase
     } catch(exception e) {
         printf("Could not read resources\n");
     }
+
+    //Some image-dependent initialization
+    m_pMouseModel = new D3SpriteRenderModel(m_pDummyMouseObj, getImageId("mouse"), Rect(-0.125f,0.f,0.25f,0.25f));
 }
 
 void

@@ -4,6 +4,7 @@
 
 int main(int argc, char *argv[])
 {
+printf(__FILE__" %d\n",__LINE__);
     //Later, we'll add support for opening a file when you start the engine
 	//Create the engine
 	ModularEngine::init(getSDLVideoFlags());

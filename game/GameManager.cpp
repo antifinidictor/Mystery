@@ -174,7 +174,7 @@ GameManager::cleanBasicHud() {
 
 void
 GameManager::initPlayerHud() {
-    const uint hudBackdropId = 9;//D3RE::get()->getImageId("hudBackdrop");
+    const uint hudBackdropId = D3RE::get()->getImageId("hudBackdrop");
     ContainerRenderModel *panel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_TOPBAR);
 
     //Backdrop
@@ -198,18 +198,18 @@ GameManager::initPlayerHud() {
     panel->add(MGHUD_AREA_NAME, label);
 
     //Health bar
-    #define BAR_ID 10
     #define BAR_SIZE (TEXTURE_TILE_SIZE / 2.F)
     #define BAR_WIDTH  (TEXTURE_TILE_SIZE * 3.F)
     #define BAR_X (TEXTURE_TILE_SIZE * 4.F)
     #define BAR_Y (BAR_SIZE / 2.F)
+    uint barId = D3RE::get()->getImageId("hudbar");
     panel = healthPanel;
-    leftEdge = new D3HudRenderModel(BAR_ID, Rect(BAR_X,BAR_Y,BAR_SIZE,BAR_SIZE));
-    middle = new D3HudRenderModel(BAR_ID, Rect(BAR_X + BAR_SIZE,BAR_Y,BAR_WIDTH - BAR_SIZE * 2,BAR_SIZE));
-    rightEdge = new D3HudRenderModel(BAR_ID, Rect(BAR_X + BAR_WIDTH - BAR_SIZE,BAR_Y,BAR_SIZE,BAR_SIZE));
+    leftEdge = new D3HudRenderModel(barId, Rect(BAR_X,BAR_Y,BAR_SIZE,BAR_SIZE));
+    middle = new D3HudRenderModel(barId, Rect(BAR_X + BAR_SIZE,BAR_Y,BAR_WIDTH - BAR_SIZE * 2,BAR_SIZE));
+    rightEdge = new D3HudRenderModel(barId, Rect(BAR_X + BAR_WIDTH - BAR_SIZE,BAR_Y,BAR_SIZE,BAR_SIZE));
 
     label = new D3HudRenderModel("99", Rect(BAR_X+BAR_WIDTH/2.f - 10.f,BAR_Y,20.f,BAR_SIZE),0.8f);
-    D3HudRenderModel *bar = new D3HudRenderModel(BAR_ID, Rect(BAR_X+1,BAR_Y,BAR_WIDTH-2,BAR_SIZE));
+    D3HudRenderModel *bar = new D3HudRenderModel(barId, Rect(BAR_X+1,BAR_Y,BAR_WIDTH-2,BAR_SIZE));
 
     rightEdge->setFrameH(2);
     middle->setFrameH(1);
@@ -222,7 +222,6 @@ GameManager::initPlayerHud() {
     panel->add(MGHUD_HEALTH_BACKDROP_RIGHT_EDGE, rightEdge);
     panel->add(MGHUD_HEALTH_BAR, bar);
     panel->add(MGHUD_HEALTH_VALUE, label);
-
 }
 
 void

@@ -31,6 +31,8 @@ public:
     int getRepsW()  { return m_iRepsW; }
     int getRepsH()  { return m_iRepsH; }
 
+    uint getImageId() { return m_uiImageId; }
+
     void setColor(const Color &cr) { m_crColor = cr; }
     Color &getColor() { return m_crColor; }
 

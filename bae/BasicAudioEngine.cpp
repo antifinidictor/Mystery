@@ -109,7 +109,7 @@ void BasicAudioEngine::init() {
 
 void BasicAudioEngine::initThread() {
     m_pLock = SDL_CreateMutex();
-    m_pThread = SDL_CreateThread(audioThread, m_pLock);
+    m_pThread = SDL_CreateThread(audioThread, "MGE Audio", m_pLock);
 }
 
 void BasicAudioEngine::loadNextSong() {

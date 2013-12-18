@@ -3,6 +3,7 @@
  */
 
 #include "PixelMap.h"
+#include <stdlib.h>
 
 //copyPixel courtesy of http://sdl.beuc.net/sdl.wiki/Pixel_Access, wih some modifications
 void copyPixel(SDL_Surface *surface, int x, int y, Color *cr)

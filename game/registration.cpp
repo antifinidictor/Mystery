@@ -10,13 +10,21 @@
 #include "game/world/AreaLinkObject.h"
 #include "game/world/Water.h"
 #include "game/world/SimpleResettableObject.h"
+#include "game/world/HmapSurface.h"
 #include "game/spells/WaterElementalVolume.h"
 #include "game/items/Item.h"
+#include "game/character/Character.h"
 
 void registerClasses() {
     ObjectFactory *fac = ObjectFactory::get();
     fac->registerClass(Player::getClassName(), Player::read)
         .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
+        .registerAttribute("Position", "pos", ATYPE_POINT)
+    ;
+
+    fac->registerClass(Character::getClassName(), Character::read)
+        .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
+        .registerAttribute("Image ID", "imgId", ATYPE_RESOURCE_ID)
         .registerAttribute("Position", "pos", ATYPE_POINT)
     ;
 
@@ -51,6 +59,14 @@ void registerClasses() {
         .registerAttribute("Volume", "vol", ATYPE_BOX)
         .registerAttribute("Color", "cr", ATYPE_COLOR)
         .registerAttribute("Density", "density", ATYPE_FLOAT)
+    ;
+
+    fac->registerClass(HmapSurface::getClassName(), HmapSurface::read)
+        .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
+        .registerAttribute("Texture", "tex", ATYPE_RESOURCE_ID)
+        .registerAttribute("Volume", "vol", ATYPE_BOX)
+        .registerAttribute("Color", "cr", ATYPE_COLOR)
+        .registerAttribute("Map File", "map", ATYPE_STRING)
     ;
 
     fac->registerClass(Wall::getClassName(), Wall::read)

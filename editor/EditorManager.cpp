@@ -510,7 +510,7 @@ EditorManager::initEnterTextHud(const std::string &slabel, const std::string &fi
 }
 
 
-#define MAX_LIST_SIZE 10
+#define MAX_LIST_SIZE 12
 void
 EditorManager::initAreaPanel() {
     ContainerRenderModel *lpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_LEFT_PANE);
@@ -540,7 +540,7 @@ EditorManager::initAreaListPanel(uint uiAreaFirst) {
     PWE::get()->getAreas(m_vAreas);
 
     uint i = 0;
-    for(vector<uint>::iterator iter = m_vAreas.begin() + uiAreaFirst; iter < m_vAreas.end() && i < MAX_LIST_SIZE; ++iter) {
+    for(vector<uint>::iterator iter = m_vAreas.begin() + uiAreaFirst; iter < m_vAreas.end() && i < MAX_LIST_SIZE-2; ++iter) {
         ostringstream name;
         if((*iter) == m_uiCurAreaId) {
             name << "#00FF00#" << *iter << " " << PWE::get()->getAreaName(*iter);

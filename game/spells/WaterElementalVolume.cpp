@@ -29,6 +29,7 @@ WaterElementalVolume::WaterElementalVolume(uint id, uint texId, Box bxVolume, fl
 
     setFlag(TPE_LIQUID, true);
     setFlag(TPE_STATIC, true);
+    setFlag(D3RE_TRANSPARENT, true);
 }
 
 WaterElementalVolume::~WaterElementalVolume() {
@@ -90,10 +91,10 @@ WaterElementalVolume::update(uint time) {
     float fTime = time / 1000.f;
     for(uint x = 0; x < m_pxMap->m_uiW; ++x) {
         for(uint z = 0; z < m_pxMap->m_uiH; ++z) {
-            m_pxMap->m_pData[x][z] = (m_fSwellSize / 2.f)
+            m_pxMap->m_pData[x][z] = uint((m_fSwellSize / 2.f)
                 * sin((x + fTime) * M_PI / 5.f)
                 * sin((z + fTime) * M_PI / 5.f)
-                + m_fSwellSize / 2;
+                + m_fSwellSize / 2);
         }
     }
 

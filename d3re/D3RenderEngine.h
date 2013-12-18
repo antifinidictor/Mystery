@@ -24,6 +24,7 @@ class D3DummyObject;
 enum RenderFlags {
     D3RE_ON_SCREEN = RENDER_FLAGS_BEGIN,
     D3RE_INVISIBLE,
+    D3RE_TRANSPARENT,
     D3RE_NUM_FLAGS
 };
 
@@ -113,6 +114,7 @@ private:
     uint m_uiWidth, m_uiHeight;
 
     std::list<GameObject *> m_lsObjsOnScreen;
+    std::list<GameObject *> m_lsTransparentObjs;
     std::vector<Image*> m_vImages;
     std::map<std::string, uint> m_mImageNameToId;
     ContainerRenderModel *m_pHudContainer;
@@ -127,6 +129,8 @@ private:
 
     Point m_ptMouseInWorld;
     Vec3f m_v3MouseRay;
+    SDL_Window *m_sdlWindow;
+    SDL_GLContext m_glContext;
 };
 
 typedef D3RenderEngine D3RE;

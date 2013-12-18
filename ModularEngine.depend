@@ -1456,7 +1456,7 @@
 	"game/GameDefs.h"
 	"mge/Event.h"
 
-1379958459 source:k:\projects\games\mge\mystery\bae\basicaudioengine.cpp
+1386146189 source:k:\projects\games\mge\mystery\bae\basicaudioengine.cpp
 	"BasicAudioEngine.h"
 	"SDL.h"
 
@@ -1526,7 +1526,7 @@
 	<map>
 	"mge/defs.h"
 
-1384288387 source:k:\projects\games\mge\mystery\game\gamemanager.cpp
+1386703293 source:k:\projects\games\mge\mystery\game\gamemanager.cpp
 	"GameManager.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/TimePhysicsEngine.h"
@@ -1599,7 +1599,7 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1382836059 source:k:\projects\games\mge\mystery\game\player.cpp
+1384310386 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/tpe.h"
@@ -1609,7 +1609,7 @@
 
 1379968751 AudioEngine.h"
 
-1382674495 k:\projects\games\mge\mystery\game\player.h
+1384310037 k:\projects\games\mge\mystery\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1671,7 +1671,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1384289872 source:k:\projects\games\mge\mystery\game\game.cpp
+1386911628 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	"pgl.h"
@@ -1717,7 +1717,7 @@
 	"ore/OrderedRenderModel.h"
 	"game/Decorative.h"
 
-1380853832 source:k:\projects\games\mge\mystery\main.cpp
+1386704568 source:k:\projects\games\mge\mystery\main.cpp
 	"game/game.h"
 	"mge/ModularEngine.h"
 
@@ -1736,7 +1736,7 @@
 	"mge/Clock.h"
 	"mge/Event.h"
 
-1380863107 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
+1386705227 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
 	"ModularEngine.h"
 	"defs.h"
 
@@ -1806,12 +1806,12 @@
 	"mge/GameObject.h"
 	"mge/Event.h"
 
-1383070815 source:k:\projects\games\mge\mystery\tpe\timephysicsengine.cpp
+1387307674 source:k:\projects\games\mge\mystery\tpe\timephysicsengine.cpp
 	"mge/GameObject.h"
 	"mge/RenderModel.h"
 	"tpe/tpe.h"
 
-1381252589 source:k:\projects\games\mge\mystery\tpe\timephysicsmodel.cpp
+1384290411 source:k:\projects\games\mge\mystery\tpe\timephysicsmodel.cpp
 	"tpe.h"
 
 1381252213 k:\projects\games\mge\mystery\tpe\timephysicsmodel.h
@@ -1963,7 +1963,7 @@
 	<map>
 	"mge/defs.h"
 
-1382674495 k:\projects\games\mge\mystery\\game\player.h
+1384310037 k:\projects\games\mge\mystery\\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -2153,7 +2153,7 @@
 	"mge/defs.h"
 	<string>
 
-1382547650 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
+1387353297 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
 	"d3re.h"
 	"SDL.h"
 	"pgl.h"
@@ -2174,7 +2174,7 @@
 
 1379928505 nderModel.h"
 
-1382547595 k:\projects\games\mge\mystery\d3re\d3renderengine.h
+1387350222 k:\projects\games\mge\mystery\d3re\d3renderengine.h
 	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
@@ -2185,7 +2185,7 @@
 	"mge/Event.h"
 	"ContainerRenderModel.h"
 
-1382548050 k:\projects\games\mge\mystery\d3re\d3spriterendermodel.h
+1384314430 k:\projects\games\mge\mystery\d3re\d3spriterendermodel.h
 	"mge/RenderModel.h"
 	"mge/defs.h"
 	"mge/Image.h"
@@ -2211,7 +2211,7 @@
 	"D3HeightmapRenderModel.h"
 	"TextRenderer.h"
 
-1382547595 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
+1387350222 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
 	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
@@ -2222,7 +2222,7 @@
 	"mge/Event.h"
 	"ContainerRenderModel.h"
 
-1382548050 k:\projects\games\mge\mystery\\d3re\d3spriterendermodel.h
+1384314430 k:\projects\games\mge\mystery\\d3re\d3spriterendermodel.h
 	"mge/RenderModel.h"
 	"mge/defs.h"
 	"mge/Image.h"
@@ -2241,7 +2241,7 @@
 	"d3re.h"
 	"mge/GameObject.h"
 
-1381002694 k:\projects\games\mge\mystery\\game\world\simplephysicsobject.h
+1386919408 k:\projects\games\mge\mystery\\game\world\simplephysicsobject.h
 	"mge/GameObject.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
@@ -8179,11 +8179,12 @@
 	"boost/property_tree/detail/info_parser_utils.hpp"
 	<string>
 
-1382467432 source:k:\projects\games\mge\mystery\game\world\simplephysicsobject.cpp
+1386920133 source:k:\projects\games\mge\mystery\game\world\simplephysicsobject.cpp
 	"SimplePhysicsObject.h"
 	"pwe/PartitionedWorldEngine.h"
+	"bae/BasicAudioEngine.h"
 
-1381002694 k:\projects\games\mge\mystery\game\world\simplephysicsobject.h
+1386919408 k:\projects\games\mge\mystery\game\world\simplephysicsobject.h
 	"mge/GameObject.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
@@ -8206,13 +8207,13 @@
 
 1380866707 "
 
-1381483880 k:\projects\games\mge\mystery\\editor\selectionrendermodel.h
+1381480280 k:\projects\games\mge\mystery\\editor\selectionrendermodel.h
 	"d3re/d3re.h"
 
-1381257385 k:\projects\games\mge\mystery\\editor\editor_defs.h
+1381253785 k:\projects\games\mge\mystery\\editor\editor_defs.h
 	"game/game_defs.h"
 
-1381257721 source:k:\projects\games\mge\mystery\editor\editor.cpp
+1386704399 source:k:\projects\games\mge\mystery\editor\editor.cpp
 	"game/game.h"
 	<SDL.h>
 	"pgl.h"
@@ -8230,9 +8231,9 @@
 
 1380868492 ctFactory.h"
 
-1380857466 k:\projects\games\mge\mystery\\game\game.h
+1380853866 k:\projects\games\mge\mystery\\game\game.h
 
-1382550942 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
+1386912469 source:k:\projects\games\mge\mystery\editor\editormanager.cpp
 	"EditorManager.h"
 	"EditorCursor.h"
 	"EditorHudButton.h"
@@ -8246,7 +8247,7 @@
 
 1380870003 enizer.hpp>
 
-1380868492 k:\projects\games\mge\mystery\editor\editormanager.h
+1380864892 k:\projects\games\mge\mystery\editor\editormanager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
 	"game/ObjectFactory.h"
@@ -8262,7 +8263,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1380868492 k:\projects\games\mge\mystery\\editor\editormanager.h
+1380864892 k:\projects\games\mge\mystery\\editor\editormanager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
 	"game/ObjectFactory.h"
@@ -8283,13 +8284,13 @@
 	"mge/defs.h"
 	<string>
 
-1380866805 k:\projects\games\mge\mystery\editor\editorhudbutton.h
+1380863205 k:\projects\games\mge\mystery\editor\editorhudbutton.h
 	"d3re/d3re.h"
 	"editor/editor_defs.h"
 	"editor/EditorManager.h"
 	"mge/ModularEngine.h"
 
-1380597810 source:k:\projects\games\mge\mystery\game\objectfactory.cpp
+1386181391 source:k:\projects\games\mge\mystery\game\objectfactory.cpp
 	"ObjectFactory.h"
 	"d3re/d3re.h"
 	"pwe/PartitionedWorldEngine.h"
@@ -8315,7 +8316,7 @@
 	<vector>
 	<boost/property_tree/ptree.hpp>
 
-1382832631 source:k:\projects\games\mge\mystery\game\registration.cpp
+1386546285 source:k:\projects\games\mge\mystery\game\registration.cpp
 	"game/ObjectFactory.h"
 	"game/Player.h"
 	"game/world/SimplePhysicsObject.h"
@@ -8323,8 +8324,10 @@
 	"game/world/AreaLinkObject.h"
 	"game/world/Water.h"
 	"game/world/SimpleResettableObject.h"
+	"game/world/HmapSurface.h"
 	"game/spells/WaterElementalVolume.h"
 	"game/items/Item.h"
+	"game/character/Character.h"
 
 1380660329 d/AreaLinkObject.h"
 
@@ -8509,12 +8512,12 @@
 	<map>
 	"mge/RenderModel.h"
 
-1381483880 source:k:\projects\games\mge\mystery\editor\editorcursor.cpp
+1381480280 source:k:\projects\games\mge\mystery\editor\editorcursor.cpp
 	"EditorCursor.h"
 	"EditorManager.h"
 	<string>
 
-1380866707 k:\projects\games\mge\mystery\editor\editorcursor.h
+1380863107 k:\projects\games\mge\mystery\editor\editorcursor.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -8523,7 +8526,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1380866707 k:\projects\games\mge\mystery\\editor\editorcursor.h
+1380863107 k:\projects\games\mge\mystery\\editor\editorcursor.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -8532,7 +8535,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1367954687 c:\libs\boost\boost_1_54_0\boost\lexical_cast.hpp
+1367951087 c:\libs\boost\boost_1_54_0\boost\lexical_cast.hpp
 	<boost/config.hpp>
 	<climits>
 	<cstddef>
@@ -8571,7 +8574,7 @@
 	<boost/integer.hpp>
 	<cwchar>
 
-1266168681 c:\libs\boost\boost_1_54_0\boost\detail\lcast_precision.hpp
+1266165081 c:\libs\boost\boost_1_54_0\boost\detail\lcast_precision.hpp
 	<climits>
 	<ios>
 	<limits>
@@ -8582,13 +8585,13 @@
 	<boost/assert.hpp>
 	<boost/static_assert.hpp>
 
-1362873305 c:\libs\boost\boost_1_54_0\boost\integer_traits.hpp
+1362869705 c:\libs\boost\boost_1_54_0\boost\integer_traits.hpp
 	<boost/config.hpp>
 	<boost/limits.hpp>
 	<limits.h>
 	<wchar.h>
 
-1362873305 c:\libs\boost\boost_1_54_0\boost\array.hpp
+1362869705 c:\libs\boost\boost_1_54_0\boost\array.hpp
 	<boost/detail/workaround.hpp>
 	<cstddef>
 	<stdexcept>
@@ -8600,17 +8603,17 @@
 	<algorithm>
 	<boost/config.hpp>
 
-1236811869 c:\libs\boost\boost_1_54_0\boost\functional\hash_fwd.hpp
+1236808269 c:\libs\boost\boost_1_54_0\boost\functional\hash_fwd.hpp
 	<boost/functional/hash/hash_fwd.hpp>
 
 1236811869 ctional/hash/hash_fwd.hpp>
 
-1236811869 c:\libs\boost\boost_1_54_0\boost\functional\hash\hash_fwd.hpp
+1236808269 c:\libs\boost\boost_1_54_0\boost\functional\hash\hash_fwd.hpp
 	<boost/config.hpp>
 	<cstddef>
 	<boost/detail/workaround.hpp>
 
-1317922037 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\cast.hpp
+1317918437 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\cast.hpp
 	<boost/detail/workaround.hpp>
 	<boost/numeric/conversion/detail/old_numeric_cast.hpp>
 	<boost/type.hpp>
@@ -8619,7 +8622,7 @@
 
 1317922037 eric/conversion/numeric_cast_traits.hpp>
 
-1206222355 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\old_numeric_cast.hpp
+1206218755 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\old_numeric_cast.hpp
 	<boost/config.hpp>
 	<cassert>
 	<typeinfo>
@@ -8629,7 +8632,7 @@
 
 1206222355 eric/conversion/converter_policies.hpp>
 
-1331368296 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\converter_policies.hpp
+1331364696 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\converter_policies.hpp
 	<typeinfo>
 	<boost/config/no_tr1/cmath.hpp>
 	<boost/throw_exception.hpp>
@@ -8640,22 +8643,22 @@
 
 1216826127 /integral_c.hpp"
 
-1221823449 c:\libs\boost\boost_1_54_0\boost\config\no_tr1\cmath.hpp
+1221819849 c:\libs\boost\boost_1_54_0\boost\config\no_tr1\cmath.hpp
 	<cmath>
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\converter.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\converter.hpp
 	"boost/numeric/conversion/conversion_traits.hpp"
 	"boost/numeric/conversion/converter_policies.hpp"
 	"boost/numeric/conversion/detail/converter.hpp"
 
 1216826127 eric/conversion/detail/converter.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\conversion_traits.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\conversion_traits.hpp
 	"boost/numeric/conversion/detail/conversion_traits.hpp"
 	"boost/detail/workaround.hpp"
 	"boost/config.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\conversion_traits.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\conversion_traits.hpp
 	"boost/type_traits/is_arithmetic.hpp"
 	"boost/type_traits/is_same.hpp"
 	"boost/type_traits/remove_cv.hpp"
@@ -8667,7 +8670,7 @@
 
 1216826127 eric/conversion/detail/is_subranged.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\meta.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\meta.hpp
 	"boost/type_traits/remove_cv.hpp"
 	"boost/mpl/if.hpp"
 	"boost/mpl/eval_if.hpp"
@@ -8679,33 +8682,33 @@
 
 1216826127 /identity.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\int_float_mixture.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\int_float_mixture.hpp
 	"boost/config.hpp"
 	"boost/limits.hpp"
 	"boost/numeric/conversion/int_float_mixture_enum.hpp"
 	"boost/numeric/conversion/detail/meta.hpp"
 	"boost/mpl/integral_c.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\int_float_mixture_enum.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\int_float_mixture_enum.hpp
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\sign_mixture.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\sign_mixture.hpp
 	"boost/config.hpp"
 	"boost/limits.hpp"
 	"boost/numeric/conversion/sign_mixture_enum.hpp"
 	"boost/numeric/conversion/detail/meta.hpp"
 	"boost/mpl/integral_c.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\sign_mixture_enum.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\sign_mixture_enum.hpp
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\udt_builtin_mixture.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\udt_builtin_mixture.hpp
 	"boost/type_traits/is_arithmetic.hpp"
 	"boost/numeric/conversion/udt_builtin_mixture_enum.hpp"
 	"boost/numeric/conversion/detail/meta.hpp"
 	"boost/mpl/integral_c.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\udt_builtin_mixture_enum.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\udt_builtin_mixture_enum.hpp
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\is_subranged.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\is_subranged.hpp
 	"boost/config.hpp"
 	"boost/limits.hpp"
 	"boost/mpl/int.hpp"
@@ -8720,7 +8723,7 @@
 
 1216826127 eric/conversion/detail/udt_builtin_mixture.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\converter.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\converter.hpp
 	<functional>
 	"boost/numeric/conversion/detail/meta.hpp"
 	"boost/numeric/conversion/detail/conversion_traits.hpp"
@@ -8728,26 +8731,26 @@
 	"boost/type_traits/is_same.hpp"
 	"boost/mpl/integral_c.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\bounds.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\bounds.hpp
 	"boost/numeric/conversion/detail/bounds.hpp"
 
 1216826127 eric/conversion/detail/bounds.hpp"
 
-1216826127 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\bounds.hpp
+1216822527 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\bounds.hpp
 	"boost/limits.hpp"
 	"boost/config.hpp"
 	"boost/mpl/if.hpp"
 
 1216826127 /if.hpp"
 
-1317922037 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\numeric_cast_traits.hpp
+1317918437 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\numeric_cast_traits.hpp
 	<boost/numeric/conversion/converter_policies.hpp>
 	<boost/cstdint.hpp>
 	<boost/numeric/conversion/detail/numeric_cast_traits.hpp>
 
 1317922037 eric/conversion/detail/numeric_cast_traits.hpp>
 
-1362873305 c:\libs\boost\boost_1_54_0\boost\cstdint.hpp
+1362869705 c:\libs\boost\boost_1_54_0\boost\cstdint.hpp
 	<boost/config.hpp>
 	<inttypes.h>
 	<inttypes.h>
@@ -8757,25 +8760,25 @@
 	<limits.h>
 	<limits.h>
 
-1328150572 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\numeric_cast_traits.hpp
+1328146972 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\numeric_cast_traits.hpp
 	<boost/numeric/conversion/detail/preprocessed/numeric_cast_traits_common.hpp>
 	<boost/numeric/conversion/detail/preprocessed/numeric_cast_traits_long_long.hpp>
 	<boost/preprocessor/seq/elem.hpp>
 	<boost/preprocessor/seq/size.hpp>
 	<boost/preprocessor/iteration/iterate.hpp>
 
-1328150572 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\preprocessed\numeric_cast_traits_common.hpp
+1328146972 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\preprocessed\numeric_cast_traits_common.hpp
 
-1328150572 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\preprocessed\numeric_cast_traits_long_long.hpp
+1328146972 c:\libs\boost\boost_1_54_0\boost\numeric\conversion\detail\preprocessed\numeric_cast_traits_long_long.hpp
 
-1366015628 c:\libs\boost\boost_1_54_0\boost\math\special_functions\sign.hpp
+1366012028 c:\libs\boost\boost_1_54_0\boost\math\special_functions\sign.hpp
 	<boost/math/tools/config.hpp>
 	<boost/math/special_functions/math_fwd.hpp>
 	<boost/math/special_functions/detail/fp_traits.hpp>
 
 1366015628 h/special_functions/detail/fp_traits.hpp>
 
-1366015628 c:\libs\boost\boost_1_54_0\boost\math\tools\config.hpp
+1366012028 c:\libs\boost\boost_1_54_0\boost\math\tools\config.hpp
 	<boost/config.hpp>
 	<boost/cstdint.hpp>
 	<boost/detail/workaround.hpp>
@@ -8793,16 +8796,16 @@
 	<iomanip>
 	<typeinfo>
 
-1216139427 c:\libs\boost\boost_1_54_0\boost\math\tools\user.hpp
+1216135827 c:\libs\boost\boost_1_54_0\boost\math\tools\user.hpp
 
-1369483871 c:\libs\boost\boost_1_54_0\boost\detail\fenv.hpp
+1369480271 c:\libs\boost\boost_1_54_0\boost\detail\fenv.hpp
 	<boost/config.hpp>
 	<features.h>
 	<bits/fenv.h>
 	<stdio.h>
 	<fenv.h>
 
-1366015628 c:\libs\boost\boost_1_54_0\boost\math\special_functions\math_fwd.hpp
+1366012028 c:\libs\boost\boost_1_54_0\boost\math\special_functions\math_fwd.hpp
 	<boost/math/special_functions/detail/round_fwd.hpp>
 	<boost/math/tools/promotion.hpp>
 	<boost/math/policies/policy.hpp>
@@ -8811,13 +8814,13 @@
 
 1366015628 fig/no_tr1/complex.hpp>
 
-1366015628 c:\libs\boost\boost_1_54_0\boost\math\special_functions\detail\round_fwd.hpp
+1366012028 c:\libs\boost\boost_1_54_0\boost\math\special_functions\detail\round_fwd.hpp
 	<boost/config.hpp>
 	<boost/math/tools/promotion.hpp>
 
 1366015628 h/tools/promotion.hpp>
 
-1294511586 c:\libs\boost\boost_1_54_0\boost\math\tools\promotion.hpp
+1294507986 c:\libs\boost\boost_1_54_0\boost\math\tools\promotion.hpp
 	<boost/math/tools/config.hpp>
 	<boost/type_traits/is_floating_point.hpp>
 	<boost/type_traits/is_integral.hpp>
@@ -8830,7 +8833,7 @@
 	<boost/mpl/not.hpp>
 	<boost/static_assert.hpp>
 
-1366015628 c:\libs\boost\boost_1_54_0\boost\math\policies\policy.hpp
+1366012028 c:\libs\boost\boost_1_54_0\boost\math\policies\policy.hpp
 	<boost/mpl/list.hpp>
 	<boost/mpl/contains.hpp>
 	<boost/mpl/if.hpp>
@@ -8851,7 +8854,7 @@
 	<stddef.h>
 	<math.h>
 
-1223705942 c:\libs\boost\boost_1_54_0\boost\mpl\list.hpp
+1223702342 c:\libs\boost\boost_1_54_0\boost\mpl\list.hpp
 	<boost/mpl/limits/list.hpp>
 	<boost/mpl/aux_/na.hpp>
 	<boost/mpl/aux_/config/preprocessor.hpp>
@@ -8863,9 +8866,9 @@
 	<boost/mpl/limits/list.hpp>
 	<boost/mpl/aux_/sequence_wrapper.hpp>
 
-1223705942 c:\libs\boost\boost_1_54_0\boost\mpl\limits\list.hpp
+1223702342 c:\libs\boost\boost_1_54_0\boost\mpl\limits\list.hpp
 
-1223705942 c:\libs\boost\boost_1_54_0\boost\mpl\remove_if.hpp
+1223702342 c:\libs\boost\boost_1_54_0\boost\mpl\remove_if.hpp
 	<boost/mpl/fold.hpp>
 	<boost/mpl/reverse_fold.hpp>
 	<boost/mpl/eval_if.hpp>
@@ -8875,10 +8878,10 @@
 	<boost/mpl/apply.hpp>
 	<boost/mpl/aux_/inserter_algorithm.hpp>
 
-1129739920 c:\libs\boost\boost_1_54_0\boost\config\no_tr1\complex.hpp
+1129736320 c:\libs\boost\boost_1_54_0\boost\config\no_tr1\complex.hpp
 	<complex>
 
-1325506901 c:\libs\boost\boost_1_54_0\boost\math\special_functions\detail\fp_traits.hpp
+1325503301 c:\libs\boost\boost_1_54_0\boost\math\special_functions\detail\fp_traits.hpp
 	<cstring>
 	<boost/assert.hpp>
 	<boost/cstdint.hpp>
@@ -8888,7 +8891,7 @@
 
 1325506901 e_traits/is_floating_point.hpp>
 
-1369567150 c:\libs\boost\boost_1_54_0\boost\detail\endian.hpp
+1369563550 c:\libs\boost\boost_1_54_0\boost\detail\endian.hpp
 	<endian.h>
 	<machine/endian.h>
 	<sys/endian.h>
@@ -8896,7 +8899,7 @@
 
 1369567150 types.h"
 
-1369394271 c:\libs\boost\boost_1_54_0\boost\math\special_functions\fpclassify.hpp
+1369390671 c:\libs\boost\boost_1_54_0\boost\math\special_functions\fpclassify.hpp
 	<math.h>
 	<boost/config/no_tr1/cmath.hpp>
 	<boost/limits.hpp>
@@ -8906,9 +8909,9 @@
 	<boost/math/special_functions/detail/fp_traits.hpp>
 	<float.h>
 
-1216139427 c:\libs\boost\boost_1_54_0\boost\math\tools\real_cast.hpp
+1216135827 c:\libs\boost\boost_1_54_0\boost\math\tools\real_cast.hpp
 
-1371522127 c:\libs\boost\boost_1_54_0\boost\range\iterator_range_core.hpp
+1371518527 c:\libs\boost\boost_1_54_0\boost\range\iterator_range_core.hpp
 	<boost/config.hpp>
 	<boost/detail/workaround.hpp>
 	<boost/assert.hpp>
@@ -8928,7 +8931,7 @@
 	<algorithm>
 	<cstddef>
 
-1206222355 c:\libs\boost\boost_1_54_0\boost\range\functions.hpp
+1206218755 c:\libs\boost\boost_1_54_0\boost\range\functions.hpp
 	<boost/range/begin.hpp>
 	<boost/range/end.hpp>
 	<boost/range/size.hpp>
@@ -8939,14 +8942,14 @@
 
 1206222355 ge/rend.hpp>
 
-1339196394 c:\libs\boost\boost_1_54_0\boost\range\size.hpp
+1339192794 c:\libs\boost\boost_1_54_0\boost\range\size.hpp
 	<boost/range/config.hpp>
 	<boost/range/begin.hpp>
 	<boost/range/end.hpp>
 	<boost/range/size_type.hpp>
 	<boost/assert.hpp>
 
-1339196394 c:\libs\boost\boost_1_54_0\boost\range\size_type.hpp
+1339192794 c:\libs\boost\boost_1_54_0\boost\range\size_type.hpp
 	<boost/range/config.hpp>
 	<boost/range/difference_type.hpp>
 	<boost/range/detail/size_type.hpp>
@@ -8956,36 +8959,36 @@
 	<cstddef>
 	<utility>
 
-1206222355 c:\libs\boost\boost_1_54_0\boost\range\difference_type.hpp
+1206218755 c:\libs\boost\boost_1_54_0\boost\range\difference_type.hpp
 	<boost/range/config.hpp>
 	<boost/range/iterator.hpp>
 	<boost/iterator/iterator_traits.hpp>
 
-1339196394 c:\libs\boost\boost_1_54_0\boost\range\detail\size_type.hpp
+1339192794 c:\libs\boost\boost_1_54_0\boost\range\detail\size_type.hpp
 	<boost/range/detail/common.hpp>
 
 1339196394 ge/detail/common.hpp>
 
-1206222355 c:\libs\boost\boost_1_54_0\boost\range\distance.hpp
+1206218755 c:\libs\boost\boost_1_54_0\boost\range\distance.hpp
 	<boost/range/begin.hpp>
 	<boost/range/end.hpp>
 	<boost/range/difference_type.hpp>
 
 1206222355 ge/difference_type.hpp>
 
-1359173619 c:\libs\boost\boost_1_54_0\boost\range\empty.hpp
+1359170019 c:\libs\boost\boost_1_54_0\boost\range\empty.hpp
 	<boost/range/config.hpp>
 	<boost/range/begin.hpp>
 	<boost/range/end.hpp>
 
 1359173619 ge/end.hpp>
 
-1339196394 c:\libs\boost\boost_1_54_0\boost\range\algorithm\equal.hpp
+1339192794 c:\libs\boost\boost_1_54_0\boost\range\algorithm\equal.hpp
 	<boost/config.hpp>
 	<boost/range/concepts.hpp>
 	<iterator>
 
-1371522127 c:\libs\boost\boost_1_54_0\boost\range\concepts.hpp
+1371518527 c:\libs\boost\boost_1_54_0\boost\range\concepts.hpp
 	<boost/concept_check.hpp>
 	<boost/iterator/iterator_concepts.hpp>
 	<boost/range/begin.hpp>
@@ -8996,7 +8999,7 @@
 
 1371522127 ge/detail/misc_concept.hpp>
 
-1362873305 c:\libs\boost\boost_1_54_0\boost\concept_check.hpp
+1362869705 c:\libs\boost\boost_1_54_0\boost\concept_check.hpp
 	<boost/concept/assert.hpp>
 	<boost/iterator.hpp>
 	<boost/type_traits/conversion_traits.hpp>
@@ -9013,7 +9016,7 @@
 
 1196017639 cept/detail/concept_undef.hpp>
 
-1206222355 c:\libs\boost\boost_1_54_0\boost\concept\assert.hpp
+1206218755 c:\libs\boost\boost_1_54_0\boost\concept\assert.hpp
 	<boost/config.hpp>
 	<boost/detail/workaround.hpp>
 	<boost/concept/detail/msvc.hpp>
@@ -9022,48 +9025,48 @@
 
 1206222355 cept/detail/general.hpp>
 
-1276025473 c:\libs\boost\boost_1_54_0\boost\concept\detail\msvc.hpp
+1276021873 c:\libs\boost\boost_1_54_0\boost\concept\detail\msvc.hpp
 	<boost/preprocessor/cat.hpp>
 	<boost/concept/detail/backward_compatibility.hpp>
 	<boost/concept/detail/has_constraints.hpp>
 	<boost/mpl/if.hpp>
 
-1300882849 c:\libs\boost\boost_1_54_0\boost\concept\detail\backward_compatibility.hpp
+1300879249 c:\libs\boost\boost_1_54_0\boost\concept\detail\backward_compatibility.hpp
 
-1276025473 c:\libs\boost\boost_1_54_0\boost\concept\detail\has_constraints.hpp
+1276021873 c:\libs\boost\boost_1_54_0\boost\concept\detail\has_constraints.hpp
 	<boost/mpl/bool.hpp>
 	<boost/detail/workaround.hpp>
 	<boost/concept/detail/backward_compatibility.hpp>
 
 1276025473 cept/detail/backward_compatibility.hpp>
 
-1276025473 c:\libs\boost\boost_1_54_0\boost\concept\detail\borland.hpp
+1276021873 c:\libs\boost\boost_1_54_0\boost\concept\detail\borland.hpp
 	<boost/preprocessor/cat.hpp>
 	<boost/concept/detail/backward_compatibility.hpp>
 
-1276025473 c:\libs\boost\boost_1_54_0\boost\concept\detail\general.hpp
+1276021873 c:\libs\boost\boost_1_54_0\boost\concept\detail\general.hpp
 	<boost/preprocessor/cat.hpp>
 	<boost/concept/detail/backward_compatibility.hpp>
 	<boost/concept/detail/has_constraints.hpp>
 	<boost/mpl/if.hpp>
 
-1215771279 c:\libs\boost\boost_1_54_0\boost\type_traits\conversion_traits.hpp
+1215767679 c:\libs\boost\boost_1_54_0\boost\type_traits\conversion_traits.hpp
 	<boost/type_traits/is_convertible.hpp>
 
-1276025473 c:\libs\boost\boost_1_54_0\boost\concept\usage.hpp
+1276021873 c:\libs\boost\boost_1_54_0\boost\concept\usage.hpp
 	<boost/concept/assert.hpp>
 	<boost/detail/workaround.hpp>
 	<boost/concept/detail/backward_compatibility.hpp>
 
-1206222355 c:\libs\boost\boost_1_54_0\boost\concept\detail\concept_def.hpp
+1206218755 c:\libs\boost\boost_1_54_0\boost\concept\detail\concept_def.hpp
 	<boost/preprocessor/seq/for_each_i.hpp>
 	<boost/preprocessor/seq/enum.hpp>
 	<boost/preprocessor/comma_if.hpp>
 	<boost/preprocessor/cat.hpp>
 
-1206222355 c:\libs\boost\boost_1_54_0\boost\concept\detail\concept_undef.hpp
+1206218755 c:\libs\boost\boost_1_54_0\boost\concept\detail\concept_undef.hpp
 
-1196017639 c:\libs\boost\boost_1_54_0\boost\iterator\iterator_concepts.hpp
+1196014039 c:\libs\boost\boost_1_54_0\boost\iterator\iterator_concepts.hpp
 	<boost/concept_check.hpp>
 	<boost/iterator/iterator_categories.hpp>
 	<boost/detail/iterator.hpp>
@@ -9080,32 +9083,32 @@
 	<boost/concept/detail/concept_def.hpp>
 	<boost/concept/detail/concept_undef.hpp>
 
-1306525527 c:\libs\boost\boost_1_54_0\boost\range\detail\misc_concept.hpp
+1306521927 c:\libs\boost\boost_1_54_0\boost\range\detail\misc_concept.hpp
 	<boost/concept_check.hpp>
 
 1306525527 cept_check.hpp>
 
-1294644902 c:\libs\boost\boost_1_54_0\boost\range\detail\safe_bool.hpp
+1294641302 c:\libs\boost\boost_1_54_0\boost\range\detail\safe_bool.hpp
 	<boost/config.hpp>
 	<boost/range/config.hpp>
 
 1294644902 ge/config.hpp>
 
-1349091124 c:\libs\boost\boost_1_54_0\boost\container\container_fwd.hpp
+1349087524 c:\libs\boost\boost_1_54_0\boost\container\container_fwd.hpp
 	<utility>
 	<memory>
 	<functional>
 	<iosfwd>
 	<string>
 
-1362873305 c:\libs\boost\boost_1_54_0\boost\integer.hpp
+1362869705 c:\libs\boost\boost_1_54_0\boost\integer.hpp
 	<boost/integer_fwd.hpp>
 	<boost/integer_traits.hpp>
 	<boost/limits.hpp>
 	<boost/cstdint.hpp>
 	<boost/static_assert.hpp>
 
-1362873305 c:\libs\boost\boost_1_54_0\boost\integer_fwd.hpp
+1362869705 c:\libs\boost\boost_1_54_0\boost\integer_fwd.hpp
 	<climits>
 	<cstddef>
 	<boost/config.hpp>
@@ -9114,24 +9117,24 @@
 
 1362873305 dint.hpp>
 
-1221706094 c:\libs\boost\boost_1_54_0\boost\tokenizer.hpp
+1221702494 c:\libs\boost\boost_1_54_0\boost\tokenizer.hpp
 	<boost/token_iterator.hpp>
 
 1221706094 en_iterator.hpp>
 
-1196017639 c:\libs\boost\boost_1_54_0\boost\token_iterator.hpp
+1196014039 c:\libs\boost\boost_1_54_0\boost\token_iterator.hpp
 	<boost/assert.hpp>
 	<boost/iterator/iterator_adaptor.hpp>
 	<boost/iterator/detail/minimum_category.hpp>
 	<boost/token_functions.hpp>
 	<utility>
 
-1206222355 c:\libs\boost\boost_1_54_0\boost\iterator\detail\minimum_category.hpp
+1206218755 c:\libs\boost\boost_1_54_0\boost\iterator\detail\minimum_category.hpp
 	<boost/type_traits/is_convertible.hpp>
 	<boost/type_traits/is_same.hpp>
 	<boost/mpl/aux_/lambda_support.hpp>
 
-1362873305 c:\libs\boost\boost_1_54_0\boost\token_functions.hpp
+1362869705 c:\libs\boost\boost_1_54_0\boost\token_functions.hpp
 	<vector>
 	<stdexcept>
 	<string>
@@ -14509,10 +14512,10 @@
 1381724986 k:\projects\games\mge\mystery\game\spells\forcefield.h
 	"mge/defs.h"
 
-1382828130 k:\projects\games\mge\mystery\\tpe\collisionmodel.h
+1387085016 k:\projects\games\mge\mystery\\tpe\collisionmodel.h
 	"mge/PixelMap.h"
 
-1382828130 k:\projects\games\mge\mystery\tpe\collisionmodel.h
+1387085016 k:\projects\games\mge\mystery\tpe\collisionmodel.h
 	"mge/PixelMap.h"
 
 1382831837 k:\projects\games\mge\mystery\\game\spells\waterelementalvolume.h
@@ -14526,7 +14529,7 @@
 	"mge/GameObject.h"
 	"game/game_defs.h"
 
-1382833554 source:k:\projects\games\mge\mystery\game\spells\waterelementalvolume.cpp
+1386918867 source:k:\projects\games\mge\mystery\game\spells\waterelementalvolume.cpp
 	"WaterElementalVolume.h"
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
@@ -14540,8 +14543,9 @@
 	"d3re/d3re.h"
 	"game/game_defs.h"
 
-1382813474 source:k:\projects\games\mge\mystery\mge\pixelmap.cpp
+1386536013 source:k:\projects\games\mge\mystery\mge\pixelmap.cpp
 	"PixelMap.h"
+	<stdlib.h>
 
 1382818122 k:\projects\games\mge\mystery\mge\pixelmap.h
 	"SDL.h"
@@ -14671,7 +14675,7 @@
 	"mge/Image.h"
 	"mge/PixelMap.h"
 
-1382834197 source:k:\projects\games\mge\mystery\d3re\d3heightmaprendermodel.cpp
+1387131472 source:k:\projects\games\mge\mystery\d3re\d3heightmaprendermodel.cpp
 	"d3re.h"
 	"mge/GameObject.h"
 
@@ -14689,4 +14693,747 @@
 	<string>
 	<list>
 	"game/game_defs.h"
+
+1386545401 source:k:\projects\games\mge\mystery\game\character\character.cpp
+	"Character.h"
+	"Action.h"
+	"WanderAction.h"
+	"pwe/PartitionedWorldEngine.h"
+
+1386545309 k:\projects\games\mge\mystery\game\character\character.h
+	"mge/GameObject.h"
+	"game/game_defs.h"
+	"tpe/tpe.h"
+	"d3re/d3re.h"
+
+1386545309 k:\projects\games\mge\mystery\\game\character\character.h
+	"mge/GameObject.h"
+	"game/game_defs.h"
+	"tpe/tpe.h"
+	"d3re/d3re.h"
+
+1258249952 c:\lib_sdl\sdl_mixer-1.2.11\include\sdl_mixer.h
+	"SDL_types.h"
+	"SDL_rwops.h"
+	"SDL_audio.h"
+	"SDL_endian.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_types.h
+	"SDL_stdinc.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<math.h>
+	<iconv.h>
+	"begin_code.h"
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_config.h
+	"SDL_platform.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_platform.h
+	"AvailabilityMacros.h"
+	"TargetConditionals.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\begin_code.h
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\close_code.h
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_atomic.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_atomic.h
+	"SDL_stdinc.h"
+	"SDL_platform.h"
+	"begin_code.h"
+	<intrin.h>
+	<libkern/OSAtomic.h>
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_assert.h"
+	"SDL_atomic.h"
+	"SDL_audio.h"
+	"SDL_clipboard.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_filesystem.h"
+	"SDL_joystick.h"
+	"SDL_gamecontroller.h"
+	"SDL_haptic.h"
+	"SDL_hints.h"
+	"SDL_loadso.h"
+	"SDL_log.h"
+	"SDL_messagebox.h"
+	"SDL_mutex.h"
+	"SDL_power.h"
+	"SDL_render.h"
+	"SDL_rwops.h"
+	"SDL_system.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_version.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_assert.h
+	"SDL_config.h"
+	"begin_code.h"
+	<signal.h>
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_clipboard.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_cpuinfo.h
+	"SDL_stdinc.h"
+	<intrin.h>
+	<intrin.h>
+	<altivec.h>
+	<mmintrin.h>
+	<mm3dnow.h>
+	<xmmintrin.h>
+	<emmintrin.h>
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_gamecontroller.h"
+	"SDL_quit.h"
+	"SDL_gesture.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_video.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_pixels.h
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_rect.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_pixels.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_surface.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_blendmode.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_blendmode.h
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keycode.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_keycode.h
+	"SDL_stdinc.h"
+	"SDL_scancode.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_scancode.h
+	"SDL_stdinc.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_gamecontroller.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_gesture.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_touch.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_filesystem.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_haptic.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_hints.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_log.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_messagebox.h
+	"SDL_stdinc.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_power.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_render.h
+	"SDL_stdinc.h"
+	"SDL_rect.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_system.h
+	"SDL_stdinc.h"
+	"SDL_keyboard.h"
+	"SDL_render.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1258246278 c:\lib_sdl\sdl_image\sdl_image-1.2.10\include\sdl_image.h
+	"SDL.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584100 c:\lib_sdl\sdl2-2.0.1\x86_64-w64-mingw32\include\sdl2\sdl_opengl.h
+	"SDL_config.h"
+	<windows.h>
+	<OpenGL/gl.h>
+	<GL/gl.h>
+	<windows.h>
+	<stddef.h>
+	<inttypes.h>
+	<inttypes.h>
+	<inttypes.h>
+	<stdint.h>
+	<stdint.h>
+	<inttypes.h>
+
+1376152825 c:\lib_sdl\sdl_mixer\sdl2_mixer-2.0.0\i686-w64-mingw32\include\sdl2\sdl_mixer.h
+	"SDL_stdinc.h"
+	"SDL_rwops.h"
+	"SDL_audio.h"
+	"SDL_endian.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<math.h>
+	<iconv.h>
+	"begin_code.h"
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_config.h
+	"SDL_platform.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_platform.h
+	"AvailabilityMacros.h"
+	"TargetConditionals.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\begin_code.h
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\close_code.h
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_atomic.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_atomic.h
+	"SDL_stdinc.h"
+	"SDL_platform.h"
+	"begin_code.h"
+	<intrin.h>
+	<libkern/OSAtomic.h>
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_assert.h"
+	"SDL_atomic.h"
+	"SDL_audio.h"
+	"SDL_clipboard.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_filesystem.h"
+	"SDL_joystick.h"
+	"SDL_gamecontroller.h"
+	"SDL_haptic.h"
+	"SDL_hints.h"
+	"SDL_loadso.h"
+	"SDL_log.h"
+	"SDL_messagebox.h"
+	"SDL_mutex.h"
+	"SDL_power.h"
+	"SDL_render.h"
+	"SDL_rwops.h"
+	"SDL_system.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_version.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_assert.h
+	"SDL_config.h"
+	"begin_code.h"
+	<signal.h>
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_clipboard.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_cpuinfo.h
+	"SDL_stdinc.h"
+	<intrin.h>
+	<intrin.h>
+	<altivec.h>
+	<mmintrin.h>
+	<mm3dnow.h>
+	<xmmintrin.h>
+	<emmintrin.h>
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_gamecontroller.h"
+	"SDL_quit.h"
+	"SDL_gesture.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_video.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_surface.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_pixels.h
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_rect.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_pixels.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_surface.h
+	"SDL_stdinc.h"
+	"SDL_pixels.h"
+	"SDL_rect.h"
+	"SDL_blendmode.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_blendmode.h
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keycode.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_keycode.h
+	"SDL_stdinc.h"
+	"SDL_scancode.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_scancode.h
+	"SDL_stdinc.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_gamecontroller.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_gesture.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"SDL_touch.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_touch.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_filesystem.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_haptic.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_joystick.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_hints.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_log.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_messagebox.h
+	"SDL_stdinc.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_power.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_render.h
+	"SDL_stdinc.h"
+	"SDL_rect.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_system.h
+	"SDL_stdinc.h"
+	"SDL_keyboard.h"
+	"SDL_render.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1376152742 c:\lib_sdl\sdl_image\sdl2_image-2.0.0\i686-w64-mingw32\include\sdl2\sdl_image.h
+	"SDL.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1382584024 c:\lib_sdl\sdl2-2.0.1\i686-w64-mingw32\include\sdl2\sdl_opengl.h
+	"SDL_config.h"
+	<windows.h>
+	<OpenGL/gl.h>
+	<GL/gl.h>
+	<windows.h>
+	<stddef.h>
+	<inttypes.h>
+	<inttypes.h>
+	<inttypes.h>
+	<stdint.h>
+	<stdint.h>
+	<inttypes.h>
+
+1386532589 k:\projects\games\mge\mystery\\game\world\hmapsurface.h
+	"mge/GameObject.h"
+	"mge/PixelMap.h"
+	"game/game_defs.h"
+	"d3re/d3re.h"
+	"tpe/tpe.h"
+
+1387077994 source:k:\projects\games\mge\mystery\game\world\hmapsurface.cpp
+	"HmapSurface.h"
+	"pwe/PartitionedWorldEngine.h"
+
+1386532589 k:\projects\games\mge\mystery\game\world\hmapsurface.h
+	"mge/GameObject.h"
+	"mge/PixelMap.h"
+	"game/game_defs.h"
+	"d3re/d3re.h"
+	"tpe/tpe.h"
+
+1386544768 k:\projects\games\mge\mystery\\game\character\action.h
+
+1386545276 k:\projects\games\mge\mystery\game\character\action.h
+	"Character.h"
+
+1386546538 source:k:\projects\games\mge\mystery\game\character\wanderaction.cpp
+	"WanderAction.h"
+	"Character.h"
+
+1386545213 k:\projects\games\mge\mystery\game\character\wanderaction.h
+	"Action.h"
+	"game/game_defs.h"
+
+1387086064 source:k:\projects\games\mge\mystery\tpe\collisionmodel.cpp
+	"CollisionModel.h"
 

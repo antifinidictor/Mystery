@@ -4,7 +4,7 @@
 
 #include "SimplePhysicsObject.h"
 #include "pwe/PartitionedWorldEngine.h"
-
+#include "bae/BasicAudioEngine.h"
 
 SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume, float fDensity) {
     m_uiID = id;
@@ -24,6 +24,8 @@ SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume, floa
 
     m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
+    m_pPhysicsModel->setListener(this);
+    m_bPlayingSound = false;
 }
 
 SimplePhysicsObject::~SimplePhysicsObject() {
@@ -69,5 +71,20 @@ SimplePhysicsObject::write(boost::property_tree::ptree &pt, const std::string &k
     pt.put(keyBase + ".cr.g", cr.g);
     pt.put(keyBase + ".cr.b", cr.b);
     pt.put(keyBase + ".density", m_pPhysicsModel->getDensity());
+}
+
+
+void
+SimplePhysicsObject::callBack(uint uiId, void *data, uint uiEventId) {
+    switch(uiEventId) {
+    case TPE_ON_COLLISION:
+        if(!m_bPlayingSound) {
+            HandleCollisionData *d = (HandleCollisionData*)data;
+            if(d->iDirection == UP || d->iDirection == DOWN) return;
+            //m_bPlayingSound = true;
+            BAE::get()->playSound(AUD_DRAG);
+        }
+        break;
+    }
 }
 

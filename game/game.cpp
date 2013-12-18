@@ -77,7 +77,7 @@ void cleanAudioEngine() {
 
 //SDL video flags
 int getSDLVideoFlags() {
-    return SDL_OPENGL | SDL_HWSURFACE;// | SDL_NOFRAME | SDL_FULLSCREEN;
+    return 0;// Obsolete with SDL 2.0     SDL_OPENGL | SDL_HWSURFACE;// | SDL_NOFRAME | SDL_FULLSCREEN;
 }
 
 void initWorld() {
@@ -87,10 +87,7 @@ void initWorld() {
     PartitionedWorldEngine *we = PWE::get();
     we->setPhysicsEngine(TimePhysicsEngine::get());
     we->setRenderEngine(D3RE::get());
-
     ObjectFactory::init();
-    GameManager::init();
-    we->setManager(GameManager::get());
 
     registerClasses();
 
@@ -116,6 +113,8 @@ void initWorld() {
 
     //Load image resources
     ObjectFactory::get()->read("res/game.info");
+    GameManager::init();
+    we->setManager(GameManager::get());
 
     PWE::get()->setCurrentArea(0);
     /*
@@ -133,6 +132,8 @@ void initWorld() {
     BAE::get()->loadSound(AUD_PICKUP, "res/audio/pickup.wav");
     BAE::get()->loadSound(AUD_LIFT, "res/audio/liftup.wav");
     BAE::get()->loadSound(AUD_DRAG, "res/audio/drag.wav");
+    BAE::get()->loadMusic(AUD_UNDERGROUND_MUSIC, "res/audio/OfBlackAndWhite.wav");
+    //BAE::get()->playMusic(AUD_UNDERGROUND_MUSIC);
 
     //Other singleton initializations
     TextRenderer::init();

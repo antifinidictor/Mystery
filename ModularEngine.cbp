@@ -18,10 +18,10 @@
 				</Compiler>
 				<Linker>
 					<Add library="mingw32" />
-					<Add library="SDLmain" />
-					<Add library="SDL_image" />
-					<Add library="SDL_mixer" />
-					<Add library="SDL.dll" />
+					<Add library="SDL2main" />
+					<Add library="SDL2_image" />
+					<Add library="SDL2_mixer" />
+					<Add library="SDL2.dll" />
 					<Add library="opengl32" />
 					<Add library="glu32" />
 					<Add library="user32" />
@@ -43,22 +43,22 @@
 				<Linker>
 					<Add option="-s" />
 					<Add library="mingw32" />
-					<Add library="SDLmain" />
-					<Add library="SDL_image" />
-					<Add library="SDL_mixer" />
-					<Add library="SDL.dll" />
 					<Add library="opengl32" />
 					<Add library="glu32" />
 					<Add library="user32" />
 					<Add library="gdi32" />
 					<Add library="winmm" />
 					<Add library="dxguid" />
+					<Add library="SDL2main" />
+					<Add library="SDL2_image" />
+					<Add library="SDL2_mixer" />
+					<Add library="SDL2.dll" />
 				</Linker>
 			</Target>
 			<Target title="Editor">
 				<Option output="bin/Windows/Editor/Editor" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Windows/Editor/" />
-				<Option type="0" />
+				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
@@ -66,16 +66,16 @@
 				</Compiler>
 				<Linker>
 					<Add library="mingw32" />
-					<Add library="SDLmain" />
-					<Add library="SDL_image" />
-					<Add library="SDL_mixer" />
-					<Add library="SDL.dll" />
 					<Add library="opengl32" />
 					<Add library="glu32" />
 					<Add library="user32" />
 					<Add library="gdi32" />
 					<Add library="winmm" />
 					<Add library="dxguid" />
+					<Add library="SDL2main" />
+					<Add library="SDL2_image" />
+					<Add library="SDL2_mixer" />
+					<Add library="SDL2.dll" />
 				</Linker>
 			</Target>
 			<Target title="LinuxDebug">
@@ -129,14 +129,20 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="K:/projects/games/mge/Mystery/" />
 			<Add directory="$(#boost)" />
 			<Add directory="$(#boost.include)" />
-			<Add directory="K:/projects/games/mge/Mystery/" />
+			<Add directory="$(#sdl.include)" />
+			<Add directory="$(#sdl_mixer.include)" />
+			<Add directory="$(#sdl_image.include)" />
 		</Compiler>
 		<Linker>
 			<Add option="`sdl-config --cflags` `sdl-config --libs`" />
-			<Add directory="$(#boost.lib)" />
 			<Add directory="K:/projects/games/mge/Mystery/lib" />
+			<Add directory="$(#boost.lib)" />
+			<Add directory="$(#sdl.lib)" />
+			<Add directory="$(#sdl_image.lib)" />
+			<Add directory="$(#sdl_mixer.lib)" />
 		</Linker>
 		<Unit filename="bae/BasicAudioEngine.cpp" />
 		<Unit filename="bae/BasicAudioEngine.h" />
@@ -197,6 +203,11 @@
 		<Unit filename="game/Player.h" />
 		<Unit filename="game/alchemy/Alchemy.cpp" />
 		<Unit filename="game/alchemy/Alchemy.h" />
+		<Unit filename="game/character/Action.h" />
+		<Unit filename="game/character/Character.cpp" />
+		<Unit filename="game/character/Character.h" />
+		<Unit filename="game/character/WanderAction.cpp" />
+		<Unit filename="game/character/WanderAction.h" />
 		<Unit filename="game/game.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
@@ -221,6 +232,8 @@
 		<Unit filename="game/spells/WaterElementalVolume.h" />
 		<Unit filename="game/world/AreaLinkObject.cpp" />
 		<Unit filename="game/world/AreaLinkObject.h" />
+		<Unit filename="game/world/HmapSurface.cpp" />
+		<Unit filename="game/world/HmapSurface.h" />
 		<Unit filename="game/world/SimplePhysicsObject.cpp" />
 		<Unit filename="game/world/SimplePhysicsObject.h" />
 		<Unit filename="game/world/SimpleResettableObject.cpp" />
@@ -252,6 +265,7 @@
 		<Unit filename="mge/defs.h" />
 		<Unit filename="pwe/PartitionedWorldEngine.cpp" />
 		<Unit filename="pwe/PartitionedWorldEngine.h" />
+		<Unit filename="tpe/CollisionModel.cpp" />
 		<Unit filename="tpe/CollisionModel.h" />
 		<Unit filename="tpe/TimePhysicsEngine.cpp" />
 		<Unit filename="tpe/TimePhysicsEngine.h" />

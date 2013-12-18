@@ -68,17 +68,17 @@ void cleanAudioEngine() {
 
 //SDL video flags
 int getSDLVideoFlags() {
-    return SDL_OPENGL | SDL_HWSURFACE;// | SDL_NOFRAME | SDL_FULLSCREEN;
+    return 0;//Rendered useless by SDL 2.0 SDL_OPENGL | SDL_HWSURFACE;// | SDL_NOFRAME | SDL_FULLSCREEN;
 }
 
 void initWorld() {
+    printf("Initializing editor\n");
     //Perform last-minute setup of the world engine
     PartitionedWorldEngine *we = PWE::get();
     we->setPhysicsEngine(TimePhysicsEngine::get());
     we->setRenderEngine(D3RE::get());
 
     ObjectFactory::init();
-    GameManager::init();
     EditorManager::init();
     we->setManager(EditorManager::get());
 
@@ -148,6 +148,5 @@ void initWorld() {
 
 void cleanWorld() {
     ObjectFactory::clean();
-    GameManager::clean();
     EditorManager::clean();
 }

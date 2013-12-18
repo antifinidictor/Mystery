@@ -266,9 +266,16 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
         tpmBox->setWasPushed(!objBox->getFlag(TPE_STATIC));
     }
 
-
-    if(objHmap->getFlag(TPE_LIQUID) && !objBox->getFlag(TPE_LIQUID) && !objBox->getFlag(TPE_STATIC)) {
+    bool hmapIsLiquid = objHmap->getFlag(TPE_LIQUID);
+    bool boxIsFloatable = !objBox->getFlag(TPE_LIQUID) && !objBox->getFlag(TPE_STATIC);
+    bool boxHasNotSunk = objBox->getFlag(TPE_FALLING) || ptShiftBox.y > 0.f;
+    if(hmapIsLiquid && boxIsFloatable && boxHasNotSunk) {
+        tpmBox->setSurface(NULL);
+        objBox->setFlag(TPE_FALLING, true);
         applyBuoyantForce(tpmBox, tpmHmap, bx1, y, bx2.y);
+    } else if(!hmapIsLiquid) {
+        tpmBox->setSurface(tpmHmap);
+        objBox->setFlag(TPE_FALLING, false);
     }
 
     //Handle collision events

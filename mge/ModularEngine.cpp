@@ -24,7 +24,8 @@ ModularEngine::ModularEngine(int iSDLVideoFlags) {
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
 		exit(-1);
 	atexit(SDL_Quit);
-
+/*
+    SDL 1.15 settings
 	//If something goes wrong on another computer or results are inconsistent,
 	// swap out SDL_HWSURFACE with SDL_SWSURFACE.
 	SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, iSDLVideoFlags);
@@ -33,7 +34,7 @@ ModularEngine::ModularEngine(int iSDLVideoFlags) {
     //Set window title and icon
     SDL_WM_SetCaption("Modular Game Engine", "MGE");
     SDL_WM_SetIcon(SDL_LoadBMP("res/icon.bmp"), NULL);
-
+*/
 	/* Initialize image loading */
 	if(IMG_Init(IMG_INIT_PNG) == 0) {
 		printf("Failed to initialize image loader.  Error: %s\n", IMG_GetError());
