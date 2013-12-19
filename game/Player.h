@@ -80,7 +80,7 @@ private:
     Spell *m_aSpells[NUM_SPELL_TYPES];
     uint m_uiCurSpell;
     float m_fClimbStepHeight;
-    int m_iCollisionDir;
+    Point m_ptClimbShift;
 
     std::vector<Item*> m_vInventory;
     uint m_uiItemAnimCounter;

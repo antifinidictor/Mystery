@@ -286,20 +286,7 @@ Player::updateClimbingTrans(uint time) {
             setFlag(TPE_FLOATING, false);
             setFlag(TPE_STATIC, false);
             #define CLIMB_SHIFT 0.1F
-            switch(m_iCollisionDir) {
-            case NORTH:
-                moveBy(Point(0.f,0.f,-CLIMB_SHIFT));
-                break;
-            case SOUTH:
-                moveBy(Point(0.f,0.f,CLIMB_SHIFT));
-                break;
-            case EAST:
-                moveBy(Point(CLIMB_SHIFT,0.f,0.f));
-                break;
-            case WEST:
-                moveBy(Point(-CLIMB_SHIFT,0.f,0.f));
-                break;
-            }
+            moveBy(m_ptClimbShift);
             handleButtonNormal(MGE::get()->getInputState());
         }
     } else {
@@ -503,15 +490,23 @@ Player::handleCollision(HandleCollisionData *data) {
 
         float shiftMag = data->ptShift.magnitude();
         float moveMag = m_pPhysicsModel->getLastVelocity().magnitude();
-        if(tbx.y + tbx.h < mbx.y + mbx.h && equal(shiftMag,moveMag)) {
+        if((tbx.y + tbx.h) - (mbx.y) < 0.2) {   //Too low to climb over, so step over
+            //Step up
+            moveBy(Point(-data->ptShift.x, (tbx.y + tbx.h) - (mbx.y), -data->ptShift.z));
+        } else if(tbx.y + tbx.h < mbx.y + mbx.h && equal(shiftMag,moveMag)) {
+            //Play appropriate sound
             BAE::get()->playSound(AUD_LIFT);
+
+            //Climbing animation
             m_eState = PLAYER_CLIMBING_TRANS;
             m_uiAnimFrameStart = PANIM_CLIMBING;
-            m_fClimbStepHeight = ((tbx.y + tbx.h) - (mbx.y)) / 160.f;
             state = 0;
+
+            //Prep for climbing
+            m_fClimbStepHeight = ((tbx.y + tbx.h) - (mbx.y)) / 160.f;
             setFlag(TPE_FLOATING, true);
             setFlag(TPE_STATIC, true);
-            m_iCollisionDir = m_iDirection;
+            m_ptClimbShift = Point(-data->ptShift.x, 0.f, -data->ptShift.z);
         } else {
             m_uiAnimFrameStart = PANIM_PUSHING;
         }

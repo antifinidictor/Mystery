@@ -256,24 +256,31 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
 
     //Shift for a single direction
     Point ptShiftBox = Point(0.f, y - bx1.y, 0.f);
+    bool bBoxInHmap = ptShiftBox.y > 0.f;
+    if(!bBoxInHmap) {
+        if(tpmBox->getSurface() == tpmHmap) {
+            tpmBox->setSurface(NULL);
+            objBox->setFlag(TPE_FALLING, true);
+        }
+        return;
+    }
 
-    bool bNoCollide = objBox->getFlag(TPE_PASSABLE) || objBox->getFlag(TPE_LIQUID) ||
-                      objHmap->getFlag(TPE_PASSABLE) || objHmap->getFlag(TPE_LIQUID);
-
-    if(!bNoCollide && !(objBox->getFlag(TPE_STATIC) && objHmap->getFlag(TPE_STATIC))) {
+    bool bNotCollidable = objBox->getFlag(TPE_PASSABLE) || objBox->getFlag(TPE_LIQUID) ||
+                          objHmap->getFlag(TPE_PASSABLE) || objHmap->getFlag(TPE_LIQUID);
+    if(!bNotCollidable && !(objBox->getFlag(TPE_STATIC) && objHmap->getFlag(TPE_STATIC))) {
         //Move the objects
         tpmBox->moveBy(ptShiftBox);
         tpmBox->setWasPushed(!objBox->getFlag(TPE_STATIC));
     }
 
-    bool hmapIsLiquid = objHmap->getFlag(TPE_LIQUID);
-    bool boxIsFloatable = !objBox->getFlag(TPE_LIQUID) && !objBox->getFlag(TPE_STATIC);
-    bool boxHasNotSunk = objBox->getFlag(TPE_FALLING) || ptShiftBox.y > 0.f;
-    if(hmapIsLiquid && boxIsFloatable && boxHasNotSunk) {
+    bool bHmapIsLiquid = objHmap->getFlag(TPE_LIQUID);
+    bool bBoxIsFloatable = !objBox->getFlag(TPE_LIQUID) && !objBox->getFlag(TPE_STATIC);
+    bool bBoxHasNotSunk = objBox->getFlag(TPE_FALLING) || ptShiftBox.y > 0.f;
+    if(bHmapIsLiquid && bBoxIsFloatable && bBoxHasNotSunk) {
         tpmBox->setSurface(NULL);
         objBox->setFlag(TPE_FALLING, true);
         applyBuoyantForce(tpmBox, tpmHmap, bx1, y, bx2.y);
-    } else if(!hmapIsLiquid) {
+    } else if(!bHmapIsLiquid) {
         tpmBox->setSurface(tpmHmap);
         objBox->setFlag(TPE_FALLING, false);
     }
@@ -289,23 +296,23 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
 #define MIN_B_FORCE (2.f - MAX_B_FORCE) //ensures objects always are half-immersed
 
 
-//Splis he shift according o
+//Splis the collision shift between the two colliding objects
 void
 TimePhysicsEngine::splitShift(GameObject *obj1, GameObject *obj2, float fShift, Point *ptShift1, Point *ptShift2) {
-        if(obj1->getFlag(TPE_STATIC) && !obj2->getFlag(TPE_STATIC)) {
-            (*ptShift1) *= 0.f;
-            (*ptShift2) *= fShift;
-        } else if(!obj1->getFlag(TPE_STATIC) && obj2->getFlag(TPE_STATIC)) {
-            (*ptShift1) *= fShift;
-            (*ptShift2) *= 0.f;
-        } else {    //Split by ratio
-            AbstractTimePhysicsModel *tpm1 = (AbstractTimePhysicsModel*)(obj1->getPhysicsModel());
-            AbstractTimePhysicsModel *tpm2 = (AbstractTimePhysicsModel*)(obj2->getPhysicsModel());
-            float fMassRatio1 = tpm2->getMass() / (tpm1->getMass() + tpm2->getMass());
-            float fMassRatio2 = tpm1->getMass() / (tpm1->getMass() + tpm2->getMass());
-            (*ptShift1) *= fShift * fMassRatio1;
-            (*ptShift2) *= fShift * fMassRatio2;
-        }
+    if(obj1->getFlag(TPE_STATIC) && !obj2->getFlag(TPE_STATIC)) {
+        (*ptShift1) *= 0.f;
+        (*ptShift2) *= fShift;
+    } else if(!obj1->getFlag(TPE_STATIC) && obj2->getFlag(TPE_STATIC)) {
+        (*ptShift1) *= fShift;
+        (*ptShift2) *= 0.f;
+    } else {    //Split by ratio
+        AbstractTimePhysicsModel *tpm1 = (AbstractTimePhysicsModel*)(obj1->getPhysicsModel());
+        AbstractTimePhysicsModel *tpm2 = (AbstractTimePhysicsModel*)(obj2->getPhysicsModel());
+        float fMassRatio1 = tpm2->getMass() / (tpm1->getMass() + tpm2->getMass());
+        float fMassRatio2 = tpm1->getMass() / (tpm1->getMass() + tpm2->getMass());
+        (*ptShift1) *= fShift * fMassRatio1;
+        (*ptShift2) *= fShift * fMassRatio2;
+    }
 }
 
 void

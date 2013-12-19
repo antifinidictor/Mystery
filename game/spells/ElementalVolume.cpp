@@ -47,8 +47,6 @@ ElementalVolume::handleCollision(HandleCollisionData *data) {
         ptForce += iter->second->getForceAt(ptPos);
         ptForce.y = 0.f;
     }
-    float mag = ptForce.magnitude();
-    printf("Force magnitude = %f\n", mag);
     data->obj->getPhysicsModel()->applyForce(ptForce);
 }
 
