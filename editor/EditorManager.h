@@ -35,7 +35,7 @@ public:
     virtual RenderModel  *getRenderModel()  { return NULL; }
     virtual PhysicsModel *getPhysicsModel() { return NULL; }
 
-    virtual void callBack(uint cID, void *data, uint id);
+    virtual int callBack(uint cID, void *data, uint id);
 
     void setEditorCursor(EditorCursor *obj) { m_pEditorCursor = obj; }
     //EditorState getState() { return m_eState; }

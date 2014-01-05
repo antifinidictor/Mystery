@@ -44,19 +44,20 @@ WanderAction::update(unsigned int time) {
     }
 }
 
-void
+int
 WanderAction::callBack(uint cID, void *data, uint uiEventId) {
     switch(uiEventId) {
     case TPE_ON_COLLISION:
         handleCollision((HandleCollisionData*)data);
-        break;
+        return EVENT_CAUGHT;
     }
+    return EVENT_DROPPED;
 }
 void
 WanderAction::handleCollision(HandleCollisionData *data) {
-    if(m_eState == WANDER_WALKING && data->iDirection == m_pActor->getDirection()) {
+    if(m_eState == WANDER_WALKING && (data->iDirection & BIT(m_pActor->getDirection()))) {
         //"Bounce" away from collision object
-        switch(data->iDirection) {
+        switch(m_pActor->getDirection()) {
         case NORTH:
             m_ptDest.z += 6.f;
             break;

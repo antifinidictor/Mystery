@@ -39,7 +39,7 @@ D3RenderEngine::D3RenderEngine() {
 	//These allow for only binary alpha values: all visible or not visible.
 	// Until proper render sorting is implemented, this should be used.
     glAlphaFunc(GL_GREATER, 0.9f);
-    glEnable(GL_ALPHA_TEST);
+    //glEnable(GL_ALPHA_TEST);
 
     //Set the initial window size
     resize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -90,40 +90,27 @@ void
 D3RenderEngine::render() {
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
     prepCamera();
 
-    updateMousePos(m_iMouseX, m_iMouseY);
-    m_ptMouseInWorld.y = -10000.f;
-
+    //Nontransparent objects
+    glEnable(GL_ALPHA_TEST);
     for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
             it != m_lsObjsOnScreen.end(); ++it) {
         if(!(*it)->getFlag(D3RE_INVISIBLE)) {
             (*it)->getRenderModel()->render(this);
-
-            //Mouse on top of item
-            Box bxCVol = (*it)->getPhysicsModel()->getCollisionVolume();
-            if(ptInXZRect(m_ptMouseInWorld, bxCVol) && bxCVol.y + bxCVol.h > m_ptMouseInWorld.y) {
-                m_ptMouseInWorld.y = bxCVol.y + bxCVol.h;
-            }
         }
     }
-
     glDisable(GL_ALPHA_TEST);
+
+    //Transparent objects
     for(list<GameObject *>::iterator it = m_lsTransparentObjs.begin();
             it != m_lsTransparentObjs.end(); ++it) {
         if(!(*it)->getFlag(D3RE_INVISIBLE)) {
             (*it)->getRenderModel()->render(this);
-/*
-            //Mouse on top of item
-            Box bxCVol = (*it)->getPhysicsModel()->getCollisionVolume();
-            if(ptInXZRect(m_ptMouseInWorld, bxCVol) && bxCVol.y + bxCVol.h > m_ptMouseInWorld.y) {
-                m_ptMouseInWorld.y = bxCVol.y + bxCVol.h;
-            }
-*/
         }
     }
-    glEnable(GL_ALPHA_TEST);
+
+    updateMousePos(m_iMouseX, m_iMouseY);
 
     if(m_pMouseModel) {
         if(m_uiMouseTimer < MAX_MOUSE_TIMER) {
@@ -140,7 +127,6 @@ D3RenderEngine::render() {
     if(!m_bDrawRealMouse && m_pMouseModel) {
         m_pMouseModel->render(this);
     }
-    //drawCircle(m_ptMouseInWorld, 0.1f, Color(0x0, 0x0, 0xFF));
 
     if(m_bDrawCollisions) {
         glBegin(GL_LINES);
@@ -485,7 +471,7 @@ D3RenderEngine::enableGuiMode() {
     }
 }
 
-void
+int
 D3RenderEngine::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
     switch(uiEventId) {
     case ON_MOUSE_MOVE: {
@@ -495,10 +481,10 @@ D3RenderEngine::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
         m_iMouseX = idat->getInputState(MIN_MOUSE_X);
         m_iMouseY = idat->getInputState(MIN_MOUSE_Y);
         //updateMousePos(x, y);
-        break;
+        return EVENT_CAUGHT;
       }
     default:
-        break;
+        return EVENT_DROPPED;
     }
 }
 
@@ -539,55 +525,22 @@ D3RenderEngine::hideRealMouse() {
 
 void
 D3RenderEngine::updateMousePos(int x, int y) {
-#if 0
-    GLint viewport[4];  //x, y, width, height
-    GLdouble matModelView[16];
-    GLdouble matProjection[16];
-    GLdouble winX, winY, depth;
+    //Code courtesy of http://nehe.gamedev.net/article/using_gluunproject/16013/
+    GLint viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    GLfloat winX, winY, winZ;
     GLdouble posX, posY, posZ;
 
-    glGetDoublev(GL_PROJECTION_MATRIX, matModelView);
-    glGetDoublev(GL_MODELVIEW_MATRIX, matProjection);
-    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+    glGetDoublev( GL_PROJECTION_MATRIX, projection );
+    glGetIntegerv( GL_VIEWPORT, viewport );
 
-    winX = (GLdouble)(x - viewport[2] / 2);
-    winY = (GLdouble)(viewport[3] / 2 - y);
+    winX = (float)x;
+    winY = (float)viewport[3] - (float)y;
+    glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
 
-    if(gluProject(winX, winY, 0.1f, matModelView, matProjection, viewport, &posX, &posY, &posZ) == GL_FALSE) {
-        printf("ERROR %s %d: Failed to do mouse near plane\n", __FILE__, __LINE__);
-    }
-    Point ptNear = Point(posX, posY, posZ);
-
-    if(gluProject(winX, winY, 1.f, matModelView, matProjection, viewport, &posX, &posY, &posZ) == GL_FALSE) {
-        printf("ERROR %s %d: Failed to do mouse far plane\n", __FILE__, __LINE__);
-    }
-    Point ptFar = Point(posX, posY, posZ);
-
-    Point ptMouseRay = ptNear - ptFar;
-    if(ptMouseRay.y == 0.f) {
-        ptMouseRay.y = 1.f;
-    }
-    float t = (m_ptPos.y - m_ptCamPos.y) / ptMouseRay.y;
-    m_ptMouseInWorld = ptMouseRay * t + m_ptCamPos;
-
-    glReadPixels( int(winX), int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_DOUBLE, &depth );
-    printf("Our depth = %f (%d:%d,%d:%d)\n",depth,x,viewport[2],y,viewport[3]);
-
-#else
-    #define X_SCALE 3.4f / CAM_DIST
-    #define Z_SCALE 2.5f / CAM_DIST
-    #define SKEW_FACTOR -0.78f / CAM_DIST
-
-    //Approx mouse coords
-    float xScale = X_SCALE * m_fCamDist;
-    float zScale = Z_SCALE * m_fCamDist;
-    float skewFactor = SKEW_FACTOR * m_fCamDist;
-    float xNorm = 2 * (float)(x - SCREEN_WIDTH / 2) / (float)SCREEN_WIDTH;  //Range = -1 to 1
-    float zNorm = 2 * (float)(y - SCREEN_HEIGHT/ 2) / (float)SCREEN_HEIGHT;  //Range = -1 to 1
-    m_ptMouseInWorld.x = m_ptPos.x + xScale * xNorm + skewFactor * zNorm * xNorm;
-    m_ptMouseInWorld.z = m_ptPos.z + zScale * zNorm;
-
-#endif
-
+    gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+    m_ptMouseInWorld = Point(posX, posY, posZ);
+    m_v3MouseRay = m_ptMouseInWorld - m_ptCamPos;
 }
-

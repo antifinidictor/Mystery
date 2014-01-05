@@ -30,7 +30,7 @@ public:
     virtual PhysicsModel *getPhysicsModel() { return m_pPhysicsModel; }
 
     //Listener
-    virtual void callBack(uint uiID, void *data, uint id);
+    virtual int callBack(uint uiID, void *data, uint id);
 
     uint getItemId();
 

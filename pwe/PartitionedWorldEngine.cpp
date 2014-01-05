@@ -269,7 +269,10 @@ PartitionedWorldEngine::setCurrentArea() {
 		for(iter = m_pCurArea->m_mAreaChangeListeners.begin();
 			iter != m_pCurArea->m_mAreaChangeListeners.end();
 			++iter ) {
-			iter->second->callBack(ID_MODULAR_ENGINE, NULL, PWE_ON_AREA_SWITCH);
+			int status = iter->second->callBack(ID_MODULAR_ENGINE, NULL, PWE_ON_AREA_SWITCH);
+			if(status == EVENT_CAUGHT) {
+                break;
+			}
 		}
 
     } else {
@@ -457,10 +460,11 @@ PartitionedWorldEngine::removeListener(uint uiListenerId, uint eventId, uint uiA
 	return false;
 }
 
-void
+int
 PartitionedWorldEngine::callBack(uint cId, void *data, uint id) {
-    if(m_pCurArea == NULL) { return; }
+    if(m_pCurArea == NULL) { return EVENT_DROPPED; }
 
+    int status = EVENT_DROPPED;
     //Pass directly on to the current list of listeners
 	map<uint,Listener*>::iterator iter;
 	switch(id) {
@@ -468,19 +472,26 @@ PartitionedWorldEngine::callBack(uint cId, void *data, uint id) {
 		for( iter = m_pCurArea->m_mMouseMoveListeners.begin();
 			iter != m_pCurArea->m_mMouseMoveListeners.end();
 			++iter ) {
-			iter->second->callBack(ID_MODULAR_ENGINE, data, id);
+			status = iter->second->callBack(ID_MODULAR_ENGINE, data, id);
+			if(status == EVENT_CAUGHT) {
+                break;
+			}
 		}
 		break;
 	case ON_BUTTON_INPUT:
 		for( iter = m_pCurArea->m_mButtonInputListeners.begin();
 			iter != m_pCurArea->m_mButtonInputListeners.end();
 			++iter ) {
-			iter->second->callBack(ID_MODULAR_ENGINE, data, id);
+			status = iter->second->callBack(ID_MODULAR_ENGINE, data, id);
+			if(status == EVENT_CAUGHT) {
+                break;
+			}
 		}
 		break;
 	default:
 		printf("Unsupported event handle %d.\n", id);
 	}
+	return status;
 }
 
 void

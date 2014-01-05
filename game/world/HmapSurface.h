@@ -29,7 +29,7 @@ public:
     PhysicsModel *getPhysicsModel() { return m_pPhysicsModel; }
 
     //Listener
-	virtual void callBack(uint uiEventHandlerId, void *data, uint uiEventId);
+	virtual int callBack(uint uiEventHandlerId, void *data, uint uiEventId);
 private:
     uint m_uiId;
     uint m_uiFlags;

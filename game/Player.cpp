@@ -4,6 +4,7 @@
 #include "GameManager.h"
 #include "game/spells/SourceSinkSpell.h"
 #include "game/spells/FlowSpell.h"
+#include "game/items/Inventory.h"
 using namespace std;
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
@@ -115,7 +116,9 @@ bool Player::update(uint time) {
 }
 
 
-void Player::callBack(uint cID, void *data, uint uiEventId) {
+int
+Player::callBack(uint cID, void *data, uint uiEventId) {
+    int status = EVENT_CAUGHT;
     switch(uiEventId) {
     case PWE_ON_ADDED_TO_AREA:
         PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
@@ -150,8 +153,10 @@ void Player::callBack(uint cID, void *data, uint uiEventId) {
         handleCollision((HandleCollisionData*)data);
         break;
     default:
+        status = EVENT_DROPPED;
         break;
     }
+    return status;
 }
 
 
@@ -478,13 +483,16 @@ Player::resetSpell(uint uiSpell) {
 void
 Player::handleCollision(HandleCollisionData *data) {
     if(data->obj->getType() == TYPE_ITEM) {
+        //Pick up the item
         Item *item = (Item*)data->obj;
         PWE::get()->remove(item->getId());
-        addHudInventoryItem(item);
+        //addHudInventoryItem(item);
+        GameManager::get()->addToInventory(item);
         BAE::get()->playSound(AUD_PICKUP);
-    } else if(data->iDirection == m_iDirection &&
+    } else if(data->iDirection & BIT(m_iDirection) &&
               m_eState == PLAYER_NORMAL &&
               !data->obj->getFlag(TPE_PASSABLE)) {
+        //Climb onto the object
         Box tbx = data->obj->getPhysicsModel()->getCollisionVolume();
         Box mbx = m_pPhysicsModel->getCollisionVolume();
 

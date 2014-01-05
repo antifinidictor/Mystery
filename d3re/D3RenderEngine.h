@@ -79,7 +79,7 @@ public:
 
     uint getNumImages() { return m_vImages.size(); }
 
-	virtual void callBack(uint uiEventHandlerId, void *data, uint uiEventId);
+	virtual int callBack(uint uiEventHandlerId, void *data, uint uiEventId);
 	virtual uint getId() { return ID_RENDER_ENGINE; }
 
 	Point getMousePos() { return m_ptMouseInWorld; }

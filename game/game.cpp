@@ -30,6 +30,7 @@
 //Test includes
 #include "mge/PixelMap.h"
 #include "game/gui/TextDisplay.h"
+#include "game/gui/DraggableHud.h"
 
 using namespace std;
 
@@ -111,62 +112,34 @@ void initWorld() {
     mge->mapInput(SDLK_h,     IN_BREAK);
     mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
 
-    //Load image resources
-    ObjectFactory::get()->read("res/game.info");
+    //Initialize the game manager
     GameManager::init();
     we->setManager(GameManager::get());
 
-    PWE::get()->setCurrentArea(0);
-    /*
-    D3RE::get()->createImage(IMG_PLAYER,   "res/Magus.png", 8, 4);
-    D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3);
-    D3RE::get()->createImage(IMG_BLOCK,    "res/world/block.png");
-    D3RE::get()->createImage(IMG_WALL_TOP, "res/world/wallTop.png");
-    D3RE::get()->createImage(IMG_WALL_BOTTOM, "res/world/wallBottom.png");
-    D3RE::get()->createImage(IMG_WALL_SIDE, "res/world/wallSide.png");
-    */
+    //Read in the world from the file
+    ObjectFactory::get()->read("res/game.info");
 
+    PWE::get()->setCurrentArea(0);
 
     //Load audio resources
     BAE::get()->loadSound(AUD_STEP, "res/audio/step.wav");
     BAE::get()->loadSound(AUD_PICKUP, "res/audio/pickup.wav");
     BAE::get()->loadSound(AUD_LIFT, "res/audio/liftup.wav");
     BAE::get()->loadSound(AUD_DRAG, "res/audio/drag.wav");
+    BAE::get()->loadSound(AUD_POPUP, "res/audio/popup.wav");
+    BAE::get()->loadSound(AUD_POPDOWN, "res/audio/popdown.wav");
     BAE::get()->loadMusic(AUD_UNDERGROUND_MUSIC, "res/audio/OfBlackAndWhite.wav");
     //BAE::get()->playMusic(AUD_UNDERGROUND_MUSIC);
 
     //Other singleton initializations
     TextRenderer::init();
-/*
-    //Initialize world areas
-    for(uint ui = 0; ui < GM_NUM_AREAS; ++ui) {
-        we->generateArea(ui);
-    }
-*/
-
-
-    //Mouse test
-    D3RE::get()->setMouseAnim(0);
-/*
-    //PixelMap test
-    PixelMap *pxMap = new PixelMap("res/tests/pixMapColorTest.png", 0);
-    for(uint y = 0; y < pxMap->m_iH; ++y) {
-        for(uint x = 0; x < pxMap->m_iW; ++x) {
-            Color cr = pxMap->m_pData[x][y];
-            printf("(%2x,%2x,%2x) ", cr.r, cr.g, cr.b);
-        }
-        printf("\n");
-    }
-    delete pxMap;
-*/
 
     D3RE::get()->setBackgroundColor(Color(0x9a,0xd7,0xfb));
-    D3RE::get()->hideRealMouse();
+    //D3RE::get()->hideRealMouse();
 
-    //buildWorld();
     //Test text
-    testTextCb(0);
-    testTextCb2(0);
+    //testTextCb(0);
+    //testTextCb2(0);
 }
 
 

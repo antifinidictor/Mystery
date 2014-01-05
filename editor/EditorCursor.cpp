@@ -79,8 +79,9 @@ EditorCursor::update(uint time) {
 }
 
 
-void
+int
 EditorCursor::callBack(uint cID, void *data, uint eventId) {
+    int status = EVENT_CAUGHT;
     switch(eventId) {
     case PWE_ON_AREA_SWITCH: {
         EditorManager::get()->setEditorCursor(this);
@@ -112,13 +113,15 @@ EditorCursor::callBack(uint cID, void *data, uint eventId) {
             typeOnKeyPress((InputData*)data);
             break;
         default:
+            status = EVENT_DROPPED;
             break;
         }
         break;
       }
     default:
-        break;
+        status = EVENT_DROPPED;
     }
+    return status;
 }
 
 

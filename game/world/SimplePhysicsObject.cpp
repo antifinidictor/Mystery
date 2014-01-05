@@ -74,17 +74,22 @@ SimplePhysicsObject::write(boost::property_tree::ptree &pt, const std::string &k
 }
 
 
-void
+int
 SimplePhysicsObject::callBack(uint uiId, void *data, uint uiEventId) {
+    int status = EVENT_CAUGHT;
     switch(uiEventId) {
     case TPE_ON_COLLISION:
         if(!m_bPlayingSound) {
             HandleCollisionData *d = (HandleCollisionData*)data;
-            if(d->iDirection == UP || d->iDirection == DOWN) return;
+            if(d->iDirection == UP || d->iDirection == DOWN) return EVENT_DROPPED;
             //m_bPlayingSound = true;
             BAE::get()->playSound(AUD_DRAG);
         }
         break;
+    default:
+        status = EVENT_DROPPED;
+        break;
     }
+    return status;
 }
 

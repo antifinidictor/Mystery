@@ -72,8 +72,9 @@ Character::update(uint time) {
     return false;
 }
 
-void
+int
 Character::callBack(uint cID, void *data, uint uiEventId) {
+    return EVENT_DROPPED;
 }
 
 

@@ -10,6 +10,7 @@
 #include "mge/GameObject.h"
 #include "mge/Event.h"
 #include "game/game_defs.h"
+#include "game/items/Inventory.h"
 
 #include "d3re/d3re.h"
 #include "pwe/PartitionedWorldEngine.h"
@@ -20,6 +21,7 @@
 #define FADE_WEIGHT 1.f
 
 class ElementalVolume;
+class DraggableHud;
 
 class GameManager : public GameObject
 {
@@ -47,12 +49,15 @@ public:
     virtual PhysicsModel *getPhysicsModel() { return NULL; }
 
     //Input
-    virtual void callBack(uint uiID, void *data, uint eventId);
+    virtual int callBack(uint uiID, void *data, uint eventId);
 
     //Other
     void addActiveVolume(ElementalVolume *ev);
     void removeActiveVolume(uint id);
     ElementalVolume *getTopVolume();
+    DraggableHud *getHud() { return m_pHud; }
+    //Inventory *getPlayerInventory() { return &m_inv; }
+    void addToInventory(Item *item);
 
 private:
     GameManager(uint uiId);
@@ -72,6 +77,10 @@ private:
     uint m_uiNextArea;
     Color m_crWorld;
     Color m_crBackground;
+
+    Inventory m_inv;
+
+    DraggableHud *m_pHud;
 
     std::stack<GameManagerState> m_skState;
     std::map<uint, ElementalVolume*> m_mActiveVolumes;

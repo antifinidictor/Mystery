@@ -26,7 +26,7 @@ public:
     static const std::string getClassName()     { return "ElementalVolume"; }
 
     //Listener
-	virtual void callBack(uint uiEventHandlerId, void *data, uint uiEventId);
+	virtual int callBack(uint uiEventHandlerId, void *data, uint uiEventId);
 
     //Elemental-specific
     uint addForceField(ForceField *field);

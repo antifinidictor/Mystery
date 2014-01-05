@@ -11,7 +11,7 @@ public:
     virtual ~WanderAction();
 
     virtual void update(unsigned int time);
-    virtual void callBack(uint cID, void *data, uint uiEventId);
+    virtual int callBack(uint cID, void *data, uint uiEventId);
 
 private:
     enum WanderState {

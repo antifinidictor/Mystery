@@ -25,16 +25,19 @@ ElementalVolume::~ElementalVolume() {
     PWE::get()->freeId(getId());
 }
 
-void
+int
 ElementalVolume::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
+    int status = EVENT_CAUGHT;
     switch(uiEventId) {
     case TPE_ON_COLLISION: {
         handleCollision((HandleCollisionData*)data);
         break;
       }
     default:
+        status = EVENT_DROPPED;
         break;
     }
+    return status;
 }
 
 void

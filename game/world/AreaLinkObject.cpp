@@ -75,8 +75,9 @@ AreaLinkObject::write(boost::property_tree::ptree &pt, const std::string &keyBas
 }
 
 
-void
+int
 AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
+    int status = EVENT_CAUGHT;
     switch(eventId) {
     case TPE_ON_COLLISION: {
         HandleCollisionData *hcd = (HandleCollisionData*)data;
@@ -89,6 +90,8 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
         break;
       }
     default:
+        status = EVENT_DROPPED;
         break;
     }
+    return status;
 }

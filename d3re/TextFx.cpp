@@ -1,8 +1,8 @@
 /*
- * TextRenderer
+ * TextFx
  */
 
-#include "TextRenderer.h"
+#include "TextFx.h"
 #include "mge/Image.h"
 #include "mge/defs.h"
 #include "d3re/d3re.h"
@@ -11,10 +11,10 @@ using namespace std;
 #define COLOR_SIZE 7
 
 //Static members
-TextRenderer *TextRenderer::m_pInstance = NULL;
+TextFx *TextFx::m_pInstance = NULL;
 
 //Constructor
-TextRenderer::TextRenderer() {
+TextFx::TextFx() {
 /*  Old font
     #define SPACE_WIDTH 3.0f
                 //A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z
@@ -39,10 +39,10 @@ TextRenderer::TextRenderer() {
     m_uiFontId = 1;
 }
 
-TextRenderer::~TextRenderer() {
+TextFx::~TextFx() {
 }
 
-int TextRenderer::char2IndH(char c) {
+int TextFx::char2IndH(char c) {
     if('a' <= c && c <= 'z') {
         return c - 'a';
     } else if('A' <= c && c <= 'Z') {
@@ -89,7 +89,7 @@ int TextRenderer::char2IndH(char c) {
     }
 }
 
-int TextRenderer::char2IndW(char c) {
+int TextFx::char2IndW(char c) {
     if('a' <= c && c <= 'z') {
         return 1;
     } else if ('A' <= c && c <= 'Z') {
@@ -99,45 +99,44 @@ int TextRenderer::char2IndW(char c) {
     }
 }
 
-float TextRenderer::twMin(int iw) {
+float TextFx::twMin(int iw) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     return iw * 1.0F / pFont->m_iNumFramesW;
 }
 
-float TextRenderer::twMax(int iw, int ih) {
+float TextFx::twMax(int iw, int ih) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     return twMin(iw) + m_aWidths[iw * pFont->m_iNumFramesH + ih] / (float)pFont->w;
 }
 
-float TextRenderer::thMin(int ih) {
+float TextFx::thMin(int ih) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     return ih * 1.0F / pFont->m_iNumFramesH;
 }
 
-float TextRenderer::thMax(int ih) {
+float TextFx::thMax(int ih) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     return thMin(ih) + 1.0F / pFont->m_iNumFramesH;
 }
 
 
-float TextRenderer::getLineHeight(float size) {
+float TextFx::getLineHeight(float size) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     return size * pFont->h / pFont->m_iNumFramesH;
 }
 
-int TextRenderer::getNextLine(const char *str, int start) {
+int TextFx::getNextLine(const char *str, int start) {
     int i;
     for(i = start; (str[i] != '\0' && str[i] != '\n'); ++i) { }
     if(str[i] == '\0') return i;
     else return i + 1;
 }
 
-void TextRenderer::render(const char *str, float x, float y, float size) {
+void TextFx::render(const char *str, float x, float y, float size) {
     float x_start = x;
 
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
 
-    //glDisable(GL_ALPHA_TEST);
     glBindTexture( GL_TEXTURE_2D, pFont->m_uiTexture );
 
     for(int i = 0; str[i] != '\0'; ++i) {
@@ -153,17 +152,16 @@ void TextRenderer::render(const char *str, float x, float y, float size) {
     }
     //Reset the color to default
     glColor3f(1.f, 1.f, 1.f);
-    //glEnable(GL_ALPHA_TEST);
 }
 
-int TextRenderer::setColor(const char *hexColor) {
+int TextFx::setColor(const char *hexColor) {
     char *end;
     Color color = strtol(hexColor, &end, 16);
     glColor3f(color.r / 255.f, color.g / 255.f, color.b / 255.f);
     return end - hexColor + 1;
 }
 
-float TextRenderer::renderChar(Image *pFont, char c, float x, float y, float size) {
+float TextFx::renderChar(Image *pFont, char c, float x, float y, float size) {
     int iw = char2IndW(c),
         ih = char2IndH(c);
     if(ih < 0) {
@@ -192,103 +190,7 @@ float TextRenderer::renderChar(Image *pFont, char c, float x, float y, float siz
 	return w;
 }
 
-char* TextRenderer::splitText(const char *str, float maxw, float size) {
-    Image *pFont = D3RE::get()->getImage(m_uiFontId);
-//#if 0
-    float xw = 0;
-    int lastSpace = 0;
-    int oi = 0;
-    char *out = (char*)SDL_calloc(strlen(str) * 2, sizeof(char));
-    for(int i = 0; str[i] != '\0'; ++i) {
-        if(str[i] == '\n') {
-            lastSpace = 0;
-            out[oi] = str[i];
-            oi++;
-            xw = 0;
-            continue;
-        } else if(str[i] == '#') {
-            i += COLOR_SIZE;
-            continue;
-        }
-
-        int iw = char2IndW(str[i]),
-            ih = char2IndH(str[i]);
-
-        xw += m_aWidths[iw * pFont->m_iNumFramesH + ih] * size;
-        if(xw > maxw) {
-            if(lastSpace == 0) {
-                out[oi] = '\n';
-                ++oi;
-                --i;
-                xw = 0;
-                continue;
-            } else {
-                oi -= i - lastSpace;
-                i = lastSpace;
-                out[oi] = '\n';
-                oi++;
-                xw = 0;
-                continue;
-            }
-        }
-        if(ih < 0) {
-            lastSpace = i;
-        }
-        out[oi] = str[i];
-        oi++;
-    }
-    out[oi] = '\0';
-    return out;
-//#endif
-}
-
-void TextRenderer::splitText(string &str, float maxw, float size) {
-    Image *pFont = D3RE::get()->getImage(m_uiFontId);
-    if(maxw < 0) {
-        printf("ERROR: illegal width %f when splitting text\n", maxw);
-    }
-
-//#if 0
-    float xw = 0;
-    int lastSpace = 0;
-    int oi = 0;
-    //char *out = (char*)SDL_calloc(strlen(str) * 2, sizeof(char));
-    for(string::iterator curChar = str.begin(); curChar < str.end(); ++curChar) {
-        if(*curChar == '\n') {
-            lastSpace = 0;
-            xw = 0;
-            continue;
-        } else if(*curChar == '#') {
-            curChar += COLOR_SIZE;
-            continue;
-        }
-
-        int iw = char2IndW(*curChar),
-            ih = char2IndH(*curChar);
-        xw += m_aWidths[iw * pFont->m_iNumFramesH + ih] * size;
-
-        if(xw > maxw) {
-            if(lastSpace == 0) {    //word is too long
-                curChar = str.insert(curChar, '\n');
-                xw = 0;
-                continue;
-            } else {
-                str[lastSpace] = '\n';
-                curChar = str.begin() + lastSpace;
-                xw = 0;
-                lastSpace = 0;
-                continue;
-            }
-        }
-        if(ih < 0) {
-            lastSpace = curChar - str.begin();
-        }
-
-    }
-//#endif
-}
-
-Rect TextRenderer::getArea(const char *str, float x, float y, float size) {
+Rect TextFx::getArea(const char *str, float x, float y, float size) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     const float h = pFont->h / pFont->m_iNumFramesH;
 

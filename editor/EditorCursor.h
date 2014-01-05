@@ -40,7 +40,7 @@ public:
     virtual PhysicsModel *getPhysicsModel()     { return m_pPhysicsModel; }
 
     //Input
-    virtual void callBack(uint cID, void *data, uint id);
+    virtual int callBack(uint cID, void *data, uint id);
 
     void setState(EditorCursorState eState);
     void moveToArea(uint uiAreaTo);

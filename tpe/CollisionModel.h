@@ -16,6 +16,7 @@ enum CollisionModelType {
 
 class CollisionModel {
 public:
+    virtual ~CollisionModel() {}
     virtual Box getBounds() = 0;    //Returns a volume that bounds this object
     virtual CollisionModelType getType() = 0;
     virtual float getVolume() = 0;
@@ -26,6 +27,7 @@ public:
     BoxCollisionModel(Box bxBounds) {
         m_bxBounds = bxBounds;
     }
+    virtual ~BoxCollisionModel() {}
     virtual Box getBounds() { return m_bxBounds; }
     virtual CollisionModelType getType() { return CM_BOX; }
 
@@ -41,6 +43,7 @@ public:
           m_bxBounds(bxBounds)
     {
     }
+    virtual ~PixelMapCollisionModel() {}
     virtual Box getBounds() { return m_bxBounds; }
     virtual CollisionModelType getType() { return CM_Y_HEIGHTMAP; }
 

@@ -287,9 +287,10 @@ EditorManager::update(uint time) {
     return false;
 }
 
-void
+int
 EditorManager::callBack(uint cID, void *data, uint eventId) {
     //If the data needs to be handled, handle it here.  Otherwise push an event.
+    int status = EVENT_CAUGHT;
     switch(eventId) {
     case ED_HUD_OP_FINALIZE:
         //Do some additional stuff here before popping the state
@@ -344,9 +345,11 @@ EditorManager::callBack(uint cID, void *data, uint eventId) {
         }
         break;
     default:
+        status = EVENT_DROPPED;
         break;
     }
     m_qEvents.push(eventId);
+    return status;
 }
 
 

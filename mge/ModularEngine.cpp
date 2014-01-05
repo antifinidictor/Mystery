@@ -174,14 +174,20 @@ void ModularEngine::informListeners(uint id) {
 		for( iter = m_mMouseMoveListeners.begin();
 			iter != m_mMouseMoveListeners.end();
 			++iter ) {
-			iter->second->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
+			int status = iter->second->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
+			if(status == EVENT_CAUGHT) {
+                return;
+			}
 		}
 		break;
 	case ON_BUTTON_INPUT:
 		for( iter = m_mButtonInputListeners.begin();
 			iter != m_mButtonInputListeners.end();
 			++iter ) {
-			iter->second->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
+			int status = iter->second->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
+			if(status == EVENT_CAUGHT) {
+                return;
+			}
 		}
 		break;
 	default:

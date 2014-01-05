@@ -130,7 +130,18 @@ TimePhysicsModel::removeCollisionModel(uint id) {
         delete m_vCollisions[id];
         m_vCollisions[id] = NULL;
     }
+    resetVolume();
+}
+CollisionModel*
+TimePhysicsModel::getCollisionModel(uint id) {
+    if(id < m_vCollisions.size()) {
+        return m_vCollisions[id];
+    }
+    return NULL;
+}
 
+void
+TimePhysicsModel::resetVolume() {
     //Recalculate total volume
     m_bxVolume = Box();
     m_fMass = 0.f;
@@ -141,17 +152,4 @@ TimePhysicsModel::removeCollisionModel(uint id) {
             m_fMass += m_fDensity * (*iter)->getVolume();
         }
     }
-}
-CollisionModel*
-TimePhysicsModel::getCollisionModel(uint id) {
-    if(id < m_vCollisions.size()) {
-        return m_vCollisions[id];
-    }
-    return NULL;
-}
-
-template<class CM>
-CM*
-TimePhysicsModel::getCollisionModel(uint id) {
-    return dynamic_cast<CM*>(getCollisionModel(id));
 }

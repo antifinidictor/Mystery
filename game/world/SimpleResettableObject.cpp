@@ -74,8 +74,9 @@ SimpleResettableObject::write(boost::property_tree::ptree &pt, const std::string
     pt.put(keyBase + ".density", m_pPhysicsModel->getDensity());
 }
 
-void
+int
 SimpleResettableObject::callBack(uint uiId, void *data, uint uiEventId) {
+    int status = EVENT_CAUGHT;
     switch(uiEventId) {
     case PWE_ON_ADDED_TO_AREA:
         m_uiArea = *(uint*)data;
@@ -85,8 +86,10 @@ SimpleResettableObject::callBack(uint uiId, void *data, uint uiEventId) {
         reset();
         break;
     default:
+        status = EVENT_DROPPED;
         break;
     }
+    return status;
 }
 
 

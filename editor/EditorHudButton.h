@@ -39,14 +39,14 @@ public:
 
     //From listener
     virtual uint getId() { return m_uiId; }
-    virtual void callBack(uint cID, void *data, uint eventId) {
+    virtual int callBack(uint cID, void *data, uint eventId) {
         switch(eventId) {
         case ON_BUTTON_INPUT:
         case ON_MOUSE_MOVE:
             handleMouseEvent((InputData*)data);
-            break;
+            return EVENT_CAUGHT;
         default:
-            break;
+            return EVENT_DROPPED;
         }
     }
 

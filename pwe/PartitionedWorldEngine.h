@@ -71,7 +71,7 @@ public:
 
     //Listener
     virtual uint getId() { return ID_WORLD_ENGINE; }
-	virtual void callBack(uint cId, void *data, uint id);
+	virtual int callBack(uint cId, void *data, uint id);
 
     //Event Handler
     virtual void addListener(Listener *pListener, uint eventId, char* triggerData = 0) { addListener(pListener, eventId, m_uiEffectiveArea, triggerData); }

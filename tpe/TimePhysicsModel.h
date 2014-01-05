@@ -40,6 +40,8 @@ public:
     virtual void removeCollisionModel(uint id) = 0;
     virtual CollisionModel *getCollisionModel(uint id) = 0;
     virtual uint getNumModels() = 0;
+    virtual bool getPhysicsChanged() = 0;
+    virtual void setPhysicsChanged(bool val) = 0;
 };
 
 /*
@@ -80,9 +82,11 @@ public:
     virtual uint addCollisionModel(CollisionModel* mdl);
     virtual void removeCollisionModel(uint id);
     virtual CollisionModel* getCollisionModel(uint id);
-    template<class CM>
-    CM* getCollisionModel(uint id);
     virtual uint getNumModels() { return m_vCollisions.size(); }
+    virtual void resetVolume();
+
+    virtual bool getPhysicsChanged() { return m_bPhysicsChanged; }
+    virtual void setPhysicsChanged(bool hasChanged) { m_bPhysicsChanged = hasChanged; }
 
 private:
     //Time physics model
@@ -101,6 +105,7 @@ private:
     Listener *m_pListener;
     bool m_bWasPushed;
     bool m_bIsCleaning; //Don't do some ops when cleaning up
+    bool m_bPhysicsChanged;
     std::list<AbstractTimePhysicsModel*> m_lsObjsOnMe;
     AbstractTimePhysicsModel *m_pObjImOn;
 };
@@ -111,7 +116,7 @@ private:
  */
 class NullTimePhysicsModel : public AbstractTimePhysicsModel {
 public:
-    NullTimePhysicsModel(Box bxVolume) { m_ptPosition = bxCenter(bxVolume); }
+    NullTimePhysicsModel(const Point &ptPos) { m_ptPosition = ptPos; }
     virtual ~NullTimePhysicsModel() {}
 
     virtual Point getPosition() { return m_ptPosition; }
@@ -143,6 +148,8 @@ public:
     virtual void removeCollisionModel(uint id) {}
     virtual CollisionModel* getCollisionModel(uint id) { return NULL; }
     virtual uint getNumModels() { return 0; }
+    virtual bool getPhysicsChanged() { return false; }
+    virtual void setPhysicsChanged(bool hasChanged) { }
 
 private:
     Point m_ptPosition;

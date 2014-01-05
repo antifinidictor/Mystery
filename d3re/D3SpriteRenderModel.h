@@ -37,6 +37,11 @@ public:
     Color &getColor() { return m_crColor; }
 
 private:
+    void billboardEnd();
+    void billboardSphericalBegin(
+			float camX, float camY, float camZ,
+			float objPosX, float objPosY, float objPosZ
+    );
     uint m_uiImageId;
     Rect m_rcDrawArea;
 

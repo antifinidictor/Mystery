@@ -11,7 +11,6 @@
 				<Option object_output="obj/Windows/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="K:/projects/games/mge/Mystery/windows" />
@@ -60,6 +59,7 @@
 				<Option object_output="obj/Windows/Editor/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="K:/projects/games/mge/Mystery/windows" />
@@ -146,6 +146,7 @@
 		</Linker>
 		<Unit filename="bae/BasicAudioEngine.cpp" />
 		<Unit filename="bae/BasicAudioEngine.h" />
+		<Unit filename="d3re/ContainerRenderModel.cpp" />
 		<Unit filename="d3re/ContainerRenderModel.h" />
 		<Unit filename="d3re/D3DummyObject.h" />
 		<Unit filename="d3re/D3HeightmapRenderModel.cpp" />
@@ -160,6 +161,8 @@
 		<Unit filename="d3re/D3SpriteRenderModel.h" />
 		<Unit filename="d3re/D3XZSpriteRenderModel.cpp" />
 		<Unit filename="d3re/D3XZSpriteRenderModel.h" />
+		<Unit filename="d3re/TextFx.cpp" />
+		<Unit filename="d3re/TextFx.h" />
 		<Unit filename="d3re/TextRenderer.cpp" />
 		<Unit filename="d3re/TextRenderer.h" />
 		<Unit filename="d3re/d3re.h" />
@@ -215,6 +218,10 @@
 		</Unit>
 		<Unit filename="game/game.h" />
 		<Unit filename="game/game_defs.h" />
+		<Unit filename="game/gui/Draggable.cpp" />
+		<Unit filename="game/gui/Draggable.h" />
+		<Unit filename="game/gui/DraggableHud.cpp" />
+		<Unit filename="game/gui/DraggableHud.h" />
 		<Unit filename="game/gui/TextDisplay.cpp" />
 		<Unit filename="game/gui/TextDisplay.h" />
 		<Unit filename="game/items/Item.cpp" />

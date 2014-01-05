@@ -61,8 +61,9 @@ Item::update(uint time) {
     return false;
 }
 
-void
+int
 Item::callBack(uint uiID, void *data, uint id) {
+    return EVENT_DROPPED;
 }
 
 uint

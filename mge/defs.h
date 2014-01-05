@@ -24,12 +24,15 @@ const int SCREEN_WIDTH = 640;
 #define FLIP_BIT(val, bit)  (val ^  BIT(bit))
 
 //Constants
-#define NORTH   0
-#define EAST    1
-#define SOUTH   2
-#define WEST    3
-#define UP      4
-#define DOWN    5
+enum Directions {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST,
+    UP,
+    DOWN,
+    NUM_DIRECTIONS
+};
 
 #define BIT_NORTH BIT(NORTH)
 #define BIT_EAST  BIT(EAST)
@@ -315,6 +318,7 @@ bool  rcIntersects(const RC &rc1, const RC &rc2);
 char  rcOutOfBounds(const RC &rc, const RC &rcBounds);
 char  ptOutOfBounds(const PT &pt, const RC &rcBounds);
 bool  bxIntersects(const BX &bx1, const BX &bx2);
+bool  bxIntersectsEq(const BX &bx1, const BX &bx2);
 char  bxOutOfBounds(const BX &bx, const BX &bxBounds);
 char  ptOutOfBounds(const PT &pt, const BX &bxBounds);
 bool  ptInRect(const PT &pt, const RC &rc);
@@ -331,5 +335,5 @@ bool equal(float f1, float f2, float offset=0.001f);
 float dot(PT &pt1, PT &pt2);
 PT cross(const PT &pt1, const PT &pt2);
 int order(const PT &pt1, const PT &pt2);    //FIXME: Obsolete
-
+std::string bin2str(uint bin);
 #endif

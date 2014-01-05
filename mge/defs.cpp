@@ -186,6 +186,15 @@ char ptOutOfBounds(const PT &pt, const RC &rcBounds) {
  * Checks to to see if the two boxes intersect.
  */
 bool bxIntersects(const Box &bx1, const Box &bx2) {
+    return  bx1.x < bx2.x + bx2.w &&
+			bx2.x < bx1.x + bx1.w &&
+			bx1.y < bx2.y + bx2.h &&
+			bx2.y < bx1.y + bx1.h &&
+			bx1.z < bx2.z + bx2.l &&
+			bx2.z < bx1.z + bx1.l;
+}
+
+bool bxIntersectsEq(const Box &bx1, const Box &bx2) {
     return  bx1.x <= bx2.x + bx2.w &&
 			bx2.x <= bx1.x + bx1.w &&
 			bx1.y <= bx2.y + bx2.h &&
@@ -355,4 +364,18 @@ Color mix(int numColors, ...) {
     return Color(r / numColors, g / numColors, b / numColors);
 }
 
-
+std::string bin2str(uint bin) {
+    std::string res = "";
+    for(int i = 0; i < 32; ++i) {
+        if(i > 0 && ((i % 4) == 0)) {
+            res = "-" + res;
+        }
+        if(bin & 1) {
+            res = "1" + res;
+        } else {
+            res = "0" + res;
+        }
+        bin = bin >> 1;
+    }
+    return res;
+}

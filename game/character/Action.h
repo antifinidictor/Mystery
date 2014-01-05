@@ -20,7 +20,7 @@ class NoAction : public Action {
 public:
     NoAction(Character *pActor) : Action(pActor) {}
     virtual void update(unsigned int time) {}
-    virtual void callBack(uint cID, void *data, uint uiEventId) {}
+    virtual int callBack(uint cID, void *data, uint uiEventId) { return EVENT_DROPPED; }
 };
 
 #endif // ACTION_H

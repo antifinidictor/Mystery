@@ -8,6 +8,12 @@
 
 #include "defs.h"
 
+//Standard callback return codes
+enum CallbackReturnStatus {
+    EVENT_CAUGHT,
+    EVENT_DROPPED
+};
+
 class Listener {
 private:
 	uint m_uiEventTypes;
@@ -18,7 +24,7 @@ public:
 	virtual ~Listener() {}
 
 	//Abstract methods
-	virtual void callBack(uint uiEventHandlerId, void *data, uint uiEventId) = 0;
+	virtual int callBack(uint uiEventHandlerId, void *data, uint uiEventId) = 0;
 	virtual uint getId() = 0;
 
 	//Accessor methods

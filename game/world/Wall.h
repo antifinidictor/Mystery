@@ -46,7 +46,7 @@ public:
     Color &getColor() { return m_pRenderModel->getColor(); }
 
     //Listener
-    virtual void callBack(uint uiID, void *data, uint id) {}
+    virtual int callBack(uint uiID, void *data, uint id) { return EVENT_DROPPED; }
 
 private:
     uint m_uiId, m_uiFlags;

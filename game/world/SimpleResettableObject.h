@@ -39,7 +39,7 @@ public:
     Color &getColor() { return m_pRenderModel->getColor(); }
 
     //Listener
-    virtual void callBack(uint uiId, void *data, uint uiEventId);
+    virtual int callBack(uint uiId, void *data, uint uiEventId);
 
 private:
     void reset();

@@ -38,7 +38,7 @@ public:
     virtual PhysicsModel *getPhysicsModel()     { return m_pPhysicsModel; }
 
     //Input
-    virtual void callBack(uint cID, void *data, uint uiEventId);
+    virtual int callBack(uint cID, void *data, uint uiEventId);
 
 private:
     enum PlayerState {

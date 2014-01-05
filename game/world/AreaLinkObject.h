@@ -31,7 +31,7 @@ public:
     static const std::string getClassName()     { return "AreaLinkObject"; }
 
     //Listener
-	virtual void callBack(uint uiID, void *data, uint eventId);
+	virtual int callBack(uint uiID, void *data, uint eventId);
 
     //Models
     virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }

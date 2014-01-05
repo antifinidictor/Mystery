@@ -44,7 +44,7 @@ public:
     virtual PhysicsModel *getPhysicsModel()     { return m_pPhysicsModel; }
 
     //Input
-    virtual void callBack(uint cID, void *data, uint uiEventId);
+    virtual int callBack(uint cID, void *data, uint uiEventId);
 
     void setFrame(int iFrame) { m_pRenderModel->setFrameH(iFrame); }
     void setDirection(int iFrame) { m_pRenderModel->setFrameW(iFrame); m_iDirection = iFrame; }

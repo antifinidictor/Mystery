@@ -69,6 +69,7 @@ private:
     void applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractTimePhysicsModel *tpmLiquid, const Box &bxObj, float liquidTop, float liquidBottom);
     bool isNotInArea(const Box &bxObj, const Box &bxBounds);
     bool isOnSurface(const Box &bxObj, const Box &bxSurface);
+    void extractCollisionDirections(const Point &ptCenterDif, float fXShift, float fYShift, float fZShift, int *iDir1, int *iDir2);
 
     static TimePhysicsEngine *tpe;
 

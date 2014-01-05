@@ -28,7 +28,7 @@ void TimePhysicsEngine::update(uint time) {
 bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     AbstractTimePhysicsModel *tmdl = dynamic_cast<AbstractTimePhysicsModel*>(obj->getPhysicsModel());
     if(tmdl == NULL) return false;
-    bool hasMoved = tmdl->wasPushed();
+    bool hasChanged = tmdl->wasPushed() || tmdl->getPhysicsChanged();
     /*
     if(obj->getFlag(TPE_STATIC)) {
         return false;
@@ -45,17 +45,17 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     obj->getRenderModel()->moveBy(tmdl->getLastVelocity());
     tmdl->setWasPushed(false);
 
-    hasMoved = hasMoved || tmdl->getLastVelocity() != Point();
+    hasChanged = hasChanged || tmdl->getLastVelocity() != Point();
     bool bCanFall = !obj->getFlag(TPE_PASSABLE) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC);
     bool bIsOnSurface = tmdl->getSurface() != NULL;
-    bool bHasLeftSurface = hasMoved && (!bIsOnSurface || isNotInArea(tmdl->getCollisionVolume(), tmdl->getSurface()->getCollisionVolume()));
+    bool bHasLeftSurface = hasChanged && (!bIsOnSurface || isNotInArea(tmdl->getCollisionVolume(), tmdl->getSurface()->getCollisionVolume()));
     if(bIsOnSurface && bHasLeftSurface) {
         tmdl->setSurface(NULL);
     }
     if(bCanFall && bHasLeftSurface) {
         obj->setFlag(TPE_FALLING, true);
     }
-    return (hasMoved);
+    return (hasChanged);
 }
 
 void
@@ -64,7 +64,7 @@ TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
     // position that the two objects do not collide and have not passed
     AbstractTimePhysicsModel *tpm1 = dynamic_cast<AbstractTimePhysicsModel*>(obj1->getPhysicsModel()),
                       *tpm2 = dynamic_cast<AbstractTimePhysicsModel*>(obj2->getPhysicsModel());
-    if(tpm1 == NULL || tpm2 == NULL || !bxIntersects(tpm1->getCollisionVolume(), tpm2->getCollisionVolume())) {
+    if(tpm1 == NULL || tpm2 == NULL || !bxIntersectsEq(tpm1->getCollisionVolume(), tpm2->getCollisionVolume())) {
         return;    //no physics model or no collision
     }
 
@@ -131,7 +131,7 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
     BoxCollisionModel *bmdl2 = (BoxCollisionModel*)tpm2->getCollisionModel(uiMdl2);
     Box bx1 = bmdl1->getBounds() + tpm1->getPosition(),
         bx2 = bmdl2->getBounds() + tpm2->getPosition();
-    if(!bxIntersects(bx1, bx2)) {
+    if(!bxIntersectsEq(bx1, bx2)) {
         return;    //no physics model or no collision
     }
 
@@ -161,45 +161,23 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
         ptObj1Shift = Point(1,0,0);
         ptObj2Shift = Point(-1,0,0);
         splitShift(obj1, obj2, fXShift, &ptObj1Shift, &ptObj2Shift);
-
-        if(fXShift < 0) {
-            iDir1 = EAST;
-            iDir2 = WEST;
-        } else {
-            iDir1 = WEST;
-            iDir2 = EAST;
-        }
     } else if(fabs(fZShift) < fabs(fXShift) && fabs(fZShift) < fabs(fYShift)) {
         //Shift by Z
         ptObj1Shift = Point(0,0,1);
         ptObj2Shift = Point(0,0,-1);
         splitShift(obj1, obj2, fZShift, &ptObj1Shift, &ptObj2Shift);
-
-        if(fZShift < 0) {
-            iDir1 = SOUTH;
-            iDir2 = NORTH;
-        } else {
-            iDir1 = NORTH;
-            iDir2 = SOUTH;
-        }
     } else {
         //Shift by Y
         ptObj1Shift = Point(0,1,0);
         ptObj2Shift = Point(0,-1,0);
         splitShift(obj1, obj2, fYShift, &ptObj1Shift, &ptObj2Shift);
 
-        if(bx2.y < bx1.y) {
-            iDir1 = UP;
-            iDir2 = DOWN;
-            if(!bNoCollide) {
+        if(!bNoCollide) {
+            if(bx2.y < bx1.y) {
                 obj1->setFlag(TPE_FALLING, false);
                 tpm1->clearVerticalVelocity();
                 tpm1->setSurface(tpm2);
-            }
-        } else {
-            iDir1 = DOWN;
-            iDir2 = UP;
-            if(!bNoCollide) {
+            } else {
                 obj2->setFlag(TPE_FALLING, false);
                 tpm2->clearVerticalVelocity();
                 tpm2->setSurface(tpm1);
@@ -231,6 +209,10 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
         }
     }
 
+    extractCollisionDirections(tpm2->getPosition() - tpm1->getPosition(),
+                               fXShift, fYShift, fZShift,
+                               &iDir1, &iDir2);
+
     //Handle collision events
     HandleCollisionData sData1(obj2, iDir1, ptObj1Shift),
                         sData2(obj1, iDir2, ptObj2Shift);
@@ -247,35 +229,63 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
     PixelMapCollisionModel *hmdl = (PixelMapCollisionModel*)tpmHmap->getCollisionModel(uiMdlHmap);
     Box bx1 = bmdl->getBounds() + tpmBox->getPosition(),
         bx2 = hmdl->getBounds() + tpmHmap->getPosition();
-    if(!bxIntersects(bx1, bx2)) {
+    if(!bxIntersectsEq(bx1, bx2)) {
         return;    //no physics model or no collision
     }
 
     //Now, get the position and the y-shift
     float y = hmdl->getHeightAtPoint(tpmBox->getPosition() - tpmHmap->getPosition()) + tpmHmap->getPosition().y;
+    float fYShift = (bx1.y + bx1.h > bx2.y) ? y - bx1.y : 0.f;
 
-    //Shift for a single direction
-    Point ptShiftBox = Point(0.f, y - bx1.y, 0.f);
-    bool bBoxInHmap = ptShiftBox.y > 0.f;
-    if(!bBoxInHmap) {
-        if(tpmBox->getSurface() == tpmHmap) {
-            tpmBox->setSurface(NULL);
-            objBox->setFlag(TPE_FALLING, true);
+    //Get the box shifts for comparison
+    float fXShift1 = bx2.x - (bx1.x + bx1.w),
+          fXShift2 = (bx2.x + bx2.w) - bx1.x,
+          fXShift  = fabs(fXShift1) < fabs(fXShift2) ? fXShift1 : fXShift2;
+    float fZShift1 = bx2.z - (bx1.z + bx1.l),
+          fZShift2 = (bx2.z + bx2.l) - bx1.z,
+          fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
+
+    Point ptBoxShift, ptHmapShift;
+    int iDirBox, iDirHmap;
+
+    if(fabs(fXShift) < fabs(fYShift) && fabs(fXShift) < fabs(fZShift)) {
+        //Shift by X
+        ptBoxShift = Point(1,0,0);
+        ptHmapShift = Point(-1,0,0);
+        splitShift(objBox, objHmap, fXShift, &ptBoxShift, &ptHmapShift);
+    } else if(fabs(fZShift) < fabs(fXShift) && fabs(fZShift) < fabs(fYShift)) {
+        //Shift by Z
+        ptBoxShift = Point(0,0,1);
+        ptHmapShift = Point(0,0,-1);
+        splitShift(objBox, objHmap, fZShift, &ptBoxShift, &ptHmapShift);
+    } else {
+        //Shift in the Y direction
+        ptBoxShift = Point(0.f, fYShift, 0.f);
+        ptHmapShift = Point();
+        bool bBoxInHmap = ptBoxShift.y > 0.f;
+        if(!bBoxInHmap) {
+            if(tpmBox->getSurface() == tpmHmap) {
+                tpmBox->setSurface(NULL);
+                objBox->setFlag(TPE_FALLING, true);
+            }
+            return;
         }
-        return;
     }
 
-    bool bNotCollidable = objBox->getFlag(TPE_PASSABLE) || objBox->getFlag(TPE_LIQUID) ||
-                          objHmap->getFlag(TPE_PASSABLE) || objHmap->getFlag(TPE_LIQUID);
-    if(!bNotCollidable && !(objBox->getFlag(TPE_STATIC) && objHmap->getFlag(TPE_STATIC))) {
+    bool bCollidable = !(objBox->getFlag(TPE_PASSABLE) || objBox->getFlag(TPE_LIQUID) ||
+                        objHmap->getFlag(TPE_PASSABLE) || objHmap->getFlag(TPE_LIQUID));
+    bool bBothStatic = objBox->getFlag(TPE_STATIC) && objHmap->getFlag(TPE_STATIC);
+    if(bCollidable && !bBothStatic) {
         //Move the objects
-        tpmBox->moveBy(ptShiftBox);
+        tpmBox->moveBy(ptBoxShift);
+        tpmHmap->moveBy(ptHmapShift);
         tpmBox->setWasPushed(!objBox->getFlag(TPE_STATIC));
+        tpmHmap->setWasPushed(!objHmap->getFlag(TPE_STATIC));
     }
 
     bool bHmapIsLiquid = objHmap->getFlag(TPE_LIQUID);
     bool bBoxIsFloatable = !objBox->getFlag(TPE_LIQUID) && !objBox->getFlag(TPE_STATIC);
-    bool bBoxHasNotSunk = objBox->getFlag(TPE_FALLING) || ptShiftBox.y > 0.f;
+    bool bBoxHasNotSunk = objBox->getFlag(TPE_FALLING) || ptBoxShift.y > 0.f;
     if(bHmapIsLiquid && bBoxIsFloatable && bBoxHasNotSunk) {
         tpmBox->setSurface(NULL);
         objBox->setFlag(TPE_FALLING, true);
@@ -285,9 +295,13 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
         objBox->setFlag(TPE_FALLING, false);
     }
 
+    extractCollisionDirections(tpmHmap->getPosition() - tpmBox->getPosition(),
+                               fXShift, fYShift, fZShift,
+                               &iDirBox, &iDirHmap);
+
     //Handle collision events
-    HandleCollisionData sDataBox(objHmap, UP, ptShiftBox),
-                        sDataHmap(objBox, DOWN, Point());
+    HandleCollisionData sDataBox(objHmap, iDirBox, ptBoxShift),
+                        sDataHmap(objBox, iDirHmap, ptHmapShift);
     tpmBox->handleCollisionEvent(&sDataBox);
     tpmHmap->handleCollisionEvent(&sDataHmap);
 }
@@ -343,4 +357,70 @@ TimePhysicsEngine::isOnSurface(const Box &bxObj, const Box &bxSurface) {
     return !isNotInArea(bxObj, bxSurface) &&
         bxObj.y >= (bxSurface.y + bxSurface.h - EQUALITY_WIDTH) &&
         bxObj.y <= (bxSurface.y + bxSurface.h + EQUALITY_WIDTH);
+}
+
+void
+TimePhysicsEngine::extractCollisionDirections(const Point &ptCenterDiff, float fXShift, float fYShift, float fZShift, int *iDir1, int *iDir2) {
+    *iDir1 = 0;
+    *iDir2 = 0;
+    float fXMag = fabs(fXShift);
+    float fYMag = fabs(fYShift);
+    float fZMag = fabs(fZShift);
+
+    if(fXMag == 0.f) {
+        if(ptCenterDiff.x < 0.f) {
+            *iDir1 |= BIT_EAST;
+            *iDir2 |= BIT_WEST;
+        } else {
+            *iDir1 |= BIT_WEST;
+            *iDir2 |= BIT_EAST;
+        }
+    }
+    if(fYMag == 0.f) {
+        if(ptCenterDiff.y < 0.f) {
+            *iDir1 |= BIT_UP;
+            *iDir2 |= BIT_DOWN;
+        } else {
+            *iDir1 |= BIT_DOWN;
+            *iDir2 |= BIT_UP;
+        }
+    }
+    if(fZMag == 0.f) {
+        if(ptCenterDiff.z < 0) {
+            *iDir1 |= BIT_SOUTH;
+            *iDir2 |= BIT_NORTH;
+        } else {
+            *iDir1 |= BIT_NORTH;
+            *iDir2 |= BIT_SOUTH;
+        }
+    }
+
+    //If none of the shifts are 0
+    if(*iDir1 == 0) {
+        if(fXMag < fZMag && fXMag < fYMag) {
+            if(fXShift < 0.f) {
+                *iDir1 |= BIT_EAST;
+                *iDir2 |= BIT_WEST;
+            } else {
+                *iDir1 |= BIT_WEST;
+                *iDir2 |= BIT_EAST;
+            }
+        } else if(fZMag < fXMag && fZMag < fYMag) {
+            if(fZShift < 0) {
+                *iDir1 = BIT_SOUTH;
+                *iDir2 = BIT_NORTH;
+            } else {
+                *iDir1 = BIT_NORTH;
+                *iDir2 = BIT_SOUTH;
+            }
+        } else {    // if(fYMag < fXMag && fYMag < fZMag) {
+            if(fYShift < 0.f) {
+                *iDir1 |= BIT_UP;
+                *iDir2 |= BIT_DOWN;
+            } else {
+                *iDir1 |= BIT_DOWN;
+                *iDir2 |= BIT_UP;
+            }
+        }
+    }
 }

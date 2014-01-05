@@ -4,19 +4,15 @@ HmapSurface::HmapSurface(uint id, uint texId, const std::string &sMapFile, const
     m_uiId = id;
     m_uiFlags = 0;
     m_sMapFile = sMapFile;
-printf(__FILE__" %d\n",__LINE__);
     m_pxMap = new PixelMap(sMapFile, 0);    //not going to worry about id for now
-printf(__FILE__" %d\n",__LINE__);
     Box bxRelativeVol = Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                             bxVolume.w, bxVolume.h, bxVolume.l);
     m_pRenderModel = new D3HeightmapRenderModel(this, texId, m_pxMap, bxRelativeVol);
-printf(__FILE__" %d\n",__LINE__);
     m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), 10000.f);
     m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
     m_pPhysicsModel->setListener(this);
 
     setFlag(TPE_STATIC, true);
-printf(__FILE__" %d\n",__LINE__);
 }
 
 HmapSurface::~HmapSurface()
@@ -29,8 +25,9 @@ HmapSurface::update(uint time) {
     return false;
 }
 
-void
+int
 HmapSurface::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
+    return EVENT_DROPPED;
 }
 
 GameObject*
