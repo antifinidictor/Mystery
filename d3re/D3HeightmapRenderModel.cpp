@@ -50,8 +50,8 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
     for(uint x = 0; x < m_pxMap->m_uiW - 1; ++x) {
         glBegin(GL_TRIANGLE_STRIP);
         for(uint z = 0; z < m_pxMap->m_uiH; z++) {
-            float y0 = (float)m_pxMap->m_pData[x][z].toUint() * (m_bxVolume.h) / MAX_COLOR_VAL;
-            float y1 = (float)m_pxMap->m_pData[x+1][z].toUint() * (m_bxVolume.h) / MAX_COLOR_VAL;
+            float y0 = m_pxMap->m_pData[x][z] * (m_bxVolume.h);
+            float y1 = m_pxMap->m_pData[x+1][z] * (m_bxVolume.h);
             //printf("(%f,%f) -> %f, (%f,%f) -> %f");
             glTexCoord2f(x * w, z * l);
             glVertex3f(x * w, y0, z * l);
@@ -77,7 +77,7 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
     glBegin(GL_QUAD_STRIP);
     x = 0;
     for(z = 0; z < m_pxMap->m_uiH; ++z) {
-        float y = (float)m_pxMap->m_pData[x][z].toUint() * (m_bxVolume.h) / MAX_COLOR_VAL;
+        float y = m_pxMap->m_pData[x][z] * (m_bxVolume.h);
 
         glTexCoord2f(z * l, 1);
         glVertex3f(x * w, 0, z * l);
@@ -91,7 +91,7 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
     glBegin(GL_QUAD_STRIP);
     x = (m_pxMap->m_uiW - 1);
     for(z = 0; z < m_pxMap->m_uiH; ++z) {
-        float y = (float)m_pxMap->m_pData[x][z].toUint() * (m_bxVolume.h) / MAX_COLOR_VAL;
+        float y = m_pxMap->m_pData[x][z] * (m_bxVolume.h);
 
         glTexCoord2f(z * l, 1);
         glVertex3f(x * w, 0, z * l);
@@ -105,7 +105,7 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
     glBegin(GL_QUAD_STRIP);
     z = (m_pxMap->m_uiH - 1);
     for(x = 0; x < m_pxMap->m_uiW; ++x) {
-        float y = (float)m_pxMap->m_pData[x][z].toUint() * (m_bxVolume.h) / MAX_COLOR_VAL;
+        float y = m_pxMap->m_pData[x][z] * (m_bxVolume.h);
 
         glTexCoord2f(x * w, 1);
         glVertex3f(x * w, 0, z * l);
@@ -119,7 +119,7 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
     glBegin(GL_QUAD_STRIP);
     z = 0;
     for(x = 0; x < m_pxMap->m_uiW; ++x) {
-        float y = (float)m_pxMap->m_pData[x][z].toUint() * (m_bxVolume.h) / MAX_COLOR_VAL;
+        float y = m_pxMap->m_pData[x][z] * (m_bxVolume.h);
 
         glTexCoord2f(x * w, 1);
         glVertex3f(x * w, 0, z * l);

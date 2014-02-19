@@ -32,8 +32,10 @@ public:
     uint addForceField(ForceField *field);
     void removeForceField(uint id);
     virtual void setVolume(float fVolume) = 0;
+    virtual void addVolumeAt(float fVolume, const Point &pt) = 0;
     virtual float getVolume() = 0;
-
+protected:
+    Point getTotalForceAt(const Point &pos);
 private:
 
     void handleCollision(HandleCollisionData *data);

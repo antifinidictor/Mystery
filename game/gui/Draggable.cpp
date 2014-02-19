@@ -25,7 +25,7 @@ Draggable::~Draggable()
 
 int
 Draggable::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
-    int status = EVENT_CAUGHT;
+    int status = EVENT_DROPPED;
     switch(uiEventId) {
     case ON_MOUSE_MOVE:
         status = onMouseMove((InputData*)data);
@@ -34,7 +34,6 @@ Draggable::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
         status = onButtonPress((InputData*)data);
         break;
     default:
-        status = EVENT_DROPPED;
         break;
     }
     return status;
@@ -64,12 +63,14 @@ Draggable::onMouseMove(InputData *data) {
     case DRAG_MOUSE_OUT: {
         if(ptInRect(ptMouse, rcClickArea)) {
             m_eState = DRAG_MOUSE_IN;
+            onMouseIn();
         }
         break;
     }
     case DRAG_MOUSE_IN: {
         if(!ptInRect(ptMouse, rcClickArea)) {
             m_eState = DRAG_MOUSE_OUT;
+            onMouseOut();
         }
         break;
     }

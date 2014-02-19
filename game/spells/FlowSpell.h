@@ -36,7 +36,7 @@ private:
     };
 
     ElementalVolume *m_ev;
-    int m_iTimer;
+    int m_iTimer, m_iFxTimer;
     float m_fMagnitude;
     std::vector<PointIdPair> m_vForcePoints;
     bool m_bWasActivated;

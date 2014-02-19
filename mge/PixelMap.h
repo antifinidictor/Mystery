@@ -28,7 +28,8 @@ public:
 	uint m_uiW;
 	uint m_uiH;
 	uint m_uiId;
-    Color **m_pData;
+    //Color **m_pData;
+    float **m_pData;
 };
 
 

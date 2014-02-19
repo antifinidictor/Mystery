@@ -102,8 +102,9 @@ PartitionedWorldEngine::update(uint time) {
 
             //Update non-physics bit first
             if(it->second->update(time)) {
+                m_lsObjsToDelete.push_back(pair<uint,uint>(it->second->getId(), m_uiCurArea));
+                /*
                 //This object requested that it be removed
-                GameObject *obj = it->second;
 
                 //Get the previous iterator, then go back to the next element
                 map<uint, GameObject*>::iterator itTemp = (--it)++;
@@ -115,6 +116,7 @@ PartitionedWorldEngine::update(uint time) {
 
                 //Restore the iterator to a valid position in the map
                 it = itTemp;
+                */
                 continue;
             }
 
@@ -474,6 +476,7 @@ PartitionedWorldEngine::callBack(uint cId, void *data, uint id) {
 			++iter ) {
 			status = iter->second->callBack(ID_MODULAR_ENGINE, data, id);
 			if(status == EVENT_CAUGHT) {
+                //printf("\tObject %d in pwe caught the mouse-move event\n", iter->second->getId());
                 break;
 			}
 		}
@@ -484,6 +487,7 @@ PartitionedWorldEngine::callBack(uint cId, void *data, uint id) {
 			++iter ) {
 			status = iter->second->callBack(ID_MODULAR_ENGINE, data, id);
 			if(status == EVENT_CAUGHT) {
+                //printf("\tObject %d in pwe caught the button event\n", iter->second->getId());
                 break;
 			}
 		}
@@ -559,6 +563,7 @@ PartitionedWorldEngine::deleteFromNow(uint uiObjId, uint uiAreaId) {
 
     itObj = itArea->second.m_mCurArea.find(uiObjId);
     if(itObj != itArea->second.m_mCurArea.end()) {
+        re->remove(itObj->second);  //Make sure the object isn't on screen
         delete (itObj->second);
         itArea->second.m_mCurArea.erase(itObj);
     } else {

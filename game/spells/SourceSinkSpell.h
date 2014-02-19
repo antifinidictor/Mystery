@@ -26,8 +26,9 @@ public:
     virtual void update();      //Returns true if the spell has finished and can be deleted
 
 private:
-    ElementalVolume *m_ev;
-    int m_iTimer;
+    ElementalVolume *m_ev1;
+    ElementalVolume *m_ev2;
+    int m_iTimer, m_iFxTimer;
     Point m_ptSource;
     Point m_ptSink;
     uint m_uiSourceId;

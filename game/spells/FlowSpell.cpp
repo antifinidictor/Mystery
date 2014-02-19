@@ -1,11 +1,15 @@
 #include "FlowSpell.h"
 #include "ElementalVolume.h"
 #include "game/spells/ForceField.h"
+#include "game/FxSprite.h"
+#include "pwe/PartitionedWorldEngine.h"
 
 using namespace std;
 
 #define MIN_NUM_POINTS 3
 #define MAX_NUM_POINTS 5
+
+#define FX_TIMER_MAX 60
 
 FlowSpell::FlowSpell(int duration, float magnitude)
 {
@@ -14,6 +18,7 @@ FlowSpell::FlowSpell(int duration, float magnitude)
     m_fMagnitude = magnitude;
     m_eState = FS_STATE_AWAITING_POINTS;
     m_bWasActivated = false;
+    m_iFxTimer = 0;
 }
 
 FlowSpell::~FlowSpell()
@@ -104,10 +109,33 @@ FlowSpell::getStatus() {
 
 void
 FlowSpell::update() {
-    if(m_eState == FS_STATE_ACTIVATED) {
+    Color crPointColor = Color(255, 0, 0);
+    switch(m_eState) {
+    case FS_STATE_ACTIVATED:
         if(--m_iTimer < 0) {
             m_eState = FS_STATE_INVALID;
         }
+        //Do not break
+    case FS_STATE_READY:
+        crPointColor = Color(0, 255, 0);
+        //Do not break
+    case FS_STATE_AWAITING_POINTS:
+        if(--m_iFxTimer < 0) {
+            m_iFxTimer = FX_TIMER_MAX;
+            for(vector<PointIdPair>::iterator iterPt = m_vForcePoints.begin(); iterPt != m_vForcePoints.end(); ++iterPt) {
+                FxSprite *sprite = new FxSprite(
+                    PWE::get()->genId(),
+                    D3RE::get()->getImageId("spellPoints"),
+                    64,
+                    iterPt->pt + Point(0.f, 0.01f, 0.f)
+                );
+                sprite->setColor(crPointColor);
+                PWE::get()->add(sprite);
+            }
+        }
+        break;
+    default:
+        break;
     }
 }
 

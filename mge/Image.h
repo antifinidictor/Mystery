@@ -86,8 +86,10 @@ inline Image::Image(const std::string &sFileName, uint uiID, int iNumFramesH, in
 		glBindTexture( GL_TEXTURE_2D, m_uiTexture );
 
 		// Set the texture's stretching properties
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
 		// Edit the texture object's image data using the information SDL_pSurface gives us
 		glTexImage2D( GL_TEXTURE_2D, 0, m_iNumColors, pSurface->w, pSurface->h, 0,

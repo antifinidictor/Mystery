@@ -63,11 +63,11 @@ private:
     void typeUpdate();
 
     //state-specific input handling functions
-    void staticOnKeyPress(InputData *data);
-    void moveOnKeyPress(InputData *data);
-    void selectVolumeOnKeyPress(InputData *data);
-    void selectRectOnKeyPress(InputData *data);
-    void typeOnKeyPress(InputData *data);
+    int staticOnKeyPress(InputData *data);
+    int moveOnKeyPress(InputData *data);
+    int selectVolumeOnKeyPress(InputData *data);
+    int selectRectOnKeyPress(InputData *data);
+    int typeOnKeyPress(InputData *data);
 
     Point toTile(const Point &pt);
     Point getTileShift();

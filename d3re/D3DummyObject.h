@@ -19,7 +19,7 @@ public:
 
     //Listener
     virtual uint getId() { return 0; }
-    virtual int callBack(uint uiEventHandlerId, void *data, uint uiEventId) {}
+    virtual int callBack(uint uiEventHandlerId, void *data, uint uiEventId) { return EVENT_DROPPED; }
 
     //GameObject
     virtual bool getFlag(uint flag) { return false; }

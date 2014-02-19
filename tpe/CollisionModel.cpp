@@ -17,10 +17,10 @@ PixelMapCollisionModel::getHeightAtPoint(const Point &ptPos) {
     }
 
     //Get heights at four neighboring indices
-    float yff = (float)m_pxMap->m_pData[fx][fz].toUint();
-    float yfc = (float)m_pxMap->m_pData[fx][cz].toUint();
-    float ycc = (float)m_pxMap->m_pData[cx][cz].toUint();
-    float ycf = (float)m_pxMap->m_pData[cx][fz].toUint();
+    float yff = m_pxMap->m_pData[fx][fz];
+    float yfc = m_pxMap->m_pData[fx][cz];
+    float ycc = m_pxMap->m_pData[cx][cz];
+    float ycf = m_pxMap->m_pData[cx][fz];
 
     //Interpolate
     float xDiff = (fx == cx) ? 0.5f : (cx - x) / (cx - fx);
@@ -28,7 +28,7 @@ PixelMapCollisionModel::getHeightAtPoint(const Point &ptPos) {
     float xInterpCz = (xDiff) * yfc + (1.f - xDiff) * ycc;
     float zDiff = (fz == cz) ? 0.5f : (cz - z) / (cz - fz);
     float interp = zDiff * xInterpFz + (1 - zDiff) * xInterpCz;
-    interp = interp / MAX_COLOR_VAL * (m_bxBounds.h) + m_bxBounds.y;
+    interp = interp * (m_bxBounds.h) + m_bxBounds.y;
 
     return interp;
 }

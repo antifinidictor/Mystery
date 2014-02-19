@@ -83,7 +83,7 @@ SimplePhysicsObject::callBack(uint uiId, void *data, uint uiEventId) {
             HandleCollisionData *d = (HandleCollisionData*)data;
             if(d->iDirection == UP || d->iDirection == DOWN) return EVENT_DROPPED;
             //m_bPlayingSound = true;
-            BAE::get()->playSound(AUD_DRAG);
+            //BAE::get()->playSound(AUD_DRAG);
         }
         break;
     default:

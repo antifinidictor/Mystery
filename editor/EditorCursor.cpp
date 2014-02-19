@@ -89,28 +89,30 @@ EditorCursor::callBack(uint cID, void *data, uint eventId) {
       }
     case PWE_ON_REMOVED_FROM_AREA:
         PWE::get()->removeListener(getId(), ON_BUTTON_INPUT, *((uint*)data));
+        status = EVENT_DROPPED; //Handled, but should not be the only one to handle it
         break;
     case PWE_ON_ADDED_TO_AREA:
         PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
+        status = EVENT_DROPPED; //Handled, but should not be the only one to handle it
         break;
     case ON_BUTTON_INPUT: {
         switch(m_eState) {
         case EDC_STATE_STATIC: {
-            staticOnKeyPress((InputData*)data);
+            status = staticOnKeyPress((InputData*)data);
             break;
             }
         case EDC_STATE_MOVE:
-            moveOnKeyPress((InputData*)data);
+            status = moveOnKeyPress((InputData*)data);
             break;
         case EDC_STATE_SELECT_VOL:
-            selectVolumeOnKeyPress((InputData*)data);
+            status = selectVolumeOnKeyPress((InputData*)data);
             break;
         case EDC_STATE_SELECT_RECT:
-            selectRectOnKeyPress((InputData*)data);
+            status = selectRectOnKeyPress((InputData*)data);
             break;
         case EDC_STATE_TYPE_FIELD:
         case EDC_STATE_TYPE:
-            typeOnKeyPress((InputData*)data);
+            status = typeOnKeyPress((InputData*)data);
             break;
         default:
             status = EVENT_DROPPED;
@@ -301,19 +303,23 @@ EditorCursor::typeUpdate() {
 }
 
 //state-specific input handling functions
-void
+int
 EditorCursor::staticOnKeyPress(InputData *data) {
     //TODO: anything?
+    return EVENT_DROPPED;
 }
 
-void
+int
 EditorCursor::moveOnKeyPress(InputData *data) {
     m_fDeltaPitch = 0.f;
+    int status = EVENT_DROPPED;
     if(data->getInputState(IN_SHIFT)) {
         if(data->getInputState(IN_NORTH)) {
             m_ptDeltaPos.y = MOVE_SPEED;
+            status = EVENT_CAUGHT;
         } else if(data->getInputState(IN_SOUTH)) {
             m_ptDeltaPos.y = -MOVE_SPEED;
+            status = EVENT_CAUGHT;
         } else {
             m_ptDeltaPos.y = 0.f;
         }
@@ -323,8 +329,10 @@ EditorCursor::moveOnKeyPress(InputData *data) {
     } else if(data->getInputState(IN_CTRL)) {
         if(data->getInputState(IN_NORTH)) {
             m_fDeltaZoom = -MOVE_SPEED;
+            status = EVENT_CAUGHT;
         } else if(data->getInputState(IN_SOUTH)) {
             m_fDeltaZoom = MOVE_SPEED;
+            status = EVENT_CAUGHT;
         } else {
             m_fDeltaZoom = 0.f;
         }
@@ -332,8 +340,10 @@ EditorCursor::moveOnKeyPress(InputData *data) {
     } else {
         if(data->getInputState(IN_NORTH)) {
             m_ptDeltaPos.z = -MOVE_SPEED;
+            status = EVENT_CAUGHT;
         } else if(data->getInputState(IN_SOUTH)) {
             m_ptDeltaPos.z = MOVE_SPEED;
+            status = EVENT_CAUGHT;
         } else {
             m_ptDeltaPos.z = 0;
         }
@@ -342,26 +352,32 @@ EditorCursor::moveOnKeyPress(InputData *data) {
 
     if(data->getInputState(IN_WEST)) {
         m_ptDeltaPos.x = -MOVE_SPEED;
+        status = EVENT_CAUGHT;
     } else if(data->getInputState(IN_EAST)) {
         m_ptDeltaPos.x = MOVE_SPEED;
+        status = EVENT_CAUGHT;
     } else {
         m_ptDeltaPos.x = 0;
     }
+    return status;
 }
 
-void
+int
 EditorCursor::selectVolumeOnKeyPress(InputData *data) {
-    moveOnKeyPress(data);
+    return moveOnKeyPress(data);
 }
 
-void
+int
 EditorCursor::selectRectOnKeyPress(InputData *data) {
     //TODO: Implement!
+    return EVENT_DROPPED;
 }
 
-void
+int
 EditorCursor::typeOnKeyPress(InputData *data) {
+    int status = EVENT_DROPPED;
     if(data->getInputState(KIN_LETTER_PRESSED) && data->hasChanged(KIN_LETTER_PRESSED)) {
+        status = EVENT_CAUGHT;
         uint letters = data->getLettersDown();
         uint l = 1;
         for(int i = 0; i < 26; ++i) {
@@ -374,6 +390,7 @@ EditorCursor::typeOnKeyPress(InputData *data) {
         }
     }
     if(data->getInputState(KIN_NUMBER_PRESSED) && data->hasChanged(KIN_NUMBER_PRESSED)) {
+        status = EVENT_CAUGHT;
         uint numbers = data->getNumbersDown();
         uint n = 1;
         for(int i = 0; i < 10; ++i) {
@@ -386,33 +403,43 @@ EditorCursor::typeOnKeyPress(InputData *data) {
 
     if(data->getInputState(ED_IN_SPACE) && data->hasChanged(ED_IN_SPACE)) {
         m_sInput.append(1, ' ');
+        status = EVENT_CAUGHT;
     }
     if(data->getInputState(ED_IN_PERIOD) && data->hasChanged(ED_IN_PERIOD)) {
         m_sInput.append(1, '.');
+        status = EVENT_CAUGHT;
     }
     if(data->getInputState(ED_IN_UNDERSCORE) && data->hasChanged(ED_IN_UNDERSCORE)) {
         if(data->getInputState(IN_SHIFT)) {
             m_sInput.append(1, '_');
+            status = EVENT_CAUGHT;
         } else {
             m_sInput.append(1, '-');
+            status = EVENT_CAUGHT;
         }
     }
     if(data->getInputState(ED_IN_SLASH) && data->hasChanged(ED_IN_SLASH)) {
         m_sInput.append(1, '/');
+        status = EVENT_CAUGHT;
     }
     if(data->getInputState(ED_IN_COLON) && data->hasChanged(ED_IN_COLON)) {
         m_sInput.append(1, ':');
+        status = EVENT_CAUGHT;
     }
     if(data->getInputState(ED_IN_BACKSPACE) && data->hasChanged(ED_IN_BACKSPACE) && m_sInput.size() > 0) {
         m_sInput.resize(m_sInput.size() - 1);
+        status = EVENT_CAUGHT;
     }
     if(data->getInputState(ED_IN_ENTER) && data->hasChanged(ED_IN_ENTER)) {
         if(m_eState == EDC_STATE_TYPE_FIELD) {
             EditorManager::get()->callBack(this->getId(), NULL, ED_HUD_OP_FINALIZE);
+            status = EVENT_CAUGHT;
         } else {
             m_sInput.append(1, '\n');
+            status = EVENT_CAUGHT;
         }
     }
+    return status;
 }
 
 

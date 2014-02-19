@@ -19,7 +19,7 @@ WaterElementalVolume::WaterElementalVolume(uint id, uint texId, Box bxVolume, fl
     m_pRenderModel = new D3HeightmapRenderModel(this, texId, m_pxMap, bxRelativeVol);
 
     //Default swell values
-    m_fSwellSize = MAX_COLOR_VAL;
+    m_fSwellSize = 1.f;
     m_fSwellSpacingX = bxVolume.w / (m_pxMap->m_uiW - 1) * M_PI / 5.f;
     m_fSwellSpacingZ = bxVolume.l / (m_pxMap->m_uiH - 1) * M_PI / 5.f;
 
@@ -91,7 +91,7 @@ WaterElementalVolume::update(uint time) {
     float fTime = time / 1000.f;
     for(uint x = 0; x < m_pxMap->m_uiW; ++x) {
         for(uint z = 0; z < m_pxMap->m_uiH; ++z) {
-            m_pxMap->m_pData[x][z] = uint((m_fSwellSize / 2.f)
+            m_pxMap->m_pData[x][z] = ((m_fSwellSize / 2.f)
                 * sin((x + fTime) * M_PI / 5.f)
                 * sin((z + fTime) * M_PI / 5.f)
                 + m_fSwellSize / 2);
@@ -104,6 +104,11 @@ WaterElementalVolume::update(uint time) {
 
 void
 WaterElementalVolume::setVolume(float fVolume) {
+}
+
+
+void
+WaterElementalVolume::addVolumeAt(float fVolume, const Point &pos) {
 }
 
 float

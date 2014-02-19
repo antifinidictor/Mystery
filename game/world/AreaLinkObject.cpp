@@ -30,6 +30,7 @@ AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPo
     setFlag(TPE_STATIC, true);
     setFlag(TPE_PASSABLE, true);
     setFlag(D3RE_INVISIBLE, true);
+    m_uiDirections = BIT(NUM_DIRECTIONS) - 1;
 }
 
 AreaLinkObject::~AreaLinkObject() {
@@ -54,6 +55,8 @@ AreaLinkObject::read(const boost::property_tree::ptree &pt, const std::string &k
     ptDestPos.y = pt.get(keyBase + ".dest.y", 0.f);
     ptDestPos.z = pt.get(keyBase + ".dest.z", 0.f);
     AreaLinkObject *obj = new AreaLinkObject(uiId, uiAreaId, ptDestPos, bxVolume);
+
+    obj->m_uiDirections = pt.get(keyBase + ".dirs", BIT(NUM_DIRECTIONS) - 1);
     return obj;
 }
 
@@ -72,6 +75,8 @@ AreaLinkObject::write(boost::property_tree::ptree &pt, const std::string &keyBas
     pt.put(keyBase + ".dest.x", m_ptDestPos.x);
     pt.put(keyBase + ".dest.y", m_ptDestPos.y);
     pt.put(keyBase + ".dest.z", m_ptDestPos.z);
+
+    pt.put(keyBase + ".dirs", m_uiDirections);
 }
 
 
@@ -82,7 +87,8 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
     case TPE_ON_COLLISION: {
         HandleCollisionData *hcd = (HandleCollisionData*)data;
         PWE *we = PWE::get();
-        if(hcd->obj->getFlag(GAM_CAN_LINK)) {
+
+        if(hcd->obj->getFlag(GAM_CAN_LINK)/*&& (hcd->iDirection & m_uiDirections)*/) {
             Point ptPosDelta = m_ptDestPos - hcd->obj->getPhysicsModel()->getPosition();
             hcd->obj->moveBy(ptPosDelta);
             we->moveObjectToArea(hcd->obj->getId(), we->getCurrentArea(), m_uiDestAreaId);

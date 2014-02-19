@@ -220,13 +220,14 @@ GameManager::initPlayerHud() {
     panel->add(MGHUD_INVENTORY_CONTAINER, inventoryPanel);
 
     //Area name
+#define TEXT_BOX_WIDTH (TEXTURE_TILE_SIZE * 12)
     Rect rcAreaLabel = Rect(
-        TEXTURE_TILE_SIZE * 4.f,
+        (TEXTURE_TILE_SIZE * 4.f) + (TEXT_BOX_WIDTH / 2.f),
         5.F + SCREEN_HEIGHT - TEXTURE_TILE_SIZE,
-        TEXTURE_TILE_SIZE * 4,
+        TEXT_BOX_WIDTH,
         TEXTURE_TILE_SIZE
     );
-    D3HudRenderModel *label = new D3HudRenderModel("Area0", rcAreaLabel,1.0f);
+    D3HudRenderModel *label = new D3HudRenderModel("", rcAreaLabel,1.0f);
     panel->add(MGHUD_AREA_NAME, label);
 
     //Health bar

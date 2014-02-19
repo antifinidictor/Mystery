@@ -44,12 +44,7 @@ void
 ElementalVolume::handleCollision(HandleCollisionData *data) {
     //We'll deal with multiple collision objects later
     Point ptPos = data->obj->getPhysicsModel()->getPosition();
-    Point ptForce = Point();
-    map<uint,ForceField*>::iterator iter;
-    for(iter = m_mForceFields.begin(); iter != m_mForceFields.end(); ++iter) {
-        ptForce += iter->second->getForceAt(ptPos);
-        ptForce.y = 0.f;
-    }
+    Point ptForce = getTotalForceAt(ptPos);
     data->obj->getPhysicsModel()->applyForce(ptForce);
 }
 
@@ -68,4 +63,15 @@ ElementalVolume::removeForceField(uint id) {
         delete iter->second;
         m_mForceFields.erase(iter);
     }
+}
+
+Point
+ElementalVolume::getTotalForceAt(const Point &ptPos) {
+    Point ptForce = Point();
+    map<uint,ForceField*>::iterator iter;
+    for(iter = m_mForceFields.begin(); iter != m_mForceFields.end(); ++iter) {
+        ptForce += iter->second->getForceAt(ptPos);
+        ptForce.y = 0.f;
+    }
+    return ptForce;
 }

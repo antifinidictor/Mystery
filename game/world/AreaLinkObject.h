@@ -40,6 +40,7 @@ public:
 private:
     uint m_uiID, m_uiFlags;
     uint m_uiDestAreaId;
+    uint m_uiDirections;
     Point m_ptDestPos;
 
     D3PrismRenderModel *m_pRenderModel;

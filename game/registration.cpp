@@ -12,6 +12,7 @@
 #include "game/world/SimpleResettableObject.h"
 #include "game/world/HmapSurface.h"
 #include "game/spells/WaterElementalVolume.h"
+#include "game/spells/EarthElementalVolume.h"
 #include "game/items/Item.h"
 #include "game/character/Character.h"
 
@@ -61,6 +62,13 @@ void registerClasses() {
         .registerAttribute("Density", "density", ATYPE_FLOAT)
     ;
 
+    fac->registerClass(EarthElementalVolume::getClassName(), EarthElementalVolume::read)
+        .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
+        .registerAttribute("Texture", "tex", ATYPE_RESOURCE_ID)
+        .registerAttribute("Volume", "vol", ATYPE_BOX)
+        .registerAttribute("Density", "density", ATYPE_FLOAT)
+    ;
+
     fac->registerClass(HmapSurface::getClassName(), HmapSurface::read)
         .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
         .registerAttribute("Texture", "tex", ATYPE_RESOURCE_ID)
@@ -86,6 +94,7 @@ void registerClasses() {
         .registerAttribute("Dest Area ID", "destAreaId", ATYPE_OBJECT_ID)
         .registerAttribute("Dest Position", "dest", ATYPE_POINT)
         .registerAttribute("Trigger Volume", "vol", ATYPE_BOX)
+        .registerAttribute("Directions", "dirs", ATYPE_UINT)
     ;
 
     fac->registerClass(Item::getClassName(), Item::read)

@@ -17,7 +17,7 @@
 #include "tpe/TimePhysicsEngine.h"
 
 #define FADE_TIME_STEP 0.02f
-#define DEFAULT_WEIGHT 0.5f
+#define DEFAULT_WEIGHT 0.0f //Used to be 0.5f.  Now let's only change it if the world color changes
 #define FADE_WEIGHT 1.f
 
 class ElementalVolume;

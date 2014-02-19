@@ -39,6 +39,8 @@ public:
     virtual void onFollow(const Point &diff);
     virtual void onStartDragging() {};
     virtual void onEndDragging() {};
+    virtual void onMouseIn() {};
+    virtual void onMouseOut() {};
 
 protected:
     ContainerRenderModel *m_pRenderModel;

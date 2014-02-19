@@ -43,8 +43,7 @@ public:
         switch(eventId) {
         case ON_BUTTON_INPUT:
         case ON_MOUSE_MOVE:
-            handleMouseEvent((InputData*)data);
-            return EVENT_CAUGHT;
+            return handleMouseEvent((InputData*)data);
         default:
             return EVENT_DROPPED;
         }
@@ -57,10 +56,12 @@ private:
         HUD_BUTTON_DOWN
     };
 
-    void handleMouseEvent(InputData *data) {
+    int handleMouseEvent(InputData *data) {
         Point ptMouse = Point(data->getInputState(MIN_MOUSE_X), data->getInputState(MIN_MOUSE_Y), 0)
             - m_pParent->getPosition();
+        int status = EVENT_DROPPED;
         if(ptInRect(ptMouse, getDrawArea())) {
+            status = EVENT_CAUGHT;
             if(data->getInputState(IN_SELECT)) {
                 setFrameH(HUD_BUTTON_DOWN);
             } else {
@@ -73,6 +74,7 @@ private:
         } else {
             setFrameH(HUD_BUTTON_UP);
         }
+        return status;
     }
 
     RenderModel *m_pParent;

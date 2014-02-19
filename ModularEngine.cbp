@@ -198,6 +198,8 @@
 			<Option target="Editor" />
 			<Option target="LinuxEditor" />
 		</Unit>
+		<Unit filename="game/FxSprite.cpp" />
+		<Unit filename="game/FxSprite.h" />
 		<Unit filename="game/GameManager.cpp" />
 		<Unit filename="game/GameManager.h" />
 		<Unit filename="game/ObjectFactory.cpp" />
@@ -224,9 +226,13 @@
 		<Unit filename="game/gui/DraggableHud.h" />
 		<Unit filename="game/gui/TextDisplay.cpp" />
 		<Unit filename="game/gui/TextDisplay.h" />
+		<Unit filename="game/items/Inventory.cpp" />
+		<Unit filename="game/items/Inventory.h" />
 		<Unit filename="game/items/Item.cpp" />
 		<Unit filename="game/items/Item.h" />
 		<Unit filename="game/registration.cpp" />
+		<Unit filename="game/spells/EarthElementalVolume.cpp" />
+		<Unit filename="game/spells/EarthElementalVolume.h" />
 		<Unit filename="game/spells/ElementalVolume.cpp" />
 		<Unit filename="game/spells/ElementalVolume.h" />
 		<Unit filename="game/spells/FlowSpell.cpp" />

@@ -16,7 +16,7 @@ Water::Water(uint id, uint texId, Box bxVolume, float fDensity) {
     PixelMap *m_pxMap = new PixelMap(2, 2,0);
     for(uint i = 0; i < m_pxMap->m_uiW; ++i) {
         for(uint j = 0; j < m_pxMap->m_uiH; ++j) {
-            m_pxMap->m_pData[i][j] = MAX_COLOR_VAL;
+            m_pxMap->m_pData[i][j] = 1.f;
         }
     }
     m_pRenderModel = new D3HeightmapRenderModel(this, texId, m_pxMap, bxRelativeVol);

@@ -88,12 +88,14 @@ PixelMap::PixelMap(const std::string &sFileName, uint uiId) {
         */
 
         //Allocate and fill out the pixel data
-        m_pData = (Color**)malloc(sizeof(Color*) * m_uiW);
+        m_pData = (float**)malloc(sizeof(float*) * m_uiW);
         for(uint x = 0; x < m_uiW; ++x) {
-            m_pData[x] = (Color*)malloc(sizeof(Color) * m_uiH);
+            m_pData[x] = (float*)malloc(sizeof(float) * m_uiH);
             for(uint y = 0; y < m_uiH; ++y) {
                 //Fill each pixel
-                copyPixel(pSurface, x, y, &m_pData[x][y]);
+                Color cr;
+                copyPixel(pSurface, x, y, &cr);
+                m_pData[x][y] = (float)cr.toUint() / (float)MAX_COLOR_VAL;
             }
         }
 
@@ -119,12 +121,12 @@ PixelMap::PixelMap(uint w, uint h, uint uiId) {
 	m_sImageFileName = "";
 	m_uiId = uiId;
 
-    m_pData = (Color**)malloc(sizeof(Color*) * m_uiW);
+    m_pData = (float**)malloc(sizeof(float*) * m_uiW);
     for(uint x = 0; x < m_uiW; ++x) {
-        m_pData[x] = (Color*)malloc(sizeof(Color) * m_uiH);
+        m_pData[x] = (float*)malloc(sizeof(float) * m_uiH);
         for(uint y = 0; y < m_uiH; ++y) {
             //Fill each pixel
-            m_pData[x][y] = Color();
+            m_pData[x][y] = 0.f;
         }
     }
 }

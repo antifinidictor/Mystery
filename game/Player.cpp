@@ -9,7 +9,7 @@ using namespace std;
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
 #define WALK_FORCE 0.5f
-#define SPELL_DURATION 10000
+#define SPELL_DURATION 1000
 
 enum PlayerAnims {
     PANIM_STANDING = 0,     //1 frame
@@ -118,7 +118,7 @@ bool Player::update(uint time) {
 
 int
 Player::callBack(uint cID, void *data, uint uiEventId) {
-    int status = EVENT_CAUGHT;
+    int status = EVENT_DROPPED;
     switch(uiEventId) {
     case PWE_ON_ADDED_TO_AREA:
         PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
@@ -332,7 +332,14 @@ Player::upateHud() {
     rcArea.w = BAR_WIDTH * m_uiHealth / m_uiMaxHealth;
     bar->updateDrawArea(rcArea);
 
-    area->updateText(PWE::get()->getAreaName(PWE::get()->getCurrentArea()));
+    //Update the area label.  We need to move the area so it is centered
+    string newAreaLabel = PWE::get()->getAreaName(PWE::get()->getCurrentArea());
+    Rect rcOldTextArea = TextRenderer::get()->getArea(area->getText().c_str(), 0.f, 0.f);
+    Rect rcNewTextArea = TextRenderer::get()->getArea(newAreaLabel.c_str(), 0.f, 0.f);
+    //Movement amount
+    float fShift = (rcOldTextArea.w - rcNewTextArea.w) / 2.f;
+    area->updateText(newAreaLabel);
+    area->moveBy(Point(fShift, 0.f, 0.f));
 
     if(m_uiItemAnimCounter % 20 == 0) {
         ContainerRenderModel *inventoryContainer = topBar->get<ContainerRenderModel*>(MGHUD_INVENTORY_CONTAINER);
@@ -467,14 +474,16 @@ Player::resetSpell(uint uiSpell) {
     }
     switch(uiSpell) {
     case SPELL_TYPE_SOURCE_SINK:
-        m_aSpells[SPELL_TYPE_SOURCE_SINK] = new SourceSinkSpell(SPELL_DURATION, 0.8f);
+        m_aSpells[SPELL_TYPE_SOURCE_SINK] = new SourceSinkSpell(SPELL_DURATION, 0.3f);
         break;
     case SPELL_TYPE_FLOW:
-        m_aSpells[SPELL_TYPE_FLOW] = new FlowSpell(SPELL_DURATION, 0.8f);
+        m_aSpells[SPELL_TYPE_FLOW] = new FlowSpell(SPELL_DURATION, 0.3f);
         break;
+/*
     case SPELL_TYPE_DIVIDE:
         m_aSpells[SPELL_TYPE_DIVIDE] = NULL;
         break;
+*/
     default:
         break;
     }
