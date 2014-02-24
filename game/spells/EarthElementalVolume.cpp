@@ -84,7 +84,7 @@ EarthElementalVolume::update(uint time) {
     #if 1
 static int tempTimer = 0;
     if(--tempTimer < 0) {
-        tempTimer = 60;
+        tempTimer = 10;
 
         //Sanity check
         //float fVolBef = getVolume();
@@ -131,7 +131,7 @@ static int tempTimer = 0;
                             ptVec.normalize();
 
                             //Get the magnitude and direction of the force projected onto the direction vector
-                            float mag = dot(ptVec, ptForce);
+                            float mag = dot(ptVec, ptForce) / 10;
                             if(mag > 1.f || mag < -1.f) {
                                 printf("ERROR: mag is too big! %f\n", mag);
                             }
@@ -141,7 +141,7 @@ static int tempTimer = 0;
                             uint dz = z + wz - 1;
                             float fHeightShift = (m_pxMap->m_pData[x][z] + m_pxMap->m_pData[dx][dz]) * mag / 2.f;
                             #define MAX_HEIGHT 1.f
-                            #define MIN_HEIGHT 0.1f
+                            #define MIN_HEIGHT 0.0f
                             if(m_pxMap->m_pData[x][z] + fHeightShift > MAX_HEIGHT) {
                                 fHeightShift = MAX_HEIGHT - m_pxMap->m_pData[x][z];
                             } else if(m_pxMap->m_pData[x][z] + fHeightShift < MIN_HEIGHT) {
@@ -182,6 +182,25 @@ EarthElementalVolume::addVolumeAt(float fVolume, const Point &ptPos) {
     //Scale ptPos to a set of four indices
     float x = (ptPos.x - bxBounds.x) * (m_pxMap->m_uiW - 1) / bxBounds.w;
     float z = (ptPos.z - bxBounds.z) * (m_pxMap->m_uiH - 1) / bxBounds.l;
+#if 1
+    float fVolPerUnit = (bxBounds.w * bxBounds.l * bxBounds.h) / ((m_pxMap->m_uiW) * (m_pxMap->m_uiH) * 1.f);
+    float fTotalVol = 0.f;
+    for(uint ux = 0; ux < m_pxMap->m_uiW; ++ux) {
+        for(uint uz = 0; uz < m_pxMap->m_uiH; ++uz) {
+            float dx = (x - ux);
+            float dz = (z - uz);
+            float distance = sqrt(dx * dx + dz * dz);
+            float dh = (distance < 1.f) ? fVolume : fVolume / distance;
+            fTotalVol += m_pxMap->m_pData[0][0] * fVolPerUnit;
+            m_pxMap->m_pData[ux][uz] = BOUND(0.f, m_pxMap->m_pData[ux][uz] + dh, 1.f);
+        }
+    }
+    printf("Unit vol: %f Total vol: %f Actual vol: %f\n",
+           m_pxMap->m_pData[0][0] * fVolPerUnit,
+           fTotalVol,
+           bxBounds.w * bxBounds.l * (bxBounds.h) / 2.f
+           );
+#else
     int fx = BOUND(0, (int)floor(x), m_pxMap->m_uiW - 1);
     int fz = BOUND(0, (int)floor(z), m_pxMap->m_uiH - 1);
     int cx = BOUND(0, (int)ceil(x), m_pxMap->m_uiW - 1);
@@ -202,6 +221,7 @@ EarthElementalVolume::addVolumeAt(float fVolume, const Point &ptPos) {
     m_pxMap->m_pData[fx][cz] = BOUND(0.f, m_pxMap->m_pData[fx][cz] + zInterpVolC * xDiff, 1.f);
     m_pxMap->m_pData[cx][cz] = BOUND(0.f, m_pxMap->m_pData[cx][cz] + zInterpVolC * (1 - xDiff), 1.f);
     m_pxMap->m_pData[cx][fz] = BOUND(0.f, m_pxMap->m_pData[cx][fz] + zInterpVolF * (1 - xDiff), 1.f);
+#endif
 }
 
 float

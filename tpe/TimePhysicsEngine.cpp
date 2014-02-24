@@ -3,7 +3,7 @@
 #include "mge/RenderModel.h"
 #include "tpe/tpe.h"
 
-#define GRAV_ACCEL 0.05f
+#define GRAV_ACCEL 0.1f
 
 using namespace std;
 

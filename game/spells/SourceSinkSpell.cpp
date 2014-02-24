@@ -88,8 +88,8 @@ SourceSinkSpell::update() {
         if(--m_iTimer < 0) {
             m_eState = SSS_STATE_INVALID;
         }
-        m_ev1->addVolumeAt(0.3f, m_ptSource);
-        m_ev2->addVolumeAt(-0.3f, m_ptSink);
+        m_ev1->addVolumeAt(0.01f, m_ptSource);
+        m_ev2->addVolumeAt(-0.01f, m_ptSink);
         //Do not break
     case SSS_STATE_READY:
         crSource = Color(0, 255, 0);
