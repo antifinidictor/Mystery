@@ -12,6 +12,9 @@ Inventory::Inventory()
     for(int i = 0; i < NUM_GENERAL_ITEMS; ++i) {
         m_aGeneralItems[i] = NULL;
     }
+    m_uiCurSpell = 0;
+    m_uiCurItem = 0;
+    m_uiCurElement = 0;
 }
 
 Inventory::~Inventory()
@@ -39,7 +42,7 @@ Inventory::add(Item *item) {
     int index;
     if(uiItemId < ITEM_NUM_ELEMENTS) {
         //Store in the element index spaces
-        index = uiItemId;
+        index = uiItemId - 1;
         if(m_aElementItems[index] != NULL) {
             delete m_aElementItems[index];
         }

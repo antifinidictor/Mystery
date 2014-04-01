@@ -91,7 +91,7 @@ DraggableHud::updateItemAnimations(Inventory *inv) {
         m_iAnimTimer = 0;
         for(int i = 0; i < NUM_ELEMENT_ITEMS; ++i) {
             if(inv->getElement(i) != NULL) {
-                uint index = i + MGHUD_ELEMENT_THUMBNAIL_START;
+                uint index = i + MGHUD_ELEMENT_THUMBNAIL_START + 1;
                 m_pRenderModel->get<D3HudRenderModel*>(index)->setFrameW(m_iFrame);
             }
         }
@@ -107,6 +107,14 @@ DraggableHud::updateItemAnimations(Inventory *inv) {
                 m_pRenderModel->get<D3HudRenderModel*>(index)->setFrameW(m_iFrame);
             }
         }
+
+        //Update itembar images (which are set to itemid 0 if no item set)
+        ContainerRenderModel *panel = D3RE::get()->getHudContainer()
+            ->get<ContainerRenderModel*>(HUD_TOPBAR)
+            ->get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER);
+        panel->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT)->setFrameW(m_iFrame);
+        panel->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL)->setFrameW(m_iFrame);
+        panel->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM)->setFrameW(m_iFrame);
     } else {
         ++m_iAnimTimer;
     }

@@ -49,7 +49,7 @@ Player::Player(uint uiId, const Point &ptPos) {
 
     for(uint i = 0; i < NUM_SPELL_TYPES; ++i) {
         m_aSpells[i] = NULL;
-        resetSpell(i);
+        //resetSpell(i);
     }
     m_uiCurSpell = 0;
 
@@ -92,7 +92,6 @@ Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 bool Player::update(uint time) {
     //Currently needs to occur in any state that isn't "paused"
     updateSpells();
-    upateHud();
 
     switch(m_eState) {
     case PLAYER_CASTING:
@@ -164,8 +163,14 @@ void
 Player::updateNormal(uint time) {
     Point mov;
     if(m_bMouseDown) {
+        Point ptMouseVec = D3RE::get()->getMouseRay();
+        Point ptCamPos = D3RE::get()->getCameraPosition();
+        float myY = m_pPhysicsModel->getPosition().y;
+        float t = (myY - ptCamPos.y) / ptMouseVec.y;
+        Point ptMouse =  ptCamPos + ptMouseVec * t;
+
         //Move according to the mouse
-        mov = D3RE::get()->getMousePos() - m_pPhysicsModel->getPosition();
+        mov = ptMouse - m_pPhysicsModel->getPosition();
         mov.y = 0.f;
         dx = mov.x;
         dy = mov.z;
@@ -237,7 +242,17 @@ Player::updateNormal(uint time) {
 
 void
 Player::updateCasting(uint time) {
-    Point ptMouse = D3RE::get()->getMousePos();
+    Point ptMouse;
+    //if(D3RE::get()->getMouseOverObject() == NULL) {
+        Point ptMouseVec = D3RE::get()->getMouseRay();
+        Point ptCamPos = D3RE::get()->getCameraPosition();
+        float myY = m_pPhysicsModel->getPosition().y;
+        float t = (myY - ptCamPos.y) / ptMouseVec.y;
+        ptMouse =  ptCamPos + ptMouseVec * t;
+    //} else {
+    //    ptMouse = D3RE::get()->getMousePos();
+    //}
+
     Point ptPos = m_pPhysicsModel->getPosition();
     Vec3f v3Diff = ptMouse - ptPos;
     float theta = atan2(v3Diff.x, v3Diff.z);
@@ -313,45 +328,6 @@ Player::updateSpells() {
                 m_aSpells[i]->update();
             }
         }
-    }
-}
-void
-Player::upateHud() {
-    #define BAR_WIDTH  (TEXTURE_TILE_SIZE * 3.F - 2.f)
-    ContainerRenderModel *topBar = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_TOPBAR);
-    ContainerRenderModel *healthContainer = topBar->get<ContainerRenderModel*>(MGHUD_HEALTH_CONTAINER);
-    D3HudRenderModel *bar = healthContainer->get<D3HudRenderModel*>(MGHUD_HEALTH_BAR);
-    D3HudRenderModel *val = healthContainer->get<D3HudRenderModel*>(MGHUD_HEALTH_VALUE);
-    D3HudRenderModel *area = topBar->get<D3HudRenderModel*>(MGHUD_AREA_NAME);
-
-    ostringstream ss;
-    ss << m_uiHealth;
-    val->updateText(ss.str());
-
-    Rect rcArea = bar->getDrawArea();
-    rcArea.w = BAR_WIDTH * m_uiHealth / m_uiMaxHealth;
-    bar->updateDrawArea(rcArea);
-
-    //Update the area label.  We need to move the area so it is centered
-    string newAreaLabel = PWE::get()->getAreaName(PWE::get()->getCurrentArea());
-    Rect rcOldTextArea = TextRenderer::get()->getArea(area->getText().c_str(), 0.f, 0.f);
-    Rect rcNewTextArea = TextRenderer::get()->getArea(newAreaLabel.c_str(), 0.f, 0.f);
-    //Movement amount
-    float fShift = (rcOldTextArea.w - rcNewTextArea.w) / 2.f;
-    area->updateText(newAreaLabel);
-    area->moveBy(Point(fShift, 0.f, 0.f));
-
-    if(m_uiItemAnimCounter % 20 == 0) {
-        ContainerRenderModel *inventoryContainer = topBar->get<ContainerRenderModel*>(MGHUD_INVENTORY_CONTAINER);
-        int iFrame = (m_uiItemAnimCounter / 20) % 8;
-        for(uint i = 0; i < m_vInventory.size(); ++i) {
-            inventoryContainer->get<D3HudRenderModel*>(MGHUD_ELEMENT_THUMBNAIL_START + i)->setFrameW(iFrame);
-        }
-        m_uiItemAnimCounter++;
-    } else if(m_uiItemAnimCounter > 160) {
-        m_uiItemAnimCounter = 0;
-    } else {
-        m_uiItemAnimCounter++;
     }
 }
 
@@ -473,8 +449,8 @@ Player::resetSpell(uint uiSpell) {
         m_aSpells[uiSpell] = NULL;
     }
     switch(uiSpell) {
-    case SPELL_TYPE_SOURCE_SINK:
-        m_aSpells[SPELL_TYPE_SOURCE_SINK] = new SourceSinkSpell(SPELL_DURATION, 0.3f);
+    case SPELL_TYPE_CYCLIC:
+        m_aSpells[SPELL_TYPE_CYCLIC] = new SourceSinkSpell(SPELL_DURATION, 0.3f);
         break;
     case SPELL_TYPE_FLOW:
         m_aSpells[SPELL_TYPE_FLOW] = new FlowSpell(SPELL_DURATION, 0.3f);
@@ -496,21 +472,57 @@ Player::handleCollision(HandleCollisionData *data) {
         Item *item = (Item*)data->obj;
         PWE::get()->remove(item->getId());
         //addHudInventoryItem(item);
-        GameManager::get()->addToInventory(item);
+        GameManager::get()->addToInventory(item, true);
         BAE::get()->playSound(AUD_PICKUP);
+
+        switch(item->getItemId()) {
+        case ITEM_SPELL_CYCLIC:
+            resetSpell(SPELL_TYPE_CYCLIC);
+            m_uiCurSpell = SPELL_TYPE_CYCLIC;
+            break;
+        case ITEM_SPELL_FLOW:
+            resetSpell(SPELL_TYPE_FLOW);
+            m_uiCurSpell = SPELL_TYPE_FLOW;
+            break;
+        }
     } else if(data->iDirection & BIT(m_iDirection) &&
               m_eState == PLAYER_NORMAL &&
               !data->obj->getFlag(TPE_PASSABLE)) {
+
         //Climb onto the object
-        Box tbx = data->obj->getPhysicsModel()->getCollisionVolume();
+
+        //Extract the height we have to climb: Get the time physics model
+        TimePhysicsModel *pmdl = dynamic_cast<TimePhysicsModel*>(data->obj->getPhysicsModel());
+        if(pmdl == NULL) {
+            return;
+        }
+
+        //Get the height according to the collision model type
+        CollisionModel *tcmdl = pmdl->getCollisionModel(data->uiCollisionModel);
+        float fHeightOfObj;
+        switch(tcmdl->getType()) {
+        case CM_BOX: {
+            BoxCollisionModel *bxmdl = (BoxCollisionModel*)tcmdl;
+            fHeightOfObj = bxmdl->m_bxBounds.y + bxmdl->m_bxBounds.h + pmdl->getPosition().y;
+            break;
+        }
+        case CM_Y_HEIGHTMAP: {
+            PixelMapCollisionModel *pxmdl = (PixelMapCollisionModel*)tcmdl;
+            fHeightOfObj = pxmdl->getHeightAtPoint(m_pPhysicsModel->getPosition() - pmdl->getPosition()) + pmdl->getPosition().y;
+            break;
+        }
+        }
+
         Box mbx = m_pPhysicsModel->getCollisionVolume();
 
         float shiftMag = data->ptShift.magnitude();
         float moveMag = m_pPhysicsModel->getLastVelocity().magnitude();
-        if((tbx.y + tbx.h) - (mbx.y) < 0.2) {   //Too low to climb over, so step over
+        if((fHeightOfObj) - (mbx.y) < 0.25) {   //Too low to climb over, so step over
             //Step up
-            moveBy(Point(-data->ptShift.x, (tbx.y + tbx.h) - (mbx.y), -data->ptShift.z));
-        } else if(tbx.y + tbx.h < mbx.y + mbx.h && equal(shiftMag,moveMag)) {
+            moveBy(Point(-data->ptShift.x, (fHeightOfObj) - (mbx.y), -data->ptShift.z));
+            Point ptPos = m_pPhysicsModel->getPosition();
+            D3RE::get()->moveScreenTo(ptPos);
+        } else if(fHeightOfObj < mbx.y + mbx.h && equal(shiftMag,moveMag)) {
             //Play appropriate sound
             BAE::get()->playSound(AUD_LIFT);
 
@@ -520,7 +532,7 @@ Player::handleCollision(HandleCollisionData *data) {
             state = 0;
 
             //Prep for climbing
-            m_fClimbStepHeight = ((tbx.y + tbx.h) - (mbx.y)) / 160.f;
+            m_fClimbStepHeight = ((fHeightOfObj) - (mbx.y)) / 160.f;
             setFlag(TPE_FLOATING, true);
             setFlag(TPE_STATIC, true);
             m_ptClimbShift = Point(-data->ptShift.x, 0.f, -data->ptShift.z);
@@ -530,18 +542,3 @@ Player::handleCollision(HandleCollisionData *data) {
     }
 }
 
-void
-Player::addHudInventoryItem(Item *item) {
-    //Add the item to the inventory
-    const uint index = m_vInventory.size();
-    m_vInventory.push_back(item);
-
-    //Add the item to the HUD
-    ContainerRenderModel *panel = D3RE::get()->getHudContainer()->
-        get<ContainerRenderModel*>(HUD_TOPBAR)->
-        get<ContainerRenderModel*>(MGHUD_INVENTORY_CONTAINER);
-    Rect rcArea = Rect(TEXTURE_TILE_SIZE * index, 0.F, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
-    D3HudRenderModel *thumbnail = new D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea);
-    thumbnail->setFrameH(item->getItemId());
-    panel->add(MGHUD_ELEMENT_THUMBNAIL_START + index, thumbnail);
-}

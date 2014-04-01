@@ -18,7 +18,6 @@ EarthElementalVolume::EarthElementalVolume(uint id, uint texId, const Box &bxVol
     m_pRenderModel = new D3HeightmapRenderModel(this, texId, m_pxMap, bxRelativeVol);
 
     m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
-    m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
     m_pPhysicsModel->setListener(this);
 
 
@@ -27,6 +26,10 @@ EarthElementalVolume::EarthElementalVolume(uint id, uint texId, const Box &bxVol
             m_pxMap->m_pData[x][z] = 0.5f;// * (x * z) / (m_pxMap->m_uiW * m_pxMap->m_uiH);
         }
     }
+    m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
+
+    m_pxOrigMap = new PixelMap(*m_pxMap);
+    m_pxTempMap = NULL;
 
     setFlag(TPE_STATIC, true);
 
@@ -81,7 +84,7 @@ EarthElementalVolume::update(uint time) {
         GameManager::get()->removeActiveVolume(getId());
     }
 
-    #if 1
+    #if 0
 static int tempTimer = 0;
     if(--tempTimer < 0) {
         tempTimer = 10;
@@ -91,6 +94,7 @@ static int tempTimer = 0;
 
         //Height adjustment by force field
         Point aaPosWindow[3][3];
+        Point aaForceWindow[3][3];
         const uint curWinX = 1; //The window never steps along the x direction
         Box bxVol = m_pPhysicsModel->getCollisionVolume();
         for(uint x = 1; x < m_pxMap->m_uiW - 1; ++x) {
@@ -102,6 +106,9 @@ static int tempTimer = 0;
                         bxVol.x + (x + wx) / HMAP_RES,
                         bxVol.y + m_pxMap->m_pData[x + wx][1 + wz] * bxVol.h,
                         bxVol.z + (1 + wz) / HMAP_RES
+                    );
+                    aaForceWindow[wx + 1][wz + 1] = getTotalForceAt(
+                        aaPosWindow[wx + 1][wz + 1]
                     );
                 }
             }
@@ -117,18 +124,22 @@ static int tempTimer = 0;
                         bxVol.y + m_pxMap->m_pData[x + wx][z + 1] * bxVol.h,
                         bxVol.z + (z + 1) / HMAP_RES
                     );
+                    aaForceWindow[wx + 1][nextWinZ] = getTotalForceAt(
+                        aaPosWindow[wx + 1][nextWinZ]
+                    );
                 }
 
                 //Calculate the new height by approximating from the forces
-                Point ptForce = getTotalForceAt(aaPosWindow[curWinX][curWinZ]);
-                ptForce.y = 0;
-                if(ptForce.magnitude() > 0.f) {
+                //Point ptForce = getTotalForceAt(aaPosWindow[curWinX][curWinZ]);
+                //ptForce.y = 0;
+                //if(ptForce.magnitude() > 0.f) {
                     for(uint wx = 0; wx < 3; ++wx) {
                         for(uint wz = 0; wz < 3; ++wz) {
                             uint wdz = (curWinZ + wz + 2) % 3;  //When wz = 1, wdz = curWinZ.  When wz = 2, wdz = nextWinZ
                             Point ptVec = aaPosWindow[curWinX][curWinZ] - aaPosWindow[wx][wdz];
                             ptVec.y = 0;
                             ptVec.normalize();
+                            Point ptForce = (aaForceWindow[curWinX][curWinZ] + aaForceWindow[wx][wdz]) / 2.f;
 
                             //Get the magnitude and direction of the force projected onto the direction vector
                             float mag = dot(ptVec, ptForce) / 10;
@@ -156,7 +167,7 @@ static int tempTimer = 0;
                             m_pxMap->m_pData[dx][dz] -= fHeightShift;
                         }
                     }
-                }
+                //}
                 curWinZ = nextWinZ;
                 nextWinZ = (nextWinZ + 1) % 3;
             }
@@ -176,8 +187,27 @@ EarthElementalVolume::setVolume(float fVolume) {
 #define BOUND(min, val, max) ((val < min) ? min : ((val > max) ? max : val))
 void
 EarthElementalVolume::addVolumeAt(float fVolume, const Point &ptPos) {
-    Box bxBounds = m_pPhysicsModel->getCollisionVolume();
     //Find the four nearest points and split the volume by interpolation
+    float fTotalVolume = m_pPhysicsModel->getVolume();
+    for(int i = 0; i < m_pPhysicsModel->getNumModels(); ++i) {
+        CollisionModel *mdl = m_pPhysicsModel->getCollisionModel(i);
+        float fThisVolume = fVolume * mdl->getVolume() / fTotalVolume;
+        switch(mdl->getType()) {
+        case CM_BOX:
+            addVolumeToBox((BoxCollisionModel*)mdl, fThisVolume);
+            break;
+        case CM_Y_HEIGHTMAP:
+            addVolumeToHmap((PixelMapCollisionModel*)mdl, fThisVolume);
+            break;
+        default:
+            break;
+        }
+    }
+
+    m_pPhysicsModel->resetVolume();
+
+#if 0
+    Box bxBounds = m_pPhysicsModel->getCollisionVolume();
 
     //Scale ptPos to a set of four indices
     float x = (ptPos.x - bxBounds.x) * (m_pxMap->m_uiW - 1) / bxBounds.w;
@@ -222,16 +252,69 @@ EarthElementalVolume::addVolumeAt(float fVolume, const Point &ptPos) {
     m_pxMap->m_pData[cx][cz] = BOUND(0.f, m_pxMap->m_pData[cx][cz] + zInterpVolC * (1 - xDiff), 1.f);
     m_pxMap->m_pData[cx][fz] = BOUND(0.f, m_pxMap->m_pData[cx][fz] + zInterpVolF * (1 - xDiff), 1.f);
 #endif
+#endif
 }
+
+void
+EarthElementalVolume::addVolumeToHmap(PixelMapCollisionModel *mdl, float fVolume) {
+    float fCellArea = mdl->m_bxBounds.w * mdl->m_bxBounds.l / (mdl->m_pxMap->m_uiH * mdl->m_pxMap->m_uiW);
+    float fExtraCellHeight = fVolume * fCellArea;
+    //float fMaxHeight = 0.f;
+    for(int x = 0; x < m_pxMap->m_uiW; ++x) {
+        for(int z = 0; z < m_pxMap->m_uiH; ++z) {
+            m_pxMap->m_pData[x][z] += fExtraCellHeight;
+            /*
+            if(m_pxMap->m_pData[x][z] > fMaxHeight) {
+                fMaxHeight = m_pxMap->m_pData[x][z];
+            }
+            */
+        }
+    }
+    //mdl->m_bxBounds.h = fMaxHeight - mdl->m_bxBounds.y;
+}
+
+void
+EarthElementalVolume::addVolumeToBox(BoxCollisionModel *mdl, float fVolume) {
+    float fExtraHeight = fVolume / (mdl->m_bxBounds.w * mdl->m_bxBounds.l);
+    mdl->m_bxBounds.h += fExtraHeight;
+}
+
 
 float
 EarthElementalVolume::getVolume() {
-    float fVolume = 0.f;
+    //For now, this is sufficient
+    return m_pPhysicsModel->getVolume();
+}
+
+void
+EarthElementalVolume::interpRestore(float fTime) {
+    if(m_pxTempMap == NULL) {
+        printf("ERROR: Null TEMP map while restoring!\n");
+        exit(-1);
+    }
+    float fOtherTime = 1.f - fTime;
     for(uint x = 0; x < m_pxMap->m_uiW; ++x) {
         for(uint z = 0; z < m_pxMap->m_uiH; ++z) {
-            fVolume += m_pxMap->m_pData[x][z];
+            m_pxMap->m_pData[x][z] = m_pxOrigMap->m_pData[x][z] * fTime + m_pxTempMap->m_pData[x][z] * fOtherTime;
         }
     }
-    //For now, this is sufficient
-    return fVolume;//m_pPhysicsModel->getVolume();
+}
+
+void
+EarthElementalVolume::beginRestore() {
+    if(m_pxTempMap != NULL) {
+        printf("WARNING: Mid-restoration begin!");
+        delete m_pxTempMap;
+    }
+    m_pxTempMap = new PixelMap(*m_pxMap);
+}
+
+void
+EarthElementalVolume::endRestore() {
+    if(m_pxTempMap == NULL) {
+        printf("ERROR: Null TEMP map while ending restoration!\n");
+        exit(-1);
+    }
+    delete m_pxTempMap;
+    m_pxTempMap = NULL;
 }

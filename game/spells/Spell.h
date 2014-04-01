@@ -8,7 +8,7 @@
 //#include "DivideSpell.h"
 
 enum SpellType {
-    SPELL_TYPE_SOURCE_SINK,
+    SPELL_TYPE_CYCLIC,
     SPELL_TYPE_FLOW,
     //SPELL_TYPE_DIVIDE,
     NUM_SPELL_TYPES

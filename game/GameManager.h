@@ -57,7 +57,7 @@ public:
     ElementalVolume *getTopVolume();
     DraggableHud *getHud() { return m_pHud; }
     //Inventory *getPlayerInventory() { return &m_inv; }
-    void addToInventory(Item *item);
+    void addToInventory(Item *item, bool makeCurrent = false);
 
 private:
     GameManager(uint uiId);

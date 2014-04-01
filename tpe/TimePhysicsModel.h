@@ -72,7 +72,7 @@ public:
     virtual void setWasPushed(bool pushed) { m_bWasPushed = pushed; }
 
     virtual float getDensity() { return m_fDensity; }
-    virtual float getVolume()  { return m_fMass * m_fDensity; }
+    virtual float getVolume()  { return m_fMass / m_fDensity; }
 
     virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl);
     virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl);

@@ -35,6 +35,9 @@ public:
     virtual void setVolume(float fVolume);
     virtual void addVolumeAt(float fVolume, const Point &pos);
     virtual float getVolume();
+    virtual void interpRestore(float fTime);
+    virtual void beginRestore();
+    virtual void endRestore();
 
 private:
     D3HeightmapRenderModel *m_pRenderModel;

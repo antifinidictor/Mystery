@@ -131,6 +131,23 @@ PixelMap::PixelMap(uint w, uint h, uint uiId) {
     }
 }
 
+PixelMap::PixelMap(const PixelMap &pxMap) {
+    m_uiW = pxMap.m_uiW;
+    m_uiH = pxMap.m_uiH;
+
+	m_sImageFileName = "";
+	m_uiId = pxMap.m_uiId;
+
+    m_pData = (float**)malloc(sizeof(float*) * m_uiW);
+    for(uint x = 0; x < m_uiW; ++x) {
+        m_pData[x] = (float*)malloc(sizeof(float) * m_uiH);
+        for(uint y = 0; y < m_uiH; ++y) {
+            //Fill each pixel
+            m_pData[x][y] = pxMap.m_pData[x][y];
+        }
+    }
+}
+
 /*
  * Destructor:  Destroys the texture information.
  */

@@ -214,8 +214,8 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
                                &iDir1, &iDir2);
 
     //Handle collision events
-    HandleCollisionData sData1(obj2, iDir1, ptObj1Shift),
-                        sData2(obj1, iDir2, ptObj2Shift);
+    HandleCollisionData sData1(obj2, iDir1, uiMdl2, ptObj1Shift),
+                        sData2(obj1, iDir2, uiMdl1, ptObj2Shift);
     tpm1->handleCollisionEvent(&sData1);
     tpm2->handleCollisionEvent(&sData2);
 }
@@ -300,8 +300,8 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
                                &iDirBox, &iDirHmap);
 
     //Handle collision events
-    HandleCollisionData sDataBox(objHmap, iDirBox, ptBoxShift),
-                        sDataHmap(objBox, iDirHmap, ptHmapShift);
+    HandleCollisionData sDataBox(objHmap, iDirBox, uiMdlHmap, ptBoxShift),
+                        sDataHmap(objBox, iDirHmap, uiMdlBox, ptHmapShift);
     tpmBox->handleCollisionEvent(&sDataBox);
     tpmHmap->handleCollisionEvent(&sDataHmap);
 }

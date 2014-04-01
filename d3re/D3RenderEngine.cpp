@@ -75,6 +75,7 @@ D3RenderEngine::D3RenderEngine() {
     m_uiMouseTimer = 0;
     m_pDummyMouseObj = new D3DummyObject(m_ptMouseInWorld);
     m_pMouseModel = NULL;
+    m_pMouseOverObject = NULL;
 
     m_bDrawRealMouse = true;
 }
@@ -86,6 +87,48 @@ D3RenderEngine::~D3RenderEngine() {
     delete m_pMouseModel;
 }
 
+
+//TODO: Move!
+#include <limits>
+float
+rayIntersects(const Point &ptRay, const Point &ptRayStart, const Box &bxBounds) {
+    float t1 = 0.f, t2 = 0.f, tmin = std::numeric_limits<float>::max();
+    if(ptRay.z != 0.f) {
+        t1 = (bxBounds.z - ptRayStart.z) / ptRay.z;
+        t2 = (bxBounds.z + bxBounds.l - ptRayStart.z) / ptRay.z;
+        bool b1 = (ptOutOfBounds(ptRay * t1 + ptRayStart, bxBounds) == 0);
+        bool b2 = (ptOutOfBounds(ptRay * t2 + ptRayStart, bxBounds) == 0);
+        if(b1) {
+            tmin = fabs(t1) < fabs(tmin) ? t1 : tmin;
+        } else if(b2) {
+            tmin = fabs(t2) < fabs(tmin) ? t2 : tmin;
+        }
+    }
+    if(ptRay.y != 0.f) {
+        t1 = (bxBounds.y - ptRayStart.y) / ptRay.y;
+        t2 = (bxBounds.y + bxBounds.h - ptRayStart.y) / ptRay.y;
+        bool b1 = (ptOutOfBounds(ptRay * t1 + ptRayStart, bxBounds) == 0);
+        bool b2 = (ptOutOfBounds(ptRay * t2 + ptRayStart, bxBounds) == 0);
+        if(b1) {
+            tmin = fabs(t1) < fabs(tmin) ? t1 : tmin;
+        } else if(b2) {
+            tmin = fabs(t2) < fabs(tmin) ? t2 : tmin;
+        }
+    }
+    if(ptRay.x != 0.f) {
+        t1 = (bxBounds.x - ptRayStart.x) / ptRay.x;
+        t2 = (bxBounds.x + bxBounds.w - ptRayStart.x) / ptRay.x;
+        bool b1 = (ptOutOfBounds(ptRay * t1 + ptRayStart, bxBounds) == 0);
+        bool b2 = (ptOutOfBounds(ptRay * t2 + ptRayStart, bxBounds) == 0);
+        if(b1) {
+            tmin = fabs(t1) < fabs(tmin) ? t1 : tmin;
+        } else if(b2) {
+            tmin = fabs(t2) < fabs(tmin) ? t2 : tmin;
+        }
+    }
+    return tmin;
+}
+
 void
 D3RenderEngine::render() {
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -94,10 +137,20 @@ D3RenderEngine::render() {
 
     //Nontransparent objects
     glEnable(GL_ALPHA_TEST);
+    bool mouseInObject = false;
+    float mouseOverT = std::numeric_limits<float>::max();
+    m_pMouseOverObject = NULL;
     for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
             it != m_lsObjsOnScreen.end(); ++it) {
         if(!(*it)->getFlag(D3RE_INVISIBLE)) {
             (*it)->getRenderModel()->render(this);
+            //if(ptOutOfBounds(m_ptMouseInWorld, (*it)->getPhysicsModel()->getCollisionVolume()) == 0) {
+            float t = rayIntersects(m_v3MouseRay, m_ptCamPos, (*it)->getPhysicsModel()->getCollisionVolume());
+            if(fabs(t) < fabs(mouseOverT)) {
+                mouseInObject = true;
+                mouseOverT = t;
+                m_pMouseOverObject = *it;
+            }
         }
     }
     glDisable(GL_ALPHA_TEST);
@@ -107,6 +160,12 @@ D3RenderEngine::render() {
             it != m_lsTransparentObjs.end(); ++it) {
         if(!(*it)->getFlag(D3RE_INVISIBLE)) {
             (*it)->getRenderModel()->render(this);
+            float t = rayIntersects(m_v3MouseRay, m_ptCamPos, (*it)->getPhysicsModel()->getCollisionVolume());
+            if(fabs(t) < fabs(mouseOverT)) {
+                mouseInObject = true;
+                mouseOverT = t;
+                m_pMouseOverObject = *it;
+            }
         }
     }
 

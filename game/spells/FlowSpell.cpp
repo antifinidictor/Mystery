@@ -23,13 +23,22 @@ FlowSpell::FlowSpell(int duration, float magnitude)
 
 FlowSpell::~FlowSpell()
 {
+    clean();
+    m_ev->beginRestore();
+    m_ev->interpRestore(1.f);
+    m_ev->endRestore();
+}
+
+void
+FlowSpell::clean() {
     if(m_bWasActivated) {
         vector<PointIdPair>::iterator iter;
         for(iter = m_vForcePoints.begin(); iter != m_vForcePoints.end(); ++iter) {
             m_ev->removeForceField(iter->id);
         }
+        m_vForcePoints.clear();
+        m_bWasActivated = false;
     }
-    m_vForcePoints.clear();
 }
 
 void
@@ -99,6 +108,7 @@ FlowSpell::getStatus() {
         return SPELL_WAITING;
     case FS_STATE_READY:
         return SPELL_READY;
+    case FS_STATE_RESTORING:
     case FS_STATE_ACTIVATED:
         return SPELL_ACTIVE;
     case FS_STATE_INVALID:
@@ -113,7 +123,10 @@ FlowSpell::update() {
     switch(m_eState) {
     case FS_STATE_ACTIVATED:
         if(--m_iTimer < 0) {
-            m_eState = FS_STATE_INVALID;
+            m_eState = FS_STATE_RESTORING;
+            m_iTimer = 300;
+            m_ev->beginRestore();
+            clean();
         }
         //Do not break
     case FS_STATE_READY:
@@ -132,6 +145,14 @@ FlowSpell::update() {
                 sprite->setColor(crPointColor);
                 PWE::get()->add(sprite);
             }
+        }
+        break;
+    case FS_STATE_RESTORING:
+        if(--m_iTimer < 0) {
+            m_eState = FS_STATE_INVALID;
+            m_ev->endRestore();
+        } else {
+            m_ev->interpRestore(1.f - m_iTimer / 300.f);
         }
         break;
     default:

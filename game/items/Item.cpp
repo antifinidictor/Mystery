@@ -10,7 +10,8 @@ Item::Item(uint id, uint itemId, const Point &pos) {
     Box bxVol = Box(-0.125f,0.f,-0.125f,0.25f,0.25f,0.25f);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVol));
     m_iAnimTimer = 20;
-    setFlag(TPE_PASSABLE, true);
+    //setFlag(TPE_PASSABLE, true);
+    //setFlag(TPE_FALLING, true);
 }
 
 Item::~Item() {

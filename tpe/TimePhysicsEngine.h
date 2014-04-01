@@ -32,11 +32,13 @@ enum TpeEvents {
 struct HandleCollisionData {
     GameObject *obj;
     int iDirection;
+    uint uiCollisionModel;
     Point ptShift;
-    HandleCollisionData(GameObject *obj, int iDirection, const Point &ptShift) {
+    HandleCollisionData(GameObject *obj, int iDirection, uint uiCollisionModel, const Point &ptShift) {
         this->obj = obj;
         this->iDirection = iDirection;
         this->ptShift = ptShift;
+        this->uiCollisionModel = uiCollisionModel;
     }
 };
 

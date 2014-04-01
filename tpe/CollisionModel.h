@@ -47,7 +47,7 @@ public:
     virtual Box getBounds() { return m_bxBounds; }
     virtual CollisionModelType getType() { return CM_Y_HEIGHTMAP; }
 
-    virtual float getVolume() { return (m_bxBounds.w * m_bxBounds.h * m_bxBounds.l); }
+    virtual float getVolume();
 
     float getHeightAtPoint(const Point &ptPos);
 

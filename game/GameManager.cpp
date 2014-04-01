@@ -207,8 +207,15 @@ GameManager::initPlayerHud() {
         TEXTURE_TILE_SIZE * 10,
         TEXTURE_TILE_SIZE
     );
+    Rect rcItembarPanel = Rect(
+        TEXTURE_TILE_SIZE * 16,
+        SCREEN_HEIGHT - TEXTURE_TILE_SIZE,
+        TEXTURE_TILE_SIZE * 3,
+        TEXTURE_TILE_SIZE
+    );
     ContainerRenderModel *healthPanel = new ContainerRenderModel(rcHealthPanel);
     ContainerRenderModel *inventoryPanel = new ContainerRenderModel(rcInventoryPanel);
+    ContainerRenderModel *itembarPanel = new ContainerRenderModel(rcItembarPanel);
     //rightEdge->setFrameH(2);
     //middle->setFrameH(1);
     //middle->setRepsW((SCREEN_WIDTH) / TEXTURE_TILE_SIZE - 2);
@@ -218,6 +225,7 @@ GameManager::initPlayerHud() {
     //panel->add(MGHUD_RIGHT_EDGE, rightEdge);
     panel->add(MGHUD_HEALTH_CONTAINER, healthPanel);
     panel->add(MGHUD_INVENTORY_CONTAINER, inventoryPanel);
+    panel->add(MGHUD_ITEMBAR_CONTAINER, itembarPanel);
 
     //Area name
 #define TEXT_BOX_WIDTH (TEXTURE_TILE_SIZE * 12)
@@ -255,6 +263,21 @@ GameManager::initPlayerHud() {
     panel->add(MGHUD_HEALTH_BACKDROP_RIGHT_EDGE, rightEdge);
     panel->add(MGHUD_HEALTH_BAR, bar);
     panel->add(MGHUD_HEALTH_VALUE, label);
+
+    //Add item elements
+    panel = itembarPanel;
+    Rect rcElementArea = Rect(0, 0, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+    D3HudRenderModel *curElementThumbnail = new D3HudRenderModel(D3RE::get()->getImageId("items"), rcElementArea);
+
+    Rect rcSpellArea = Rect(0, 0, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+    D3HudRenderModel *curSpellThumbnail = new D3HudRenderModel(D3RE::get()->getImageId("items"), rcSpellArea);
+
+    Rect rcItemArea = Rect(TEXTURE_TILE_SIZE * 2, 0, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+    D3HudRenderModel *curItemThumbnail = new D3HudRenderModel(D3RE::get()->getImageId("items"), rcItemArea);
+
+    panel->add(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT, curElementThumbnail);
+    panel->add(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL, curSpellThumbnail);
+    panel->add(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM, curItemThumbnail);
 }
 
 void
@@ -263,22 +286,26 @@ GameManager::cleanPlayerHud() {
 }
 
 void
-GameManager::addToInventory(Item *item) {
+GameManager::addToInventory(Item *item, bool makeCurrent) {
     uint invIndex = m_inv.add(item);
     uint itemId = item->getItemId();
 
     float x, y;
     uint hudIndex = itemId + MGHUD_ELEMENT_THUMBNAIL_START;
+    uint itembarIndex = 0;
     if(itemId < ITEM_NUM_ELEMENTS) {
         x = (2 + 2 * (invIndex % 2)) * TEXTURE_TILE_SIZE;
         y = (2 + 2 * (invIndex / 2)) * TEXTURE_TILE_SIZE;
+        itembarIndex = MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT;
     } else if(itemId < ITEM_NUM_SPELLS) {
         x = (10) * TEXTURE_TILE_SIZE;
         y = (2 + 2 * (invIndex % 2)) * TEXTURE_TILE_SIZE;
+        itembarIndex = MGHUD_ELEMENT_ITEMBAR_CUR_SPELL;
     } else {
         x = (2 + 2 * (invIndex % 6)) * TEXTURE_TILE_SIZE;
         y = (7 + 2 * (invIndex / 6)) * TEXTURE_TILE_SIZE;
         hudIndex = invIndex + ITEM_NUM_SPELLS + MGHUD_ELEMENT_THUMBNAIL_START;
+        itembarIndex = MGHUD_ELEMENT_ITEMBAR_CUR_ITEM;
     }
 
     Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
@@ -286,4 +313,13 @@ GameManager::addToInventory(Item *item) {
     thumbnail->setFrameH(item->getItemId());
 
     m_pHud->getHudContainer()->add(hudIndex, thumbnail);
+
+
+    if(makeCurrent) {
+        D3RE::get()->getHudContainer()
+            ->get<ContainerRenderModel*>(HUD_TOPBAR)
+            ->get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
+            ->get<D3HudRenderModel*>(itembarIndex)
+            ->setFrameH(itemId);
+    }
 }

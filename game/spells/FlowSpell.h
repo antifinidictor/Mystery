@@ -12,6 +12,7 @@ enum FSpellState {
     FS_STATE_READY,
     FS_STATE_ACTIVATED,
     FS_STATE_INVALID,
+    FS_STATE_RESTORING,
     NUM_FS_STATES
 };
 
@@ -34,6 +35,8 @@ private:
             this->id = 0;
         }
     };
+
+    void clean();
 
     ElementalVolume *m_ev;
     int m_iTimer, m_iFxTimer;

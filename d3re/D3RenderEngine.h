@@ -90,6 +90,8 @@ public:
 
     void showRealMouse();
     void hideRealMouse();
+    GameObject *getMouseOverObject() { return m_pMouseOverObject; }
+    Point getMouseRay() { return m_v3MouseRay; }
 
 private:
     D3RenderEngine();
@@ -123,6 +125,7 @@ private:
     bool m_bDrawRealMouse;
 
     //Mouse animations
+    GameObject *m_pMouseOverObject;
     uint m_uiMouseFrame, m_uiMouseTimer;
     D3SpriteRenderModel *m_pMouseModel;
     D3DummyObject *m_pDummyMouseObj;

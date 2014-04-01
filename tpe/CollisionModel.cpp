@@ -12,9 +12,11 @@ PixelMapCollisionModel::getHeightAtPoint(const Point &ptPos) {
     int cx = BOUND(0, (int)ceil(x), m_pxMap->m_uiW - 1);
     int cz = BOUND(0, (int)ceil(z), m_pxMap->m_uiH - 1);
 
+/*
     if(fx < 0 || cx >= m_pxMap->m_uiW || fz < 0 || cz >= m_pxMap->m_uiH) {
         return 0.f;
     }
+*/
 
     //Get heights at four neighboring indices
     float yff = m_pxMap->m_pData[fx][fz];
@@ -31,4 +33,17 @@ PixelMapCollisionModel::getHeightAtPoint(const Point &ptPos) {
     interp = interp * (m_bxBounds.h) + m_bxBounds.y;
 
     return interp;
+}
+
+float
+PixelMapCollisionModel::getVolume() {
+    //Approximate the volume.  This won't be perfectly accurate but it should be fairly close
+    float fVolume = 0.f;
+    float cellArea = m_bxBounds.w * m_bxBounds.l / (m_pxMap->m_uiW * m_pxMap->m_uiH);
+    for(uint x = 0; x < m_pxMap->m_uiW; ++x) {
+        for(uint z = 0; z < m_pxMap->m_uiH; ++z) {
+            fVolume += m_pxMap->m_pData[x][z];
+        }
+    }
+    return fVolume * cellArea;
 }

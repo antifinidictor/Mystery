@@ -6,6 +6,7 @@
 #include "d3re/D3HeightmapRenderModel.h"
 #include "tpe/TimePhysicsModel.h"
 #include "mge/PixelMap.h"
+#include "tpe/CollisionModel.h"
 
 class EarthElementalVolume : public ElementalVolume
 {
@@ -29,11 +30,21 @@ public:
     virtual void setVolume(float fVolume);
     virtual void addVolumeAt(float fVolume, const Point &pos);
     virtual float getVolume();
+    virtual void interpRestore(float fTime);
+    virtual void beginRestore();
+    virtual void endRestore();
 protected:
 private:
+    void addVolumeToHmap(PixelMapCollisionModel *mdl, float volume);
+    void addVolumeToBox(BoxCollisionModel *mdl, float volume);
+
     D3HeightmapRenderModel *m_pRenderModel;
     TimePhysicsModel  *m_pPhysicsModel;
     PixelMap *m_pxMap;
+
+    //Interpolation maps
+    PixelMap *m_pxOrigMap;
+    PixelMap *m_pxTempMap;
 
     float m_fVolume;
 };

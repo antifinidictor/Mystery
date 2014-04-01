@@ -56,7 +56,6 @@ private:
     void updateClimbingTrans(uint time);
     void updateSpells();
     void upateHud();
-    void addHudInventoryItem(Item *item);
 
     void handleButtonNormal(InputData* data);
     void handleButtonCasting(InputData *data);
@@ -82,7 +81,6 @@ private:
     float m_fClimbStepHeight;
     Point m_ptClimbShift;
 
-    std::vector<Item*> m_vInventory;
     uint m_uiItemAnimCounter;
 
     uint m_uiHealth;

@@ -124,17 +124,17 @@ PartitionedWorldEngine::update(uint time) {
             bool bHasMoved = pe->applyPhysics(it->second);
 
             //Apply joint physics
-            for(list<GameObject*>::iterator mv = lsHasMoved.begin();
-                    mv != lsHasMoved.end(); ++mv) {
-                pe->applyPhysics(it->second, (*mv));
+            if(bHasMoved) {
+                lsHasMoved.push_back(it->second);
+            } else {
+                for(list<GameObject*>::iterator mv = lsHasMoved.begin();
+                        mv != lsHasMoved.end(); ++mv) {
+                    pe->applyPhysics(it->second, (*mv));
+                }
             }
 
             if(bHasMoved || re->screenHasMoved()) {
                 re->manageObjOnScreen(it->second);
-            }
-
-            if(bHasMoved) {
-                lsHasMoved.push_back(it->second);
             }
         }
 

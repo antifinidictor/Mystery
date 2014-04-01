@@ -115,3 +115,15 @@ float
 WaterElementalVolume::getVolume() {
     return m_pPhysicsModel->getVolume();
 }
+
+void
+WaterElementalVolume::interpRestore(float fTime) {
+}
+
+void
+WaterElementalVolume::beginRestore() {
+}
+
+void
+WaterElementalVolume::endRestore() {
+}

@@ -264,6 +264,7 @@
 		<Unit filename="mge/Clock.h" />
 		<Unit filename="mge/Event.h" />
 		<Unit filename="mge/GameObject.h" />
+		<Unit filename="mge/Image.cpp" />
 		<Unit filename="mge/Image.h" />
 		<Unit filename="mge/ModularEngine.cpp" />
 		<Unit filename="mge/ModularEngine.h" />

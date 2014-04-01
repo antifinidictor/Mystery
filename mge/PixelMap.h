@@ -21,6 +21,7 @@ public:
 //	PixelMap(std::string &sFileName, char cID, int iNumFramesH = 1, int iNumFramesW = 1);
 	PixelMap(const std::string &sFileName, uint uiId);
 	PixelMap(uint w, uint h, uint uiId);
+	PixelMap(const PixelMap &pxMap);
 	virtual ~PixelMap();
 
 	//Members

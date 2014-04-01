@@ -34,6 +34,9 @@ public:
     virtual void setVolume(float fVolume) = 0;
     virtual void addVolumeAt(float fVolume, const Point &pt) = 0;
     virtual float getVolume() = 0;
+    virtual void interpRestore(float fTime) = 0;    //Use to restore to its original state, from 0.f -> 1.f
+    virtual void beginRestore() = 0;
+    virtual void endRestore() = 0;
 protected:
     Point getTotalForceAt(const Point &pos);
 private:

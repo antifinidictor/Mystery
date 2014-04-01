@@ -29,12 +29,12 @@ SourceSinkSpell::addPoint(ElementalVolume *ev, const Point &pt) {
     case SSS_STATE_FIRST_POINT:
         m_ev1 = ev;
         m_eState = SSS_STATE_SECOND_POINT;
-        m_ptSource = pt;
+        m_ptSink = pt;
         break;
     case SSS_STATE_SECOND_POINT:
         m_ev2 = ev;
         m_eState = SSS_STATE_READY;
-        m_ptSink = pt;
+        m_ptSource = pt;
         break;
     case SSS_STATE_ACTIVATED:
     case SSS_STATE_READY:
@@ -56,8 +56,8 @@ SourceSinkSpell::activate() {
         }
         m_eState = SSS_STATE_ACTIVATED;
         m_bWasActivated = true;
-        m_uiSourceId = m_ev1->addForceField(new SourceForceField(m_ptSource, m_fMagnitude));
-        m_uiSinkId = m_ev2->addForceField(new SinkForceField(m_ptSink, m_fMagnitude));
+        m_uiSourceId = m_ev2->addForceField(new SourceForceField(m_ptSource, m_fMagnitude));
+        m_uiSinkId = m_ev1->addForceField(new SinkForceField(m_ptSink, m_fMagnitude));
         return true;
     }
     return false;
@@ -81,29 +81,34 @@ SourceSinkSpell::getStatus() {
 
 void
 SourceSinkSpell::update() {
-    Color crSource = Color(255, 0, 0);
-    Color crSink = Color(255, 0, 0);
+    Color crPoint = Color(255, 0, 0);
     switch(m_eState) {
-    case SSS_STATE_ACTIVATED:
+    case SSS_STATE_ACTIVATED: {
         if(--m_iTimer < 0) {
             m_eState = SSS_STATE_INVALID;
         }
-        m_ev1->addVolumeAt(0.01f, m_ptSource);
-        m_ev2->addVolumeAt(-0.01f, m_ptSink);
+
+        //Determine the amount of volume to transfer
+        float volProp = 0.f;
+        if(m_ev1->getVolume() > 1.f) {
+            volProp = 0.01f;
+        }
+        m_ev2->addVolumeAt(volProp, m_ptSource);
+        m_ev1->addVolumeAt(-volProp, m_ptSink);
         //Do not break
+    }
     case SSS_STATE_READY:
-        crSource = Color(0, 255, 0);
-        crSink = Color(0, 255, 0);
+        crPoint = Color(0, 255, 0);
 
         if(m_iFxTimer < 0) {
             FxSprite *sprite = new FxSprite(
                 PWE::get()->genId(),
                 D3RE::get()->getImageId("spellPoints"),
                 64,
-                m_ptSink + Point(0.f, 0.01f, 0.f),
-                1
+                m_ptSource + Point(0.f, 0.01f, 0.f),
+                0
             );
-            sprite->setColor(crSink);
+            sprite->setColor(crPoint);
             PWE::get()->add(sprite);
         }
         //Do not break
@@ -114,10 +119,10 @@ SourceSinkSpell::update() {
                 PWE::get()->genId(),
                 D3RE::get()->getImageId("spellPoints"),
                 64,
-                m_ptSource + Point(0.f, 0.01f, 0.f),
-                0
+                m_ptSink + Point(0.f, 0.01f, 0.f),
+                1
             );
-            sprite->setColor(crSource);
+            sprite->setColor(crPoint);
             PWE::get()->add(sprite);
         }
         m_iFxTimer--;
