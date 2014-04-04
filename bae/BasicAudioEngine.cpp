@@ -7,6 +7,7 @@ BasicAudioEngine *BasicAudioEngine::bae;
 
 //Constructor
 BasicAudioEngine::BasicAudioEngine() {
+    printf("Audio engine initializing\n");
 
     //Initialize audio
     int audio_rate = 22050;
@@ -42,6 +43,7 @@ BasicAudioEngine::BasicAudioEngine() {
 
 //Destructor
 BasicAudioEngine::~BasicAudioEngine() {
+    printf("Audio engine cleaning\n");
     //Close music thread.
     m_bRunning = false;
     int status = 0;
@@ -168,8 +170,13 @@ BasicAudioEngine::playMusic(uint uiId, int fadein, int fadeout) {
 
 }
 
-void
+int
 BasicAudioEngine::playSound(uint uiId, int reps, int channel) {
-    Mix_PlayChannel(channel, m_mChunks[uiId], reps);    //Apparently this does not clash with the music channel...
+    if(uiId == NO_SOUND) {
+        Mix_HaltChannel(channel);
+        return channel;
+    } else {
+        return Mix_PlayChannel(channel, m_mChunks[uiId], reps);    //Apparently this does not clash with the music channel...
+    }
 }
 

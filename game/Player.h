@@ -11,6 +11,8 @@
 
 #include "game/spells/Spell.h"
 #include "game/items/Item.h"
+#include "game/items/Inventory.h"
+#include "game/gui/DraggableHud.h"
 #include <vector>
 
 class Player : public GameObject
@@ -61,8 +63,9 @@ private:
     void handleButtonCasting(InputData *data);
     void handleCollision(HandleCollisionData *data);
 
-    void cleanSpells();
-    void resetSpell(uint uiSpell);
+    float getObjHeight(TimePhysicsModel *pmdl, uint uiCmdlId);
+    void startClimbing();
+    void startCasting();
 
     uint m_uiId, m_uiFlags;
     D3SpriteRenderModel *m_pRenderModel;
@@ -70,21 +73,28 @@ private:
 
     float dx, dy;
     int m_iDirection;
-    int timer, state;
+    int m_iAnimTimer, m_iAnimState;
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas
     uint m_uiAnimFrameStart;
     bool m_bFirst;
     bool m_bMouseDown;
     PlayerState m_eState;
-    Spell *m_aSpells[NUM_SPELL_TYPES];
-    uint m_uiCurSpell;
-    float m_fClimbStepHeight;
-    Point m_ptClimbShift;
 
-    uint m_uiItemAnimCounter;
+    //You can only cast one spell at a time
+    Spell *m_pCurSpell;
+
+    float m_fEndClimbHeight;
+    float m_fStartClimbHeight;
+    Point m_ptClimbShift;
+    uint m_uiClimbObjCmdlId;
+    uint m_uiClimbObjId;    //ID of the object player is climbing up
+    bool m_bCanClimb;
 
     uint m_uiHealth;
     uint m_uiMaxHealth;
+
+    Inventory m_inv;
+    DraggableHud m_hud;
 };
 
 #endif // PLAYER_H

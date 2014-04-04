@@ -193,7 +193,6 @@ Water::expand() {
     }
 
     pmdl->m_bxBounds = bxMe;
-    m_pRenderModel->updateVolume(bxMe);
     m_pPhysicsModel->resetVolume();
 
     /*

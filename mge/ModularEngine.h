@@ -76,8 +76,10 @@ private:
     //Input handling
     InputData m_sInputData;
 	std::map<int, int> m_mInputMap;	//Maps SDL constants to InputIDs
-	std::map<uint, Listener*> m_mButtonInputListeners;
-	std::map<uint, Listener*> m_mMouseMoveListeners;
+	//std::map<uint, Listener*> m_mButtonInputListeners;
+	//std::map<uint, Listener*> m_mMouseMoveListeners;
+	std::list<Listener*>m_lsButtonInputListeners;
+	std::list<Listener*>m_lsMouseMoveListeners;
 
     //General
 	bool m_bIsRunning;

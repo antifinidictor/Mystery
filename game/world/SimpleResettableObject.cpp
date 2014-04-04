@@ -4,7 +4,7 @@
 
 #include "SimpleResettableObject.h"
 #include "pwe/PartitionedWorldEngine.h"
-
+#include "bae/BasicAudioEngine.h"
 
 SimpleResettableObject::SimpleResettableObject(uint id, uint texId, Box bxVolume, float fDensity) {
     m_uiID = id;
@@ -97,3 +97,22 @@ void
 SimpleResettableObject::reset() {
     moveBy(m_ptOriginalPosition - m_pPhysicsModel->getPosition());
 }
+
+
+bool
+SimpleResettableObject::update(uint time) {
+    #define MIN_SHIFT_FOR_SOUND 0.001f
+    if(m_iSoundChannel >= 0 &&
+           (m_pPhysicsModel->getSurface() == NULL ||
+            m_pPhysicsModel->getLastVelocity().magnitude() <= MIN_SHIFT_FOR_SOUND)) {
+        BAE::get()->playSound(AUD_NONE, 0, m_iSoundChannel);
+        m_iSoundChannel = -1;
+
+    } else if(m_iSoundChannel < 0 &&
+              m_pPhysicsModel->getSurface() != NULL &&
+              m_pPhysicsModel->getLastVelocity().magnitude() > MIN_SHIFT_FOR_SOUND) {
+        m_iSoundChannel = BAE::get()->playSound(AUD_DRAG, -1, -1);
+    }
+    return false;
+}
+

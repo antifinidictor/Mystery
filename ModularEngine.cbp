@@ -230,6 +230,8 @@
 		<Unit filename="game/items/Inventory.h" />
 		<Unit filename="game/items/Item.cpp" />
 		<Unit filename="game/items/Item.h" />
+		<Unit filename="game/items/SpellItem.cpp" />
+		<Unit filename="game/items/SpellItem.h" />
 		<Unit filename="game/registration.cpp" />
 		<Unit filename="game/spells/EarthElementalVolume.cpp" />
 		<Unit filename="game/spells/EarthElementalVolume.h" />

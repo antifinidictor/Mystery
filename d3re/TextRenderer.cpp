@@ -246,12 +246,13 @@ void TextRenderer::splitText(string &str, float maxw, float size) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     if(maxw < 0) {
         printf("ERROR: illegal width %f when splitting text\n", maxw);
+        return;
     }
 
 //#if 0
     float xw = 0;
     int lastSpace = 0;
-    int oi = 0;
+    //int oi = 0;
     //char *out = (char*)SDL_calloc(strlen(str) * 2, sizeof(char));
     for(string::iterator curChar = str.begin(); curChar < str.end(); ++curChar) {
         if(*curChar == '\n') {

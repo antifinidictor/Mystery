@@ -4,6 +4,7 @@
 #include "pwe/PartitionedWorldEngine.h"
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
 #define WALK_FORCE 0.5f
+#define ANIM_TIMER_MAX 3
 
 enum NpcAnim {
     NPC_STANDING,
@@ -103,7 +104,7 @@ Character::moveTowards(const Point &pt, float speed) {
 
     //Animate walking
     if(m_iAnimTimer < 0) {
-        m_iAnimTimer = 20;
+        m_iAnimTimer = ANIM_TIMER_MAX;
         m_uiAnimState = ((m_uiAnimState + 1) % 4);
         m_pRenderModel->setFrameH(m_uiAnimState + NPC_WALKING);
     } else {

@@ -22,12 +22,10 @@ public:
     uint getTexture() { return m_uiTexture; }
     void setColor(const Color &cr) { m_crColor = cr; }
     Color &getColor() { return m_crColor; }
-    void updateVolume(const Box &bxVolume) { m_bxVolume = bxVolume; }
 
 private:
     uint m_uiTexture;
     const PixelMap *m_pxMap;
-    Box m_bxVolume;
 
     Color m_crColor;
 

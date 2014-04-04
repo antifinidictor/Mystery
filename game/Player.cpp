@@ -5,11 +5,13 @@
 #include "game/spells/SourceSinkSpell.h"
 #include "game/spells/FlowSpell.h"
 #include "game/items/Inventory.h"
+#include "game/items/SpellItem.h"
 using namespace std;
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
 #define WALK_FORCE 0.5f
-#define SPELL_DURATION 1000
+#define SPELL_DURATION 300
+#define ANIM_TIMER_MAX 3
 
 enum PlayerAnims {
     PANIM_STANDING = 0,     //1 frame
@@ -20,7 +22,9 @@ enum PlayerAnims {
     NUM_PANIMS
 };
 
-Player::Player(uint uiId, const Point &ptPos) {
+Player::Player(uint uiId, const Point &ptPos)
+    :   m_hud(PWE::get()->genId())
+{
     Image *img = D3RE::get()->getImage("player");
     int iw = img->h / img->m_iNumFramesH;
     float w = WORLD_TILE_SIZE / 2;    //img->w / img->m_iNumFramesW,
@@ -36,30 +40,33 @@ Player::Player(uint uiId, const Point &ptPos) {
 
     dx = dy = 0;
     m_fDeltaPitch = m_fDeltaZoom = 0.f;
-    state = timer = 0;
+    m_iAnimState = m_iAnimTimer = 0;
     m_iDirection = SOUTH;
     m_bFirst = true;
     m_uiAnimFrameStart = 1;
     m_pPhysicsModel->setListener(this);
     m_bMouseDown = false;
-    m_uiItemAnimCounter = 0;
 
     m_eState = PLAYER_NORMAL;
     //PWE::get()->addListener(this, ON_BUTTON_INPUT);
 
-    for(uint i = 0; i < NUM_SPELL_TYPES; ++i) {
-        m_aSpells[i] = NULL;
-        //resetSpell(i);
-    }
-    m_uiCurSpell = 0;
+    m_pCurSpell = NULL;
 
     m_uiHealth = 10;
     m_uiMaxHealth = 20;
     setFlag(GAM_CAN_LINK, true);
+
+    //TODO: How can we design this better?
+    GameManager::get()->registerPlayer(this);
+    m_hud.registerPlayer(this);
+    m_inv.setInventoryDisplay(&m_hud);
 }
 
 Player::~Player() {
-    cleanSpells();
+    if(m_pCurSpell != NULL) {
+        delete m_pCurSpell; //TODO: Possible cause of crash on exit (tries to access ev that does not exist)
+    }
+
     PWE::get()->freeId(getId());
     delete m_pPhysicsModel;
     delete m_pRenderModel;
@@ -72,7 +79,7 @@ Player::read(const boost::property_tree::ptree &pt, const std::string &keyBase) 
     float y = pt.get(keyBase + ".pos.y", 0.f);
     float z = pt.get(keyBase + ".pos.z", 0.f);
 
-    //Put state information here
+    //Put m_iAnimState information here
 
     return new Player(id, Point(x,y,z));
 }
@@ -85,13 +92,13 @@ Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     pt.put(keyBase + ".pos.y", ptPos.y);
     pt.put(keyBase + ".pos.z", ptPos.z);
 
-    //Read state information here
-
+    //Read m_iAnimState information here
 }
 
 bool Player::update(uint time) {
-    //Currently needs to occur in any state that isn't "paused"
+    //Currently needs to occur in any m_iAnimState that isn't "paused"
     updateSpells();
+    upateHud();
 
     switch(m_eState) {
     case PLAYER_CASTING:
@@ -107,9 +114,10 @@ bool Player::update(uint time) {
         updateClimbingTrans(time);
         break;
     default:
-        //Unhandled state
+        //Unhandled m_iAnimState
         break;
     }
+
     m_bFirst = false;
     return false;
 }
@@ -119,8 +127,44 @@ int
 Player::callBack(uint cID, void *data, uint uiEventId) {
     int status = EVENT_DROPPED;
     switch(uiEventId) {
-    case PWE_ON_ADDED_TO_AREA:
-        PWE::get()->addListener(this, ON_BUTTON_INPUT, *((uint*)data));
+    case ON_UPDATE_HUD:
+        m_hud.updateItemAnimations();
+        break;
+    case ON_ITEM_DROPPED: {
+printf(__FILE__" %d\n",__LINE__);
+        ItemDropEvent *event = (ItemDropEvent*)data;
+printf(__FILE__" %d\n",__LINE__);
+        //An EVENT_ITEM_CANNOT_DROP flag means that we successfully reacted to the
+        //item/spell/element, but its position on the hud should not be changed
+        status = EVENT_ITEM_CANNOT_DROP;
+printf(__FILE__" %d\n",__LINE__);
+        if(event->itemId < ITEM_NUM_ELEMENTS) {
+printf(__FILE__" %d\n",__LINE__);
+            //Elements cannot be moved, can only be made current
+            m_inv.setCurElement(event->itemOldIndex);
+        } else if(event->itemId < ITEM_NUM_SPELLS) {
+printf(__FILE__" %d\n",__LINE__);
+            //Spells cannot be moved, can only be made current
+            m_inv.setCurSpell(event->itemOldIndex);
+        } else if(event->itemNewIndex == CUR_GENERIC_ITEM_INDEX) {
+printf(__FILE__" %d\n",__LINE__);
+            //Generic item should be made current
+            m_inv.setCurItem(event->itemOldIndex);
+        } else if(event->itemNewIndex == DROP_GENERIC_ITEM_INDEX) {
+printf(__FILE__" %d\n",__LINE__);
+            //Generic item should be dropped on the ground
+        } else {
+printf(__FILE__" %d\n",__LINE__);
+            //Generic item should be moved
+            m_inv.moveItem(event->itemOldIndex, event->itemNewIndex);
+            status = EVENT_ITEM_CAN_DROP;
+        }
+printf(__FILE__" %d\n",__LINE__);
+        break;
+    }
+    case PWE_ON_ADDED_TO_AREA: {
+        uint uiAreaId = *((uint*)data);
+        PWE::get()->addListener(this, ON_BUTTON_INPUT, uiAreaId);
         //PWE::get()->setCurrentArea(*((uint*)data));
         if(!m_bFirst) {
             GameManager::get()->callBack(getId(), data, ON_AREA_FADE_IN);
@@ -128,8 +172,13 @@ Player::callBack(uint cID, void *data, uint uiEventId) {
         dx = dy = 0;
         m_bMouseDown = false;
 
+        ContainerRenderModel *panel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_TOPBAR);
+        D3HudRenderModel *label = panel->get<D3HudRenderModel*>(MGHUD_CUR_AREA);
+        label->updateText(PWE::get()->getAreaName(uiAreaId));
+
         //handleButtonNormal(MGE::get()->getInputState());
         break;
+    }
     case PWE_ON_REMOVED_FROM_AREA:
         PWE::get()->removeListener(getId(), ON_BUTTON_INPUT, *((uint*)data));
         m_pPhysicsModel->setSurface(NULL);
@@ -215,24 +264,24 @@ Player::updateNormal(uint time) {
     D3RE::get()->adjustCamDist(m_fDeltaZoom);
 
     m_pRenderModel->setFrameW(m_iDirection);
-
     if(dx == 0 && dy == 0) {
         m_pRenderModel->setFrameH(PANIM_STANDING);
-        timer = -1;
+        m_iAnimTimer = -1;
     } else {
-        if(timer < 0) {
-            timer = 20;
-            state = ((state + 1) % 4);
-            m_pRenderModel->setFrameH(state + m_uiAnimFrameStart);
-#if 0
-            if(state == 0 || state == 2) {
+        if(m_iAnimTimer < 0) {
+            m_iAnimTimer = ANIM_TIMER_MAX;
+            m_iAnimState = ((m_iAnimState + 1) % 4);
+            m_pRenderModel->setFrameH(m_iAnimState + m_uiAnimFrameStart);
+#if 1
+            if(m_iAnimState == 0 || m_iAnimState == 2) {
                 BAE::get()->playSound(AUD_STEP);
             }
 #endif
         } else {
-            --timer;
+            --m_iAnimTimer;
         }
     }
+    m_bCanClimb = false;
 
     //Collisions continuously change the animation frame: make sure it gets reset
     m_uiAnimFrameStart = PANIM_WALKING;
@@ -272,71 +321,123 @@ Player::updateCasting(uint time) {
     m_pRenderModel->setFrameW(m_iDirection);
 }
 
-
 void
 Player::updateCastingTrans(uint time) {
-    if(timer < 0) {
-        timer = 20;
-        state = state + 1;
-        m_pRenderModel->setFrameH(state + m_uiAnimFrameStart);
-        if(state > 3) {
+    if(m_iAnimTimer < 0) {
+        m_iAnimTimer = ANIM_TIMER_MAX;
+        m_iAnimState = m_iAnimState + 1;
+        m_pRenderModel->setFrameH(m_iAnimState + m_uiAnimFrameStart);
+        if(m_iAnimState > 3) {
+            //Stop casting
             m_eState = PLAYER_NORMAL;
-            state = 0;
+            m_iAnimState = 0;
             m_uiAnimFrameStart = PANIM_STANDING;
         }
     } else {
-        --timer;
+        --m_iAnimTimer;
     }
 }
 
-
-
 void
 Player::updateClimbingTrans(uint time) {
-    if(timer < 0) {
-        timer = 20;
-        state = state + 1;
-        m_pRenderModel->setFrameH(state + m_uiAnimFrameStart);
+    Point ptObjShift = Point();
+    GameObject *obj = PWE::get()->find(m_uiClimbObjId);
+    if(obj != NULL) {
+        ptObjShift = obj->getPhysicsModel()->getLastVelocity();
 
-        if(state > 8) {
+        //Update the end climb height
+        m_fEndClimbHeight = getObjHeight((TimePhysicsModel*)obj->getPhysicsModel(), m_uiClimbObjCmdlId);
+    }
+    if(m_iAnimTimer < 0) {
+        m_iAnimTimer = ANIM_TIMER_MAX;
+        m_iAnimState = m_iAnimState + 1;
+        m_pRenderModel->setFrameH(m_iAnimState + m_uiAnimFrameStart);
+
+        if(m_iAnimState > 8) {
             m_eState = PLAYER_NORMAL;
-            m_pPhysicsModel->setSurface(NULL);
-            state = 0;
+            if(obj == NULL) {
+                m_pPhysicsModel->setSurface(NULL);
+            } else {
+                m_pPhysicsModel->setSurface(obj->getPhysicsModel());
+            }
+            m_iAnimState = 0;
             m_uiAnimFrameStart = PANIM_STANDING;
             setFlag(TPE_FLOATING, false);
             setFlag(TPE_STATIC, false);
             #define CLIMB_SHIFT 0.1F
             moveBy(m_ptClimbShift);
             handleButtonNormal(MGE::get()->getInputState());
+
+            //Move the screen to the player position
+            Point ptPos = m_pPhysicsModel->getPosition();
+            D3RE::get()->moveScreenTo(ptPos);
+            return;
         }
     } else {
-        --timer;
+        --m_iAnimTimer;
     }
 
-    moveBy(Point(0.f,m_fClimbStepHeight,0.f));
+    //Determine the current climb height via interpolation
+    float fCurTime = (m_iAnimState * ANIM_TIMER_MAX + ANIM_TIMER_MAX - m_iAnimTimer) / (ANIM_TIMER_MAX * 8.f);
+    float fClimbShift = fCurTime         * m_fEndClimbHeight +
+                        (1.f - fCurTime) * m_fStartClimbHeight -
+                        m_pPhysicsModel->getPosition().y;   //This is moveBy, not moveTo
+
+    m_pPhysicsModel->setPhysicsChanged(true);
+    moveBy(Point(ptObjShift.x, fClimbShift + ptObjShift.y, ptObjShift.z));
+
+    //Move the screen to the player position
     Point ptPos = m_pPhysicsModel->getPosition();
     D3RE::get()->moveScreenTo(ptPos);
 }
 
 void
 Player::updateSpells() {
-    for(uint i = 0; i < NUM_SPELL_TYPES; ++i) {
-        if(m_aSpells[i] != NULL) {
-            if(m_aSpells[i]->getStatus() == SPELL_INVALID) {
-                resetSpell(i);
-            } else {
-                m_aSpells[i]->update();
-            }
-        }
+    if(m_pCurSpell == NULL) {
+        return;
+    }
+
+    //Update the spell
+    m_pCurSpell->update();
+
+    //If the spell is finished, delete it
+    if(m_pCurSpell->getStatus() == SPELL_INVALID) {
+        delete m_pCurSpell;
+        m_pCurSpell = NULL;
+    }
+}
+
+
+void
+Player::upateHud() {
+    ContainerRenderModel *panel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_TOPBAR);
+    D3HudRenderModel *label = panel->get<D3HudRenderModel*>(MGHUD_CUR_ACTION);
+    SpellItem *item = m_inv.getCurSpell();
+    if(m_bCanClimb) {
+        label->updateText("Climb");
+    } else if(item != NULL && m_pCurSpell == NULL) {
+        label->updateText("Cast");
+    } else if(m_pCurSpell != NULL && m_pCurSpell->getStatus() != SPELL_READY && m_pCurSpell->getStatus() != SPELL_ACTIVE) {
+        label->updateText("Cancel");
+    } else if(m_pCurSpell != NULL && m_pCurSpell->getStatus() == SPELL_READY) {
+        label->updateText("Cast");
+    } else if(m_pCurSpell != NULL) {
+        label->updateText("Dispell");
+    } else {
+        label->updateText("");
     }
 }
 
 void
 Player::handleButtonNormal(InputData* data) {
-    if(data->getInputState(IN_CAST)) {
-        m_eState = PLAYER_CASTING;
-        m_pRenderModel->setFrameH(PANIM_THROWING);
-        D3RE::get()->setMouseAnim(m_uiCurSpell + 1);
+    //Start casting if we don't already have a spell running
+    if(data->getInputState(IN_CAST) && data->hasChanged(IN_CAST)) {
+        //Determine possible courses of action
+        if(m_bCanClimb) {
+            startClimbing();
+        } else {
+            startCasting(); //Tries to start casting, cancels existing spell if any
+        }
     }
     m_bMouseDown = data->getInputState(IN_SELECT);
     if(!m_bMouseDown) {
@@ -394,75 +495,55 @@ Player::handleButtonNormal(InputData* data) {
 
 void
 Player::handleButtonCasting(InputData* data) {
-    if(!data->getInputState(IN_CAST)) {
+    //Actually cast the spell, if it is valid
+    if(!data->getInputState(IN_CAST) && data->hasChanged(IN_CAST)) {
         m_eState = PLAYER_NORMAL;
         m_uiAnimFrameStart = PANIM_WALKING;
-        for(uint i = 0; i < NUM_SPELL_TYPES; ++i) {
-            if(m_aSpells[i] == NULL) continue;
-
-            if(m_aSpells[i]->getStatus() == SPELL_READY) {
-                m_aSpells[i]->activate();
+        if(m_pCurSpell != NULL) {
+            if(m_pCurSpell->getStatus() == SPELL_READY) {
+                m_pCurSpell->activate();
                 m_eState = PLAYER_CASTING_TRANS;
                 m_uiAnimFrameStart = PANIM_THROWING;
-            } else if(m_aSpells[i]->getStatus() != SPELL_ACTIVE) {
-                resetSpell(i);
+            } else {
+                m_pCurSpell->deactivate();
             }
         }
-        D3RE::get()->setMouseAnim(0);
+
+        //Stop playing spell sound if it is playing
+        BAE::get()->playSound(AUD_NONE, 0, AUD_CHAN_PLAYER_SPELL_BACKGROUND);
     }
 
     //Add points to current spells
-    if(data->getInputState(IN_SELECT) && data->hasChanged(IN_SELECT) && m_aSpells[m_uiCurSpell] != NULL) {
-        m_aSpells[m_uiCurSpell]->addPoint(GameManager::get()->getTopVolume(), D3RE::get()->getMousePos());
+    if(data->getInputState(IN_SELECT) && data->hasChanged(IN_SELECT)
+       && m_pCurSpell != NULL && GameManager::get()->getTopVolume() != NULL) {
+        m_pCurSpell->addPoint(GameManager::get()->getTopVolume(), D3RE::get()->getMousePos(), true);
     }
 
-    //Switch current spell
-    if(data->getInputState(IN_WEST) && data->hasChanged(IN_WEST)) {
-        //Modulus behaves strangely for negatives
-        if(m_uiCurSpell == 0) {
-            m_uiCurSpell = NUM_SPELL_TYPES - 1;
-        } else {
-            m_uiCurSpell--;
-        }
-        D3RE::get()->setMouseAnim(m_uiCurSpell + 1);
-    } else if(data->getInputState(IN_EAST) && data->hasChanged(IN_EAST)) {
-        m_uiCurSpell = (m_uiCurSpell + 1) % (NUM_SPELL_TYPES);
-        D3RE::get()->setMouseAnim(m_uiCurSpell + 1);
+    if(data->getInputState(IN_RCLICK) && data->hasChanged(IN_RCLICK)
+       && m_pCurSpell != NULL && GameManager::get()->getTopVolume() != NULL) {
+        m_pCurSpell->addPoint(GameManager::get()->getTopVolume(), D3RE::get()->getMousePos(), false);
     }
 }
 
-void
-Player::cleanSpells() {
-    for(uint i = 0; i < NUM_SPELL_TYPES; ++i) {
-        if(m_aSpells[i] != NULL) {
-            delete m_aSpells[i];
-            m_aSpells[i] = NULL;
-        }
+float
+Player::getObjHeight(TimePhysicsModel *pmdl, uint uiCmdlId) {
+    CollisionModel *cmdl = pmdl->getCollisionModel(uiCmdlId);
+    float fHeightOfObj = pmdl->getPosition().y;
+    switch(cmdl->getType()) {
+    case CM_BOX: {
+        BoxCollisionModel *bxmdl = (BoxCollisionModel*)cmdl;
+        fHeightOfObj += bxmdl->m_bxBounds.y + bxmdl->m_bxBounds.h;
+        break;
     }
-    m_uiCurSpell = 0;
-}
-
-void
-Player::resetSpell(uint uiSpell) {
-    if(m_aSpells[uiSpell] != NULL) {
-        delete m_aSpells[uiSpell];
-        m_aSpells[uiSpell] = NULL;
+    case CM_Y_HEIGHTMAP: {
+        PixelMapCollisionModel *pxmdl = (PixelMapCollisionModel*)cmdl;
+        fHeightOfObj += pxmdl->getHeightAtPoint(m_pPhysicsModel->getPosition() - pmdl->getPosition());
+        break;
     }
-    switch(uiSpell) {
-    case SPELL_TYPE_CYCLIC:
-        m_aSpells[SPELL_TYPE_CYCLIC] = new SourceSinkSpell(SPELL_DURATION, 0.3f);
-        break;
-    case SPELL_TYPE_FLOW:
-        m_aSpells[SPELL_TYPE_FLOW] = new FlowSpell(SPELL_DURATION, 0.3f);
-        break;
-/*
-    case SPELL_TYPE_DIVIDE:
-        m_aSpells[SPELL_TYPE_DIVIDE] = NULL;
-        break;
-*/
     default:
         break;
     }
+    return fHeightOfObj;
 }
 
 void
@@ -472,19 +553,9 @@ Player::handleCollision(HandleCollisionData *data) {
         Item *item = (Item*)data->obj;
         PWE::get()->remove(item->getId());
         //addHudInventoryItem(item);
-        GameManager::get()->addToInventory(item, true);
+        //GameManager::get()->addToInventory(item, true);
+        m_inv.add(item);
         BAE::get()->playSound(AUD_PICKUP);
-
-        switch(item->getItemId()) {
-        case ITEM_SPELL_CYCLIC:
-            resetSpell(SPELL_TYPE_CYCLIC);
-            m_uiCurSpell = SPELL_TYPE_CYCLIC;
-            break;
-        case ITEM_SPELL_FLOW:
-            resetSpell(SPELL_TYPE_FLOW);
-            m_uiCurSpell = SPELL_TYPE_FLOW;
-            break;
-        }
     } else if(data->iDirection & BIT(m_iDirection) &&
               m_eState == PLAYER_NORMAL &&
               !data->obj->getFlag(TPE_PASSABLE)) {
@@ -498,47 +569,68 @@ Player::handleCollision(HandleCollisionData *data) {
         }
 
         //Get the height according to the collision model type
-        CollisionModel *tcmdl = pmdl->getCollisionModel(data->uiCollisionModel);
-        float fHeightOfObj;
-        switch(tcmdl->getType()) {
-        case CM_BOX: {
-            BoxCollisionModel *bxmdl = (BoxCollisionModel*)tcmdl;
-            fHeightOfObj = bxmdl->m_bxBounds.y + bxmdl->m_bxBounds.h + pmdl->getPosition().y;
-            break;
-        }
-        case CM_Y_HEIGHTMAP: {
-            PixelMapCollisionModel *pxmdl = (PixelMapCollisionModel*)tcmdl;
-            fHeightOfObj = pxmdl->getHeightAtPoint(m_pPhysicsModel->getPosition() - pmdl->getPosition()) + pmdl->getPosition().y;
-            break;
-        }
-        }
+        float fHeightOfObj = getObjHeight(pmdl, data->uiCollisionModel);
 
         Box mbx = m_pPhysicsModel->getCollisionVolume();
 
-        float shiftMag = data->ptShift.magnitude();
-        float moveMag = m_pPhysicsModel->getLastVelocity().magnitude();
+        //float shiftMag = data->ptShift.magnitude();
+        //float moveMag = m_pPhysicsModel->getLastVelocity().magnitude();
+
+        //Object is low enough to step onto
         if((fHeightOfObj) - (mbx.y) < 0.25) {   //Too low to climb over, so step over
             //Step up
             moveBy(Point(-data->ptShift.x, (fHeightOfObj) - (mbx.y), -data->ptShift.z));
             Point ptPos = m_pPhysicsModel->getPosition();
             D3RE::get()->moveScreenTo(ptPos);
-        } else if(fHeightOfObj < mbx.y + mbx.h && equal(shiftMag,moveMag)) {
-            //Play appropriate sound
-            BAE::get()->playSound(AUD_LIFT);
-
-            //Climbing animation
-            m_eState = PLAYER_CLIMBING_TRANS;
-            m_uiAnimFrameStart = PANIM_CLIMBING;
-            state = 0;
-
-            //Prep for climbing
-            m_fClimbStepHeight = ((fHeightOfObj) - (mbx.y)) / 160.f;
-            setFlag(TPE_FLOATING, true);
-            setFlag(TPE_STATIC, true);
-            m_ptClimbShift = Point(-data->ptShift.x, 0.f, -data->ptShift.z);
+            m_pPhysicsModel->setSurface(pmdl);
         } else {
+            //We might be able to climb, if we didn't step up.
+            if(fHeightOfObj < mbx.y + mbx.h) {
+                //Prep for climbing
+                m_fEndClimbHeight = fHeightOfObj;
+                m_fStartClimbHeight = mbx.y;
+                m_uiClimbObjCmdlId = data->uiCollisionModel;
+                m_uiClimbObjId = data->obj->getId();
+                m_ptClimbShift = Point(-data->ptShift.x, 0.f, -data->ptShift.z);
+                m_bCanClimb = true;
+            }
+
             m_uiAnimFrameStart = PANIM_PUSHING;
         }
     }
 }
 
+void
+Player::startClimbing() {
+    //Set the state to prepare for climbing
+    // Assumes all climbing prep has been done and the player can climb
+
+    //Play appropriate sound
+    BAE::get()->playSound(AUD_LIFT);
+
+    //Climbing animation
+    m_eState = PLAYER_CLIMBING_TRANS;
+    m_uiAnimFrameStart = PANIM_CLIMBING;
+    m_iAnimState = 0;
+
+    //Physics bludgeoning
+    setFlag(TPE_FLOATING, true);
+    //setFlag(TPE_STATIC, true);
+}
+
+void
+Player::startCasting() {
+    if(m_pCurSpell == NULL) {
+        SpellItem *item = m_inv.getCurSpell();
+        if(item != NULL) {
+            m_eState = PLAYER_CASTING;
+            m_pRenderModel->setFrameH(PANIM_THROWING);
+            m_pCurSpell = item->createSpell(SPELL_DURATION, 0.8f);
+
+            //Play appropriate sound
+            BAE::get()->playSound(AUD_CASTING, -1, AUD_CHAN_PLAYER_SPELL_BACKGROUND);
+        }
+    } else {
+        m_pCurSpell->deactivate();
+    }
+}

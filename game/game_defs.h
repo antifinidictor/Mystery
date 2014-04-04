@@ -6,6 +6,7 @@
 #define GAME_DEFS_H
 
 #include "mge/defs.h"
+#include "mge/Event.h"
 
 enum GAME_AREA {
     GM_START_PAGE,
@@ -44,10 +45,18 @@ enum SOUND_TYPES {
     AUD_DRAG,
     AUD_POPUP,
     AUD_POPDOWN,
+    AUD_SPELL_POINT,
     AUD_CITY_MUSIC,
     AUD_SCHOOL_MUSIC,
     AUD_UNDERGROUND_MUSIC,
+    AUD_CASTING,
     NUM_SOUNDS
+};
+
+//15 audio channels
+enum AUDIO_CHANNELS {
+    AUD_CHAN_PLAYER_SPELL_BACKGROUND,
+    AUD_CHAN_ANY = -1
 };
 
 enum RENDER_ORDER {
@@ -64,6 +73,7 @@ enum InputID {
     IN_SOUTH,
     IN_WEST,
     IN_SELECT,
+    IN_RCLICK,
     IN_TOGGLE_DEBUG_MODE,
     IN_SHIFT,   //Modify key #1
     IN_CTRL,    //Modify key #2
@@ -80,9 +90,16 @@ enum GameEvent {
     ON_SPELL_SOURCE_CAST,   //Spell that causes an element to flow from one point to another WITHIN a volume (called once for source, once for sink)
     ON_SPELL_FLOW_CAST,     //Spell that causes a flow within the specified volume
     ON_SPELL_CANCEL,        //Spell cancelled
+    ON_ITEM_DROPPED,        //Item dropped into a slot
+    ON_UPDATE_HUD,          //HUD animations should be updated
     NUM_GAME_EVENTS
 };
 
+enum GameEventReturnCodes {
+    EVENT_ITEM_CAN_DROP = NUM_EVENT_RETURN_CODES,   //Item can be dropped here
+    EVENT_ITEM_CANNOT_DROP,                         //Item cannot be dropped here (should return to previous location)
+    NUM_GAME_EVENT_RETURN_CODES
+};
 
 enum GameManagerState {
     GM_START,
@@ -100,10 +117,14 @@ enum HudContainers {
 
 enum TopBarHudElements {
     MGHUD_BACKDROP,
-    MGHUD_AREA_NAME,
     MGHUD_HEALTH_CONTAINER,
     MGHUD_ITEMBAR_CONTAINER,
-    MGHUD_INVENTORY_CONTAINER,
+    MGHUD_CUR_AREA,
+    MGHUD_CUR_ACTION,
+    MGHUD_SPELL_CONTAINER,
+    MGHUD_ITEM_CONTAINER,
+    MGHUD_ELEMENT_CONTAINER,
+    MGHUD_SIDEBUTTON_CONTAINER,
     NUM_MGHUD_TOP_BAR_ELEMENTS
 };
 
@@ -125,6 +146,13 @@ enum InventoryElements {
 enum GameFlags {
     GAM_CAN_LINK = GAME_FLAGS_BEGIN,
     NUM_GAME_FLAGS
+};
+
+//Some useful event structures
+struct ItemDropEvent {
+    uint itemId;
+    uint itemOldIndex;
+    uint itemNewIndex;
 };
 
 #endif

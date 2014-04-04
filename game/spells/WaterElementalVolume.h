@@ -39,6 +39,10 @@ public:
     virtual void beginRestore();
     virtual void endRestore();
 
+
+
+    virtual float getHeightAt(const Point &pt);
+
 private:
     D3HeightmapRenderModel *m_pRenderModel;
     TimePhysicsModel  *m_pPhysicsModel;

@@ -20,6 +20,7 @@ using namespace std;
 D3RenderEngine *D3RenderEngine::re;
 
 D3RenderEngine::D3RenderEngine() {
+    printf("Render engine has ID %d\n", getId());
     m_sdlWindow = SDL_CreateWindow("The Child and the Alchemist",
                           SDL_WINDOWPOS_UNDEFINED,
                           SDL_WINDOWPOS_UNDEFINED,
@@ -81,6 +82,7 @@ D3RenderEngine::D3RenderEngine() {
 }
 
 D3RenderEngine::~D3RenderEngine() {
+    printf("Render engine cleaning\n");
     MGE::get()->removeListener(getId(), ON_MOUSE_MOVE);
     delete m_pHudContainer;
     delete m_pDummyMouseObj;
@@ -483,6 +485,7 @@ D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase
         uint framesW = pt.get(key + ".framesW", 1);
         uint framesH = pt.get(key + ".framesH", 1);
         string name = pt.get(key + ".name", "?");
+
         if(name.compare("?") == 0) {
             createImage(uiId, filename, framesH, framesW);
         } else {

@@ -45,6 +45,7 @@ TimePhysicsModel::~TimePhysicsModel() {
 
 void TimePhysicsModel::moveBy(Point ptShift) {
     m_ptPos += ptShift;
+    m_ptLastMotion += ptShift;
 
     list<AbstractTimePhysicsModel*>::iterator iter;
     for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
@@ -64,13 +65,14 @@ void TimePhysicsModel::update(uint uiDeltaTime) {
     float dt = uiDeltaTime / m_fTimeDivisor;
 
     //Move the physics model
-    m_ptLastMotion.x = 0.5 * m_ptAcceleration.x * dt * dt + m_ptVelocity.x * dt,
-    m_ptLastMotion.y = 0.5 * m_ptAcceleration.y * dt * dt + m_ptVelocity.y * dt,
-    m_ptLastMotion.z = 0.5 * m_ptAcceleration.z * dt * dt + m_ptVelocity.z * dt;
+    m_ptLastMotion = Point();
+    float fx = 0.5 * m_ptAcceleration.x * dt * dt + m_ptVelocity.x * dt;
+    float fy = 0.5 * m_ptAcceleration.y * dt * dt + m_ptVelocity.y * dt;
+    float fz = 0.5 * m_ptAcceleration.z * dt * dt + m_ptVelocity.z * dt;
     m_ptVelocity.x = m_ptAcceleration.x * dt + m_ptVelocity.x * m_fFrictionAffect;
     m_ptVelocity.y = m_ptAcceleration.y * dt + m_ptVelocity.y * m_fFrictionAffect;
     m_ptVelocity.z = m_ptAcceleration.z * dt + m_ptVelocity.z * m_fFrictionAffect;
-    moveBy(m_ptLastMotion);
+    moveBy(Point(fx, fy, fz));
 
     //Reset values changed each turn
     m_ptAcceleration = Point();
@@ -103,12 +105,13 @@ TimePhysicsModel::removeSurfaceObj(AbstractTimePhysicsModel *mdl) {
 }
 
 void
-TimePhysicsModel::setSurface(AbstractTimePhysicsModel *mdl) {
-    if(m_pObjImOn != mdl) {
+TimePhysicsModel::setSurface(PhysicsModel *mdl) {
+    AbstractTimePhysicsModel *amdl = (AbstractTimePhysicsModel*)mdl;
+    if(m_pObjImOn != amdl) {
         if(m_pObjImOn != NULL) {
             m_pObjImOn->removeSurfaceObj(this);
         }
-        m_pObjImOn = mdl;
+        m_pObjImOn = amdl;
         if(m_pObjImOn != NULL) {
             m_pObjImOn->addSurfaceObj(this);
         }

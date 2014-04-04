@@ -127,3 +127,35 @@ WaterElementalVolume::beginRestore() {
 void
 WaterElementalVolume::endRestore() {
 }
+
+
+float
+WaterElementalVolume::getHeightAt(const Point &pt) {
+    //Get the physics-position adjusted point for use in bounds comparison
+    Point ptAdjusted = pt - m_pPhysicsModel->getPosition();
+    float fHeight = m_pPhysicsModel->getPosition().y;   //Base collision volume
+    for(uint curCmdl = 0; curCmdl < m_pPhysicsModel->getNumModels(); ++curCmdl) {
+        //Make sure this point is in the bounds of this collision model
+        CollisionModel *cmdl = m_pPhysicsModel->getCollisionModel(curCmdl);
+        if(!ptInXZRect(ptAdjusted, cmdl->getBounds())) {
+            continue;
+        }
+
+        //Get height information specific to the type of collision model
+        switch(cmdl->getType()) {
+        case CM_BOX: {
+            BoxCollisionModel *bxmdl = (BoxCollisionModel*)cmdl;
+            fHeight += bxmdl->m_bxBounds.y + bxmdl->m_bxBounds.h;
+            break;
+          }
+        case CM_Y_HEIGHTMAP: {
+            PixelMapCollisionModel *pxmdl = (PixelMapCollisionModel*)cmdl;
+            fHeight += pxmdl->getHeightAtPoint(ptAdjusted);
+            break;
+          }
+        default:
+            break;
+        }
+    }
+    return fHeight;
+}

@@ -84,4 +84,33 @@ private:
     float m_fMagnitude;
 };
 
+class VortexForceField : public ForceField {
+public:
+    VortexForceField(const Point &pos, const Point &norm, float mag) {
+        m_ptCenter = pos;
+        m_ptNormal = norm;
+        m_fMagnitude = mag;
+
+        m_ptNormal.normalize();
+    }
+    virtual ~VortexForceField() {}
+
+    virtual Point getForceAt(const Point &pt) {
+        Point ptDiff = pt - m_ptCenter;
+        float fDist = ptDiff.magnitude();
+        if(fDist < 1.f) {
+            fDist = 1.f;
+        }
+        float fForceMag = m_fMagnitude / fDist / fDist;
+        ptDiff.normalize();
+        Point ptForce = cross(ptDiff, m_ptNormal);
+        ptForce *= fForceMag / ptForce.magnitude();
+        return ptForce;
+    }
+
+private:
+    Point m_ptCenter;
+    Point m_ptNormal;
+    float m_fMagnitude;
+};
 #endif //FORCE_FIELD

@@ -33,6 +33,8 @@ public:
     virtual void interpRestore(float fTime);
     virtual void beginRestore();
     virtual void endRestore();
+
+    virtual float getHeightAt(const Point &pt);
 protected:
 private:
     void addVolumeToHmap(PixelMapCollisionModel *mdl, float volume);
@@ -45,6 +47,7 @@ private:
     //Interpolation maps
     PixelMap *m_pxOrigMap;
     PixelMap *m_pxTempMap;
+    Box m_bxOrigBounds;
 
     float m_fVolume;
 };

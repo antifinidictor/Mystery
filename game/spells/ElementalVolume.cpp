@@ -43,9 +43,11 @@ ElementalVolume::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
 void
 ElementalVolume::handleCollision(HandleCollisionData *data) {
     //We'll deal with multiple collision objects later
-    Point ptPos = data->obj->getPhysicsModel()->getPosition();
-    Point ptForce = getTotalForceAt(ptPos);
-    data->obj->getPhysicsModel()->applyForce(ptForce);
+    if(!data->obj->getFlag(TPE_STATIC)) {
+        Point ptPos = data->obj->getPhysicsModel()->getPosition();
+        Point ptForce = getTotalForceAt(ptPos);
+        data->obj->getPhysicsModel()->applyForce(ptForce);
+    }
 }
 
 

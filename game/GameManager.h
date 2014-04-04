@@ -16,12 +16,9 @@
 #include "pwe/PartitionedWorldEngine.h"
 #include "tpe/TimePhysicsEngine.h"
 
-#define FADE_TIME_STEP 0.02f
-#define DEFAULT_WEIGHT 0.0f //Used to be 0.5f.  Now let's only change it if the world color changes
-#define FADE_WEIGHT 1.f
-
 class ElementalVolume;
 class DraggableHud;
+class Player;
 
 class GameManager : public GameObject
 {
@@ -55,9 +52,8 @@ public:
     void addActiveVolume(ElementalVolume *ev);
     void removeActiveVolume(uint id);
     ElementalVolume *getTopVolume();
-    DraggableHud *getHud() { return m_pHud; }
-    //Inventory *getPlayerInventory() { return &m_inv; }
-    void addToInventory(Item *item, bool makeCurrent = false);
+
+    void registerPlayer(Listener *pPlayer);
 
 private:
     GameManager(uint uiId);
@@ -78,9 +74,7 @@ private:
     Color m_crWorld;
     Color m_crBackground;
 
-    Inventory m_inv;
-
-    DraggableHud *m_pHud;
+    Listener *m_pPlayerListener; //The player, as a listener
 
     std::stack<GameManagerState> m_skState;
     std::map<uint, ElementalVolume*> m_mActiveVolumes;

@@ -1,14 +1,12 @@
 #include "Draggable.h"
+#include "pwe/PartitionedWorldEngine.h"
 
 Draggable::Draggable(uint uiId, const Rect &rcArea)
 {
     m_uiFlags = 0;
     m_uiId = uiId;
+    m_rcClickArea = rcArea;
     Rect rcBackdropArea = Rect(0.f, 0.f, rcArea.w, rcArea.h);
-    m_pRenderModel = new ContainerRenderModel(rcArea);
-    //D3HudRenderModel *pBackground = new D3HudRenderModel(uiImgId, rcBackdropArea);
-    //m_pRenderModel->add(0, pBackground);
-    //m_pRenderModel = new D3HudRenderModel(uiImgId, rcArea);;
 
     m_pPhysicsModel = new NullTimePhysicsModel(
         Point(rcArea.x + rcArea.w / 2, rcArea.y + rcArea.h / 2, 0)
@@ -20,7 +18,7 @@ Draggable::Draggable(uint uiId, const Rect &rcArea)
 
 Draggable::~Draggable()
 {
-    //dtor
+    PWE::get()->freeId(m_uiId);
 }
 
 int
@@ -47,7 +45,8 @@ Draggable::update(uint time) {
 void
 Draggable::onFollow(const Point &diff) {
     m_pPhysicsModel->moveBy(diff);
-    m_pRenderModel->moveBy(diff);
+    m_rcClickArea.x += diff.x;
+    m_rcClickArea.y += diff.y;
 }
 
 int
@@ -58,17 +57,16 @@ Draggable::onMouseMove(InputData *data) {
         0.f
     );
 
-    Rect rcClickArea = m_pRenderModel->getDrawArea();
     switch(m_eState) {
     case DRAG_MOUSE_OUT: {
-        if(ptInRect(ptMouse, rcClickArea)) {
+        if(ptInRect(ptMouse, m_rcClickArea)) {
             m_eState = DRAG_MOUSE_IN;
             onMouseIn();
         }
         break;
     }
     case DRAG_MOUSE_IN: {
-        if(!ptInRect(ptMouse, rcClickArea)) {
+        if(!ptInRect(ptMouse, m_rcClickArea)) {
             m_eState = DRAG_MOUSE_OUT;
             onMouseOut();
         }

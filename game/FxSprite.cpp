@@ -1,5 +1,5 @@
 #include "FxSprite.h"
-#define MAX_ANIM_TIMER 10
+#define ANIM_TIMER_MAX 3
 FxSprite::FxSprite(uint id, uint texId, int duration, const Point &ptPos, uint frameW) {
     m_uiId = id;
     m_uiFlags = 0;
@@ -27,7 +27,7 @@ FxSprite::~FxSprite() {
 
 bool
 FxSprite::update(uint time) {
-    //Insert animation stuff here
+    //Animate
     uint curFrame = (m_iMaxTimeToLive - m_iTimeToLive) * m_uiMaxFramesH / m_iMaxTimeToLive;
     m_pRenderModel->setFrameH(curFrame);
     return m_iTimeToLive-- < 0;

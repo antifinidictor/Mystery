@@ -38,12 +38,12 @@ PixelMapCollisionModel::getHeightAtPoint(const Point &ptPos) {
 float
 PixelMapCollisionModel::getVolume() {
     //Approximate the volume.  This won't be perfectly accurate but it should be fairly close
-    float fVolume = 0.f;
-    float cellArea = m_bxBounds.w * m_bxBounds.l / (m_pxMap->m_uiW * m_pxMap->m_uiH);
+    float fPercentCellVolume = 0.f;
+    float fCellVolume = m_bxBounds.w * m_bxBounds.l * m_bxBounds.h / (m_pxMap->m_uiW * m_pxMap->m_uiH);
     for(uint x = 0; x < m_pxMap->m_uiW; ++x) {
         for(uint z = 0; z < m_pxMap->m_uiH; ++z) {
-            fVolume += m_pxMap->m_pData[x][z];
+            fPercentCellVolume += m_pxMap->m_pData[x][z];
         }
     }
-    return fVolume * cellArea;
+    return fPercentCellVolume * fCellVolume;
 }

@@ -1,5 +1,6 @@
 #include "Item.h"
 #include "pwe/PartitionedWorldEngine.h"
+#define ANIM_TIMER_MAX 1
 
 Item::Item(uint id, uint itemId, const Point &pos) {
     m_uiId = id;
@@ -9,7 +10,7 @@ Item::Item(uint id, uint itemId, const Point &pos) {
     m_pPhysicsModel = new TimePhysicsModel(pos);
     Box bxVol = Box(-0.125f,0.f,-0.125f,0.25f,0.25f,0.25f);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVol));
-    m_iAnimTimer = 20;
+    m_iAnimTimer = ANIM_TIMER_MAX;
     //setFlag(TPE_PASSABLE, true);
     //setFlag(TPE_FALLING, true);
 }
@@ -44,7 +45,7 @@ bool
 Item::update(uint time) {
     //animation
     if(m_iAnimTimer < 0) {
-        m_iAnimTimer = 20;
+        m_iAnimTimer = ANIM_TIMER_MAX;
         int nextFrame = (m_pRenderModel->getFrameW() + 1) % 8;
         m_pRenderModel->setFrameW(nextFrame);
     } else {

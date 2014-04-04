@@ -21,18 +21,21 @@ public:
     FlowSpell(int duration, float magnitude = 0.8f);
     virtual ~FlowSpell();
 
-    virtual void addPoint(ElementalVolume *ev, const Point &pt);
+    virtual void addPoint(ElementalVolume *ev, const Point &pt, bool bLeftClick);
     virtual bool activate();    //Returns true if successful, false if not
     virtual SpellState getStatus();       //Returns true if ready for activation
     virtual void update();      //Returns true if the spell has finished and can be deleted
+    virtual void deactivate();
 
 private:
     struct PointIdPair{
         uint id;
         Point pt;
-        PointIdPair(const Point &pt) {
+        bool m_bPositiveNormal;
+        PointIdPair(const Point &pt, bool bPositiveNormal) {
             this->pt = pt;
             this->id = 0;
+            m_bPositiveNormal = bPositiveNormal;
         }
     };
 

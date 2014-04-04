@@ -11,17 +11,20 @@ using namespace std;
 TimePhysicsEngine *TimePhysicsEngine::tpe;
 
 TimePhysicsEngine::TimePhysicsEngine() {
+    printf("Physics engine initialized\n");
     //ctor
 }
 
 TimePhysicsEngine::~TimePhysicsEngine() {
+    printf("Physics engine cleaned\n");
     //dtor
 }
 
 
 
 void TimePhysicsEngine::update(uint time) {
-    m_uiDeltaTime = 7;//time - m_uiLastUpdated;
+    //m_uiDeltaTime = time - m_uiLastUpdated;
+    m_uiDeltaTime = 12;
     m_uiLastUpdated = time;
 }
 
@@ -344,10 +347,10 @@ TimePhysicsEngine::applyBuoyantForce(AbstractTimePhysicsModel *tpmObj, AbstractT
 
 bool
 TimePhysicsEngine::isNotInArea(const Box &bxObj, const Box &bxBounds) {
-    return  ((bxObj.x) < (bxBounds.x)) ||
-            ((bxObj.x + bxObj.w) > (bxBounds.x + bxBounds.w)) ||
-            ((bxObj.z) < (bxBounds.z)) ||
-            ((bxObj.z + bxObj.l) > (bxBounds.z + bxBounds.l));
+    return ((bxObj.x + bxObj.w) < (bxBounds.x)) ||
+            ((bxObj.x) > (bxBounds.x + bxBounds.w)) ||
+            ((bxObj.z + bxObj.l) < (bxBounds.z)) ||
+            ((bxObj.z) > (bxBounds.z + bxBounds.l));
 }
 
 #define EQUALITY_WIDTH 0.01f

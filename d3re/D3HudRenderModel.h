@@ -25,12 +25,20 @@ public:
     void setRepsW(int rw)  { m_iRepsW = rw; }
     void setRepsH(int rh)  { m_iRepsH = rh; }
 
+    int getFrameW() { return m_iFrameW; }
+    int getFrameH() { return m_iFrameH; }
+    int getRepsW()  { return m_iRepsW; }
+    int getRepsH()  { return m_iRepsH; }
+
     void setImageColor(const Color &cr) { m_crImageColor = cr; }
     Color &getImageColor() { return m_crImageColor; }
 
     void updateDrawArea(const Rect &rc);
     void updateText(const std::string &data, float textSize = -1.f);
     std::string getText() { return m_sData; }
+
+    void centerVertically(bool bCenter);
+    void centerHorizontally(bool bCenter);
 
 private:
     void renderImage(Image *pImage);
@@ -43,6 +51,9 @@ private:
 
     Rect m_rcDrawArea;
     Point m_ptTextPos;
+
+    bool m_bVertCenter;
+    bool m_bHorizCenter;
 
     int m_iFrameW, m_iFrameH;
     int m_iRepsW, m_iRepsH;

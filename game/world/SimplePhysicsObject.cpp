@@ -25,7 +25,7 @@ SimplePhysicsObject::SimplePhysicsObject(uint id, uint texId, Box bxVolume, floa
     m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
     m_pPhysicsModel->setListener(this);
-    m_bPlayingSound = false;
+    m_iSoundChannel = -1;
 }
 
 SimplePhysicsObject::~SimplePhysicsObject() {
@@ -79,12 +79,14 @@ SimplePhysicsObject::callBack(uint uiId, void *data, uint uiEventId) {
     int status = EVENT_CAUGHT;
     switch(uiEventId) {
     case TPE_ON_COLLISION:
+        /*
         if(!m_bPlayingSound) {
             HandleCollisionData *d = (HandleCollisionData*)data;
             if(d->iDirection == UP || d->iDirection == DOWN) return EVENT_DROPPED;
-            //m_bPlayingSound = true;
-            //BAE::get()->playSound(AUD_DRAG);
+            m_bPlayingSound = true;
+            BAE::get()->playSound(AUD_DRAG);
         }
+        */
         break;
     default:
         status = EVENT_DROPPED;
@@ -93,3 +95,20 @@ SimplePhysicsObject::callBack(uint uiId, void *data, uint uiEventId) {
     return status;
 }
 
+bool
+SimplePhysicsObject::update(uint time) {
+    //Useful place to put test code
+    #define MIN_SHIFT_FOR_SOUND 0.01f
+    if(m_iSoundChannel >= 0 &&
+           (m_pPhysicsModel->getSurface() == NULL ||
+            m_pPhysicsModel->getLastVelocity().magnitude() <= MIN_SHIFT_FOR_SOUND)) {
+        BAE::get()->playSound(AUD_NONE, 0, m_iSoundChannel);
+        m_iSoundChannel = -1;
+
+    } else if(m_iSoundChannel < 0 &&
+              m_pPhysicsModel->getSurface() != NULL &&
+              m_pPhysicsModel->getLastVelocity().magnitude() > MIN_SHIFT_FOR_SOUND) {
+        m_iSoundChannel = BAE::get()->playSound(AUD_DRAG, -1, -1);
+    }
+    return false;
+}

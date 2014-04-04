@@ -18,6 +18,7 @@ void ModularEngine::clean() {
 
 //Constructor/Destructor
 ModularEngine::ModularEngine(int iSDLVideoFlags) {
+    printf("Modular engine initializing\n");
 	m_sInputData.clear();
 
 	//Initialize SDL
@@ -47,6 +48,7 @@ ModularEngine::ModularEngine(int iSDLVideoFlags) {
 }
 
 ModularEngine::~ModularEngine() {
+    printf("Modular engine cleaning\n");
     Clock::clean();
     IMG_Quit();
 	m_mInputMap.clear();
@@ -62,6 +64,7 @@ void ModularEngine::run() {
 	/* Main game loop */
 	while(m_bIsRunning) {
 	    ck->update();
+	    uint uiStartTimeInMs = SDL_GetTicks();
 
 		m_sInputData.clearChanged();
 		while(SDL_PollEvent(&event)) {
@@ -83,9 +86,16 @@ void ModularEngine::run() {
         //Render the scene.
         re->render();
 
-        //Blit the buffer onto the screen
-//        SDL_GL_SwapBuffers();   //Should probably be done by the render engine
-		SDL_Delay(5);
+        //Constant framerate
+#define FRAMES_PER_S 30
+#define MS_PER_FRAME (1000 / FRAMES_PER_S)
+	    uint uiTimePassedInMs = SDL_GetTicks() - uiStartTimeInMs;
+	    if(uiTimePassedInMs >= MS_PER_FRAME) {
+            printf("WARNING: Could not maintain framerate\n");
+            SDL_Delay(5);   //We couldn't achieve 30 frames/second (~33ms/frame)
+	    } else {
+	        SDL_Delay(MS_PER_FRAME - uiTimePassedInMs);
+	    }
 	}
 }
 
@@ -168,26 +178,26 @@ void ModularEngine::handleButton(SDL_Event *pEvent, bool bDown) {
 }
 
 void ModularEngine::informListeners(uint id) {
-	map<uint, Listener*>::iterator iter;
+	list<Listener*>::iterator iter;
 	switch(id) {
 	case ON_MOUSE_MOVE:
-		for( iter = m_mMouseMoveListeners.begin();
-			iter != m_mMouseMoveListeners.end();
+		for( iter = m_lsMouseMoveListeners.begin();
+			iter != m_lsMouseMoveListeners.end();
 			++iter ) {
-			int status = iter->second->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
+			int status = (*iter)->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
 			if(status == EVENT_CAUGHT) {
-                //printf("Obj %d caught the mouse move event\n", iter->second->getId());
+                //printf("Obj %d caught the mouse move event\n", (*iter)->getId());
                 return;
 			}
 		}
 		break;
 	case ON_BUTTON_INPUT:
-		for( iter = m_mButtonInputListeners.begin();
-			iter != m_mButtonInputListeners.end();
+		for( iter = m_lsButtonInputListeners.begin();
+			iter != m_lsButtonInputListeners.end();
 			++iter ) {
-			int status = iter->second->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
+			int status = (*iter)->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
 			if(status == EVENT_CAUGHT) {
-                //printf("Obj %d caught the button event\n", iter->second->getId());
+                //printf("Obj %d caught the button event\n", (*iter)->getId());
                 return;
 			}
 		}
@@ -198,27 +208,58 @@ void ModularEngine::informListeners(uint id) {
 }
 
 void ModularEngine::addListener(Listener *pListener, uint id, char* triggerData) {
+
 	switch(id) {
 	case ON_MOUSE_MOVE:
-		m_mMouseMoveListeners[pListener->getId()] = pListener;
+	    for(list<Listener*>::iterator it = m_lsMouseMoveListeners.begin(); it != m_lsMouseMoveListeners.end(); ++it) {
+            if((*it)->getPriority() <= pListener->getPriority()) {
+                m_lsMouseMoveListeners.insert(it, pListener);
+                return;
+            }
+	    }
+	    m_lsMouseMoveListeners.push_back(pListener);
 		break;
 	case ON_BUTTON_INPUT:
-		m_mButtonInputListeners[pListener->getId()] = pListener;
+	    for(list<Listener*>::iterator it = m_lsButtonInputListeners.begin(); it != m_lsButtonInputListeners.end(); ++it) {
+            if((*it)->getPriority() <= pListener->getPriority()) {
+                m_lsButtonInputListeners.insert(it, pListener);
+                break;
+            }
+	    }
+	    m_lsButtonInputListeners.push_back(pListener);
 		break;
 	default:
 		cout << "Unsupported event handle " << id << ".\n";
 	}
 }
 
-bool ModularEngine::removeListener(uint uiListenerID, uint id) {
+bool ModularEngine::removeListener(uint uiListenerID, uint uiEventId) {
 	map<uint, Listener*>::iterator iter;
-	switch(id) {
-	case ON_MOUSE_MOVE:
-	    return (m_mMouseMoveListeners.erase(uiListenerID) > 0);
-	case ON_BUTTON_INPUT:
-	    return (m_mButtonInputListeners.erase(uiListenerID) > 0);
+	switch(uiEventId) {
+	case ON_MOUSE_MOVE: {
+	    bool found = false;
+	    for(list<Listener*>::iterator it = m_lsMouseMoveListeners.begin(); it != m_lsMouseMoveListeners.end(); ++it) {
+            if((*it)->getId() == uiListenerID) {
+                found = true;
+                m_lsMouseMoveListeners.erase(it);
+                break;
+            }
+	    }
+	    return found;
+	}
+	case ON_BUTTON_INPUT: {
+	    bool found = false;
+	    for(list<Listener*>::iterator it = m_lsButtonInputListeners.begin(); it != m_lsButtonInputListeners.end(); ++it) {
+            if((*it)->getId() == uiListenerID) {
+                found = true;
+                m_lsButtonInputListeners.erase(it);
+                break;
+            }
+	    }
+	    return found;
+	}
 	default:
-		cout << "Unsupported event handle " << id << ".\n";
+		cout << "Unsupported event handle " << uiEventId << ".\n";
 		return false;
 	}
 }

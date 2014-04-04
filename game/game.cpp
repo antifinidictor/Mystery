@@ -109,8 +109,12 @@ void initWorld() {
     mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
     mge->mapInput(SDLK_LCTRL, IN_CTRL);
     mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
+    mge->mapInput(SDL_BUTTON_RIGHT, IN_RCLICK);
     mge->mapInput(SDLK_h,     IN_BREAK);
     mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
+
+    //Initialize the text renderer
+    TextRenderer::init();
 
     //Initialize the game manager
     GameManager::init();
@@ -128,11 +132,12 @@ void initWorld() {
     BAE::get()->loadSound(AUD_DRAG, "res/audio/drag.wav");
     BAE::get()->loadSound(AUD_POPUP, "res/audio/popup.wav");
     BAE::get()->loadSound(AUD_POPDOWN, "res/audio/popdown.wav");
-    BAE::get()->loadMusic(AUD_UNDERGROUND_MUSIC, "res/audio/OfBlackAndWhite.wav");
-    //BAE::get()->playMusic(AUD_UNDERGROUND_MUSIC);
+    BAE::get()->loadSound(AUD_CASTING, "res/audio/spellCastMode.wav");
+    BAE::get()->loadSound(AUD_SPELL_POINT, "res/audio/spellPoint.wav");
 
-    //Other singleton initializations
-    TextRenderer::init();
+    BAE::get()->loadMusic(AUD_UNDERGROUND_MUSIC, "res/audio/OfBlackAndWhite.wav");
+
+    //BAE::get()->playMusic(AUD_UNDERGROUND_MUSIC);
 
     D3RE::get()->setBackgroundColor(Color(0x9a,0xd7,0xfb));
     //D3RE::get()->hideRealMouse();
@@ -146,6 +151,7 @@ void initWorld() {
 void cleanWorld() {
     ObjectFactory::clean();
     GameManager::clean();
+    TextRenderer::clean();
 }
 
 

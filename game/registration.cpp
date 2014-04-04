@@ -14,6 +14,7 @@
 #include "game/spells/WaterElementalVolume.h"
 #include "game/spells/EarthElementalVolume.h"
 #include "game/items/Item.h"
+#include "game/items/SpellItem.h"
 #include "game/character/Character.h"
 
 void registerClasses() {
@@ -98,6 +99,12 @@ void registerClasses() {
     ;
 
     fac->registerClass(Item::getClassName(), Item::read)
+        .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
+        .registerAttribute("Item ID", "itemId", ATYPE_UINT)
+        .registerAttribute("Position", "pos", ATYPE_POINT)
+    ;
+
+    fac->registerClass(SpellItem::getClassName(), SpellItem::read)
         .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
         .registerAttribute("Item ID", "itemId", ATYPE_UINT)
         .registerAttribute("Position", "pos", ATYPE_POINT)

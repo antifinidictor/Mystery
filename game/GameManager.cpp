@@ -5,7 +5,12 @@
 #include "game/game_defs.h"
 #include "game/gui/TextDisplay.h"
 #include "game/gui/DraggableHud.h"
+#include "game/gui/DraggableItem.h"
 #include "game/items/Item.h"
+
+#define FADE_TIME_STEP 0.1f
+#define DEFAULT_WEIGHT 0.0f //Used to be 0.5f.  Now let's only change it if the world color changes
+#define FADE_WEIGHT 1.f
 
 using namespace std;
 
@@ -24,7 +29,11 @@ GameManager::GameManager(uint uiId) {
     D3RE::get()->setBackgroundColor(m_crBackground);
     D3RE::get()->setColorWeight(DEFAULT_WEIGHT);
     TextDisplay::init();
-    m_pHud = new DraggableHud(0);
+
+    //Init draggable item location information
+    //TODO: Fix so it is relative to the draggable hud and not so hardcoded?
+    //Add the draw-item location
+
 }
 
 GameManager::~GameManager() {
@@ -52,7 +61,9 @@ GameManager::write(boost::property_tree::ptree &pt, const std::string &keyBase) 
 bool
 GameManager::update(uint time) {
     TextDisplay::get()->update(time);
-    m_pHud->updateItemAnimations(&m_inv);
+
+    m_pPlayerListener->callBack(getId(), &time, ON_UPDATE_HUD);
+
     switch(m_skState.top()) {
     case GM_START:
         //Any initialization here
@@ -167,27 +178,18 @@ void
 GameManager::initBasicHud() {
     ContainerRenderModel *panel = D3RE::get()->getHudContainer();
 
-    //ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
-
-    //ContainerRenderModel *topBar = new ContainerRenderModel(Rect(0.f, 0.f, SCREEN_WIDTH, TEXTURE_TILE_SIZE));
-    uint uiHudBackdropImgId = D3RE::get()->getImageId("guiBackdrop");
-    Rect rcHudBackdropArea = Rect(0.f, 0.f, SCREEN_WIDTH, SCREEN_HEIGHT);
-    D3HudRenderModel *pBackground = new D3HudRenderModel(uiHudBackdropImgId, rcHudBackdropArea);
-    m_pHud->getHudContainer()->add(MGHUD_BACKDROP, pBackground);
-
     ContainerRenderModel *bottomBar = new ContainerRenderModel(Rect(0.f, SCREEN_HEIGHT - 2 * TEXTURE_TILE_SIZE, SCREEN_WIDTH, TEXTURE_TILE_SIZE * 2));
-    panel->add(HUD_TOPBAR, m_pHud->getHudContainer());
     panel->add(HUD_BOTTOMBAR, bottomBar);
 }
 
 void
 GameManager::cleanBasicHud() {
     D3RE::get()->getHudContainer()->clear();
-    delete m_pHud;
 }
 
 void
 GameManager::initPlayerHud() {
+#if 0
     //const uint hudBackdropId = D3RE::get()->getImageId("hudBackdrop");
     ContainerRenderModel *panel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_TOPBAR);
 
@@ -198,7 +200,7 @@ GameManager::initPlayerHud() {
     Rect rcHealthPanel = Rect(
         TEXTURE_TILE_SIZE,
         SCREEN_HEIGHT - TEXTURE_TILE_SIZE,
-        SCREEN_WIDTH - TEXTURE_TILE_SIZE * 2,
+        TEXTURE_TILE_SIZE * 3,
         TEXTURE_TILE_SIZE
     );
     Rect rcInventoryPanel = Rect(
@@ -228,15 +230,27 @@ GameManager::initPlayerHud() {
     panel->add(MGHUD_ITEMBAR_CONTAINER, itembarPanel);
 
     //Area name
-#define TEXT_BOX_WIDTH (TEXTURE_TILE_SIZE * 12)
+#define TEXT_BOX_WIDTH (TEXTURE_TILE_SIZE * 9)
     Rect rcAreaLabel = Rect(
-        (TEXTURE_TILE_SIZE * 4.f) + (TEXT_BOX_WIDTH / 2.f),
+        rcHealthPanel.x + rcHealthPanel.w,
         5.F + SCREEN_HEIGHT - TEXTURE_TILE_SIZE,
         TEXT_BOX_WIDTH,
         TEXTURE_TILE_SIZE
     );
-    D3HudRenderModel *label = new D3HudRenderModel("", rcAreaLabel,1.0f);
-    panel->add(MGHUD_AREA_NAME, label);
+    Rect rcActionLabel = Rect(
+        rcAreaLabel.x + rcAreaLabel.w,
+        7.F + SCREEN_HEIGHT - TEXTURE_TILE_SIZE,
+        TEXTURE_TILE_SIZE * 3,
+        TEXTURE_TILE_SIZE - 12
+    );
+    D3HudRenderModel *label = new D3HudRenderModel("area", rcAreaLabel,1.0f);
+    label->centerHorizontally(true);
+    panel->add(MGHUD_CUR_AREA, label);
+
+    label = new D3HudRenderModel("action", rcActionLabel,0.8f);
+    label->centerHorizontally(true);
+    label->centerVertically(true);
+    panel->add(MGHUD_CUR_ACTION, label);
 
     //Health bar
     #define BAR_SIZE (TEXTURE_TILE_SIZE / 2.F)
@@ -278,6 +292,7 @@ GameManager::initPlayerHud() {
     panel->add(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT, curElementThumbnail);
     panel->add(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL, curSpellThumbnail);
     panel->add(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM, curItemThumbnail);
+#endif
 }
 
 void
@@ -286,40 +301,7 @@ GameManager::cleanPlayerHud() {
 }
 
 void
-GameManager::addToInventory(Item *item, bool makeCurrent) {
-    uint invIndex = m_inv.add(item);
-    uint itemId = item->getItemId();
-
-    float x, y;
-    uint hudIndex = itemId + MGHUD_ELEMENT_THUMBNAIL_START;
-    uint itembarIndex = 0;
-    if(itemId < ITEM_NUM_ELEMENTS) {
-        x = (2 + 2 * (invIndex % 2)) * TEXTURE_TILE_SIZE;
-        y = (2 + 2 * (invIndex / 2)) * TEXTURE_TILE_SIZE;
-        itembarIndex = MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT;
-    } else if(itemId < ITEM_NUM_SPELLS) {
-        x = (10) * TEXTURE_TILE_SIZE;
-        y = (2 + 2 * (invIndex % 2)) * TEXTURE_TILE_SIZE;
-        itembarIndex = MGHUD_ELEMENT_ITEMBAR_CUR_SPELL;
-    } else {
-        x = (2 + 2 * (invIndex % 6)) * TEXTURE_TILE_SIZE;
-        y = (7 + 2 * (invIndex / 6)) * TEXTURE_TILE_SIZE;
-        hudIndex = invIndex + ITEM_NUM_SPELLS + MGHUD_ELEMENT_THUMBNAIL_START;
-        itembarIndex = MGHUD_ELEMENT_ITEMBAR_CUR_ITEM;
-    }
-
-    Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
-    D3HudRenderModel *thumbnail = new D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea);
-    thumbnail->setFrameH(item->getItemId());
-
-    m_pHud->getHudContainer()->add(hudIndex, thumbnail);
-
-
-    if(makeCurrent) {
-        D3RE::get()->getHudContainer()
-            ->get<ContainerRenderModel*>(HUD_TOPBAR)
-            ->get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
-            ->get<D3HudRenderModel*>(itembarIndex)
-            ->setFrameH(itemId);
-    }
+GameManager::registerPlayer(Listener *pPlayer) {
+    //The GameManager needs to know about the player so it can tell it to update the HUD
+    m_pPlayerListener = pPlayer;
 }

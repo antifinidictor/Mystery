@@ -31,7 +31,6 @@ public:
     static const std::string getClassName()     { return "Draggable"; }
 
     //Models
-    virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }
     virtual PhysicsModel *getPhysicsModel() { return m_pPhysicsModel; }
 
     //Listener
@@ -43,10 +42,8 @@ public:
     virtual void onMouseOut() {};
 
 protected:
-    ContainerRenderModel *m_pRenderModel;
-    //D3HudRenderModel * m_pRenderModel;
     NullTimePhysicsModel *m_pPhysicsModel;
-
+    Rect getClickArea() { return m_rcClickArea; }
 private:
     int onMouseMove(InputData *data);
     int onButtonPress(InputData *data);
@@ -56,6 +53,7 @@ private:
 
     Point m_ptMouseOffset;
     DraggableState m_eState;
+    Rect m_rcClickArea;
     //float m_fRadius;
 
 };

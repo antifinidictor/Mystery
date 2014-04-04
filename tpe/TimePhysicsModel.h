@@ -34,7 +34,7 @@ public:
 
     virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl) = 0;
     virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl) = 0;
-    virtual void setSurface(AbstractTimePhysicsModel *mdl) = 0;
+    virtual void setSurface(PhysicsModel *mdl) = 0;
     virtual AbstractTimePhysicsModel* getSurface() = 0;
     virtual uint addCollisionModel(CollisionModel* mdl) = 0;
     virtual void removeCollisionModel(uint id) = 0;
@@ -76,7 +76,7 @@ public:
 
     virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl);
     virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl);
-    virtual void setSurface(AbstractTimePhysicsModel *mdl);
+    virtual void setSurface(PhysicsModel *mdl);
     virtual AbstractTimePhysicsModel* getSurface() { return m_pObjImOn; }
 
     virtual uint addCollisionModel(CollisionModel* mdl);
@@ -141,7 +141,7 @@ public:
 
     virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl) {}
     virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl) {}
-    virtual void setSurface(AbstractTimePhysicsModel *mdl) {}
+    virtual void setSurface(PhysicsModel *mdl) {}
     virtual AbstractTimePhysicsModel* getSurface() { return NULL; }
 
     virtual uint addCollisionModel(CollisionModel* mdl) { return 0; }

@@ -12,6 +12,7 @@ using namespace std;
 PartitionedWorldEngine *PartitionedWorldEngine::pwe;
 
 PartitionedWorldEngine::PartitionedWorldEngine() {
+    printf("World engine has id %d\n", getId());
     m_uiNextId = ID_FIRST_UNUSED;   //The first few ids are reserved for the engines
     m_uiNextAreaId = 1;
     m_uiCurArea = m_uiNextArea = m_uiEffectiveArea = 0;
@@ -27,6 +28,9 @@ PartitionedWorldEngine::PartitionedWorldEngine() {
 }
 
 PartitionedWorldEngine::~PartitionedWorldEngine() {
+    printf("World engine cleaning\n");
+    MGE::get()->removeListener(this->getId(), ON_MOUSE_MOVE);
+    MGE::get()->removeListener(this->getId(), ON_BUTTON_INPUT);
     //Need to free everything
     cleanAllAreas();
 }

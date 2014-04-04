@@ -11,6 +11,7 @@ enum SSSpellState {
     SSS_STATE_SECOND_POINT,
     SSS_STATE_READY,
     SSS_STATE_ACTIVATED,
+    SSS_STATE_RESTORING,
     SSS_STATE_INVALID,
     NUM_SSS_STATES
 };
@@ -20,12 +21,14 @@ public:
     SourceSinkSpell(int duration, float magnitude = 100.f);
     virtual ~SourceSinkSpell();
 
-    virtual void addPoint(ElementalVolume *ev, const Point &pt);
+    virtual void addPoint(ElementalVolume *ev, const Point &pt, bool bLeftClick);
     virtual bool activate();    //Returns true if successful, false if not
     virtual SpellState getStatus();       //Returns true if getStatus for activation
     virtual void update();      //Returns true if the spell has finished and can be deleted
-
+    virtual void deactivate();
 private:
+    void clean();
+
     ElementalVolume *m_ev1;
     ElementalVolume *m_ev2;
     int m_iTimer, m_iFxTimer;

@@ -11,16 +11,18 @@
 //Standard callback return codes
 enum CallbackReturnStatus {
     EVENT_CAUGHT,
-    EVENT_DROPPED
+    EVENT_DROPPED,
+    NUM_EVENT_RETURN_CODES
 };
 
 class Listener {
 private:
-	uint m_uiEventTypes;
+//	uint m_uiEventTypes;
+	int m_iPriority;
 
 public:
 	//Constructor(s)/Destructor
-	Listener() { m_uiEventTypes = 0; }
+	Listener() { m_iPriority = 0; } //{ m_uiEventTypes = 0; }
 	virtual ~Listener() {}
 
 	//Abstract methods
@@ -28,9 +30,13 @@ public:
 	virtual uint getId() = 0;
 
 	//Accessor methods
+/*
 	bool getEventType(uint id) { return m_uiEventTypes & BIT(id); }
 	void addEventType(uint id) { m_uiEventTypes = (m_uiEventTypes | BIT(id)); }
 	void resetEventTypes() { m_uiEventTypes = 0; }
+*/
+	int getPriority() { return m_iPriority; }
+	void setPriority(int iPriority) { m_iPriority = iPriority; }
 };
 
 class EventHandler {

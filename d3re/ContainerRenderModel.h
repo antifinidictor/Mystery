@@ -38,7 +38,16 @@ public:
         }
     }
 
-    uint getNumModels() { return m_mModels.size(); }
+    template <class Functor>
+    void forEachModel(Functor &f) {
+        std::map<uint, RenderModel*>::iterator it;
+        for(it = m_mModels.begin(); it != m_mModels.end(); ++it) {
+            bool finished = f(it->first, it->second);
+            if(finished) {
+                break;
+            }
+        }
+    }
 
     virtual Rect getDrawArea() { return m_rcTotalArea; }
 

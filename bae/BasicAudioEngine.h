@@ -21,7 +21,7 @@ public:
     void loadSound(uint uiId, const char *filename);
 
     void playMusic(uint uiId, int fadeout=0, int fadein = 0);
-    void playSound(uint uiId, int reps=0, int channel=-1);
+    int playSound(uint uiId, int reps=0, int channel=-1);
 
     //For the thread
     bool isRunning() { return m_bRunning; }
