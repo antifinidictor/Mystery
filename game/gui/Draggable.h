@@ -43,7 +43,7 @@ public:
 
 protected:
     NullTimePhysicsModel *m_pPhysicsModel;
-    Rect getClickArea() { return m_rcClickArea; }
+    Rect getClickArea();
 private:
     int onMouseMove(InputData *data);
     int onButtonPress(InputData *data);

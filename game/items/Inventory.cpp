@@ -91,40 +91,53 @@ void
 Inventory::removeSpell(uint index)   {
     m_aSpellItems[index] = NULL;
     m_pDisplay->removeSpell(index);
+
+    //If this was the current spell...
+    if(index == m_uiCurSpell) {
+        m_pDisplay->setCurrentSpell(ITEM_NONE);
+    }
 }
 
 void
 Inventory::removeElement(uint index) {
     m_aElementItems[index] = NULL;
     m_pDisplay->removeElement(index);
+
+    //If this was the current element...
+    if(index == m_uiCurElement) {
+        m_pDisplay->setCurrentElement(ITEM_NONE);
+    }
 }
 
 void
 Inventory::removeItem(uint index) {
     m_aGeneralItems[index] = NULL;
     m_pDisplay->removeItem(index);
+
+    //If this was the current item...
+    if(index == m_uiCurItem) {
+        m_pDisplay->setCurrentItem(ITEM_NONE);
+    }
 }
 
 
 void
 Inventory::moveItem(uint uiStartIndex, uint uiEndIndex) {
-printf(__FILE__" %d\n",__LINE__);
+    if(uiStartIndex == uiEndIndex || uiStartIndex > NUM_GENERAL_ITEMS || uiEndIndex > NUM_GENERAL_ITEMS) {
+        return;
+    }
+
     Item *pItemOld = m_aGeneralItems[uiEndIndex];
     m_aGeneralItems[uiEndIndex] = m_aGeneralItems[uiStartIndex];
     m_aGeneralItems[uiStartIndex] = pItemOld;
-printf(__FILE__" %d\n",__LINE__);
-    if(pItemOld != NULL) {
-printf(__FILE__" %d\n",__LINE__);
-        //We need to do some special display stuff
-        m_pDisplay->removeItem(uiEndIndex);
-printf(__FILE__" %d\n",__LINE__);
-        m_pDisplay->addItem(pItemOld->getItemId(), uiStartIndex);
-printf(__FILE__" %d\n",__LINE__);
+
+    if(m_uiCurItem == uiStartIndex) {
+        m_uiCurItem = uiEndIndex;
+    } else if(m_uiCurItem == uiEndIndex) {
+        m_uiCurItem = uiStartIndex;
     }
 
-printf(__FILE__" %d\n",__LINE__);
     m_pDisplay->moveItem(uiStartIndex, uiEndIndex);
-printf(__FILE__" %d\n",__LINE__);
 }
 
 void
@@ -146,5 +159,29 @@ Inventory::setInventoryDisplay(InventoryDisplay *pDisplay) {
         if(m_aGeneralItems[i] != NULL) {
             m_pDisplay->addSpell(m_aGeneralItems[i]->getItemId(), i);
         }
+    }
+}
+
+void
+Inventory::setCurSpell(uint curSpell) {
+    m_uiCurSpell = curSpell;
+    if(m_pDisplay != NULL) {
+        m_pDisplay->setCurrentSpell(m_aSpellItems[m_uiCurSpell]->getItemId());
+    }
+}
+
+void
+Inventory::setCurItem(uint curItem) {
+    m_uiCurItem = curItem;
+    if(m_pDisplay != NULL) {
+        m_pDisplay->setCurrentItem(m_aGeneralItems[curItem]->getItemId());
+    }
+}
+
+void
+Inventory::setCurElement(uint curElement) {
+    m_uiCurElement = curElement;
+    if(m_pDisplay != NULL) {
+        m_pDisplay->setCurrentElement(m_aElementItems[curElement]->getItemId());
     }
 }

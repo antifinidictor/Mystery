@@ -3,9 +3,9 @@
  */
 
 #include "d3re.h"
-#include "mge/GameObject.h"
+#include "mge/Positionable.h"
 
-D3PrismRenderModel::D3PrismRenderModel(GameObject *parent, Box bxVolume) {
+D3PrismRenderModel::D3PrismRenderModel(Positionable *parent, Box bxVolume) {
     m_bxVolume = bxVolume;
     m_pParent = parent;
 
@@ -30,9 +30,11 @@ D3PrismRenderModel::render(RenderEngine *re) {
     glPushMatrix();
 
     //Render collision box
+    /*
     if(D3RE::get()->getDrawCollisions()) {
         D3RE::get()->drawBox(m_pParent->getPhysicsModel()->getCollisionVolume(), m_crColor);
     }
+    */
 
     Color worldColor = D3RE::get()->getWorldColor();
     float fWeight = D3RE::get()->getColorWeight();
@@ -40,7 +42,7 @@ D3PrismRenderModel::render(RenderEngine *re) {
                            m_crColor.g * (1 - fWeight) + worldColor.g * fWeight,
                            m_crColor.b * (1 - fWeight) + worldColor.b * fWeight);
 
-    Point ptPos = getPosition();
+    Point ptPos = m_pParent->getPosition();
     glTranslatef((ptPos.x + m_bxVolume.x), (ptPos.y + m_bxVolume.y), (ptPos.z + m_bxVolume.z));
 
     glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);
@@ -131,7 +133,7 @@ D3PrismRenderModel::renderFace(uint texId, const Point &tl, const Point &tr, con
         glVertex3f(bl.x, bl.y, bl.z);
     glEnd();
 }
-
+/*
 Rect
 D3PrismRenderModel::getDrawArea() {
     Point ptPos = getPosition();
@@ -146,3 +148,4 @@ D3PrismRenderModel::getPosition() {
     }
     return ptPos;
 }
+*/

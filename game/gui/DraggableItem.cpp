@@ -32,7 +32,8 @@ DraggableItem::~DraggableItem()
     MGE::get()->removeListener(this->getId(), ON_MOUSE_MOVE);
     MGE::get()->removeListener(this->getId(), ON_BUTTON_INPUT);
 
-    delete m_pRenderModel;
+    //The render model should be deleted by its container
+    //delete m_pRenderModel;
 }
 
 void
@@ -49,7 +50,6 @@ DraggableItem::onStartDragging() {
 
 void
 DraggableItem::onEndDragging() {
-printf(__FILE__" %d\n",__LINE__);
     //Check: If close to a viable position, then react to that viable position.  Otherwise, snap back.
     Point ptCurPos = m_pPhysicsModel->getPosition();
 
@@ -57,26 +57,21 @@ printf(__FILE__" %d\n",__LINE__);
     int index = 0;
     for(vector<Point>::iterator pt = s_vDropPoints.begin(); pt != s_vDropPoints.end(); ++pt, ++index) {
         if(dist(*pt, ptCurPos) < VALID_DROP_RADIUS) {
-printf(__FILE__" %d\n",__LINE__);
             //Prepare to ask the listener for permission to drop the item here
             ItemDropEvent event;
             event.itemId = m_pRenderModel->getFrameH();
             event.itemOldIndex = m_uiIndex;
             event.itemNewIndex = index;
-printf(__FILE__" %d\n",__LINE__);
 
             //Ask the listener for permission
             int retCode = m_pDropListener->callBack(getId(), &event, ON_ITEM_DROPPED);
-printf(__FILE__" %d\n",__LINE__);
 
             //Did we get permission?
             if(retCode == EVENT_ITEM_CAN_DROP) {
-printf(__FILE__" %d\n",__LINE__);
                 m_ptSnapPosition = *pt;
                 m_uiIndex = index;
                 break;
             } else if(retCode == EVENT_ITEM_CANNOT_DROP) {
-printf(__FILE__" %d\n",__LINE__);
                 //The item should not be checked against other positions,
                 // but it still cannot be dropped here
                 break;

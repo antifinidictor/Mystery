@@ -5,7 +5,7 @@
 #include "d3re.h"
 #include "mge/GameObject.h"
 
-D3HeightmapRenderModel::D3HeightmapRenderModel(GameObject *parent, uint uiTexture, const PixelMap *pxMap, Box bxVolume)
+D3HeightmapRenderModel::D3HeightmapRenderModel(PhysicsModel *parent, uint uiTexture, const PixelMap *pxMap, Box bxVolume)
     : m_uiTexture(uiTexture),
       m_pxMap(pxMap),
       m_crColor(0xFF, 0xFF, 0xFF),
@@ -22,9 +22,11 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
     glPushMatrix();
 
     //Render collision box
+/*
     if(D3RE::get()->getDrawCollisions()) {
         D3RE::get()->drawBox(m_pParent->getPhysicsModel()->getCollisionVolume(), m_crColor);
     }
+*/
 
     Image *tex = D3RE::get()->getImage(m_uiTexture);
     if(tex == NULL) return;
@@ -35,7 +37,7 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
                            m_crColor.g * (1 - fWeight) + worldColor.g * fWeight,
                            m_crColor.b * (1 - fWeight) + worldColor.b * fWeight);
 
-    Box bxVolume = m_pParent->getPhysicsModel()->getCollisionVolume();
+    Box bxVolume = m_pParent->getCollisionVolume();
 
     //glTranslatef(ptPos.x, ptPos.y, ptPos.z);
     glTranslatef(bxVolume.x, bxVolume.y, bxVolume.z);
@@ -131,7 +133,7 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
     glPopMatrix();
 }
 
-
+/*
 Rect
 D3HeightmapRenderModel::getDrawArea() {
     return m_pParent->getPhysicsModel()->getCollisionVolume();
@@ -145,3 +147,4 @@ D3HeightmapRenderModel::getPosition() {
     }
     return ptPos;
 }
+*/

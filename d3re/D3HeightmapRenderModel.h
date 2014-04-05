@@ -8,16 +8,19 @@
 #include "mge/defs.h"
 #include "mge/Image.h"
 #include "mge/PixelMap.h"
+#include "mge/PhysicsModel.h"
 
 class D3HeightmapRenderModel : public RenderModel {
 public:
-    D3HeightmapRenderModel(GameObject *parent, uint uiTexture, const PixelMap *pxMap, Box bxVolume);
+    D3HeightmapRenderModel(PhysicsModel *parent, uint uiTexture, const PixelMap *pxMap, Box bxVolume);
     virtual ~D3HeightmapRenderModel();
 
     virtual void render(RenderEngine *re);
-    virtual void moveBy(Point ptShift) {}
+    /*
+    virtual void moveBy(const Point &ptShift) {}
     virtual Point getPosition();
     virtual Rect getDrawArea();
+    */
 
     uint getTexture() { return m_uiTexture; }
     void setColor(const Color &cr) { m_crColor = cr; }
@@ -29,7 +32,7 @@ private:
 
     Color m_crColor;
 
-    GameObject *m_pParent;
+    PhysicsModel *m_pParent;
 };
 
 #endif //D3_HEIGHTMAP_RENDER_MODEL_H

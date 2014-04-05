@@ -37,7 +37,7 @@ public:
         glEnd();
     }
 
-    virtual void moveBy(Point ptShift) {
+    virtual void moveBy(const Point &ptShift) {
         m_bxVolume.x += ptShift.x;
         m_bxVolume.y += ptShift.y;
         m_bxVolume.z += ptShift.z;

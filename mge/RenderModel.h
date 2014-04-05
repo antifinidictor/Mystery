@@ -14,9 +14,9 @@ class RenderModel {
 public:
     virtual ~RenderModel() {}
     virtual void render(RenderEngine *re) = 0;
-    virtual void moveBy(Point ptShift) = 0;
-    virtual Point getPosition() = 0;
-    virtual Rect getDrawArea() = 0;
+//    virtual void moveBy(const Point &ptShift) = 0;
+//    virtual Point getPosition() = 0;
+//    virtual Rect getDrawArea() = 0;
 };
 
 class NullRenderModel : public RenderModel {
@@ -29,9 +29,9 @@ public:
     static void clean() { delete rm; }
 
     virtual void render(RenderEngine *re) {}
-    virtual void moveBy(Point ptShift) {}
-    virtual Point getPosition() { return Point(); }
-    virtual Rect getDrawArea() { return Rect(); }
+//    virtual void moveBy(const Point &ptShift) {}
+//    virtual Point getPosition() { return Point(); }
+//    virtual Rect getDrawArea() { return Rect(); }
 };
 
 #endif

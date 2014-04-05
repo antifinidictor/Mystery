@@ -14,18 +14,21 @@ WaterElementalVolume::WaterElementalVolume(uint id, uint texId, Box bxVolume, fl
 
     Box bxRelativeVol =Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                             bxVolume.w,      bxVolume.h,      bxVolume.l);
+
     m_fSwellRes = fSwellRes;
     m_pxMap = new PixelMap(bxVolume.w * m_fSwellRes, bxVolume.l * m_fSwellRes,0);
-    m_pRenderModel = new D3HeightmapRenderModel(this, texId, m_pxMap, bxRelativeVol);
+
+    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
+    m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
+    m_pPhysicsModel->setListener(this);
+
+    m_pRenderModel = new D3HeightmapRenderModel(m_pPhysicsModel, texId, m_pxMap, bxRelativeVol);
 
     //Default swell values
     m_fSwellSize = 1.f;
     m_fSwellSpacingX = bxVolume.w / (m_pxMap->m_uiW - 1) * M_PI / 5.f;
     m_fSwellSpacingZ = bxVolume.l / (m_pxMap->m_uiH - 1) * M_PI / 5.f;
 
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
-    m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
-    m_pPhysicsModel->setListener(this);
 
     setFlag(TPE_LIQUID, true);
     setFlag(TPE_STATIC, true);

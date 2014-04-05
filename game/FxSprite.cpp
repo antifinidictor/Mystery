@@ -6,7 +6,7 @@ FxSprite::FxSprite(uint id, uint texId, int duration, const Point &ptPos, uint f
     float size = 0.25f;
     Rect rcRelativeArea = Rect(-size / 2, -size / 2, size, size);
     m_pPhysicsModel = new NullTimePhysicsModel(ptPos);
-    m_pRenderModel = new D3XZSpriteRenderModel(this, texId, rcRelativeArea);
+    m_pRenderModel = new D3XZSpriteRenderModel(m_pPhysicsModel, texId, rcRelativeArea);
     setFlag(TPE_STATIC, true);
     setFlag(TPE_PASSABLE, true);
 

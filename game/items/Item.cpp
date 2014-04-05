@@ -5,14 +5,16 @@
 Item::Item(uint id, uint itemId, const Point &pos) {
     m_uiId = id;
     m_uiFlags = 0;
-    m_pRenderModel = new D3SpriteRenderModel(this, D3RE::get()->getImageId("items"), Rect(-0.125f,0.f,0.25f,0.25f));
-    m_pRenderModel->setFrameH(itemId);
     m_pPhysicsModel = new TimePhysicsModel(pos);
     Box bxVol = Box(-0.125f,0.f,-0.125f,0.25f,0.25f,0.25f);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVol));
+    m_pPhysicsModel->setListener(this);
+    m_pRenderModel = new D3SpriteRenderModel(m_pPhysicsModel, D3RE::get()->getImageId("items"), Rect(-0.125f,0.f,0.25f,0.25f));
+    m_pRenderModel->setFrameH(itemId);
     m_iAnimTimer = ANIM_TIMER_MAX;
     //setFlag(TPE_PASSABLE, true);
     //setFlag(TPE_FALLING, true);
+    m_bCollidingWithPlayer = true;  //Just in case we start inside a player
 }
 
 Item::~Item() {
@@ -60,11 +62,29 @@ Item::update(uint time) {
         m_pRenderModel->setColor(Color(0xFF,0xFF,0xFF));
     }
 
+    //Survived one round without touching the player
+    if(!m_bCollidingWithPlayer && !getFlag(GAM_CAN_PICK_UP)) {
+        setFlag(GAM_CAN_PICK_UP, true);
+        setFlag(TPE_PASSABLE, false);
+    }
+
+    m_bCollidingWithPlayer = false; //This object is not yet colliding with the player
     return false;
 }
 
 int
 Item::callBack(uint uiID, void *data, uint id) {
+    switch(id) {
+    case TPE_ON_COLLISION: {
+        HandleCollisionData *hd = (HandleCollisionData*)data;
+        if(hd->obj->getType() == TYPE_PLAYER) {
+            m_bCollidingWithPlayer = true;
+        }
+        break;
+    }
+    default:
+        break;
+    }
     return EVENT_DROPPED;
 }
 

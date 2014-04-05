@@ -7,17 +7,20 @@
 #include "mge/RenderModel.h"
 #include "mge/defs.h"
 #include "mge/Image.h"
+#include "mge/Positionable.h"
+
 
 class D3PrismRenderModel : public RenderModel {
 public:
-    D3PrismRenderModel(GameObject *parent, Box bxVolume);
+    D3PrismRenderModel(Positionable *parent, Box bxVolume);
     virtual ~D3PrismRenderModel();
 
     virtual void render(RenderEngine *re);
-    virtual void moveBy(Point ptShift) {}
+/*
+    virtual void moveBy(const Point &ptShift) {}
     virtual Point getPosition();
     virtual Rect getDrawArea();
-
+*/
     uint getTexture(int iFace) { return m_aTextures[iFace]; }
     void setTexture(int iFace, uint uiTexId);   //Assumes values are valid!
     void setColor(const Color &cr) { m_crColor = cr; }
@@ -31,7 +34,7 @@ private:
 
     Color m_crColor;
 
-    GameObject *m_pParent;
+    Positionable *m_pParent;
 };
 
 #endif

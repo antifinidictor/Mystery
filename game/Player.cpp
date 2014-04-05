@@ -36,7 +36,7 @@ Player::Player(uint uiId, const Point &ptPos)
     Box bxVolume = Box(-w / 3, 0, -w / 8, 2 * w / 3, 3 * h / 4, w / 4);
     m_pPhysicsModel = new TimePhysicsModel(ptPos, DENSITY);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
-    m_pRenderModel  = new D3SpriteRenderModel(this, img->m_uiID, rcDrawArea);
+    m_pRenderModel  = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
 
     dx = dy = 0;
     m_fDeltaPitch = m_fDeltaZoom = 0.f;
@@ -131,35 +131,32 @@ Player::callBack(uint cID, void *data, uint uiEventId) {
         m_hud.updateItemAnimations();
         break;
     case ON_ITEM_DROPPED: {
-printf(__FILE__" %d\n",__LINE__);
         ItemDropEvent *event = (ItemDropEvent*)data;
-printf(__FILE__" %d\n",__LINE__);
         //An EVENT_ITEM_CANNOT_DROP flag means that we successfully reacted to the
         //item/spell/element, but its position on the hud should not be changed
         status = EVENT_ITEM_CANNOT_DROP;
-printf(__FILE__" %d\n",__LINE__);
         if(event->itemId < ITEM_NUM_ELEMENTS) {
-printf(__FILE__" %d\n",__LINE__);
             //Elements cannot be moved, can only be made current
             m_inv.setCurElement(event->itemOldIndex);
         } else if(event->itemId < ITEM_NUM_SPELLS) {
-printf(__FILE__" %d\n",__LINE__);
             //Spells cannot be moved, can only be made current
             m_inv.setCurSpell(event->itemOldIndex);
         } else if(event->itemNewIndex == CUR_GENERIC_ITEM_INDEX) {
-printf(__FILE__" %d\n",__LINE__);
             //Generic item should be made current
             m_inv.setCurItem(event->itemOldIndex);
         } else if(event->itemNewIndex == DROP_GENERIC_ITEM_INDEX) {
-printf(__FILE__" %d\n",__LINE__);
             //Generic item should be dropped on the ground
+            Item *item = m_inv.getItem(event->itemOldIndex);
+            m_inv.removeItem(event->itemOldIndex);
+            item->moveBy(m_pPhysicsModel->getPosition() - item->getPhysicsModel()->getPosition());
+            item->setFlag(GAM_CAN_PICK_UP, true);
+            item->setFlag(TPE_PASSABLE, true);
+            PWE::get()->add(item);
         } else {
-printf(__FILE__" %d\n",__LINE__);
             //Generic item should be moved
             m_inv.moveItem(event->itemOldIndex, event->itemNewIndex);
             status = EVENT_ITEM_CAN_DROP;
         }
-printf(__FILE__" %d\n",__LINE__);
         break;
     }
     case PWE_ON_ADDED_TO_AREA: {
@@ -548,14 +545,28 @@ Player::getObjHeight(TimePhysicsModel *pmdl, uint uiCmdlId) {
 
 void
 Player::handleCollision(HandleCollisionData *data) {
-    if(data->obj->getType() == TYPE_ITEM) {
+    if(data->obj->getType() == TYPE_ITEM && data->obj->getFlag(GAM_CAN_PICK_UP)) {
         //Pick up the item
         Item *item = (Item*)data->obj;
-        PWE::get()->remove(item->getId());
         //addHudInventoryItem(item);
         //GameManager::get()->addToInventory(item, true);
-        m_inv.add(item);
-        BAE::get()->playSound(AUD_PICKUP);
+        int index = m_inv.add(item);
+        if(index >= 0) {    //Item successfully added to the index
+            //Remove the item from the world
+            PWE::get()->remove(item->getId());
+
+            //Make this item current
+            if(item->getItemId() < ITEM_NUM_ELEMENTS) {
+                m_inv.setCurElement(index);
+            } else if(item->getItemId() < ITEM_NUM_SPELLS) {
+                m_inv.setCurSpell(index);
+            } else {
+                m_inv.setCurItem(index);
+            }
+
+            //Play the appropriate sound
+            BAE::get()->playSound(AUD_PICKUP);
+        }
     } else if(data->iDirection & BIT(m_iDirection) &&
               m_eState == PLAYER_NORMAL &&
               !data->obj->getFlag(TPE_PASSABLE)) {

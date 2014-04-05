@@ -30,7 +30,8 @@ DraggableElementalSpellItem::~DraggableElementalSpellItem()
     MGE::get()->removeListener(this->getId(), ON_MOUSE_MOVE);
     MGE::get()->removeListener(this->getId(), ON_BUTTON_INPUT);
 
-    delete m_pRenderModel;
+    //The model should be deleted by its container
+    //delete m_pRenderModel;
 }
 
 void

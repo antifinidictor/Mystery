@@ -7,16 +7,17 @@
 #include "mge/RenderModel.h"
 #include "mge/defs.h"
 #include "mge/Image.h"
+#include "mge/Positionable.h"
 
 class D3SpriteRenderModel : public RenderModel {
 public:
-    D3SpriteRenderModel(GameObject *parent, uint uiImageId, Rect rcArea);
+    D3SpriteRenderModel(Positionable *parent, uint uiImageId, Rect rcArea);
     virtual ~D3SpriteRenderModel();
 
     virtual void render(RenderEngine *re);
-    virtual void moveBy(Point ptShift) {}
-    virtual Point getPosition();
-    virtual Rect getDrawArea();
+    //virtual void moveBy(const Point &ptShift) {}
+    //virtual Point getPosition();
+    //virtual Rect getDrawArea();
 
     //Image *getTexture() { return m_pImage; }
 
@@ -50,7 +51,7 @@ private:
 
     Color m_crColor;
 
-    GameObject *m_pParent;
+    Positionable *m_pParent;
 };
 
 #endif

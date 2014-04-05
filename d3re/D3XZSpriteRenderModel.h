@@ -7,17 +7,20 @@
 #include "mge/RenderModel.h"
 #include "mge/defs.h"
 #include "mge/Image.h"
+#include "mge/Positionable.h"
+
 
 class D3XZSpriteRenderModel : public RenderModel {
 public:
-    D3XZSpriteRenderModel(GameObject *parent, uint uiImageId, Rect rcArea);
+    D3XZSpriteRenderModel(Positionable *parent, uint uiImageId, Rect rcArea);
     virtual ~D3XZSpriteRenderModel();
 
     virtual void render(RenderEngine *re);
-    virtual void moveBy(Point ptShift) {}
+/*
+    virtual void moveBy(const Point &ptShift) {}
     virtual Point getPosition();
     virtual Rect getDrawArea();
-
+*/
     //Image *getTexture() { return m_pImage; }
 
     void setFrameW(int fw) { m_iFrameW = fw; }
@@ -37,7 +40,7 @@ private:
 
     Color m_crColor;
 
-    GameObject *m_pParent;
+    Positionable *m_pParent;
 };
 
 #endif //D3_XZ_SPRITE_RENDER_MODEL_H

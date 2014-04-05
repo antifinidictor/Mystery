@@ -21,7 +21,7 @@ public:
     virtual ~ContainerRenderModel();
 
     virtual void render(RenderEngine *re);
-    virtual void moveBy(Point ptShift);
+    virtual void moveBy(const Point &ptShift);
     virtual Point getPosition();
 
     void add(uint id, RenderModel *mdl);

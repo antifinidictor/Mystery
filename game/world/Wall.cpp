@@ -7,7 +7,11 @@ Wall::Wall(uint uiId, uint texTopId, uint texBottomId, uint texSideId, Box bxVol
 
     Box bxRelativeVol =Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                             bxVolume.w,      bxVolume.h,      bxVolume.l);
-    m_pRenderModel = new D3PrismRenderModel(this, bxRelativeVol);
+
+    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), DENSITY_STONE);
+    m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
+
+    m_pRenderModel = new D3PrismRenderModel(m_pPhysicsModel, bxRelativeVol);
 
     m_pRenderModel->setTexture(NORTH, ((visibleFaces & WALL_NORTH) ? texSideId : IMG_NONE));
     m_pRenderModel->setTexture(SOUTH, ((visibleFaces & WALL_SOUTH) ? texSideId : IMG_NONE));
@@ -15,9 +19,6 @@ Wall::Wall(uint uiId, uint texTopId, uint texBottomId, uint texSideId, Box bxVol
     m_pRenderModel->setTexture(WEST,  ((visibleFaces & WALL_WEST)  ? texSideId : IMG_NONE));
     m_pRenderModel->setTexture(UP,    ((visibleFaces & WALL_UP)    ? texTopId  : IMG_NONE));
     m_pRenderModel->setTexture(DOWN,  ((visibleFaces & WALL_DOWN)  ? texBottomId : IMG_NONE));
-
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), DENSITY_STONE);
-    m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
 
     setFlag(TPE_STATIC, true);
 }

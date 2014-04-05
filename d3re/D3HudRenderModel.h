@@ -7,8 +7,9 @@
 #include "mge/RenderModel.h"
 #include "mge/defs.h"
 #include "mge/Image.h"
+#include "mge/Positionable.h"
 
-class D3HudRenderModel : public RenderModel {
+class D3HudRenderModel : public RenderModel, public Positionable {
 public:
     D3HudRenderModel(uint uiImageId, const Rect &rcArea);
     D3HudRenderModel(const std::string &data, const Rect &rcArea, float textSize = 1.f);
@@ -16,7 +17,7 @@ public:
     virtual ~D3HudRenderModel();
 
     virtual void render(RenderEngine *re);
-    virtual void moveBy(Point ptShift);
+    virtual void moveBy(const Point &ptShift);
     virtual Point getPosition();
     virtual Rect getDrawArea();
 

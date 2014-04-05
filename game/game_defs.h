@@ -145,6 +145,7 @@ enum InventoryElements {
 
 enum GameFlags {
     GAM_CAN_LINK = GAME_FLAGS_BEGIN,
+    GAM_CAN_PICK_UP,
     NUM_GAME_FLAGS
 };
 

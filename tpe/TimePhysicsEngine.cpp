@@ -45,7 +45,6 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
 
     //Apply general physics updates to object
     tmdl->update(m_uiDeltaTime);
-    obj->getRenderModel()->moveBy(tmdl->getLastVelocity());
     tmdl->setWasPushed(false);
 
     hasChanged = hasChanged || tmdl->getLastVelocity() != Point();
@@ -198,8 +197,6 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
     // the earlier calculations to handle collision events
     if(!bNoCollide && !(obj1->getFlag(TPE_STATIC) && obj2->getFlag(TPE_STATIC))) {
         //Move the objects
-        obj1->getRenderModel()->moveBy(ptObj1Shift);
-        obj2->getRenderModel()->moveBy(ptObj2Shift);
         tpm1->moveBy(ptObj1Shift);
         tpm2->moveBy(ptObj2Shift);
         tpm1->setWasPushed(!obj1->getFlag(TPE_STATIC));

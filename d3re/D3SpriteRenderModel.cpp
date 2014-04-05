@@ -3,9 +3,9 @@
  */
 
 #include "d3re.h"
-#include "mge/GameObject.h"
+#include "mge/Positionable.h"
 
-D3SpriteRenderModel::D3SpriteRenderModel(GameObject *parent, uint uiImageId, Rect rcArea) {
+D3SpriteRenderModel::D3SpriteRenderModel(Positionable *parent, uint uiImageId, Rect rcArea) {
 
     m_uiImageId = uiImageId;
     m_rcDrawArea = rcArea;
@@ -28,9 +28,11 @@ D3SpriteRenderModel::render(RenderEngine *re) {
     glPushMatrix();
 
     //Render collision box
+    /*
     if(D3RE::get()->getDrawCollisions()) {
         D3RE::get()->drawBox(m_pParent->getPhysicsModel()->getCollisionVolume(), m_crColor);
     }
+    */
 
     Color worldColor = D3RE::get()->getWorldColor();
     float fWeight = D3RE::get()->getColorWeight();
@@ -47,7 +49,7 @@ D3SpriteRenderModel::render(RenderEngine *re) {
           fTexRight  = m_iFrameW * 1.0F / pImage->m_iNumFramesW + m_iRepsW * 1.0F / pImage->m_iNumFramesW,
           fTexBottom = m_iFrameH * 1.0F / pImage->m_iNumFramesH + m_iRepsH * 1.0F / pImage->m_iNumFramesH;
 
-    Point ptPos = getPosition();
+    Point ptPos = m_pParent->getPosition();
     glTranslatef((ptPos.x + m_rcDrawArea.x), (ptPos.y + m_rcDrawArea.y), (ptPos.z));
 
     //Bind the texture to which subsequent calls refer to
@@ -78,6 +80,7 @@ D3SpriteRenderModel::render(RenderEngine *re) {
     glPopMatrix();
 }
 
+/*
 Rect
 D3SpriteRenderModel::getDrawArea() {
     Point ptPos = getPosition();
@@ -88,10 +91,11 @@ Point
 D3SpriteRenderModel::getPosition() {
     Point ptPos = Point();
     if(m_pParent != NULL) {
-        ptPos = m_pParent->getPhysicsModel()->getPosition();
+        ptPos = m_pParent->getPosition();
     }
     return ptPos;
 }
+*/
 
 //Code borrowed from http://www.lighthouse3d.com/opengl/billboarding
 void

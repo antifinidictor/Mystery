@@ -63,9 +63,9 @@ public:
     Item *getCurItem() { return m_aGeneralItems[m_uiCurItem]; }
     Item *getCurElement() { return m_aElementItems[m_uiCurElement]; }
 
-    void setCurSpell(uint curSpell) { m_uiCurSpell = curSpell; }
-    void setCurItem(uint curItem) { m_uiCurItem = curItem; }
-    void setCurElement(uint curElement) { m_uiCurElement = curElement; }
+    void setCurSpell(uint curSpell);
+    void setCurItem(uint curItem);
+    void setCurElement(uint curElement);
     void setInventoryDisplay(InventoryDisplay *pDisplay);
 protected:
 private:

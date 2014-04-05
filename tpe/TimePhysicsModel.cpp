@@ -43,7 +43,7 @@ TimePhysicsModel::~TimePhysicsModel() {
     m_vCollisions.clear();
 }
 
-void TimePhysicsModel::moveBy(Point ptShift) {
+void TimePhysicsModel::moveBy(const Point &ptShift) {
     m_ptPos += ptShift;
     m_ptLastMotion += ptShift;
 
@@ -55,7 +55,7 @@ void TimePhysicsModel::moveBy(Point ptShift) {
 
 //F = ma
 //a_new = F / m
-void TimePhysicsModel::applyForce(Point ptForce) {
+void TimePhysicsModel::applyForce(const Point &ptForce) {
     m_ptAcceleration += ptForce / m_fMass;
 }
 

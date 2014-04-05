@@ -14,11 +14,12 @@ EarthElementalVolume::EarthElementalVolume(uint id, uint texId, const Box &bxVol
     Box bxRelativeVol =Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                             bxVolume.w,      bxVolume.h,      bxVolume.l);
 
-    m_pxMap = new PixelMap(bxVolume.w * HMAP_RES + 1, bxVolume.l * HMAP_RES + 1, 0);
-    m_pRenderModel = new D3HeightmapRenderModel(this, texId, m_pxMap, bxRelativeVol);
-
     m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
     m_pPhysicsModel->setListener(this);
+
+    m_pxMap = new PixelMap(bxVolume.w * HMAP_RES + 1, bxVolume.l * HMAP_RES + 1, 0);
+    m_pRenderModel = new D3HeightmapRenderModel(m_pPhysicsModel, texId, m_pxMap, bxRelativeVol);
+
 
 
     for(uint x = 0; x < m_pxMap->m_uiW; ++x) {

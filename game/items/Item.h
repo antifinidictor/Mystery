@@ -39,6 +39,8 @@ private:
 
     int m_iAnimTimer;
 
+    bool m_bCollidingWithPlayer;
+
     D3SpriteRenderModel *m_pRenderModel;
     TimePhysicsModel  *m_pPhysicsModel;
 };

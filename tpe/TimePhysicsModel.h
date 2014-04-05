@@ -57,8 +57,8 @@ public:
     virtual Point getCenter() { return bxCenter(m_bxVolume) + m_ptPos; }
     virtual Point getLastVelocity() { return m_ptLastMotion; }
     virtual Box   getCollisionVolume() { return m_bxVolume + m_ptPos; }
-    virtual void  moveBy(Point ptShift);
-    virtual void  applyForce(Point ptForce);
+    virtual void  moveBy(const Point &ptShift);
+    virtual void  applyForce(const Point &ptForce);
 
     virtual void  handleCollisionEvent(HandleCollisionData *dat);
     virtual void  update(uint time);
@@ -123,8 +123,8 @@ public:
     virtual Point getCenter() { return m_ptPosition; }
     virtual Point getLastVelocity() { return Point(); }
     virtual Box   getCollisionVolume() { return Box(m_ptPosition.x, m_ptPosition.y, m_ptPosition.z, 0, 0, 0); }
-    virtual void  moveBy(Point ptShift) { m_ptPosition += ptShift; }
-    virtual void  applyForce(Point ptForce) {}
+    virtual void  moveBy(const Point &ptShift) { m_ptPosition += ptShift; }
+    virtual void  applyForce(const Point &ptForce) {}
 
     virtual void  handleCollisionEvent(HandleCollisionData *dat) {}
     virtual void  update(uint time) {}

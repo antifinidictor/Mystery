@@ -148,7 +148,6 @@
 		<Unit filename="bae/BasicAudioEngine.h" />
 		<Unit filename="d3re/ContainerRenderModel.cpp" />
 		<Unit filename="d3re/ContainerRenderModel.h" />
-		<Unit filename="d3re/D3DummyObject.h" />
 		<Unit filename="d3re/D3HeightmapRenderModel.cpp" />
 		<Unit filename="d3re/D3HeightmapRenderModel.h" />
 		<Unit filename="d3re/D3HudRenderModel.cpp" />
@@ -222,12 +221,17 @@
 		<Unit filename="game/game_defs.h" />
 		<Unit filename="game/gui/Draggable.cpp" />
 		<Unit filename="game/gui/Draggable.h" />
+		<Unit filename="game/gui/DraggableElementalSpellItem.cpp" />
+		<Unit filename="game/gui/DraggableElementalSpellItem.h" />
 		<Unit filename="game/gui/DraggableHud.cpp" />
 		<Unit filename="game/gui/DraggableHud.h" />
+		<Unit filename="game/gui/DraggableItem.cpp" />
+		<Unit filename="game/gui/DraggableItem.h" />
 		<Unit filename="game/gui/TextDisplay.cpp" />
 		<Unit filename="game/gui/TextDisplay.h" />
 		<Unit filename="game/items/Inventory.cpp" />
 		<Unit filename="game/items/Inventory.h" />
+		<Unit filename="game/items/InventoryDisplay.h" />
 		<Unit filename="game/items/Item.cpp" />
 		<Unit filename="game/items/Item.h" />
 		<Unit filename="game/items/SpellItem.cpp" />
@@ -274,6 +278,7 @@
 		<Unit filename="mge/PhysicsModel.h" />
 		<Unit filename="mge/PixelMap.cpp" />
 		<Unit filename="mge/PixelMap.h" />
+		<Unit filename="mge/Positionable.h" />
 		<Unit filename="mge/RenderEngine.h" />
 		<Unit filename="mge/RenderModel.h" />
 		<Unit filename="mge/WorldEngine.h" />

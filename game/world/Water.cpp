@@ -19,23 +19,12 @@ Water::Water(uint id, uint texId, Box bxVolume, float fDensity) {
             m_pxMap->m_pData[i][j] = 1.f;
         }
     }
-    m_pRenderModel = new D3HeightmapRenderModel(this, texId, m_pxMap, bxRelativeVol);
-
-/*
-    Image *img = D3RE::get()->getImage(texId);
-    m_pRenderModel = new D3PrismRenderModel(this, bxRelativeVol);
-    //Hidden faces not rendered
-    m_pRenderModel->setTexture(NORTH, IMG_NONE);//img->m_uiID);
-    m_pRenderModel->setTexture(SOUTH, img->m_uiID);
-    m_pRenderModel->setTexture(EAST,  img->m_uiID);
-    m_pRenderModel->setTexture(WEST,  img->m_uiID);
-    m_pRenderModel->setTexture(UP,    img->m_uiID);
-    m_pRenderModel->setTexture(DOWN,  IMG_NONE);//img->m_uiID);
-*/
 
     m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
     m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
     m_pPhysicsModel->setListener(this);
+
+    m_pRenderModel = new D3HeightmapRenderModel(m_pPhysicsModel, texId, m_pxMap, bxRelativeVol);
 
     m_pNorth = m_pEast = m_pSouth = m_pWest = NULL;
 

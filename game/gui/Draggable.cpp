@@ -5,8 +5,7 @@ Draggable::Draggable(uint uiId, const Rect &rcArea)
 {
     m_uiFlags = 0;
     m_uiId = uiId;
-    m_rcClickArea = rcArea;
-    Rect rcBackdropArea = Rect(0.f, 0.f, rcArea.w, rcArea.h);
+    m_rcClickArea = Rect(-rcArea.w / 2, -rcArea.h / 2, rcArea.w, rcArea.h);
 
     m_pPhysicsModel = new NullTimePhysicsModel(
         Point(rcArea.x + rcArea.w / 2, rcArea.y + rcArea.h / 2, 0)
@@ -45,15 +44,25 @@ Draggable::update(uint time) {
 void
 Draggable::onFollow(const Point &diff) {
     m_pPhysicsModel->moveBy(diff);
-    m_rcClickArea.x += diff.x;
-    m_rcClickArea.y += diff.y;
+}
+
+Rect
+Draggable::getClickArea() {
+    Point ptPos = m_pPhysicsModel->getPosition();
+    return Rect(
+        ptPos.x + m_rcClickArea.x,
+        ptPos.y + m_rcClickArea.y,
+        m_rcClickArea.w,
+        m_rcClickArea.h
+    );
 }
 
 int
 Draggable::onMouseMove(InputData *data) {
+    Point ptPos = m_pPhysicsModel->getPosition();
     Point ptMouse = Point(
-        data->getInputState(MIN_MOUSE_X),
-        data->getInputState(MIN_MOUSE_Y),
+        data->getInputState(MIN_MOUSE_X) - (ptPos.x),
+        data->getInputState(MIN_MOUSE_Y) - (ptPos.y),
         0.f
     );
 
@@ -73,8 +82,7 @@ Draggable::onMouseMove(InputData *data) {
         break;
     }
     case DRAG_DRAGGING: {
-        Point ptPos = m_pPhysicsModel->getPosition();
-        onFollow(ptMouse + m_ptMouseOffset - ptPos);
+        onFollow(ptMouse + m_ptMouseOffset);
         break;
     }
     }

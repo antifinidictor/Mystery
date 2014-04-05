@@ -86,7 +86,7 @@ D3HudRenderModel::getPosition() {
 }
 
 void
-D3HudRenderModel::moveBy(Point ptShift) {
+D3HudRenderModel::moveBy(const Point &ptShift) {
     m_rcDrawArea.x += ptShift.x;
     m_rcDrawArea.y += ptShift.y;
     m_ptTextPos += ptShift;

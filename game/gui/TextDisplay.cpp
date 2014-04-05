@@ -38,7 +38,7 @@ TextDisplay::update(uint time) {
     list<TextInfo>::iterator it;
 
     for(it = m_lsTexts.begin(); it != m_lsTexts.end(); ) {
-        RenderModel *rm = panel->get<RenderModel*>(it->m_uiHudId);
+        D3HudRenderModel *rm = panel->get<D3HudRenderModel*>(it->m_uiHudId);
         Point pos = rm->getPosition();
         if(rm->getPosition().x + rm->getDrawArea().w < 0) {
             //Callback

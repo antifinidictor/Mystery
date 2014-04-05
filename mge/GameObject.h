@@ -31,7 +31,7 @@ public:
         name << getClass() << getId();
         return name.str();
     }
-    virtual void moveBy(Point ptShift) {
+    virtual void moveBy(const Point &ptShift) {
         getPhysicsModel()->moveBy(ptShift);
     }
 

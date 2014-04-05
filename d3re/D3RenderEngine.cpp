@@ -9,7 +9,6 @@
 
 #include "mge/GameObject.h"
 #include "game/game_defs.h"
-#include "D3DummyObject.h"
 
 using namespace std;
 
@@ -74,8 +73,6 @@ D3RenderEngine::D3RenderEngine() {
 
     m_uiMouseFrame = 0;
     m_uiMouseTimer = 0;
-    m_pDummyMouseObj = new D3DummyObject(m_ptMouseInWorld);
-    m_pMouseModel = NULL;
     m_pMouseOverObject = NULL;
 
     m_bDrawRealMouse = true;
@@ -85,8 +82,6 @@ D3RenderEngine::~D3RenderEngine() {
     printf("Render engine cleaning\n");
     MGE::get()->removeListener(getId(), ON_MOUSE_MOVE);
     delete m_pHudContainer;
-    delete m_pDummyMouseObj;
-    delete m_pMouseModel;
 }
 
 
@@ -172,22 +167,6 @@ D3RenderEngine::render() {
     }
 
     updateMousePos(m_iMouseX, m_iMouseY);
-
-    if(m_pMouseModel) {
-        if(m_uiMouseTimer < MAX_MOUSE_TIMER) {
-            m_uiMouseTimer++;
-        } else {
-            m_uiMouseTimer = 0;
-            m_uiMouseFrame = (m_uiMouseFrame + 1) % 8;
-            m_pMouseModel->setFrameH(m_uiMouseFrame);
-        }
-    }
-
-    Point ptMouseObj = m_pDummyMouseObj->getPosition();
-    m_pDummyMouseObj->moveBy(m_ptMouseInWorld - ptMouseObj);
-    if(!m_bDrawRealMouse && m_pMouseModel) {
-        m_pMouseModel->render(this);
-    }
 
     if(m_bDrawCollisions) {
         glBegin(GL_LINES);
@@ -495,9 +474,6 @@ D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase
     } catch(exception e) {
         printf("Could not read resources\n");
     }
-
-    //Some image-dependent initialization
-    m_pMouseModel = new D3SpriteRenderModel(m_pDummyMouseObj, getImageId("mouse"), Rect(-0.125f,0.f,0.25f,0.25f));
 }
 
 void
@@ -565,11 +541,6 @@ D3RenderEngine::comesBefore(GameObject *obj1, GameObject *obj2) {
            (top1 >= bx2.y && bx1.y <= top2 &&
             front1 >= bx2.z && bx1.z <= front2 &&
             right1 < bx2.x);
-}
-
-void
-D3RenderEngine::setMouseAnim(uint uiAnim) {
-    m_pMouseModel->setFrameW(uiAnim);
 }
 
 

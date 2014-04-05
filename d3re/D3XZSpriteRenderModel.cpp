@@ -5,7 +5,7 @@
 #include "d3re.h"
 #include "mge/GameObject.h"
 
-D3XZSpriteRenderModel::D3XZSpriteRenderModel(GameObject *parent, uint uiImageId, Rect rcArea) {
+D3XZSpriteRenderModel::D3XZSpriteRenderModel(Positionable *parent, uint uiImageId, Rect rcArea) {
 
     m_uiImageId = uiImageId;
     m_rcDrawArea = rcArea;
@@ -28,9 +28,11 @@ D3XZSpriteRenderModel::render(RenderEngine *re) {
     glPushMatrix();
 
     //Render collision box
+/*
     if(D3RE::get()->getDrawCollisions()) {
         D3RE::get()->drawBox(m_pParent->getPhysicsModel()->getCollisionVolume(), m_crColor);
     }
+*/
 
     Color worldColor = D3RE::get()->getWorldColor();
     float fWeight = D3RE::get()->getColorWeight();
@@ -47,7 +49,7 @@ D3XZSpriteRenderModel::render(RenderEngine *re) {
           fTexRight  = m_iFrameW * 1.0F / pImage->m_iNumFramesW + m_iRepsW * 1.0F / pImage->m_iNumFramesW,
           fTexBottom = m_iFrameH * 1.0F / pImage->m_iNumFramesH + m_iRepsH * 1.0F / pImage->m_iNumFramesH;
 
-    Point ptPos = getPosition();
+    Point ptPos = m_pParent->getPosition();
     glTranslatef((ptPos.x + m_rcDrawArea.x), (ptPos.y), (ptPos.z + m_rcDrawArea.y));
 
     //Bind the texture to which subsequent calls refer to
@@ -75,6 +77,7 @@ D3XZSpriteRenderModel::render(RenderEngine *re) {
     glPopMatrix();
 }
 
+/*
 Rect
 D3XZSpriteRenderModel::getDrawArea() {
     Point ptPos = getPosition();
@@ -89,3 +92,4 @@ D3XZSpriteRenderModel::getPosition() {
     }
     return ptPos;
 }
+*/

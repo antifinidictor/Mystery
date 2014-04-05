@@ -4,6 +4,7 @@
 #include "Draggable.h"
 #include "game/items/InventoryDisplay.h"
 #include <map>
+#include <list>
 
 class Inventory;
 class Item;
@@ -26,6 +27,9 @@ public:
     virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }
     ContainerRenderModel *getHudContainer() { return m_pRenderModel; }
 
+
+    virtual void moveBy(const Point &ptShift);
+
     //From InventoryDisplay
     virtual void addItem(uint itemId, uint invIndex);
     virtual void addSpell(uint itemId, uint invIndex);
@@ -44,9 +48,6 @@ public:
 
     void updateItemAnimations();
 
-protected:
-    void moveBy(const Point &ptShift);
-
 private:
 
     void initPlayerHud();
@@ -54,13 +55,42 @@ private:
     void initItemBarHud(ContainerRenderModel *panel);
     void initSideButtonHud(ContainerRenderModel *panel);
 
+    void removeScheduledItems();
+
+    float indexToItemX(uint index);
+    float indexToItemY(uint index);
+
+    float indexToSpellX(uint index);
+    float indexToSpellY(uint index);
+
+    float indexToElementX(uint index);
+    float indexToElementY(uint index);
+
     ContainerRenderModel *m_pRenderModel;
 
     bool m_bHidden;
     int m_iAnimTimer;
     int m_iFrame;
     Listener *m_pMyPlayer;
-    //std::map<uint, Draggable*> m_mChildren;
+    std::map<uint, Draggable*> m_mItems;
+    std::map<uint, Draggable*> m_mSpells;
+    std::map<uint, Draggable*> m_mElements;
+    std::list<uint> m_lsItemsToRemove;
+    std::list<uint> m_lsSpellsToRemove;
+    std::list<uint> m_lsElementsToRemove;
+
+
+    class ItemDebugFunctor {
+    public:
+        ItemDebugFunctor(DraggableHud *pHud) {
+            m_pHud = pHud;
+        }
+
+        bool operator()(uint itemIndex, RenderModel *rmdl);
+
+    private:
+        DraggableHud *m_pHud;
+    };
 };
 
 #endif // DRAGGABLEHUD_H
