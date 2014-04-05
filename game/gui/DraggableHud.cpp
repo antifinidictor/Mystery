@@ -6,8 +6,8 @@
 #include "pwe/PartitionedWorldEngine.h"
 #include "bae/BasicAudioEngine.h"
 #include "mge/ModularEngine.h"
-#include "game/items/Inventory.h"
 #include "game/items/Item.h"
+#include "game/items/SpellItem.h"
 #include "mge/Event.h"
 
 #define Y_HIDDEN (TEXTURE_TILE_SIZE - SCREEN_HEIGHT)
@@ -20,12 +20,14 @@
 using namespace std;
 
 DraggableHud::DraggableHud(uint uiId)
-    : Draggable(uiId, Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT))
+    : Draggable(this, Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)),
+      ContainerRenderModel(Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT))
 {
+    m_uiId = uiId;
+
     m_bHidden = true;
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
     MGE::get()->addListener(this, ON_BUTTON_INPUT);
-    m_pRenderModel = new ContainerRenderModel(getClickArea());
     m_iAnimTimer = 0;
     m_iFrame = 0;
 
@@ -54,6 +56,10 @@ DraggableHud::DraggableHud(uint uiId)
     //The current spell/element location
     ptValid = Point(528, 464, 0);
     DraggableElementalSpellItem::setMakeCurrentPoint(ptValid);
+
+    m_pCurItem = NULL;
+    m_pCurElement = NULL;
+    m_pCurSpell = NULL;
 }
 
 DraggableHud::~DraggableHud() {
@@ -69,7 +75,7 @@ DraggableHud::~DraggableHud() {
  */
 void
 DraggableHud::onFollow(const Point &diff) {
-    float fTop = m_pRenderModel->getDrawArea().y;
+    float fTop = getDrawArea().y;
     Point ptShift;
     if(fTop + diff.y > Y_SHOWN) {
         ptShift.y = Y_SHOWN - fTop;
@@ -91,7 +97,7 @@ DraggableHud::onStartDragging() {
 
 void
 DraggableHud::onEndDragging() {
-    float fTop = m_pRenderModel->getDrawArea().y;
+    float fTop = getDrawArea().y;
     if(m_bHidden) {
         if(fTop > Y_SHOW_BOUND) {
             Point ptShift = Point(0.f, Y_SHOWN - fTop, 0.f);
@@ -141,18 +147,10 @@ private:
     uint m_uiFrameW;
 };
 
-static bool s_bTEMP_PRINT_DEBUG = false;
-
 void
 DraggableHud::updateItemAnimations() {
     //Remove any items scheduled for removal
     removeScheduledItems();
-
-    if(s_bTEMP_PRINT_DEBUG) {
-        ItemDebugFunctor ftor(this);
-        m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->forEachModel(ftor);
-        s_bTEMP_PRINT_DEBUG = false;
-    }
 
     if(m_iAnimTimer > ANIM_TIMER_MAX) {
         m_iFrame = (m_iFrame + 1) % 8;
@@ -162,19 +160,19 @@ DraggableHud::updateItemAnimations() {
         ItemAnimUpdateFunctor curFrameFunctor(m_iFrame);
 
         //Update general item animations
-        panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+        panel = get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
         panel->forEachModel(curFrameFunctor);
 
         //Update element animations
-        panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
+        panel = get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
         panel->forEachModel(curFrameFunctor);
 
         //Update spell animations
-        panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
+        panel = get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
         panel->forEachModel(curFrameFunctor);
 
         //Update itembar images (which are set to itemid 0 if no item set)
-        panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER);
+        panel = get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER);
         panel->forEachModel(curFrameFunctor);
     } else {
         ++m_iAnimTimer;
@@ -183,88 +181,133 @@ DraggableHud::updateItemAnimations() {
 
 void
 DraggableHud::moveBy(const Point &ptShift) {
-    Draggable::onFollow(ptShift);
-    m_pRenderModel->moveBy(ptShift);
-
-    map<uint,Draggable*>::iterator it;
-    for(it = m_mItems.begin(); it != m_mItems.end(); ++it) {
-        it->second->moveBy(ptShift);
-        Point pt = it->second->getPhysicsModel()->getPosition();
-    }
-
-    for(it = m_mSpells.begin(); it != m_mSpells.end(); ++it) {
-        it->second->moveBy(ptShift);
-        Point pt = it->second->getPhysicsModel()->getPosition();
-    }
-
-    for(it = m_mElements.begin(); it != m_mElements.end(); ++it) {
-        it->second->moveBy(ptShift);
-        Point pt = it->second->getPhysicsModel()->getPosition();
-    }
+    ContainerRenderModel::moveBy(ptShift);
 }
 
-void
-DraggableHud::addItem(uint itemId, uint invIndex) {
-    //x/y position of the item on the screen
-    float x = indexToItemX(invIndex);
-    float y = indexToItemY(invIndex);
+class ItemFindEmptySlotFunctor {
+public:
+    ItemFindEmptySlotFunctor() {
+        m_uiIndex = 0;
+    }
 
-    Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
-    DraggableItem *pItem = new DraggableItem(PWE::get()->genId(), itemId, invIndex, rcArea, m_pMyPlayer);
-    m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)
-        ->add(invIndex, pItem->getRenderModel());
+    bool operator()(uint itemIndex, RenderModel *rmdl) {
+        printf("My index vs their index: %d/%d\n", m_uiIndex, itemIndex);
+        //Assuming we iterate in order
+        if(itemIndex > m_uiIndex) {
+            return true;    //Found an empty index
+        } else {
+            m_uiIndex++;
+            return false;   //Don't stop iterating
+        }
+    }
 
-    //Artifact of the fact that both render and physics maintain absolute positions
-    // This code allows us to move the physics model when the render model is moved
-    Rect rcClickArea = getClickArea();
-    Point ptShiftAmount = Point(rcClickArea.x, rcClickArea.y, 0.f);
-    pItem->moveBy(ptShiftAmount);
-    m_mItems[invIndex] = pItem;
+    uint m_uiIndex;
+};
 
-    s_bTEMP_PRINT_DEBUG = true;
+bool
+DraggableHud::addItem(Item *pItem, bool bMakeCurrent) {
+    //The item ID will tell us where to put it in the inventory
+    uint uiItemId = pItem->getItemId();
+
+    //Wrap the item in the appropriate draggable render model and stash on the
+    // appropriate inventory gui panel
+    if(uiItemId < ITEM_NUM_ELEMENTS) {
+        float x = indexToElementX(uiItemId);
+        float y = indexToElementY(uiItemId);
+
+        //Wrap the element and store it
+        Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+        DraggableElementalSpellItem *pDraggableItem =
+            new DraggableElementalSpellItem(pItem, rcArea, this);
+        get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER)->add(uiItemId, pDraggableItem);
+
+    } else if(uiItemId < ITEM_NUM_SPELLS) {
+        float x = indexToSpellX(uiItemId);
+        float y = indexToSpellY(uiItemId);
+
+        //Wrap the spell and store it
+        Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+        DraggableElementalSpellItem *pDraggableItem =
+            new DraggableElementalSpellItem(pItem, rcArea, this);
+        get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER)->add(uiItemId, pDraggableItem);
+
+    } else {
+        //Find an empty item slot
+        ItemFindEmptySlotFunctor ftor;
+        get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->forEachModel(ftor);
+        if(ftor.m_uiIndex >= NUM_GENERAL_ITEMS) {
+            return false;   //Failed to add
+        }
+
+        //x/y position of the item on the screen
+        float x = indexToItemX(ftor.m_uiIndex);
+        float y = indexToItemY(ftor.m_uiIndex);
+
+        //Wrap the item and store it
+        Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+        DraggableItem *pDraggableItem = new DraggableItem(pItem, ftor.m_uiIndex, rcArea, this);
+        get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->add(ftor.m_uiIndex, pDraggableItem);
+    }
+
+
+    if(bMakeCurrent) {
+        makeCurrent(pItem);
+    }
+
+    return true;
 }
 
-void
-DraggableHud::addSpell(uint itemId, uint invIndex) {
-    float x = indexToSpellX(invIndex);
-    float y = indexToSpellY(invIndex);
 
-    Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
-    DraggableElementalSpellItem *pItem =
-        new DraggableElementalSpellItem(PWE::get()->genId(), itemId, invIndex, rcArea, m_pMyPlayer);
-    m_pRenderModel->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER)
-        ->add(invIndex, pItem->getRenderModel());
-
-    //Artifact of the fact that both render and physics maintain absolute positions
-    // This code allows us to move the physics model when the render model is moved
-    Rect rcClickArea = getClickArea();
-    Point ptShiftAmount = Point(rcClickArea.x, rcClickArea.y, 0.f);
-    pItem->moveBy(ptShiftAmount);
-    m_mSpells[invIndex] = pItem;
-}
-
-void
-DraggableHud::addElement(uint itemId, uint invIndex) {
-    float x = indexToElementX(invIndex);
-    float y = indexToElementY(invIndex);
-
-    Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
-    DraggableElementalSpellItem *pItem =
-        new DraggableElementalSpellItem(PWE::get()->genId(), itemId, invIndex, rcArea, m_pMyPlayer);
-    m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER)
-        ->add(invIndex, pItem->getRenderModel());
-
-    //Artifact of the fact that both render and physics maintain absolute positions
-    // This code allows us to move the physics model when the render model is moved
-    Rect rcClickArea = getClickArea();
-    Point ptShiftAmount = Point(rcClickArea.x, rcClickArea.y, 0.f);
-    pItem->moveBy(ptShiftAmount);
-    m_mElements[invIndex] = pItem;
+int
+DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
+    int status = EVENT_DROPPED;
+    switch(uiEventId) {
+    case ON_ITEM_DROPPED: {
+        printf("Item dropped!\n");
+        ItemDropEvent *event = (ItemDropEvent*)data;
+        uint uiItemId = event->item->getItemId();
+        //An EVENT_ITEM_CANNOT_DROP flag means that we successfully reacted to the
+        //item/spell/element, but its position on the hud should not be changed
+        status = EVENT_ITEM_CANNOT_DROP;
+        if(uiItemId < ITEM_NUM_ELEMENTS) {
+            //Either make the element current or drop it
+            if(event->itemNewIndex == CUR_SPELL_ITEM_INDEX) {
+                makeCurrent(event->item);
+            } else {
+                removeElement(event->itemOldIndex);
+                m_pMyPlayer->callBack(uiEventHandlerId, data, uiEventId);
+            }
+        } else if(uiItemId < ITEM_NUM_SPELLS) {
+            //Either make the element current or drop it
+            if(event->itemNewIndex == CUR_SPELL_ITEM_INDEX) {
+                makeCurrent(event->item);
+            } else {
+                removeSpell(event->itemOldIndex);
+                m_pMyPlayer->callBack(uiEventHandlerId, data, uiEventId);
+            }
+        } else if(event->itemNewIndex == CUR_GENERIC_ITEM_INDEX) {
+            //Generic item should be made current
+            makeCurrent(event->item);
+        } else if(event->itemNewIndex == DROP_GENERIC_ITEM_INDEX) {
+            //Generic item should be dropped on the ground.  Remove from HUD and pass on to player
+            removeItem(event->itemOldIndex);
+            m_pMyPlayer->callBack(uiEventHandlerId, data, uiEventId);
+        } else {
+            //Generic item should be moved
+            moveItem(event->itemOldIndex, event->itemNewIndex);
+            status = EVENT_ITEM_CAN_DROP;
+        }
+        break;
+    }
+    default:
+        status = Draggable::callBack(uiEventHandlerId, data, uiEventId);
+    }
+    return status;
 }
 
 void
 DraggableHud::removeItem(uint invIndex) {
-    ContainerRenderModel *panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
     RenderModel *item = panel->get<RenderModel*>(invIndex);
     if(item != NULL) {
         m_lsItemsToRemove.push_back(invIndex);  //Schedule for later when it's safer
@@ -273,7 +316,7 @@ DraggableHud::removeItem(uint invIndex) {
 
 void
 DraggableHud::removeSpell(uint invIndex) {
-    ContainerRenderModel *panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
+    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
     RenderModel *item = panel->get<RenderModel*>(invIndex);
     if(item != NULL) {
         m_lsSpellsToRemove.push_back(invIndex);  //Schedule for later when it's safer
@@ -282,13 +325,12 @@ DraggableHud::removeSpell(uint invIndex) {
 
 void
 DraggableHud::removeElement(uint invIndex) {
-    ContainerRenderModel *panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
+    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
     RenderModel *item = panel->get<RenderModel*>(invIndex);
     if(item != NULL) {
         m_lsElementsToRemove.push_back(invIndex);  //Schedule for later when it's safer
     }
 }
-
 
 void
 DraggableHud::removeScheduledItems() {
@@ -296,36 +338,57 @@ DraggableHud::removeScheduledItems() {
     list<uint>::iterator it;
 
     //Remove generic items
-    panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+    panel = get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
     for(it = m_lsItemsToRemove.begin(); it != m_lsItemsToRemove.end(); ++it) {
-        RenderModel *item = panel->get<RenderModel*>(*it);
+        DraggableItem *item = panel->get<DraggableItem*>(*it);
         if(item != NULL) {
+            //Make the item not current
+            if(m_pCurItem != NULL && m_pCurItem->getId() == item->getId()) {
+                m_pCurItem = NULL;
+
+                get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
+                    ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM)
+                    ->setFrameH(ITEM_NONE);
+            }
             panel->remove(*it);
-            m_mItems.erase(*it);
             delete item;
         }
     }
     m_lsItemsToRemove.clear();
 
     //Remove spells
-    panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
+    panel = get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
     for(it = m_lsSpellsToRemove.begin(); it != m_lsSpellsToRemove.end(); ++it) {
-        RenderModel *item = panel->get<RenderModel*>(*it);
+        DraggableElementalSpellItem *item = panel->get<DraggableElementalSpellItem*>(*it);
         if(item != NULL) {
+            //Make the item not current
+            if(m_pCurSpell != NULL && m_pCurSpell->getId() == item->getId()) {
+                m_pCurSpell = NULL;
+
+                get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
+                    ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL)
+                    ->setFrameH(ITEM_NONE);
+            }
             panel->remove(*it);
-            m_mSpells.erase(*it);
             delete item;
         }
     }
     m_lsSpellsToRemove.clear();
 
     //Remove elements
-    panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
+    panel = get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
     for(it = m_lsElementsToRemove.begin(); it != m_lsElementsToRemove.end(); ++it) {
-        RenderModel *item = panel->get<RenderModel*>(*it);
+        DraggableElementalSpellItem *item = panel->get<DraggableElementalSpellItem*>(*it);
         if(item != NULL) {
+            //Make the item not current
+            if(m_pCurElement != NULL && m_pCurElement->getId() == item->getId()) {
+                m_pCurElement = NULL;
+
+                get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
+                    ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT)
+                    ->setFrameH(ITEM_NONE);
+            }
             panel->remove(*it);
-            m_mElements.erase(*it);
             delete item;
         }
     }
@@ -345,141 +408,67 @@ DraggableHud::indexToItemY(uint index) {
 
 float
 DraggableHud::indexToSpellX(uint index) {
+    index--;
     return (10) * TEXTURE_TILE_SIZE;
 }
 
 float
 DraggableHud::indexToSpellY(uint index) {
+    index--;
     return (2 + 2 * (index % 2)) * TEXTURE_TILE_SIZE;
 }
 
 float
 DraggableHud::indexToElementX(uint index) {
+    index--;
     return (2 + 2 * (index % 2)) * TEXTURE_TILE_SIZE;
 }
 
 float
 DraggableHud::indexToElementY(uint index) {
+    index--;
     return (2 + 2 * (index / 2)) * TEXTURE_TILE_SIZE;
 }
 
 void
-DraggableHud::setCurrentItem(uint itemId) {
-    m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
-        ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM)
-        ->setFrameH(itemId);
+DraggableHud::makeCurrent(Item *pItem) {
+    uint uiItemId = pItem->getItemId();
+    if(uiItemId < ITEM_NUM_ELEMENTS) {
+        m_pCurElement = pItem;
+
+        get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
+            ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT)
+            ->setFrameH(uiItemId);
+    } else if(uiItemId < ITEM_NUM_SPELLS) {
+        m_pCurSpell = dynamic_cast<SpellItem*>(pItem);
+
+        get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
+            ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL)
+            ->setFrameH(uiItemId);
+    } else {
+        m_pCurItem = pItem;
+
+        get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
+            ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM)
+            ->setFrameH(uiItemId);
+    }
 }
-
-void
-DraggableHud::setCurrentSpell(uint itemId) {
-    m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
-        ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL)
-        ->setFrameH(itemId);
-}
-
-void
-DraggableHud::setCurrentElement(uint itemId) {
-    m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)
-        ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT)
-        ->setFrameH(itemId);
-}
-
-
 
 void
 DraggableHud::moveItem(uint startIndex, uint endIndex) {
-    ContainerRenderModel *panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
-    RenderModel *item1 = panel->get<RenderModel*>(startIndex);
-    RenderModel *item2 = panel->get<RenderModel*>(endIndex);
-    map<uint,Draggable*>::iterator it1 = m_mItems.find(startIndex);
-    map<uint,Draggable*>::iterator it2 = m_mItems.find(endIndex);
-    Draggable *drag1 = NULL;
-    Draggable *drag2 = NULL;
+    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+    DraggableItem *item1 = panel->get<DraggableItem*>(startIndex);
+    DraggableItem *item2 = panel->get<DraggableItem*>(endIndex);
 
-    printf("Item 1: %d/%d  Item 2: %d/%d\n", item1 != NULL, it1 != m_mItems.end(),
-           item2 != NULL, it2 != m_mItems.end());
-
-    if(item1 != NULL) {
-        panel->remove(startIndex);
-        drag1 = it1->second;
-        m_mItems.erase(it1);
-    }
-/*
-    if(item2 != NULL) {
-        panel->remove(endIndex);
-        panel->add(startIndex, item2);
-        drag2 = it2->second;
-        m_mItems.erase(it2);
-        m_mItems[startIndex] = drag2;
-
-        //item2 did not move itself, so find and move its physics
-        Point ptShift = Point(
-            indexToItemX(startIndex) - indexToItemX(endIndex),
-            indexToItemY(startIndex) - indexToItemY(endIndex),
-            0.f
-        );
-        printf("Shift %f,%f from %d -> %d\n", ptShift.x, ptShift.y, endIndex, startIndex);
-        //drag2->moveBy(ptShift);
-        item2->moveBy(ptShift);
-    }
-*/
-
-    if(item1 != NULL) {
-        panel->add(endIndex, item1);
-        m_mItems[endIndex] = drag1;
-    }
-/*
-    ItemDebugFunctor ftor(this);
-    panel->forEachModel(ftor);
-*/
-    s_bTEMP_PRINT_DEBUG = true;
-}
-
-void
-DraggableHud::moveSpell(uint startIndex, uint endIndex) {
-    ContainerRenderModel *panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
-    RenderModel *item1 = panel->get<RenderModel*>(startIndex);
-    RenderModel *item2 = panel->get<RenderModel*>(endIndex);
     if(item1 != NULL) {
         panel->remove(startIndex);
     }
     if(item2 != NULL) {
         panel->remove(endIndex);
         panel->add(startIndex, item2);
+        item2->snapToIndex(startIndex);
+    }
 
-        //item2 did not move itself, so find and move its physics
-        map<uint,Draggable*>::iterator it = m_mItems.find(endIndex);
-        if(it != m_mItems.end()) {
-            float dx = indexToSpellX(startIndex) - indexToSpellX(endIndex);
-            float dy = indexToSpellY(startIndex) - indexToSpellY(endIndex);
-            it->second->moveBy(Point(dx, dy, 0.f));
-        }
-    }
-    if(item1 != NULL) {
-        panel->add(endIndex, item1);
-    }
-}
-
-void
-DraggableHud::moveElement(uint startIndex, uint endIndex) {
-    ContainerRenderModel *panel = m_pRenderModel->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
-    RenderModel *item1 = panel->get<RenderModel*>(startIndex);
-    RenderModel *item2 = panel->get<RenderModel*>(endIndex);
-    if(item1 != NULL) {
-        panel->remove(startIndex);
-    }
-    if(item2 != NULL) {
-        panel->remove(endIndex);
-        panel->add(startIndex, item2);
-
-        //item2 did not move itself, so find and move its physics
-        map<uint,Draggable*>::iterator it = m_mItems.find(endIndex);
-        if(it != m_mItems.end()) {
-            float dx = indexToElementX(startIndex) - indexToElementX(endIndex);
-            float dy = indexToElementY(startIndex) - indexToElementY(endIndex);
-            it->second->moveBy(Point(dx, dy, 0.f));
-        }
-    }
     if(item1 != NULL) {
         panel->add(endIndex, item1);
     }
@@ -489,14 +478,14 @@ void
 DraggableHud::initPlayerHud() {
     //const uint hudBackdropId = D3RE::get()->getImageId("hudBackdrop");
     ContainerRenderModel *panel = D3RE::get()->getHudContainer();
-    panel->add(HUD_TOPBAR, m_pRenderModel);
+    panel->add(HUD_TOPBAR, this);
 
-    panel = m_pRenderModel;
+    panel = this;
 
     uint uiHudBackdropImgId = D3RE::get()->getImageId("guiBackdrop");
     Rect rcHudBackdropArea = Rect(0.f, 0.f, SCREEN_WIDTH, SCREEN_HEIGHT);
     D3HudRenderModel *pBackground = new D3HudRenderModel(uiHudBackdropImgId, rcHudBackdropArea);
-    m_pRenderModel->add(MGHUD_BACKDROP, pBackground);
+    add(MGHUD_BACKDROP, pBackground);
 
     Rect rcHealthPanel = Rect(
         TEXTURE_TILE_SIZE,
@@ -617,10 +606,8 @@ bool
 DraggableHud::ItemDebugFunctor::operator()(uint itemIndex, RenderModel *rmdl) {
     D3HudRenderModel *hudMdl = dynamic_cast<D3HudRenderModel*>(rmdl);
     Point renderPos;
-    Point physPos;
     Point expPos;
     uint renderId = 0;
-    uint physId = 0;
     if(hudMdl != NULL) {
         Rect rc = hudMdl->getDrawArea();
         renderPos.x = rc.x + rc.w / 2;
@@ -629,20 +616,11 @@ DraggableHud::ItemDebugFunctor::operator()(uint itemIndex, RenderModel *rmdl) {
         expPos.x = rc.w / 2;
         expPos.y = rc.h / 2;
     }
-    std::map<uint,Draggable*>::iterator it = m_pHud->m_mItems.find(itemIndex);
-    if(it != m_pHud->m_mItems.end()) {
-        physPos = it->second->getPhysicsModel()->getPosition();
-        hudMdl = dynamic_cast<D3HudRenderModel*>(it->second->getRenderModel());
-        if(hudMdl != NULL) {
-            physId = hudMdl->getFrameH();
-        }
-    }
 
     expPos.x += m_pHud->indexToItemX(itemIndex);
     expPos.y += m_pHud->indexToItemY(itemIndex);
 
     printf("%d Render:   (%2.2f,%2.2f)\n", renderId, renderPos.x, renderPos.y);
-    printf("%d Physics:  (%2.2f,%2.2f)\n", physId, physPos.x, physPos.y);
     printf("? Expected: (%2.2f,%2.2f)\n\n", expPos.x, expPos.y);
     return false;   //Don't stop iterating
 }

@@ -10,7 +10,6 @@
 #include "mge/GameObject.h"
 #include "mge/Event.h"
 #include "game/game_defs.h"
-#include "game/items/Inventory.h"
 
 #include "d3re/d3re.h"
 #include "pwe/PartitionedWorldEngine.h"

@@ -192,9 +192,7 @@ void ModularEngine::informListeners(uint id) {
 		}
 		break;
 	case ON_BUTTON_INPUT:
-		for( iter = m_lsButtonInputListeners.begin();
-			iter != m_lsButtonInputListeners.end();
-			++iter ) {
+		for( iter = m_lsButtonInputListeners.begin(); iter != m_lsButtonInputListeners.end(); ++iter ) {
 			int status = (*iter)->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
 			if(status == EVENT_CAUGHT) {
                 //printf("Obj %d caught the button event\n", (*iter)->getId());
@@ -208,22 +206,22 @@ void ModularEngine::informListeners(uint id) {
 }
 
 void ModularEngine::addListener(Listener *pListener, uint id, char* triggerData) {
-
+    list<Listener*>::iterator it;
 	switch(id) {
 	case ON_MOUSE_MOVE:
-	    for(list<Listener*>::iterator it = m_lsMouseMoveListeners.begin(); it != m_lsMouseMoveListeners.end(); ++it) {
+	    for(it = m_lsMouseMoveListeners.begin(); it != m_lsMouseMoveListeners.end(); ++it) {
             if((*it)->getPriority() <= pListener->getPriority()) {
                 m_lsMouseMoveListeners.insert(it, pListener);
                 return;
             }
 	    }
-	    m_lsMouseMoveListeners.push_back(pListener);
+        m_lsMouseMoveListeners.push_back(pListener);
 		break;
 	case ON_BUTTON_INPUT:
-	    for(list<Listener*>::iterator it = m_lsButtonInputListeners.begin(); it != m_lsButtonInputListeners.end(); ++it) {
+	    for(it = m_lsButtonInputListeners.begin(); it != m_lsButtonInputListeners.end(); ++it) {
             if((*it)->getPriority() <= pListener->getPriority()) {
                 m_lsButtonInputListeners.insert(it, pListener);
-                break;
+                return;
             }
 	    }
 	    m_lsButtonInputListeners.push_back(pListener);

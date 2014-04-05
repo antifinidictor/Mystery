@@ -1,11 +1,8 @@
 #ifndef DRAGGABLE_H
 #define DRAGGABLE_H
 
-#include "game/game_defs.h"
-#include "mge/GameObject.h"
-#include "tpe/TimePhysicsModel.h"
-#include "d3re/D3HudRenderModel.h"
-#include "d3re/ContainerRenderModel.h"
+#include "mge/Event.h"
+#include "mge/Positionable.h"
 
 enum DraggableState {
     DRAG_MOUSE_OUT,
@@ -13,49 +10,35 @@ enum DraggableState {
     DRAG_DRAGGING
 };
 
-class Draggable : public GameObject
+class Draggable : public Listener
 {
 public:
-    Draggable(uint uiId, const Rect &rcArea);
+    Draggable(Positionable *parent, const Rect &rcRelativeClickArea);
     virtual ~Draggable();
 
-    //General
-    virtual bool update(uint time);
-
-    //General
-    virtual uint getId()                        { return m_uiId; }
-    virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
-    virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
-    virtual uint getType()                      { return TYPE_GUI; }
-    virtual const std::string getClass()        { return getClassName(); }
-    static const std::string getClassName()     { return "Draggable"; }
-
-    //Models
-    virtual PhysicsModel *getPhysicsModel() { return m_pPhysicsModel; }
 
     //Listener
+    //virtual uint getId() = 0;
 	virtual int callBack(uint uiEventHandlerId, void *data, uint uiEventId);
-    virtual void onFollow(const Point &diff);
+
+protected:
+	//For use by the subclasses
+    virtual void onFollow(const Point &ptShift);
     virtual void onStartDragging() {};
     virtual void onEndDragging() {};
     virtual void onMouseIn() {};
     virtual void onMouseOut() {};
 
-protected:
-    NullTimePhysicsModel *m_pPhysicsModel;
-    Rect getClickArea();
+    Positionable *m_pParent;
+
 private:
     int onMouseMove(InputData *data);
     int onButtonPress(InputData *data);
 
-    uint m_uiId;
-    uint m_uiFlags;
-
     Point m_ptMouseOffset;
     DraggableState m_eState;
-    Rect m_rcClickArea;
-    //float m_fRadius;
 
+    Rect m_rcClickArea;
 };
 
 #endif // DRAGGABLE_H

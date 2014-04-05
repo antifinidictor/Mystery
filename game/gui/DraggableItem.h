@@ -3,32 +3,36 @@
 
 #include "game/gui/Draggable.h"
 #include "d3re/D3HudRenderModel.h"
+#include "game/items/Item.h"
 #include <vector>
 
-class DraggableItem : public Draggable
+class DraggableItem : public Draggable, public D3HudRenderModel
 {
 public:
     static void addValidDropLocation(const Point &pt);
 
-    DraggableItem(uint uiObjId, uint uiItemId, uint uiIndex, const Rect &rcArea, Listener *pDropListener);
+    DraggableItem(Item *item, uint uiIndex, const Rect &rcArea, Listener *pDropListener);
     virtual ~DraggableItem();
 
-    //models
-    virtual RenderModel  *getRenderModel()  { return m_pRenderModel; }
-
-    virtual void write(boost::property_tree::ptree &pt, const std::string &keyBase) {}
+    //Listener
+    virtual uint getId() { return m_pItem->getId(); }
 
     //Draggable functions
-    virtual void onFollow(const Point &diff);
+    //virtual void onFollow(const Point &diff);
     virtual void onStartDragging();
     virtual void onEndDragging();
     virtual void onMouseIn();
     virtual void onMouseOut();
 
+    //General
+    Item *getItem() { return m_pItem; }
+
+    void snapToIndex(uint index);
+
 private:
     static std::vector<Point> s_vDropPoints;
 
-    D3HudRenderModel *m_pRenderModel;
+    Item *m_pItem;
     Point m_ptSnapPosition;
     Listener *m_pDropListener;
     uint m_uiIndex;

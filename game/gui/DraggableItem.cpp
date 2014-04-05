@@ -1,6 +1,8 @@
 #include "DraggableItem.h"
 #include "d3re/d3re.h"
 #include "mge/ModularEngine.h"
+#include "pwe/PartitionedWorldEngine.h"
+#include "game/game_defs.h"
 using namespace std;
 
 #define VALID_DROP_RADIUS (32)
@@ -11,47 +13,43 @@ DraggableItem::addValidDropLocation(const Point &pt) {
     s_vDropPoints.push_back(pt);
 }
 
-DraggableItem::DraggableItem(uint uiObjId, uint uiItemId, uint uiIndex, const Rect &rcArea, Listener *pDropListener)
-    : Draggable(uiObjId, rcArea)
+DraggableItem::DraggableItem(Item *item, uint uiIndex, const Rect &rcArea, Listener *pDropListener)
+    : D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea),
+      Draggable(this, Rect(-rcArea.w / 2.f, -rcArea.h / 2.f, rcArea.w, rcArea.h))
 {
+printf(__FILE__" %d\n",__LINE__);
+
     setPriority(1); //Higher priority than the draggable HUD
-    m_pRenderModel = new D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea);
-    m_pRenderModel->setFrameH(uiItemId);
+
+    m_pItem = item;
+    setFrameH(item->getItemId());
+
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
     MGE::get()->addListener(this, ON_BUTTON_INPUT);
 
     m_pDropListener = pDropListener;
 
     m_uiIndex = uiIndex;
-
-    printf("Item %d has obj id %d\n", uiItemId, uiObjId);
 }
 
 DraggableItem::~DraggableItem()
 {
     MGE::get()->removeListener(this->getId(), ON_MOUSE_MOVE);
     MGE::get()->removeListener(this->getId(), ON_BUTTON_INPUT);
-
     //The render model should be deleted by its container
     //delete m_pRenderModel;
 }
 
 void
-DraggableItem::onFollow(const Point &ptShift) {
-    Draggable::onFollow(ptShift);
-    m_pRenderModel->moveBy(ptShift);
-}
-
-
-void
 DraggableItem::onStartDragging() {
-    m_ptSnapPosition = m_pPhysicsModel->getPosition();
+    m_ptSnapPosition = m_pParent->getPosition();
+    //printf("Picked up at (%f,%f)\n", m_ptSnapPosition.x, m_ptSnapPosition.y);
 }
 
 void
 DraggableItem::onEndDragging() {
     //Check: If close to a viable position, then react to that viable position.  Otherwise, snap back.
-    Point ptCurPos = m_pPhysicsModel->getPosition();
+    Point ptCurPos = m_pParent->getPosition();
 
     //If the position is invalid
     int index = 0;
@@ -59,7 +57,7 @@ DraggableItem::onEndDragging() {
         if(dist(*pt, ptCurPos) < VALID_DROP_RADIUS) {
             //Prepare to ask the listener for permission to drop the item here
             ItemDropEvent event;
-            event.itemId = m_pRenderModel->getFrameH();
+            event.item = m_pItem;
             event.itemOldIndex = m_uiIndex;
             event.itemNewIndex = index;
 
@@ -78,14 +76,24 @@ DraggableItem::onEndDragging() {
             }   //Otherwise, keep searching
         }
     }
-    printf("Dropped at (%f,%f) (snap was (%f,%f))\n", ptCurPos.x, ptCurPos.y, m_ptSnapPosition.x, m_ptSnapPosition.y);
+    //printf("Dropped at (%f,%f) (snap was (%f,%f))\n", ptCurPos.x, ptCurPos.y, m_ptSnapPosition.x, m_ptSnapPosition.y);
     onFollow(m_ptSnapPosition - ptCurPos);
 }
 
+
 void
 DraggableItem::onMouseIn() {
+    setImageColor(Color(200, 255, 200));
 }
 
 void
 DraggableItem::onMouseOut() {
+    setImageColor(Color(255, 255, 255));
+}
+
+void
+DraggableItem::snapToIndex(uint index) {
+    Point ptShift = s_vDropPoints[index] - m_pParent->getPosition();
+    onFollow(ptShift);
+    m_uiIndex = index;
 }

@@ -362,7 +362,7 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
         ObjectFactory::get()->initClass(className);
         key = keyBase + "." + className;
         BOOST_FOREACH(ptree::value_type &o, pt.get_child(key)) {
-printf(__FILE__" %d %s\n",__LINE__, className.c_str());
+//printf(__FILE__" %d %s\n",__LINE__, className.c_str());
             GameObject *obj = ObjectFactory::get()->createFromTree(pt, key + "." + o.first.data());
             if(obj != NULL) {
                 addTo(obj, uiAreaId);

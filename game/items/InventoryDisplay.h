@@ -13,8 +13,6 @@ public:
     virtual void setCurrentSpell(uint itemId) = 0;
     virtual void setCurrentElement(uint itemId) = 0;
     virtual void moveItem(uint startIndex, uint endIndex) = 0;
-    virtual void moveSpell(uint startIndex, uint endIndex) = 0;
-    virtual void moveElement(uint startIndex, uint endIndex) = 0;
 };
 
 

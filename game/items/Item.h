@@ -33,6 +33,8 @@ public:
     virtual int callBack(uint uiID, void *data, uint id);
 
     uint getItemId();
+    virtual void onItemPickup();
+    virtual void onItemDrop();
 
 private:
     uint m_uiId, m_uiFlags;

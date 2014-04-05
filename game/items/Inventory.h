@@ -35,10 +35,6 @@ enum GeneralItemIds {
 #define NUM_ELEMENT_ITEMS   4
 #define NUM_GENERAL_ITEMS   18
 
-#define ITEM_SPELL_INDEX 0
-#define ITEM_ELEMENT_INDEX 1
-#define ITEM_GENERIC_INDEX 2
-
 #define CUR_GENERIC_ITEM_INDEX (NUM_GENERAL_ITEMS)
 #define DROP_GENERIC_ITEM_INDEX (NUM_GENERAL_ITEMS - 1)
 #define CUR_SPELL_ITEM_INDEX (0)
@@ -69,6 +65,9 @@ public:
     void setInventoryDisplay(InventoryDisplay *pDisplay);
 protected:
 private:
+
+    void debugPrintContent();
+
     SpellItem *m_aSpellItems[NUM_SPELL_ITEMS];
     Item *m_aElementItems[NUM_ELEMENT_ITEMS];
     Item *m_aGeneralItems[NUM_GENERAL_ITEMS];

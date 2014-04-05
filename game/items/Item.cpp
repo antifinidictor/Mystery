@@ -92,3 +92,14 @@ uint
 Item::getItemId() {
     return m_pRenderModel->getFrameH();
 }
+
+
+void
+Item::onItemPickup() {
+}
+
+void
+Item::onItemDrop() {
+    setFlag(GAM_CAN_PICK_UP, false);
+    setFlag(TPE_PASSABLE, true);
+}

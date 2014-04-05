@@ -78,11 +78,15 @@ Inventory::add(Item *item) {
                 if(m_pDisplay != NULL) {
                     m_pDisplay->addItem(uiItemId, index);
                 }
+                debugPrintContent();
                 return index;
             }
         }
         index = -1; //Could not store
     }
+
+    debugPrintContent();
+
     return index;
 }
 
@@ -138,6 +142,7 @@ Inventory::moveItem(uint uiStartIndex, uint uiEndIndex) {
     }
 
     m_pDisplay->moveItem(uiStartIndex, uiEndIndex);
+    debugPrintContent();
 }
 
 void
@@ -184,4 +189,19 @@ Inventory::setCurElement(uint curElement) {
     if(m_pDisplay != NULL) {
         m_pDisplay->setCurrentElement(m_aElementItems[curElement]->getItemId());
     }
+}
+
+void
+Inventory::debugPrintContent() {
+    for(int i = 0; i < NUM_GENERAL_ITEMS; ++i) {
+        if(i % 6 == 0) {
+            printf("\n");
+        }
+        if(m_aGeneralItems[i] != NULL) {
+            printf("%d ", m_aGeneralItems[i]->getItemId());
+        } else {
+            printf("%d ", 0);
+        }
+    }
+    printf("\n");
 }

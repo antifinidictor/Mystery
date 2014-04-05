@@ -8,6 +8,8 @@
 #include "mge/defs.h"
 #include "mge/Event.h"
 
+class Item;
+
 enum GAME_AREA {
     GM_START_PAGE,
     GM_MAIN_GAME,
@@ -151,7 +153,7 @@ enum GameFlags {
 
 //Some useful event structures
 struct ItemDropEvent {
-    uint itemId;
+    Item *item;
     uint itemOldIndex;
     uint itemNewIndex;
 };

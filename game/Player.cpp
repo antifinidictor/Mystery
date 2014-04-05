@@ -4,7 +4,6 @@
 #include "GameManager.h"
 #include "game/spells/SourceSinkSpell.h"
 #include "game/spells/FlowSpell.h"
-#include "game/items/Inventory.h"
 #include "game/items/SpellItem.h"
 using namespace std;
 
@@ -23,7 +22,6 @@ enum PlayerAnims {
 };
 
 Player::Player(uint uiId, const Point &ptPos)
-    :   m_hud(PWE::get()->genId())
 {
     Image *img = D3RE::get()->getImage("player");
     int iw = img->h / img->m_iNumFramesH;
@@ -58,8 +56,8 @@ Player::Player(uint uiId, const Point &ptPos)
 
     //TODO: How can we design this better?
     GameManager::get()->registerPlayer(this);
-    m_hud.registerPlayer(this);
-    m_inv.setInventoryDisplay(&m_hud);
+    m_pHud = new DraggableHud(PWE::get()->genId()); //The DraggableHud manages its own memory
+    m_pHud->registerPlayer(this);
 }
 
 Player::~Player() {
@@ -128,35 +126,13 @@ Player::callBack(uint cID, void *data, uint uiEventId) {
     int status = EVENT_DROPPED;
     switch(uiEventId) {
     case ON_UPDATE_HUD:
-        m_hud.updateItemAnimations();
+        m_pHud->updateItemAnimations();
         break;
     case ON_ITEM_DROPPED: {
-        ItemDropEvent *event = (ItemDropEvent*)data;
-        //An EVENT_ITEM_CANNOT_DROP flag means that we successfully reacted to the
-        //item/spell/element, but its position on the hud should not be changed
-        status = EVENT_ITEM_CANNOT_DROP;
-        if(event->itemId < ITEM_NUM_ELEMENTS) {
-            //Elements cannot be moved, can only be made current
-            m_inv.setCurElement(event->itemOldIndex);
-        } else if(event->itemId < ITEM_NUM_SPELLS) {
-            //Spells cannot be moved, can only be made current
-            m_inv.setCurSpell(event->itemOldIndex);
-        } else if(event->itemNewIndex == CUR_GENERIC_ITEM_INDEX) {
-            //Generic item should be made current
-            m_inv.setCurItem(event->itemOldIndex);
-        } else if(event->itemNewIndex == DROP_GENERIC_ITEM_INDEX) {
-            //Generic item should be dropped on the ground
-            Item *item = m_inv.getItem(event->itemOldIndex);
-            m_inv.removeItem(event->itemOldIndex);
-            item->moveBy(m_pPhysicsModel->getPosition() - item->getPhysicsModel()->getPosition());
-            item->setFlag(GAM_CAN_PICK_UP, true);
-            item->setFlag(TPE_PASSABLE, true);
-            PWE::get()->add(item);
-        } else {
-            //Generic item should be moved
-            m_inv.moveItem(event->itemOldIndex, event->itemNewIndex);
-            status = EVENT_ITEM_CAN_DROP;
-        }
+        Item *item = ((ItemDropEvent*)data)->item;
+        item->moveBy(m_pPhysicsModel->getPosition() - item->getPhysicsModel()->getPosition());
+        item->onItemDrop();
+        PWE::get()->add(item);
         break;
     }
     case PWE_ON_ADDED_TO_AREA: {
@@ -409,7 +385,7 @@ void
 Player::upateHud() {
     ContainerRenderModel *panel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_TOPBAR);
     D3HudRenderModel *label = panel->get<D3HudRenderModel*>(MGHUD_CUR_ACTION);
-    SpellItem *item = m_inv.getCurSpell();
+    SpellItem *item = m_pHud->getCurSpell();
     if(m_bCanClimb) {
         label->updateText("Climb");
     } else if(item != NULL && m_pCurSpell == NULL) {
@@ -548,21 +524,10 @@ Player::handleCollision(HandleCollisionData *data) {
     if(data->obj->getType() == TYPE_ITEM && data->obj->getFlag(GAM_CAN_PICK_UP)) {
         //Pick up the item
         Item *item = (Item*)data->obj;
-        //addHudInventoryItem(item);
-        //GameManager::get()->addToInventory(item, true);
-        int index = m_inv.add(item);
-        if(index >= 0) {    //Item successfully added to the index
+        if(m_pHud->addItem(item)) {    //Item successfully added to the index?
             //Remove the item from the world
             PWE::get()->remove(item->getId());
-
-            //Make this item current
-            if(item->getItemId() < ITEM_NUM_ELEMENTS) {
-                m_inv.setCurElement(index);
-            } else if(item->getItemId() < ITEM_NUM_SPELLS) {
-                m_inv.setCurSpell(index);
-            } else {
-                m_inv.setCurItem(index);
-            }
+            item->onItemPickup();
 
             //Play the appropriate sound
             BAE::get()->playSound(AUD_PICKUP);
@@ -632,7 +597,7 @@ Player::startClimbing() {
 void
 Player::startCasting() {
     if(m_pCurSpell == NULL) {
-        SpellItem *item = m_inv.getCurSpell();
+        SpellItem *item = m_pHud->getCurSpell();
         if(item != NULL) {
             m_eState = PLAYER_CASTING;
             m_pRenderModel->setFrameH(PANIM_THROWING);

@@ -1,8 +1,8 @@
 #include "SpellItem.h"
-#include "game/items/Inventory.h"
 #include "game/spells/SourceSinkSpell.h"
 #include "game/spells/FlowSpell.h"
 #include "pwe/PartitionedWorldEngine.h"
+#include "game/gui/DraggableHud.h"
 
 SpellItem::SpellItem(uint id, uint itemId, const Point &pos)
     : Item(id, itemId, pos)

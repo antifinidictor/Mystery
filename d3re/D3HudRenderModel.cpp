@@ -82,7 +82,7 @@ D3HudRenderModel::getDrawArea() {
 
 Point
 D3HudRenderModel::getPosition() {
-    return Point(m_rcDrawArea.x, m_rcDrawArea.y, 0.f);
+    return Point(m_rcDrawArea.x + m_rcDrawArea.w / 2, m_rcDrawArea.y + m_rcDrawArea.h / 2, 0.f);
 }
 
 void

@@ -11,7 +11,6 @@
 
 #include "game/spells/Spell.h"
 #include "game/items/Item.h"
-#include "game/items/Inventory.h"
 #include "game/gui/DraggableHud.h"
 #include <vector>
 
@@ -93,8 +92,7 @@ private:
     uint m_uiHealth;
     uint m_uiMaxHealth;
 
-    Inventory m_inv;
-    DraggableHud m_hud;
+    DraggableHud *m_pHud;
 };
 
 #endif // PLAYER_H

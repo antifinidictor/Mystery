@@ -1,23 +1,22 @@
 #include "Draggable.h"
 #include "pwe/PartitionedWorldEngine.h"
+#include "game/game_defs.h"
 
-Draggable::Draggable(uint uiId, const Rect &rcArea)
+Draggable::Draggable(Positionable *parent, const Rect &rcRelativeClickArea)
 {
-    m_uiFlags = 0;
-    m_uiId = uiId;
-    m_rcClickArea = Rect(-rcArea.w / 2, -rcArea.h / 2, rcArea.w, rcArea.h);
+    m_rcClickArea = rcRelativeClickArea;
 
-    m_pPhysicsModel = new NullTimePhysicsModel(
-        Point(rcArea.x + rcArea.w / 2, rcArea.y + rcArea.h / 2, 0)
-    );
-    //m_fRadius = rcArea.w / 2;
+    printf("Click area (relative): (%f,%f,%f,%f)\n",
+           m_rcClickArea.x, m_rcClickArea.y,
+           m_rcClickArea.w, m_rcClickArea.h);
+
     m_eState = DRAG_MOUSE_OUT;
     m_ptMouseOffset = Point();
+    m_pParent = parent;
 }
 
 Draggable::~Draggable()
 {
-    PWE::get()->freeId(m_uiId);
 }
 
 int
@@ -28,6 +27,7 @@ Draggable::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
         status = onMouseMove((InputData*)data);
         break;
     case ON_BUTTON_INPUT:
+        onMouseMove((InputData*)data);
         status = onButtonPress((InputData*)data);
         break;
     default:
@@ -36,30 +36,14 @@ Draggable::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
     return status;
 }
 
-bool
-Draggable::update(uint time) {
-    return false;
-}
-
 void
 Draggable::onFollow(const Point &diff) {
-    m_pPhysicsModel->moveBy(diff);
-}
-
-Rect
-Draggable::getClickArea() {
-    Point ptPos = m_pPhysicsModel->getPosition();
-    return Rect(
-        ptPos.x + m_rcClickArea.x,
-        ptPos.y + m_rcClickArea.y,
-        m_rcClickArea.w,
-        m_rcClickArea.h
-    );
+    m_pParent->moveBy(diff);
 }
 
 int
 Draggable::onMouseMove(InputData *data) {
-    Point ptPos = m_pPhysicsModel->getPosition();
+    Point ptPos = m_pParent->getPosition();
     Point ptMouse = Point(
         data->getInputState(MIN_MOUSE_X) - (ptPos.x),
         data->getInputState(MIN_MOUSE_Y) - (ptPos.y),
@@ -101,7 +85,8 @@ Draggable::onButtonPress(InputData *data) {
                 data->getInputState(MIN_MOUSE_Y),
                 0.f
             );
-            m_ptMouseOffset = m_pPhysicsModel->getPosition() - ptMouse;
+            m_ptMouseOffset = m_pParent->getPosition() - ptMouse;
+            printf("Clicked on pos (%f,%f)\n", ptMouse.x, ptMouse.y);
             onStartDragging();
             status = EVENT_CAUGHT;
         }

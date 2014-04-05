@@ -8,12 +8,13 @@
 
 #include <map>
 #include "mge/RenderModel.h"
+#include "mge/Positionable.h"
 
 class RenderEngine;
 
 typedef void (*opOnRenderModel)(uint id, RenderModel *rm);
 
-class ContainerRenderModel : public RenderModel {
+class ContainerRenderModel : public RenderModel, public Positionable {
 public:
     ContainerRenderModel(Rect rcArea);
     //This is a hack

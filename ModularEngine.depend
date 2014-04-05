@@ -1532,13 +1532,12 @@
 	"game/gui/DraggableItem.h"
 	"game/items/Item.h"
 
-1396643289 k:\projects\games\mge\mystery\game\gamemanager.h
+1396724651 k:\projects\games\mge\mystery\game\gamemanager.h
 	<stack>
 	<map>
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
-	"game/items/Inventory.h"
 	"d3re/d3re.h"
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/TimePhysicsEngine.h"
@@ -1598,19 +1597,18 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1396682974 source:k:\projects\games\mge\mystery\game\player.cpp
+1396729869 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/tpe.h"
 	"GameManager.h"
 	"game/spells/SourceSinkSpell.h"
 	"game/spells/FlowSpell.h"
-	"game/items/Inventory.h"
 	"game/items/SpellItem.h"
 
 1379968751 AudioEngine.h"
 
-1396643274 k:\projects\games\mge\mystery\game\player.h
+1396724634 k:\projects\games\mge\mystery\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1619,7 +1617,6 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/spells/Spell.h"
 	"game/items/Item.h"
-	"game/items/Inventory.h"
 	"game/gui/DraggableHud.h"
 	<vector>
 
@@ -1674,7 +1671,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1396683712 source:k:\projects\games\mge\mystery\game\game.cpp
+1396688904 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	"pgl.h"
@@ -1740,7 +1737,7 @@
 	"mge/Clock.h"
 	"mge/Event.h"
 
-1396548129 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
+1396729915 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
 	"ModularEngine.h"
 	"defs.h"
 
@@ -1791,7 +1788,7 @@
 	"mge/GameObject.h"
 	"mge/PhysicsModel.h"
 
-1396683851 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
+1396688775 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
 	"PartitionedWorldEngine.h"
 	"mge/ModularEngine.h"
 	"game/ObjectFactory.h"
@@ -1968,7 +1965,7 @@
 	<map>
 	"mge/defs.h"
 
-1396643274 k:\projects\games\mge\mystery\\game\player.h
+1396724634 k:\projects\games\mge\mystery\\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1977,7 +1974,6 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/spells/Spell.h"
 	"game/items/Item.h"
-	"game/items/Inventory.h"
 	"game/gui/DraggableHud.h"
 	<vector>
 
@@ -2037,13 +2033,12 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1396643289 k:\projects\games\mge\mystery\\game\gamemanager.h
+1396724651 k:\projects\games\mge\mystery\\game\gamemanager.h
 	<stack>
 	<map>
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
-	"game/items/Inventory.h"
 	"d3re/d3re.h"
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/TimePhysicsEngine.h"
@@ -2137,7 +2132,7 @@
 	"mge/RenderModel.h"
 	"mge/Image.h"
 
-1396654261 k:\projects\games\mge\mystery\\game\game_defs.h
+1396723029 k:\projects\games\mge\mystery\\game\game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -2291,7 +2286,7 @@
 	"mge/Image.h"
 	"mge/Positionable.h"
 
-1396658275 source:k:\projects\games\mge\mystery\d3re\d3hudrendermodel.cpp
+1396690674 source:k:\projects\games\mge\mystery\d3re\d3hudrendermodel.cpp
 	"d3re.h"
 	"mge/GameObject.h"
 	"TextRenderer.h"
@@ -8319,7 +8314,7 @@
 	<vector>
 	<boost/property_tree/ptree.hpp>
 
-1396654261 k:\projects\games\mge\mystery\game\game_defs.h
+1396723029 k:\projects\games\mge\mystery\game\game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -8520,13 +8515,15 @@
 	<boost/range/end.hpp>
 	<boost/range/reverse_iterator.hpp>
 
-1396658262 k:\projects\games\mge\mystery\d3re\containerrendermodel.h
+1396687727 k:\projects\games\mge\mystery\d3re\containerrendermodel.h
 	<map>
 	"mge/RenderModel.h"
+	"mge/Positionable.h"
 
-1396658262 k:\projects\games\mge\mystery\\d3re\containerrendermodel.h
+1396687727 k:\projects\games\mge\mystery\\d3re\containerrendermodel.h
 	<map>
 	"mge/RenderModel.h"
+	"mge/Positionable.h"
 
 1391074770 source:k:\projects\games\mge\mystery\editor\editorcursor.cpp
 	"EditorCursor.h"
@@ -14547,7 +14544,7 @@
 	"mge/GameObject.h"
 	"game/game_defs.h"
 
-1396683347 source:k:\projects\games\mge\mystery\game\spells\waterelementalvolume.cpp
+1396684109 source:k:\projects\games\mge\mystery\game\spells\waterelementalvolume.cpp
 	"WaterElementalVolume.h"
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
@@ -14657,17 +14654,17 @@
 	"d3re.h"
 	"mge/GameObject.h"
 
-1396682964 source:k:\projects\games\mge\mystery\game\items\item.cpp
+1396730071 source:k:\projects\games\mge\mystery\game\items\item.cpp
 	"Item.h"
 	"pwe/PartitionedWorldEngine.h"
 
-1396654652 k:\projects\games\mge\mystery\game\items\item.h
+1396729386 k:\projects\games\mge\mystery\game\items\item.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
 
-1396654652 k:\projects\games\mge\mystery\\game\items\item.h
+1396729386 k:\projects\games\mge\mystery\\game\items\item.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
@@ -15476,31 +15473,27 @@
 	"mge/defs.h"
 	<string>
 
-1396659427 source:k:\projects\games\mge\mystery\game\gui\draggable.cpp
+1396720560 source:k:\projects\games\mge\mystery\game\gui\draggable.cpp
 	"Draggable.h"
 	"pwe/PartitionedWorldEngine.h"
-
-1396657774 k:\projects\games\mge\mystery\game\gui\draggable.h
 	"game/game_defs.h"
-	"mge/GameObject.h"
-	"tpe/TimePhysicsModel.h"
-	"d3re/D3HudRenderModel.h"
-	"d3re/ContainerRenderModel.h"
 
-1396664956 k:\projects\games\mge\mystery\\game\gui\draggablehud.h
+1396689206 k:\projects\games\mge\mystery\game\gui\draggable.h
+	"mge/Event.h"
+	"mge/Positionable.h"
+
+1396726868 k:\projects\games\mge\mystery\\game\gui\draggablehud.h
 	"Draggable.h"
-	"game/items/InventoryDisplay.h"
+	"game/items/Item.h"
+	"d3re/ContainerRenderModel.h"
 	<map>
 	<list>
 
-1396657774 k:\projects\games\mge\mystery\\game\gui\draggable.h
-	"game/game_defs.h"
-	"mge/GameObject.h"
-	"tpe/TimePhysicsModel.h"
-	"d3re/D3HudRenderModel.h"
-	"d3re/ContainerRenderModel.h"
+1396689206 k:\projects\games\mge\mystery\\game\gui\draggable.h
+	"mge/Event.h"
+	"mge/Positionable.h"
 
-1396683070 source:k:\projects\games\mge\mystery\game\gui\draggablehud.cpp
+1396730809 source:k:\projects\games\mge\mystery\game\gui\draggablehud.cpp
 	"DraggableHud.h"
 	"DraggableItem.h"
 	"DraggableElementalSpellItem.h"
@@ -15508,13 +15501,14 @@
 	"pwe/PartitionedWorldEngine.h"
 	"bae/BasicAudioEngine.h"
 	"mge/ModularEngine.h"
-	"game/items/Inventory.h"
 	"game/items/Item.h"
+	"game/items/SpellItem.h"
 	"mge/Event.h"
 
-1396664956 k:\projects\games\mge\mystery\game\gui\draggablehud.h
+1396726868 k:\projects\games\mge\mystery\game\gui\draggablehud.h
 	"Draggable.h"
-	"game/items/InventoryDisplay.h"
+	"game/items/Item.h"
+	"d3re/ContainerRenderModel.h"
 	<map>
 	<list>
 
@@ -15522,16 +15516,16 @@
 	"ContainerRenderModel.h"
 	"pgl.h"
 
-1396663903 source:k:\projects\games\mge\mystery\game\items\inventory.cpp
+1396716972 source:k:\projects\games\mge\mystery\game\items\inventory.cpp
 	"Inventory.h"
 	"Item.h"
 	"SpellItem.h"
 	"InventoryDisplay.h"
 
-1396654029 k:\projects\games\mge\mystery\game\items\inventory.h
+1396724424 k:\projects\games\mge\mystery\game\items\inventory.h
 	"game/game_defs.h"
 
-1396654029 k:\projects\games\mge\mystery\\game\items\inventory.h
+1396724424 k:\projects\games\mge\mystery\\game\items\inventory.h
 	"game/game_defs.h"
 
 1392624239 source:k:\projects\games\mge\mystery\spells\earthelementalvolume.cpp
@@ -15577,12 +15571,12 @@
 	<string>
 	<iostream>
 
-1396472405 source:k:\projects\games\mge\mystery\game\items\spellitem.cpp
+1396724950 source:k:\projects\games\mge\mystery\game\items\spellitem.cpp
 	"SpellItem.h"
-	"game/items/Inventory.h"
 	"game/spells/SourceSinkSpell.h"
 	"game/spells/FlowSpell.h"
 	"pwe/PartitionedWorldEngine.h"
+	"game/gui/DraggableHud.h"
 
 1396465996 k:\projects\games\mge\mystery\game\items\spellitem.h
 	"game/items/Item.h"
@@ -15592,34 +15586,41 @@
 	"game/items/Item.h"
 	"game/spells/Spell.h"
 
-1396649693 k:\projects\games\mge\mystery\\game\gui\draggableitem.h
+1396723428 k:\projects\games\mge\mystery\\game\gui\draggableitem.h
 	"game/gui/Draggable.h"
 	"d3re/D3HudRenderModel.h"
+	"game/items/Item.h"
 	<vector>
 
-1396661780 source:k:\projects\games\mge\mystery\game\gui\draggableitem.cpp
+1396730947 source:k:\projects\games\mge\mystery\game\gui\draggableitem.cpp
 	"DraggableItem.h"
 	"d3re/d3re.h"
 	"mge/ModularEngine.h"
+	"pwe/PartitionedWorldEngine.h"
+	"game/game_defs.h"
 
-1396649693 k:\projects\games\mge\mystery\game\gui\draggableitem.h
+1396723428 k:\projects\games\mge\mystery\game\gui\draggableitem.h
 	"game/gui/Draggable.h"
 	"d3re/D3HudRenderModel.h"
+	"game/items/Item.h"
 	<vector>
 
-1396636352 k:\projects\games\mge\mystery\\game\items\inventorydisplay.h
+1396686273 k:\projects\games\mge\mystery\\game\items\inventorydisplay.h
 
-1396636352 k:\projects\games\mge\mystery\game\items\inventorydisplay.h
+1396686273 k:\projects\games\mge\mystery\game\items\inventorydisplay.h
 
-1396655883 source:k:\projects\games\mge\mystery\game\gui\draggableelementalspellitem.cpp
+1396730891 source:k:\projects\games\mge\mystery\game\gui\draggableelementalspellitem.cpp
 	"DraggableElementalSpellItem.h"
 	"d3re/d3re.h"
 	"mge/ModularEngine.h"
-	"game/items/Inventory.h"
+	"pwe/PartitionedWorldEngine.h"
+	"game/game_defs.h"
+	"game/gui/DraggableHud.h"
 
-1396652217 k:\projects\games\mge\mystery\game\gui\draggableelementalspellitem.h
+1396723985 k:\projects\games\mge\mystery\game\gui\draggableelementalspellitem.h
 	"game/gui/Draggable.h"
 	"d3re/D3HudRenderModel.h"
+	"game/items/Item.h"
 	<vector>
 
 1396681015 k:\projects\games\mge\mystery\\mge\positionable.h
