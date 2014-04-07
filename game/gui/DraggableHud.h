@@ -39,7 +39,7 @@ enum GeneralItemIds {
 class Listener;
 class SpellItem;
 
-class DraggableHud : public Draggable, public ContainerRenderModel
+class DraggableHud : public ContainerRenderModel, public Draggable
 {
 public:
     DraggableHud(uint uiId);

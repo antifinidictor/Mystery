@@ -20,8 +20,8 @@
 using namespace std;
 
 DraggableHud::DraggableHud(uint uiId)
-    : Draggable(this, Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)),
-      ContainerRenderModel(Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT))
+    : ContainerRenderModel(Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT)),
+      Draggable(this, Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 {
     m_uiId = uiId;
 

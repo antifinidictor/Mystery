@@ -229,9 +229,6 @@
 		<Unit filename="game/gui/DraggableItem.h" />
 		<Unit filename="game/gui/TextDisplay.cpp" />
 		<Unit filename="game/gui/TextDisplay.h" />
-		<Unit filename="game/items/Inventory.cpp" />
-		<Unit filename="game/items/Inventory.h" />
-		<Unit filename="game/items/InventoryDisplay.h" />
 		<Unit filename="game/items/Item.cpp" />
 		<Unit filename="game/items/Item.h" />
 		<Unit filename="game/items/SpellItem.cpp" />

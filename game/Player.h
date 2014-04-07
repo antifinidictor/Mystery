@@ -46,14 +46,19 @@ private:
         PLAYER_NORMAL,
         PLAYER_TALKING,
         PLAYER_CASTING,
-        PLAYER_CASTING_TRANS,
         PLAYER_CLIMBING_TRANS,
         NUM_PLAYER_STATES
     };
 
+    enum PlayerAction {
+        PLAYER_LOOK,
+        PLAYER_SPRINT,
+        PLAYER_CLIMB,
+        NUM_PLAYER_ACTIONS
+    };
+
     void updateNormal(uint time);
     void updateCasting(uint time);
-    void updateCastingTrans(uint time);
     void updateClimbingTrans(uint time);
     void updateSpells();
     void upateHud();
@@ -78,6 +83,7 @@ private:
     bool m_bFirst;
     bool m_bMouseDown;
     PlayerState m_eState;
+    PlayerAction m_eAction;
 
     //You can only cast one spell at a time
     Spell *m_pCurSpell;

@@ -6,10 +6,6 @@ Draggable::Draggable(Positionable *parent, const Rect &rcRelativeClickArea)
 {
     m_rcClickArea = rcRelativeClickArea;
 
-    printf("Click area (relative): (%f,%f,%f,%f)\n",
-           m_rcClickArea.x, m_rcClickArea.y,
-           m_rcClickArea.w, m_rcClickArea.h);
-
     m_eState = DRAG_MOUSE_OUT;
     m_ptMouseOffset = Point();
     m_pParent = parent;
@@ -86,7 +82,6 @@ Draggable::onButtonPress(InputData *data) {
                 0.f
             );
             m_ptMouseOffset = m_pParent->getPosition() - ptMouse;
-            printf("Clicked on pos (%f,%f)\n", ptMouse.x, ptMouse.y);
             onStartDragging();
             status = EVENT_CAUGHT;
         }

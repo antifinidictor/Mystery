@@ -94,6 +94,8 @@ enum GameEvent {
     ON_SPELL_CANCEL,        //Spell cancelled
     ON_ITEM_DROPPED,        //Item dropped into a slot
     ON_UPDATE_HUD,          //HUD animations should be updated
+    ON_ITEM_CLICK_USE,      //Current item receives a mouse click (button up/down, mouse location)
+    ON_ITEM_DRAG_USE,       //Current item receives a mouse-drag event (mouse location)
     NUM_GAME_EVENTS
 };
 
@@ -156,6 +158,11 @@ struct ItemDropEvent {
     Item *item;
     uint itemOldIndex;
     uint itemNewIndex;
+};
+
+struct ItemUseEvent {
+    Point m_ptMousePos;
+    bool m_bMouseDown;
 };
 
 #endif

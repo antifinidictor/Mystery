@@ -105,9 +105,6 @@ bool Player::update(uint time) {
     case PLAYER_NORMAL:
         updateNormal(time);
         break;
-    case PLAYER_CASTING_TRANS:
-        updateCastingTrans(time);
-        break;
     case PLAYER_CLIMBING_TRANS:
         updateClimbingTrans(time);
         break;
@@ -264,6 +261,26 @@ Player::updateNormal(uint time) {
 
 void
 Player::updateCasting(uint time) {
+    //Update animation
+    if(m_uiAnimFrameStart == PANIM_THROWING) {
+        if(m_iAnimTimer < 0) {
+            m_iAnimTimer = ANIM_TIMER_MAX;
+            m_iAnimState = m_iAnimState + 1;
+            m_pRenderModel->setFrameH(m_iAnimState + m_uiAnimFrameStart);
+            if(m_iAnimState > 3) {
+                //Continue casting
+                m_eState = PLAYER_CASTING;
+                m_iAnimState = 0;
+                m_uiAnimFrameStart = PANIM_STANDING;
+                m_pRenderModel->setFrameH(PANIM_STANDING);
+            }
+        } else {
+            --m_iAnimTimer;
+        }
+    }
+
+
+    //Move the screen to halfway between the player and the mouse
     Point ptMouse;
     //if(D3RE::get()->getMouseOverObject() == NULL) {
         Point ptMouseVec = D3RE::get()->getMouseRay();
@@ -294,22 +311,6 @@ Player::updateCasting(uint time) {
     m_pRenderModel->setFrameW(m_iDirection);
 }
 
-void
-Player::updateCastingTrans(uint time) {
-    if(m_iAnimTimer < 0) {
-        m_iAnimTimer = ANIM_TIMER_MAX;
-        m_iAnimState = m_iAnimState + 1;
-        m_pRenderModel->setFrameH(m_iAnimState + m_uiAnimFrameStart);
-        if(m_iAnimState > 3) {
-            //Stop casting
-            m_eState = PLAYER_NORMAL;
-            m_iAnimState = 0;
-            m_uiAnimFrameStart = PANIM_STANDING;
-        }
-    } else {
-        --m_iAnimTimer;
-    }
-}
 
 void
 Player::updateClimbingTrans(uint time) {
@@ -468,6 +469,14 @@ Player::handleButtonNormal(InputData* data) {
 
 void
 Player::handleButtonCasting(InputData* data) {
+    //If the spell became invalid, create a new one
+    if(m_pCurSpell == NULL) {
+        SpellItem *item = m_pHud->getCurSpell();
+        if(item != NULL) {
+            m_pCurSpell = item->createSpell(SPELL_DURATION, 0.8f);
+        }
+    }
+
     //Actually cast the spell, if it is valid
     if(!data->getInputState(IN_CAST) && data->hasChanged(IN_CAST)) {
         m_eState = PLAYER_NORMAL;
@@ -475,8 +484,6 @@ Player::handleButtonCasting(InputData* data) {
         if(m_pCurSpell != NULL) {
             if(m_pCurSpell->getStatus() == SPELL_READY) {
                 m_pCurSpell->activate();
-                m_eState = PLAYER_CASTING_TRANS;
-                m_uiAnimFrameStart = PANIM_THROWING;
             } else {
                 m_pCurSpell->deactivate();
             }
@@ -484,17 +491,20 @@ Player::handleButtonCasting(InputData* data) {
 
         //Stop playing spell sound if it is playing
         BAE::get()->playSound(AUD_NONE, 0, AUD_CHAN_PLAYER_SPELL_BACKGROUND);
+        return;
     }
 
     //Add points to current spells
     if(data->getInputState(IN_SELECT) && data->hasChanged(IN_SELECT)
        && m_pCurSpell != NULL && GameManager::get()->getTopVolume() != NULL) {
         m_pCurSpell->addPoint(GameManager::get()->getTopVolume(), D3RE::get()->getMousePos(), true);
+        m_uiAnimFrameStart = PANIM_THROWING;
     }
 
     if(data->getInputState(IN_RCLICK) && data->hasChanged(IN_RCLICK)
        && m_pCurSpell != NULL && GameManager::get()->getTopVolume() != NULL) {
         m_pCurSpell->addPoint(GameManager::get()->getTopVolume(), D3RE::get()->getMousePos(), false);
+        m_uiAnimFrameStart = PANIM_THROWING;
     }
 }
 
@@ -600,7 +610,7 @@ Player::startCasting() {
         SpellItem *item = m_pHud->getCurSpell();
         if(item != NULL) {
             m_eState = PLAYER_CASTING;
-            m_pRenderModel->setFrameH(PANIM_THROWING);
+            m_pRenderModel->setFrameH(PANIM_STANDING);
             m_pCurSpell = item->createSpell(SPELL_DURATION, 0.8f);
 
             //Play appropriate sound

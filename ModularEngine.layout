@@ -1,24 +1,176 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="game\spells\SourceSinkSpell.h" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="game\gui\DraggableElementalSpellItem.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="472" topLine="16" />
+			<Cursor1 position="1851" topLine="30" />
 		</Cursor>
 	</File>
-	<File name="game\items\Item.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="game\world\AreaLinkObject.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1293" topLine="23" />
+			<Cursor1 position="473" topLine="7" />
 		</Cursor>
 	</File>
-	<File name="d3re\D3SpriteRenderModel.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="editor\EditorCursor.h" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1681" topLine="22" />
+			<Cursor1 position="2355" topLine="48" />
 		</Cursor>
 	</File>
-	<File name="mge\PixelMap.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="mge\Event.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4492" topLine="87" />
+			<Cursor1 position="608" topLine="19" />
+		</Cursor>
+	</File>
+	<File name="game\gui\DraggableElementalSpellItem.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1208" topLine="16" />
+		</Cursor>
+	</File>
+	<File name="game\world\AreaLinkObject.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1535" topLine="25" />
+		</Cursor>
+	</File>
+	<File name="editor\EditorHudButton.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1549" topLine="12" />
+		</Cursor>
+	</File>
+	<File name="mge\GameObject.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1043" topLine="21" />
+		</Cursor>
+	</File>
+	<File name="game\gui\DraggableHud.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1552" topLine="28" />
+		</Cursor>
+		<Folding>
+			<Collapse line="64" />
+			<Collapse line="76" />
+			<Collapse line="90" />
+			<Collapse line="98" />
+			<Collapse line="131" />
+			<Collapse line="182" />
+			<Collapse line="308" />
+			<Collapse line="317" />
+			<Collapse line="326" />
+			<Collapse line="399" />
+			<Collapse line="404" />
+			<Collapse line="409" />
+			<Collapse line="415" />
+			<Collapse line="421" />
+			<Collapse line="427" />
+			<Collapse line="433" />
+			<Collapse line="477" />
+			<Collapse line="562" />
+			<Collapse line="589" />
+			<Collapse line="605" />
+		</Folding>
+	</File>
+	<File name="game\world\HmapSurface.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="732" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="editor\EditorManager.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6761" topLine="158" />
+		</Cursor>
+	</File>
+	<File name="mge\Image.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2839" topLine="68" />
+		</Cursor>
+	</File>
+	<File name="game\gui\DraggableHud.h" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="929" topLine="29" />
+		</Cursor>
+	</File>
+	<File name="game\world\HmapSurface.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="595" topLine="10" />
+		</Cursor>
+	</File>
+	<File name="editor\EditorManager.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="95" />
+		</Cursor>
+	</File>
+	<File name="mge\Image.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="628" topLine="19" />
+		</Cursor>
+	</File>
+	<File name="game\gui\DraggableItem.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="371" topLine="7" />
+		</Cursor>
+	</File>
+	<File name="game\world\SimplePhysicsObject.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="303" topLine="9" />
+		</Cursor>
+	</File>
+	<File name="editor\SelectionRenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1187" topLine="29" />
+		</Cursor>
+	</File>
+	<File name="mge\ModularEngine.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5175" topLine="123" />
+		</Cursor>
+		<Folding>
+			<Collapse line="103" />
+			<Collapse line="136" />
+			<Collapse line="171" />
+		</Folding>
+	</File>
+	<File name="game\gui\DraggableItem.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="235" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="game\world\SimplePhysicsObject.h" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1727" topLine="29" />
+		</Cursor>
+	</File>
+	<File name="editor\editor.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1820" topLine="80" />
+		</Cursor>
+	</File>
+	<File name="mge\ModularEngine.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2258" topLine="68" />
+		</Cursor>
+	</File>
+	<File name="game\gui\TextDisplay.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1771" topLine="40" />
+		</Cursor>
+	</File>
+	<File name="game\world\SimpleResettableObject.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="714" topLine="8" />
+		</Cursor>
+	</File>
+	<File name="editor\editor_defs.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="196" topLine="2" />
+		</Cursor>
+	</File>
+	<File name="game\gui\TextDisplay.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="142" topLine="2" />
+		</Cursor>
+	</File>
+	<File name="game\world\SimpleResettableObject.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1830" topLine="40" />
 		</Cursor>
 	</File>
 	<File name="game\FxSprite.cpp" open="0" top="0" tabpos="15" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -26,24 +178,9 @@
 			<Cursor1 position="325" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="game\spells\Spell.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="mge\PhysicsModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="473" topLine="24" />
-		</Cursor>
-	</File>
-	<File name="game\items\SpellItem.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1178" topLine="24" />
-		</Cursor>
-	</File>
-	<File name="d3re\D3SpriteRenderModel.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="284" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="mge\PixelMap.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="679" topLine="12" />
+			<Cursor1 position="299" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="game\FxSprite.h" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -51,19 +188,9 @@
 			<Cursor1 position="1383" topLine="26" />
 		</Cursor>
 	</File>
-	<File name="game\spells\WaterElementalVolume.cpp" open="1" top="1" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="mge\PixelMap.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1274" topLine="20" />
-		</Cursor>
-	</File>
-	<File name="game\items\SpellItem.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="564" topLine="5" />
-		</Cursor>
-	</File>
-	<File name="d3re\D3XZSpriteRenderModel.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1614" topLine="34" />
+			<Cursor1 position="4492" topLine="87" />
 		</Cursor>
 	</File>
 	<File name="game\GameManager.cpp" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -83,59 +210,44 @@
 			<Collapse line="298" />
 		</Folding>
 	</File>
-	<File name="game\spells\WaterElementalVolume.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="mge\PixelMap.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1463" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="game\registration.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="665" topLine="8" />
-		</Cursor>
-	</File>
-	<File name="d3re\D3XZSpriteRenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="245" topLine="6" />
-		</Cursor>
-	</File>
-	<File name="mge\RenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="408" topLine="12" />
+			<Cursor1 position="679" topLine="12" />
 		</Cursor>
 	</File>
 	<File name="game\GameManager.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2191" topLine="62" />
+			<Cursor1 position="198" topLine="2" />
 		</Cursor>
 	</File>
-	<File name="game\world\AreaLinkObject.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="mge\Positionable.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="473" topLine="7" />
+			<Cursor1 position="68" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="game\spells\EarthElementalVolume.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="game\items\Item.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="587" topLine="7" />
+			<Cursor1 position="1048" topLine="72" />
 		</Cursor>
 	</File>
-	<File name="d3re\TextFx.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="d3re\D3HeightmapRenderModel.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2801" topLine="87" />
+			<Cursor1 position="320" topLine="3" />
 		</Cursor>
 	</File>
-	<File name="game\ObjectFactory.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="game\ObjectFactory.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1589" topLine="47" />
 		</Cursor>
 	</File>
-	<File name="game\world\AreaLinkObject.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="game\items\Item.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1535" topLine="25" />
+			<Cursor1 position="1326" topLine="29" />
 		</Cursor>
 	</File>
-	<File name="d3re\TextFx.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="d3re\D3HudRenderModel.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="191" topLine="10" />
+			<Cursor1 position="2018" topLine="38" />
 		</Cursor>
 	</File>
 	<File name="game\ObjectFactory.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -143,9 +255,293 @@
 			<Cursor1 position="3615" topLine="90" />
 		</Cursor>
 	</File>
-	<File name="game\world\HmapSurface.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="mge\RenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="732" topLine="0" />
+			<Cursor1 position="408" topLine="12" />
+		</Cursor>
+	</File>
+	<File name="game\items\SpellItem.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="179" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3HudRenderModel.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1158" topLine="28" />
+		</Cursor>
+	</File>
+	<File name="game\Player.cpp" open="1" top="1" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="667" topLine="35" />
+		</Cursor>
+		<Folding>
+			<Collapse line="14" />
+			<Collapse line="73" />
+			<Collapse line="85" />
+			<Collapse line="121" />
+			<Collapse line="262" />
+			<Collapse line="315" />
+			<Collapse line="368" />
+			<Collapse line="385" />
+			<Collapse line="405" />
+			<Collapse line="511" />
+			<Collapse line="532" />
+			<Collapse line="589" />
+		</Folding>
+	</File>
+	<File name="game\items\SpellItem.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="564" topLine="5" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3PrismRenderModel.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="107" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="game\Player.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1583" topLine="40" />
+		</Cursor>
+	</File>
+	<File name="mge\defs.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9598" topLine="322" />
+		</Cursor>
+	</File>
+	<File name="game\registration.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="665" topLine="8" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3PrismRenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="305" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="game\alchemy\Alchemy.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2543" topLine="61" />
+		</Cursor>
+	</File>
+	<File name="mge\defs.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9841" topLine="324" />
+		</Cursor>
+	</File>
+	<File name="game\spells\EarthElementalVolume.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="641" topLine="13" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3RenderEngine.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="17683" topLine="502" />
+		</Cursor>
+		<Folding>
+			<Collapse line="90" />
+		</Folding>
+	</File>
+	<File name="game\alchemy\Alchemy.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1283" topLine="27" />
+		</Cursor>
+	</File>
+	<File name="pwe\PartitionedWorldEngine.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11645" topLine="341" />
+		</Cursor>
+		<Folding>
+			<Collapse line="39" />
+		</Folding>
+	</File>
+	<File name="game\spells\EarthElementalVolume.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1728" topLine="40" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3RenderEngine.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2913" topLine="97" />
+		</Cursor>
+	</File>
+	<File name="game\character\Action.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="60" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="pwe\PartitionedWorldEngine.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4653" topLine="99" />
+		</Cursor>
+	</File>
+	<File name="game\spells\ElementalVolume.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1117" topLine="35" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3SpriteRenderModel.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1681" topLine="22" />
+		</Cursor>
+	</File>
+	<File name="game\character\Character.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1011" topLine="19" />
+		</Cursor>
+	</File>
+	<File name="tpe\CollisionModel.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="421" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="game\spells\ElementalVolume.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1522" topLine="23" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3SpriteRenderModel.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="284" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="d3re\ContainerRenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="667" topLine="17" />
+		</Cursor>
+	</File>
+	<File name="game\character\Character.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2058" topLine="48" />
+		</Cursor>
+	</File>
+	<File name="tpe\CollisionModel.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1467" topLine="41" />
+		</Cursor>
+	</File>
+	<File name="game\spells\FlowSpell.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5065" topLine="174" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3XZSpriteRenderModel.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1614" topLine="34" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3HeightmapRenderModel.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1145" topLine="29" />
+		</Cursor>
+	</File>
+	<File name="game\world\Wall.cpp" open="0" top="0" tabpos="16" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="527" topLine="2" />
+		</Cursor>
+	</File>
+	<File name="game\character\WanderAction.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1599" topLine="50" />
+		</Cursor>
+	</File>
+	<File name="tpe\TimePhysicsEngine.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7722" topLine="190" />
+		</Cursor>
+	</File>
+	<File name="game\spells\FlowSpell.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1051" topLine="24" />
+		</Cursor>
+	</File>
+	<File name="d3re\D3XZSpriteRenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="245" topLine="6" />
+		</Cursor>
+	</File>
+	<File name="bae\BasicAudioEngine.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4727" topLine="166" />
+		</Cursor>
+	</File>
+	<File name="game\world\Wall.h" open="0" top="0" tabpos="15" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="tpe\TimePhysicsEngine.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1542" topLine="20" />
+		</Cursor>
+	</File>
+	<File name="game\spells\ForceField.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2952" topLine="94" />
+		</Cursor>
+	</File>
+	<File name="d3re\TextFx.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2801" topLine="87" />
+		</Cursor>
+	</File>
+	<File name="bae\BasicAudioEngine.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="577" topLine="17" />
+		</Cursor>
+	</File>
+	<File name="game\world\Water.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="897" topLine="19" />
+		</Cursor>
+	</File>
+	<File name="game\game.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2620" topLine="115" />
+		</Cursor>
+	</File>
+	<File name="tpe\TimePhysicsModel.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1647" topLine="3" />
+		</Cursor>
+		<Folding>
+			<Collapse line="8" />
+			<Collapse line="25" />
+		</Folding>
+	</File>
+	<File name="game\spells\SourceSinkSpell.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5522" topLine="184" />
+		</Cursor>
+	</File>
+	<File name="d3re\TextFx.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="191" topLine="10" />
+		</Cursor>
+	</File>
+	<File name="d3re\ContainerRenderModel.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="811" topLine="40" />
+		</Cursor>
+	</File>
+	<File name="game\world\Water.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1472" topLine="39" />
+		</Cursor>
+	</File>
+	<File name="game\game.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="tpe\TimePhysicsModel.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4782" topLine="105" />
+		</Cursor>
+	</File>
+	<File name="game\spells\SourceSinkSpell.h" open="0" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="472" topLine="16" />
 		</Cursor>
 	</File>
 	<File name="d3re\TextRenderer.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -169,21 +565,19 @@
 			<Collapse line="244" />
 		</Folding>
 	</File>
-	<File name="game\Player.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="linux\pgl.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1368" topLine="21" />
+			<Cursor1 position="106" topLine="0" />
 		</Cursor>
-		<Folding>
-			<Collapse line="15" />
-			<Collapse line="64" />
-			<Collapse line="75" />
-			<Collapse line="87" />
-			<Collapse line="97" />
-		</Folding>
 	</File>
-	<File name="game\world\HmapSurface.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="game\game_defs.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="595" topLine="10" />
+			<Cursor1 position="3773" topLine="145" />
+		</Cursor>
+	</File>
+	<File name="game\spells\Spell.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="473" topLine="24" />
 		</Cursor>
 	</File>
 	<File name="d3re\TextRenderer.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -191,14 +585,19 @@
 			<Cursor1 position="884" topLine="8" />
 		</Cursor>
 	</File>
-	<File name="game\Player.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="341" topLine="38" />
+			<Cursor1 position="416" topLine="6" />
 		</Cursor>
 	</File>
-	<File name="game\world\SimplePhysicsObject.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="game\gui\Draggable.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="303" topLine="9" />
+			<Cursor1 position="2147" topLine="81" />
+		</Cursor>
+	</File>
+	<File name="game\spells\WaterElementalVolume.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="967" topLine="13" />
 		</Cursor>
 	</File>
 	<File name="d3re\d3re.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -206,414 +605,19 @@
 			<Cursor1 position="345" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="game\alchemy\Alchemy.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2543" topLine="61" />
-		</Cursor>
-	</File>
-	<File name="game\world\SimplePhysicsObject.h" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1727" topLine="29" />
-		</Cursor>
-	</File>
-	<File name="bae\BasicAudioEngine.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4727" topLine="166" />
-		</Cursor>
-	</File>
-	<File name="game\alchemy\Alchemy.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1283" topLine="27" />
-		</Cursor>
-	</File>
-	<File name="game\world\SimpleResettableObject.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="714" topLine="8" />
-		</Cursor>
-	</File>
-	<File name="bae\BasicAudioEngine.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="577" topLine="17" />
-		</Cursor>
-	</File>
-	<File name="game\character\Action.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="60" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="game\world\SimpleResettableObject.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1830" topLine="40" />
-		</Cursor>
-	</File>
-	<File name="d3re\ContainerRenderModel.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="811" topLine="40" />
-		</Cursor>
-	</File>
-	<File name="game\gui\DraggableItem.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="344" topLine="10" />
-		</Cursor>
-	</File>
-	<File name="game\character\Character.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1011" topLine="19" />
-		</Cursor>
-	</File>
-	<File name="game\world\Wall.cpp" open="0" top="0" tabpos="16" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="527" topLine="2" />
-		</Cursor>
-	</File>
-	<File name="game\character\Character.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2058" topLine="48" />
-		</Cursor>
-	</File>
-	<File name="game\world\Wall.h" open="0" top="0" tabpos="15" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="game\character\WanderAction.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1599" topLine="50" />
-		</Cursor>
-	</File>
-	<File name="game\world\Water.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="897" topLine="19" />
-		</Cursor>
-	</File>
-	<File name="game\world\Water.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1472" topLine="39" />
-		</Cursor>
-	</File>
-	<File name="mge\Positionable.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="68" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="game\game.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2918" topLine="107" />
-		</Cursor>
-	</File>
-	<File name="linux\pgl.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="106" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="game\game.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="main.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="95" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="game\gui\DraggableItem.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="958" topLine="16" />
-		</Cursor>
-	</File>
-	<File name="game\game_defs.h" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3415" topLine="136" />
-		</Cursor>
-	</File>
-	<File name="d3re\ContainerRenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="575" topLine="13" />
-		</Cursor>
-	</File>
-	<File name="game\gui\DraggableElementalSpellItem.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="348" topLine="6" />
-		</Cursor>
-	</File>
-	<File name="game\gui\DraggableElementalSpellItem.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1167" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="mge\defs.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="9598" topLine="322" />
-		</Cursor>
-	</File>
-	<File name="game\gui\Draggable.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1425" topLine="86" />
-		</Cursor>
-	</File>
-	<File name="mge\defs.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="9841" topLine="324" />
-		</Cursor>
-	</File>
 	<File name="game\gui\Draggable.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1055" topLine="32" />
+			<Cursor1 position="386" topLine="11" />
 		</Cursor>
 	</File>
-	<File name="d3re\D3HeightmapRenderModel.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="game\spells\WaterElementalVolume.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1145" topLine="29" />
+			<Cursor1 position="1463" topLine="18" />
 		</Cursor>
-	</File>
-	<File name="mge\Event.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="300" topLine="2" />
-		</Cursor>
-	</File>
-	<File name="pwe\PartitionedWorldEngine.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="11869" topLine="341" />
-		</Cursor>
-		<Folding>
-			<Collapse line="39" />
-		</Folding>
 	</File>
 	<File name="editor\EditorCursor.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="3332" topLine="99" />
-		</Cursor>
-	</File>
-	<File name="game\spells\EarthElementalVolume.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1728" topLine="40" />
-		</Cursor>
-	</File>
-	<File name="game\gui\DraggableHud.cpp" open="0" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="13640" topLine="300" />
-		</Cursor>
-		<Folding>
-			<Collapse line="23" />
-			<Collapse line="58" />
-			<Collapse line="70" />
-			<Collapse line="84" />
-			<Collapse line="125" />
-			<Collapse line="184" />
-			<Collapse line="227" />
-		</Folding>
-	</File>
-	<File name="d3re\D3HeightmapRenderModel.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="320" topLine="3" />
-		</Cursor>
-	</File>
-	<File name="mge\GameObject.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1043" topLine="21" />
-		</Cursor>
-	</File>
-	<File name="pwe\PartitionedWorldEngine.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4653" topLine="99" />
-		</Cursor>
-	</File>
-	<File name="editor\EditorCursor.h" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2355" topLine="48" />
-		</Cursor>
-	</File>
-	<File name="game\spells\ElementalVolume.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1117" topLine="35" />
-		</Cursor>
-	</File>
-	<File name="game\gui\DraggableHud.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2623" topLine="75" />
-		</Cursor>
-	</File>
-	<File name="d3re\D3HudRenderModel.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1852" topLine="70" />
-		</Cursor>
-	</File>
-	<File name="mge\Image.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2839" topLine="68" />
-		</Cursor>
-	</File>
-	<File name="tpe\CollisionModel.cpp" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="421" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="editor\EditorHudButton.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1549" topLine="12" />
-		</Cursor>
-	</File>
-	<File name="game\spells\ElementalVolume.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1522" topLine="23" />
-		</Cursor>
-	</File>
-	<File name="game\gui\TextDisplay.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1771" topLine="40" />
-		</Cursor>
-	</File>
-	<File name="d3re\D3HudRenderModel.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="214" topLine="6" />
-		</Cursor>
-	</File>
-	<File name="mge\Image.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="628" topLine="19" />
-		</Cursor>
-	</File>
-	<File name="tpe\CollisionModel.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1467" topLine="41" />
-		</Cursor>
-	</File>
-	<File name="editor\EditorManager.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6761" topLine="158" />
-		</Cursor>
-	</File>
-	<File name="game\spells\FlowSpell.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5065" topLine="174" />
-		</Cursor>
-	</File>
-	<File name="game\gui\TextDisplay.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="142" topLine="2" />
-		</Cursor>
-	</File>
-	<File name="d3re\D3PrismRenderModel.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="107" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="mge\ModularEngine.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2054" topLine="45" />
-		</Cursor>
-		<Folding>
-			<Collapse line="9" />
-			<Collapse line="13" />
-			<Collapse line="19" />
-			<Collapse line="49" />
-		</Folding>
-	</File>
-	<File name="tpe\TimePhysicsEngine.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7722" topLine="190" />
-		</Cursor>
-	</File>
-	<File name="editor\EditorManager.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="95" />
-		</Cursor>
-	</File>
-	<File name="game\spells\FlowSpell.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1051" topLine="24" />
-		</Cursor>
-	</File>
-	<File name="game\items\Inventory.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3475" topLine="121" />
-		</Cursor>
-	</File>
-	<File name="d3re\D3PrismRenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="305" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="mge\ModularEngine.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2258" topLine="68" />
-		</Cursor>
-	</File>
-	<File name="tpe\TimePhysicsEngine.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1542" topLine="20" />
-		</Cursor>
-	</File>
-	<File name="editor\SelectionRenderModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1187" topLine="29" />
-		</Cursor>
-	</File>
-	<File name="game\spells\ForceField.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2952" topLine="94" />
-		</Cursor>
-	</File>
-	<File name="game\items\Inventory.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="703" topLine="22" />
-		</Cursor>
-	</File>
-	<File name="d3re\D3RenderEngine.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="17683" topLine="502" />
-		</Cursor>
-		<Folding>
-			<Collapse line="90" />
-		</Folding>
-	</File>
-	<File name="tpe\TimePhysicsModel.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1647" topLine="3" />
-		</Cursor>
-		<Folding>
-			<Collapse line="8" />
-			<Collapse line="25" />
-		</Folding>
-	</File>
-	<File name="editor\editor.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1820" topLine="80" />
-		</Cursor>
-	</File>
-	<File name="game\items\InventoryDisplay.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="582" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="game\spells\SourceSinkSpell.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5522" topLine="184" />
-		</Cursor>
-	</File>
-	<File name="game\items\Item.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="180" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="d3re\D3RenderEngine.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2913" topLine="97" />
-		</Cursor>
-	</File>
-	<File name="mge\PhysicsModel.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="299" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="tpe\TimePhysicsModel.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4782" topLine="105" />
-		</Cursor>
-	</File>
-	<File name="editor\editor_defs.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="196" topLine="2" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

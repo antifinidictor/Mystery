@@ -6,7 +6,7 @@
 #include "game/items/Item.h"
 #include <vector>
 
-class DraggableItem : public Draggable, public D3HudRenderModel
+class DraggableItem : public D3HudRenderModel, public Draggable
 {
 public:
     static void addValidDropLocation(const Point &pt);
