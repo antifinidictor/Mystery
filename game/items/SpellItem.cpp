@@ -1,6 +1,7 @@
 #include "SpellItem.h"
 #include "game/spells/SourceSinkSpell.h"
 #include "game/spells/FlowSpell.h"
+#include "game/spells/VortexSpell.h"
 #include "pwe/PartitionedWorldEngine.h"
 #include "game/gui/DraggableHud.h"
 
@@ -34,9 +35,11 @@ SpellItem::createSpell(int duration, float magnitude) {
     switch(getItemId()) {
     case ITEM_SPELL_CYCLIC:
         return new FlowSpell(duration, magnitude);
-        break;
     case ITEM_SPELL_FLOW:
         return new SourceSinkSpell(duration, magnitude);
+    case ITEM_SPELL_VORTEX:
+        return new VortexSpell(duration, magnitude);
+    default:
         break;
     }
     return NULL;

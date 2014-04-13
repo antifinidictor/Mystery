@@ -212,21 +212,15 @@ DraggableHud::addItem(Item *pItem, bool bMakeCurrent) {
     //Wrap the item in the appropriate draggable render model and stash on the
     // appropriate inventory gui panel
     if(uiItemId < ITEM_NUM_ELEMENTS) {
-        float x = indexToElementX(uiItemId);
-        float y = indexToElementY(uiItemId);
-
         //Wrap the element and store it
-        Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+        Rect rcArea = indexToElementRect(uiItemId);
         DraggableElementalSpellItem *pDraggableItem =
             new DraggableElementalSpellItem(pItem, rcArea, this);
         get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER)->add(uiItemId, pDraggableItem);
 
     } else if(uiItemId < ITEM_NUM_SPELLS) {
-        float x = indexToSpellX(uiItemId);
-        float y = indexToSpellY(uiItemId);
-
         //Wrap the spell and store it
-        Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+        Rect rcArea = indexToSpellRect(uiItemId);
         DraggableElementalSpellItem *pDraggableItem =
             new DraggableElementalSpellItem(pItem, rcArea, this);
         get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER)->add(uiItemId, pDraggableItem);
@@ -239,12 +233,8 @@ DraggableHud::addItem(Item *pItem, bool bMakeCurrent) {
             return false;   //Failed to add
         }
 
-        //x/y position of the item on the screen
-        float x = indexToItemX(ftor.m_uiIndex);
-        float y = indexToItemY(ftor.m_uiIndex);
-
         //Wrap the item and store it
-        Rect rcArea = Rect(x, y, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE);
+        Rect rcArea = indexToItemRect(ftor.m_uiIndex);
         DraggableItem *pDraggableItem = new DraggableItem(pItem, ftor.m_uiIndex, rcArea, this);
         get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->add(ftor.m_uiIndex, pDraggableItem);
     }
@@ -285,14 +275,15 @@ DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
                 removeSpell(event->itemOldIndex);
                 m_pMyPlayer->callBack(uiEventHandlerId, data, uiEventId);
             }
-        } else if(event->itemNewIndex == CUR_GENERIC_ITEM_INDEX) {
+        } else if(event->itemNewIndex == CUR_GENERIC_ITEM_INDEX ||
+                  (event->itemOldIndex == event->itemNewIndex && event->distance < 5.f)) {
             //Generic item should be made current
             makeCurrent(event->item);
         } else if(event->itemNewIndex == DROP_GENERIC_ITEM_INDEX) {
             //Generic item should be dropped on the ground.  Remove from HUD and pass on to player
             removeItem(event->itemOldIndex);
             m_pMyPlayer->callBack(uiEventHandlerId, data, uiEventId);
-        } else {
+        } else if(event->itemOldIndex != event->itemNewIndex) {
             //Generic item should be moved
             moveItem(event->itemOldIndex, event->itemNewIndex);
             status = EVENT_ITEM_CAN_DROP;
@@ -395,39 +386,43 @@ DraggableHud::removeScheduledItems() {
     m_lsElementsToRemove.clear();
 }
 
-
-float
-DraggableHud::indexToItemX(uint index) {
-    return (2 + 2 * (index % 6)) * TEXTURE_TILE_SIZE;
+Rect
+DraggableHud::indexToItemRect(uint index) {
+    return Rect(
+        (2 + 2 * (index % 6)) * TEXTURE_TILE_SIZE,
+        (7 + 2 * (index / 6)) * TEXTURE_TILE_SIZE,
+        TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE
+    );
 }
 
-float
-DraggableHud::indexToItemY(uint index) {
-    return (7 + 2 * (index / 6)) * TEXTURE_TILE_SIZE;
+Rect
+DraggableHud::indexToSpellRect(uint index) {
+    index--;    //Account for NULL item
+    float theta = (index * 2 * M_PI / NUM_SPELL_ITEMS - M_PI / 2);
+    return Rect(
+        (10 + cos(theta)) * TEXTURE_TILE_SIZE,  //x
+        (3 + sin(theta)) * TEXTURE_TILE_SIZE,   //y
+        TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE    //w, h
+    );
 }
 
-float
-DraggableHud::indexToSpellX(uint index) {
+Rect
+DraggableHud::indexToElementRect(uint index) {
     index--;
-    return (10) * TEXTURE_TILE_SIZE;
-}
-
-float
-DraggableHud::indexToSpellY(uint index) {
-    index--;
-    return (2 + 2 * (index % 2)) * TEXTURE_TILE_SIZE;
-}
-
-float
-DraggableHud::indexToElementX(uint index) {
-    index--;
-    return (2 + 2 * (index % 2)) * TEXTURE_TILE_SIZE;
-}
-
-float
-DraggableHud::indexToElementY(uint index) {
-    index--;
-    return (2 + 2 * (index / 2)) * TEXTURE_TILE_SIZE;
+    if(index < 4) {
+        return Rect(
+            (2 + 2 * (index % 2)) * TEXTURE_TILE_SIZE,  //x
+            (2 + 2 * (index / 2)) * TEXTURE_TILE_SIZE,  //y
+            TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE        //w, h
+        );
+    } else {
+        // The 5th element is centered
+        return Rect(
+            3 * TEXTURE_TILE_SIZE,                      //x
+            3 * TEXTURE_TILE_SIZE,                      //y
+            TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE        //w, h
+        );
+    }
 }
 
 void
@@ -617,8 +612,9 @@ DraggableHud::ItemDebugFunctor::operator()(uint itemIndex, RenderModel *rmdl) {
         expPos.y = rc.h / 2;
     }
 
-    expPos.x += m_pHud->indexToItemX(itemIndex);
-    expPos.y += m_pHud->indexToItemY(itemIndex);
+    Rect rcItemArea = m_pHud->indexToItemRect(itemIndex);
+    expPos.x += rcItemArea.x;
+    expPos.y += rcItemArea.y;
 
     printf("%d Render:   (%2.2f,%2.2f)\n", renderId, renderPos.x, renderPos.y);
     printf("? Expected: (%2.2f,%2.2f)\n\n", expPos.x, expPos.y);

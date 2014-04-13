@@ -19,7 +19,7 @@ public:
     virtual uint getId() { return m_pItem->getId(); }
 
     //Draggable functions
-    //virtual void onFollow(const Point &diff);
+    virtual void onFollow(const Point &diff);
     virtual void onStartDragging();
     virtual void onEndDragging();
     //virtual void onMouseIn();
@@ -34,6 +34,7 @@ private:
     Item *m_pItem;
     Point m_ptSnapPosition;
     Listener *m_pDropListener;
+    float m_fTotalDragDistance;
 };
 
 #endif // DRAGGABLE_ELEMENTAL_SPELL_ITEM_H

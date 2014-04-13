@@ -1,4 +1,4 @@
-#include "FlowSpell.h"
+#include "VortexSpell.h"
 #include "ElementalVolume.h"
 #include "game/spells/ForceField.h"
 #include "game/FxSprite.h"
@@ -6,22 +6,22 @@
 #include "bae/BasicAudioEngine.h"
 using namespace std;
 
-#define MIN_NUM_POINTS 3
+#define MIN_NUM_POINTS 1
 #define MAX_NUM_POINTS 5
 
 #define FX_TIMER_MAX 16
 
-FlowSpell::FlowSpell(int duration, float magnitude)
+VortexSpell::VortexSpell(int duration, float magnitude)
 {
     m_ev = NULL;
     m_iTimer = duration;
     m_fMagnitude = magnitude;
-    m_eState = FS_STATE_AWAITING_POINTS;
+    m_eState = VS_STATE_AWAITING_POINTS;
     m_bWasActivated = false;
     m_iFxTimer = 0;
 }
 
-FlowSpell::~FlowSpell()
+VortexSpell::~VortexSpell()
 {
     if(m_bWasActivated) {
         //TODO: May cause cleanup issues at the end of the game
@@ -34,7 +34,7 @@ FlowSpell::~FlowSpell()
 }
 
 void
-FlowSpell::clean() {
+VortexSpell::clean() {
     if(m_bWasActivated) {
         vector<PointIdPair>::iterator iter;
         for(iter = m_vForcePoints.begin(); iter != m_vForcePoints.end(); ++iter) {
@@ -46,51 +46,51 @@ FlowSpell::clean() {
 }
 
 void
-FlowSpell::addPoint(ElementalVolume *ev, const Point &pt, bool bLeftClick) {
+VortexSpell::addPoint(ElementalVolume *ev, const Point &pt, bool bLeftClick) {
     switch(m_eState) {
-    case FS_STATE_AWAITING_POINTS:
+    case VS_STATE_AWAITING_POINTS:
         if(m_ev == NULL) {
             m_ev = ev;
         } else if(m_ev != ev) {
-            m_eState = FS_STATE_INVALID;
+            m_eState = VS_STATE_INVALID;
         }
         m_vForcePoints.push_back(PointIdPair(pt, bLeftClick));
         if(m_vForcePoints.size() >= MIN_NUM_POINTS) {
-            m_eState = FS_STATE_READY;
+            m_eState = VS_STATE_READY;
         }
         break;
-    case FS_STATE_READY:
+    case VS_STATE_READY:
         if(m_ev == NULL) {
             m_ev = ev;
         } else if(m_ev != ev) {
-            m_eState = FS_STATE_INVALID;
+            m_eState = VS_STATE_INVALID;
         }
         m_vForcePoints.push_back(PointIdPair(pt, bLeftClick));
         if(m_vForcePoints.size() > MAX_NUM_POINTS) {
-            m_eState = FS_STATE_INVALID; //Tried to add too many points!
+            m_eState = VS_STATE_INVALID; //Tried to add too many points!
         }
         break;
-    case FS_STATE_ACTIVATED:
-        m_eState = FS_STATE_INVALID; //Tried to add more points!
+    case VS_STATE_ACTIVATED:
+        m_eState = VS_STATE_INVALID; //Tried to add more points!
         break;
-    case FS_STATE_INVALID:
+    case VS_STATE_INVALID:
         break;
     default:
         break;
     }
-    if(m_eState != FS_STATE_INVALID) {
+    if(m_eState != VS_STATE_INVALID) {
         BAE::get()->playSound(AUD_SPELL_POINT);
     }
 }
 
 bool
-FlowSpell::activate() {
-    if(m_eState == FS_STATE_READY) {
+VortexSpell::activate() {
+    if(m_eState == VS_STATE_READY) {
         if(m_ev == NULL) {
-            m_eState = FS_STATE_INVALID;
+            m_eState = VS_STATE_INVALID;
             return false;
         }
-        m_eState = FS_STATE_ACTIVATED;
+        m_eState = VS_STATE_ACTIVATED;
         m_bWasActivated = true;
 
         //Create a cycle of line force fields
@@ -99,11 +99,11 @@ FlowSpell::activate() {
                 j = 0;
             }
             PointIdPair *p0 = &m_vForcePoints[i];
-            PointIdPair *p1 = &m_vForcePoints[j];
+            //PointIdPair *p1 = &m_vForcePoints[j];
 
-            p0->id = m_ev->addForceField(new LineForceField(p0->pt, p1->pt, 0.8f));
-            //float normDir = p0->m_bPositiveNormal ? 1.f : -1.f;
-            //p0->id = m_ev->addForceField(new VortexForceField(p0->pt, Point(0.f,normDir,0.f), 0.8f));
+            //p0->id = m_ev->addForceField(new LineForceField(p0->pt, p1->pt, 0.8f));
+            float normDir = p0->m_bPositiveNormal ? 1.f : -1.f;
+            p0->id = m_ev->addForceField(new VortexForceField(p0->pt, Point(0.f,normDir,0.f), 0.8f));
         }
         return true;
     }
@@ -111,37 +111,37 @@ FlowSpell::activate() {
 }
 
 SpellState
-FlowSpell::getStatus() {
+VortexSpell::getStatus() {
     switch(m_eState) {
-    case FS_STATE_AWAITING_POINTS:
+    case VS_STATE_AWAITING_POINTS:
         return SPELL_WAITING;
-    case FS_STATE_READY:
+    case VS_STATE_READY:
         return SPELL_READY;
-    case FS_STATE_RESTORING:
-    case FS_STATE_ACTIVATED:
+    case VS_STATE_RESTORING:
+    case VS_STATE_ACTIVATED:
         return SPELL_ACTIVE;
-    case FS_STATE_INVALID:
+    case VS_STATE_INVALID:
     default:
         return SPELL_INVALID;
     }
 }
 
 void
-FlowSpell::update() {
+VortexSpell::update() {
     Color crPointColor = Color(255, 0, 0);
     switch(m_eState) {
-    case FS_STATE_ACTIVATED:
+    case VS_STATE_ACTIVATED:
         if(--m_iTimer < 0) {
-            m_eState = FS_STATE_INVALID;    //FS_STATE_RESTORING;
+            m_eState = VS_STATE_INVALID;    //VS_STATE_RESTORING;
             //m_iTimer = RESTORE_TIMER_MAX;
             //m_ev->beginRestore();
             clean();
         }
         //Do not break
-    case FS_STATE_READY:
+    case VS_STATE_READY:
         crPointColor = Color(0, 255, 0);
         //Do not break
-    case FS_STATE_AWAITING_POINTS:
+    case VS_STATE_AWAITING_POINTS:
         if(--m_iFxTimer < 0) {
             m_iFxTimer = FX_TIMER_MAX;
             for(vector<PointIdPair>::iterator iterPt = m_vForcePoints.begin(); iterPt != m_vForcePoints.end(); ++iterPt) {
@@ -156,9 +156,9 @@ FlowSpell::update() {
             }
         }
         break;
-    case FS_STATE_RESTORING:
+    case VS_STATE_RESTORING:
         if(--m_iTimer < 0) {
-            m_eState = FS_STATE_INVALID;
+            m_eState = VS_STATE_INVALID;
             m_ev->endRestore();
         } else {
             m_ev->interpRestore(1.f - m_iTimer * 1.f / RESTORE_TIMER_MAX);
@@ -170,19 +170,19 @@ FlowSpell::update() {
 }
 
 void
-FlowSpell::deactivate() {
+VortexSpell::deactivate() {
     switch(m_eState) {
-    case FS_STATE_RESTORING:
+    case VS_STATE_RESTORING:
         //Already restoring, do nothing
         break;
-    case FS_STATE_ACTIVATED:
-        m_eState = FS_STATE_INVALID;    //FS_STATE_RESTORING;
+    case VS_STATE_ACTIVATED:
+        m_eState = VS_STATE_INVALID;    //VS_STATE_RESTORING;
         //m_iTimer = RESTORE_TIMER_MAX;
         //m_ev->beginRestore();
         clean();
         break;
     default:
-        m_eState = FS_STATE_INVALID;
+        m_eState = VS_STATE_INVALID;
         break;
     }
     clean();

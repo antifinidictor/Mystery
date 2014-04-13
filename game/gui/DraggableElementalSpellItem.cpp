@@ -35,8 +35,15 @@ DraggableElementalSpellItem::~DraggableElementalSpellItem()
 }
 
 void
+DraggableElementalSpellItem::onFollow(const Point &diff) {
+    Draggable::onFollow(diff);
+    m_fTotalDragDistance += diff.magnitude();
+}
+
+void
 DraggableElementalSpellItem::onStartDragging() {
     m_ptSnapPosition = m_pParent->getPosition();
+    m_fTotalDragDistance = 0.f;
 }
 
 void
@@ -49,6 +56,8 @@ DraggableElementalSpellItem::onEndDragging() {
         sendItemDropEvent(CUR_SPELL_ITEM_INDEX);
     } else if(dist(s_ptDropPoint, ptCurPos) < VALID_DROP_RADIUS) {
         sendItemDropEvent(DROP_SPELL_ITEM_INDEX);
+    } else if(m_fTotalDragDistance < 5.f) {
+        sendItemDropEvent(CUR_SPELL_ITEM_INDEX);
     }
 
     //Move the item back to the correct position
@@ -63,6 +72,7 @@ DraggableElementalSpellItem::sendItemDropEvent(int newIndex) {
         event.item = m_pItem;
         event.itemOldIndex = m_pItem->getItemId();
         event.itemNewIndex = newIndex;
+        event.distance = m_fTotalDragDistance;
 
         //Tell the listener about the event.  Its reply does not matter
         m_pDropListener->callBack(getId(), &event, ON_ITEM_DROPPED);

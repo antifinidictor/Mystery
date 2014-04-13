@@ -14,6 +14,8 @@ using namespace std;
 
 #define CAM_DIST 6.25f  //200.f
 #define CAM_ANGLE (9 * M_PI / 32)
+#define LOOK_ANGLE (M_PI / 2)
+#define CAM_ROTATE_SPEED (M_PI / 32)
 #define MAX_MOUSE_TIMER 20
 //static members
 D3RenderEngine *D3RenderEngine::re;
@@ -57,6 +59,8 @@ D3RenderEngine::D3RenderEngine() {
 
     m_fCamDist = CAM_DIST;
     m_fCamAngle = CAM_ANGLE;
+    m_fLookAngle = LOOK_ANGLE;
+    m_fDesiredLookAngle = LOOK_ANGLE;
     m_ptPos = Point();
     updateCamPos();
     m_crWorld = Color(0xFF, 0xFF, 0xFF);
@@ -129,6 +133,16 @@ rayIntersects(const Point &ptRay, const Point &ptRayStart, const Box &bxBounds) 
 void
 D3RenderEngine::render() {
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+    //Update look direction
+    if(m_fDesiredLookAngle < m_fLookAngle - CAM_ROTATE_SPEED) {
+        m_fLookAngle -= CAM_ROTATE_SPEED;
+    } else if(m_fDesiredLookAngle > m_fLookAngle + CAM_ROTATE_SPEED) {
+        m_fLookAngle += CAM_ROTATE_SPEED;
+    } else {
+        m_fLookAngle = m_fDesiredLookAngle;
+    }
 
     prepCamera();
 
@@ -335,9 +349,16 @@ D3RenderEngine::prepCamera() {
     enableCameraMode();
     glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
+
+	//Calculate the up vector
+	Point ptLookDir = m_ptPos - m_ptCamPos;
+	Point ptRight = cross(ptLookDir, Point(0.f, 1.f, 0.f));
+	Point ptUp = cross(ptRight, ptLookDir);
+
+	//Direct the camera
     gluLookAt(m_ptCamPos.x, m_ptCamPos.y, m_ptCamPos.z, //Camera position
               m_ptPos.x,    m_ptPos.y,    m_ptPos.z,             //Look at this coord
-              0,            1,            -1);                   //Up vector
+              ptUp.x,       ptUp.y,       ptUp.z);               //Up vector
 }
 
 void
@@ -478,9 +499,9 @@ D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase
 
 void
 D3RenderEngine::updateCamPos() {
-    m_ptCamPos = Point(m_ptPos.x,
+    m_ptCamPos = Point(m_ptPos.x + m_fCamDist * cos(m_fCamAngle) * cos(m_fLookAngle),
                        m_ptPos.y + m_fCamDist * sin(m_fCamAngle),
-                       m_ptPos.z + m_fCamDist * cos(m_fCamAngle));
+                       m_ptPos.z + m_fCamDist * cos(m_fCamAngle) * sin(m_fLookAngle));
 }
 
 

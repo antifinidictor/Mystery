@@ -9,8 +9,11 @@ using namespace std;
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
 #define WALK_FORCE 0.5f
+#define SPRINT_FORCE 0.8f
 #define SPELL_DURATION 300
 #define ANIM_TIMER_MAX 3
+#define SPRINT_ANIM_TIMER_MAX 1
+#define SECTION (M_PI / 4)
 
 enum PlayerAnims {
     PANIM_STANDING = 0,     //1 frame
@@ -36,7 +39,7 @@ Player::Player(uint uiId, const Point &ptPos)
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pRenderModel  = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
 
-    dx = dy = 0;
+    m_iStrafeSpeed = m_iForwardSpeed = 0;
     m_fDeltaPitch = m_fDeltaZoom = 0.f;
     m_iAnimState = m_iAnimTimer = 0;
     m_iDirection = SOUTH;
@@ -49,6 +52,15 @@ Player::Player(uint uiId, const Point &ptPos)
     //PWE::get()->addListener(this, ON_BUTTON_INPUT);
 
     m_pCurSpell = NULL;
+
+
+    m_fEndClimbHeight = 0.f;
+    m_fStartClimbHeight = 0.f;
+    m_ptClimbShift = Point();
+    m_uiClimbObjCmdlId = 0;
+    m_uiClimbObjId = 0;
+    m_bCanClimb = false;
+    m_bSprinting = false;
 
     m_uiHealth = 10;
     m_uiMaxHealth = 20;
@@ -139,7 +151,7 @@ Player::callBack(uint cID, void *data, uint uiEventId) {
         if(!m_bFirst) {
             GameManager::get()->callBack(getId(), data, ON_AREA_FADE_IN);
         }
-        dx = dy = 0;
+        m_iStrafeSpeed = m_iForwardSpeed = 0;
         m_bMouseDown = false;
 
         ContainerRenderModel *panel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_TOPBAR);
@@ -191,8 +203,8 @@ Player::updateNormal(uint time) {
         //Move according to the mouse
         mov = ptMouse - m_pPhysicsModel->getPosition();
         mov.y = 0.f;
-        dx = mov.x;
-        dy = mov.z;
+        m_iStrafeSpeed = mov.x;
+        m_iForwardSpeed = mov.z;
 
         //Distance from mouse has some effect on speed
         float scale = mov.magnitude() / 1.f;
@@ -201,45 +213,47 @@ Player::updateNormal(uint time) {
         mov *= scale;
 
         //Player faces mouse
-        float theta = atan2(dx, dy);
-        if(theta > 3 * M_PI / 4.f || theta < -3 * M_PI / 4.f) {
-            m_iDirection = NORTH;
-        } else if(theta > M_PI / 4.f && theta < 3 * M_PI / 4.f) {
-            m_iDirection = EAST;
-        } else if(theta > -M_PI / 4.f && theta < M_PI / 4.f) {
-            m_iDirection = SOUTH;
-        } else {
-            m_iDirection = WEST;
+        float fLookAngle = D3RE::get()->getLookAngle();
+        float theta = atan2(mov.z, mov.x) - fLookAngle;
+        m_iDirection = (int)floor((theta + SECTION / 2.f) / SECTION) + 4;
+        if(m_iDirection < 1) {
+            m_iDirection += NUM_CARDINAL_DIRECTIONS;
+        } else if(m_iDirection >= NUM_CARDINAL_DIRECTIONS) {
+            m_iDirection -= NUM_CARDINAL_DIRECTIONS;
         }
-    } else {
+    } else if(m_iStrafeSpeed != 0 || m_iForwardSpeed != 0) {
         //Move according to the movement keys
-        mov = Point(dx, 0 ,dy);
+        float fLookAngle = D3RE::get()->getLookAngle();
+        mov = Point(
+            m_iForwardSpeed * cos(fLookAngle) - m_iStrafeSpeed * sin(-fLookAngle),
+            0,
+            m_iForwardSpeed * sin(fLookAngle) - m_iStrafeSpeed * cos(-fLookAngle)
+        );
         mov.normalize();
 
         //Player faces direction of arrow keys
-        if(dx > 0 && dy == 0) {
-            m_iDirection = EAST;
-        } else if(dx < 0 && dy == 0) {
-            m_iDirection = WEST;
-        } else if(dx == 0 && dy > 0) {
-            m_iDirection = SOUTH;
-        } else if(dx == 0 && dy < 0) {
-            m_iDirection = NORTH;
+        float theta = atan2(mov.z, mov.x) - fLookAngle;
+        m_iDirection = (int)floor((theta + SECTION / 2.f) / SECTION) + 4;
+        if(m_iDirection < 1) {
+            m_iDirection += NUM_CARDINAL_DIRECTIONS;
+        } else if(m_iDirection >= NUM_CARDINAL_DIRECTIONS) {
+            m_iDirection -= NUM_CARDINAL_DIRECTIONS;
         }
     }
-    m_pPhysicsModel->applyForce(mov * WALK_FORCE);
+    float fSpeed = m_bSprinting ? SPRINT_FORCE : WALK_FORCE;
+    m_pPhysicsModel->applyForce(mov * fSpeed);
 
     //Camera adjustment
     D3RE::get()->adjustCamAngle(m_fDeltaPitch);
     D3RE::get()->adjustCamDist(m_fDeltaZoom);
 
     m_pRenderModel->setFrameW(m_iDirection);
-    if(dx == 0 && dy == 0) {
+    if(m_iStrafeSpeed == 0 && m_iForwardSpeed == 0) {
         m_pRenderModel->setFrameH(PANIM_STANDING);
         m_iAnimTimer = -1;
     } else {
         if(m_iAnimTimer < 0) {
-            m_iAnimTimer = ANIM_TIMER_MAX;
+            m_iAnimTimer = m_bSprinting ? SPRINT_ANIM_TIMER_MAX : ANIM_TIMER_MAX;
             m_iAnimState = ((m_iAnimState + 1) % 4);
             m_pRenderModel->setFrameH(m_iAnimState + m_uiAnimFrameStart);
 #if 1
@@ -329,6 +343,7 @@ Player::updateClimbingTrans(uint time) {
 
         if(m_iAnimState > 8) {
             m_eState = PLAYER_NORMAL;
+            m_bCanClimb = false;
             if(obj == NULL) {
                 m_pPhysicsModel->setSurface(NULL);
             } else {
@@ -389,6 +404,8 @@ Player::upateHud() {
     SpellItem *item = m_pHud->getCurSpell();
     if(m_bCanClimb) {
         label->updateText("Climb");
+    } else if(m_iStrafeSpeed != 0.f || m_iForwardSpeed != 0.f || m_bMouseDown) {
+        label->updateText("Sprint");
     } else if(item != NULL && m_pCurSpell == NULL) {
         label->updateText("Cast");
     } else if(m_pCurSpell != NULL && m_pCurSpell->getStatus() != SPELL_READY && m_pCurSpell->getStatus() != SPELL_ACTIVE) {
@@ -398,25 +415,16 @@ Player::upateHud() {
     } else if(m_pCurSpell != NULL) {
         label->updateText("Dispell");
     } else {
-        label->updateText("");
+        label->updateText("Look");
     }
 }
 
 void
 Player::handleButtonNormal(InputData* data) {
-    //Start casting if we don't already have a spell running
-    if(data->getInputState(IN_CAST) && data->hasChanged(IN_CAST)) {
-        //Determine possible courses of action
-        if(m_bCanClimb) {
-            startClimbing();
-        } else {
-            startCasting(); //Tries to start casting, cancels existing spell if any
-        }
-    }
     m_bMouseDown = data->getInputState(IN_SELECT);
     if(!m_bMouseDown) {
-        dx = 0;
-        dy = 0;
+        m_iStrafeSpeed = 0;
+        m_iForwardSpeed = 0;
     }
 
     if(!data->getInputState(IN_TOGGLE_DEBUG_MODE) && data->hasChanged(IN_TOGGLE_DEBUG_MODE)) {
@@ -432,7 +440,7 @@ Player::handleButtonNormal(InputData* data) {
         } else {
             m_fDeltaPitch = 0.f;
         }
-        dy = 0;
+        m_iForwardSpeed = 0;
 
         m_fDeltaZoom = 0.f;
     } else if(data->getInputState(IN_SHIFT)) {
@@ -443,33 +451,54 @@ Player::handleButtonNormal(InputData* data) {
         } else {
             m_fDeltaZoom = 0.f;
         }
-        dy = 0;
+        m_iForwardSpeed = 0;
 
         m_fDeltaPitch = 0.f;
     } else {
         if(data->getInputState(IN_NORTH)) {
-            dy = -1;
+            m_iForwardSpeed = -1;
         } else if(data->getInputState(IN_SOUTH)) {
-            dy = 1;
+            m_iForwardSpeed = 1;
         } else {
-            dy = 0;
+            m_iForwardSpeed = 0;
         }
         m_fDeltaZoom = m_fDeltaPitch = 0.f;
     }
 
     if(data->getInputState(IN_WEST)) {
-        dx = -1;
+        m_iStrafeSpeed = -1;
     } else if(data->getInputState(IN_EAST)) {
-        dx = 1;
+        m_iStrafeSpeed = 1;
     } else {
-        dx = 0;
+        m_iStrafeSpeed = 0;
     }
 
+    //Start casting if we don't already have a spell running
+    if(data->getInputState(IN_CAST) && data->hasChanged(IN_CAST)) {
+        //Determine possible courses of action
+        if(m_bCanClimb) {
+            startClimbing();
+        } else if(m_iStrafeSpeed != 0.f || m_iForwardSpeed != 0.f || m_bMouseDown) {
+            m_bSprinting = true;
+        } else {
+            startCasting(); //Tries to start casting, cancels existing spell if any
+        }
+    } else if(!data->getInputState(IN_CAST) && data->hasChanged(IN_CAST)) {
+        m_bSprinting = false;
+    }
+
+    float fCurLookAngle = D3RE::get()->getLookAngle();
+    float fCurDesiredLookAngle = D3RE::get()->getDesiredLookAngle();
+    if(data->getInputState(IN_ROTATE_LEFT) && data->hasChanged(IN_ROTATE_LEFT) && fCurDesiredLookAngle <= fCurLookAngle) {
+        D3RE::get()->adjustLookAngle(M_PI / 2);
+    } else  if(data->getInputState(IN_ROTATE_RIGHT) && data->hasChanged(IN_ROTATE_RIGHT) && fCurDesiredLookAngle >= fCurLookAngle) {
+        D3RE::get()->adjustLookAngle(-M_PI / 2);
+    }
 }
 
 void
 Player::handleButtonCasting(InputData* data) {
-    //If the spell became invalid, create a new one
+    //If the spell became invalid, try to create a new one
     if(m_pCurSpell == NULL) {
         SpellItem *item = m_pHud->getCurSpell();
         if(item != NULL) {
@@ -505,6 +534,14 @@ Player::handleButtonCasting(InputData* data) {
        && m_pCurSpell != NULL && GameManager::get()->getTopVolume() != NULL) {
         m_pCurSpell->addPoint(GameManager::get()->getTopVolume(), D3RE::get()->getMousePos(), false);
         m_uiAnimFrameStart = PANIM_THROWING;
+    }
+
+    float fCurLookAngle = D3RE::get()->getLookAngle();
+    float fCurDesiredLookAngle = D3RE::get()->getDesiredLookAngle();
+    if(data->getInputState(IN_ROTATE_LEFT) && data->hasChanged(IN_ROTATE_LEFT) && fCurDesiredLookAngle <= fCurLookAngle) {
+        D3RE::get()->adjustLookAngle(M_PI / 2);
+    } else  if(data->getInputState(IN_ROTATE_RIGHT) && data->hasChanged(IN_ROTATE_RIGHT) && fCurDesiredLookAngle >= fCurLookAngle) {
+        D3RE::get()->adjustLookAngle(-M_PI / 2);
     }
 }
 
@@ -602,15 +639,17 @@ Player::startClimbing() {
     //Physics bludgeoning
     setFlag(TPE_FLOATING, true);
     //setFlag(TPE_STATIC, true);
+    m_bSprinting = false;
 }
 
 void
 Player::startCasting() {
     if(m_pCurSpell == NULL) {
+        m_eState = PLAYER_CASTING;
+        m_pRenderModel->setFrameH(PANIM_STANDING);
+
         SpellItem *item = m_pHud->getCurSpell();
         if(item != NULL) {
-            m_eState = PLAYER_CASTING;
-            m_pRenderModel->setFrameH(PANIM_STANDING);
             m_pCurSpell = item->createSpell(SPELL_DURATION, 0.8f);
 
             //Play appropriate sound
@@ -619,4 +658,5 @@ Player::startCasting() {
     } else {
         m_pCurSpell->deactivate();
     }
+    m_bSprinting = false;
 }

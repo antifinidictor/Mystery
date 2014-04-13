@@ -74,6 +74,8 @@ enum InputID {
     IN_EAST,
     IN_SOUTH,
     IN_WEST,
+    IN_ROTATE_LEFT,     //Rotate the screen left
+    IN_ROTATE_RIGHT,    //Rotate the screen right
     IN_SELECT,
     IN_RCLICK,
     IN_TOGGLE_DEBUG_MODE,
@@ -158,6 +160,7 @@ struct ItemDropEvent {
     Item *item;
     uint itemOldIndex;
     uint itemNewIndex;
+    float distance;
 };
 
 struct ItemUseEvent {

@@ -13,12 +13,14 @@ enum ElementItemIds {
     ITEM_ELEMENT_AIR,
     ITEM_ELEMENT_FIRE,
     ITEM_ELEMENT_WATER,
+    ITEM_ELEMENT_TIME,
     ITEM_NUM_ELEMENTS
 };
 
 enum SpellItemIds {
     ITEM_SPELL_CYCLIC = ITEM_NUM_ELEMENTS,
     ITEM_SPELL_FLOW,
+    ITEM_SPELL_VORTEX,
     ITEM_NUM_SPELLS
 };
 
@@ -27,8 +29,8 @@ enum GeneralItemIds {
     ITEM_NUM_ITEMS
 };
 
-#define NUM_SPELL_ITEMS     2
-#define NUM_ELEMENT_ITEMS   4
+#define NUM_SPELL_ITEMS     (ITEM_NUM_SPELLS - ITEM_NUM_ELEMENTS)
+#define NUM_ELEMENT_ITEMS   (ITEM_NUM_ELEMENTS - ITEM_ELEMENT_EARTH)
 #define NUM_GENERAL_ITEMS   17
 
 #define CUR_GENERIC_ITEM_INDEX (NUM_GENERAL_ITEMS + 1)
@@ -86,14 +88,9 @@ private:
 
     void removeScheduledItems();
 
-    float indexToItemX(uint index);
-    float indexToItemY(uint index);
-
-    float indexToSpellX(uint index);
-    float indexToSpellY(uint index);
-
-    float indexToElementX(uint index);
-    float indexToElementY(uint index);
+    Rect indexToItemRect(uint index);
+    Rect indexToSpellRect(uint index);
+    Rect indexToElementRect(uint index);
 
     uint m_uiId;
 

@@ -5,6 +5,7 @@
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
 #define WALK_FORCE 0.5f
 #define ANIM_TIMER_MAX 3
+#define SECTION (M_PI / 4)
 
 enum NpcAnim {
     NPC_STANDING,
@@ -29,6 +30,7 @@ Character::Character(uint uiId, uint uiImageId, Point ptPos) {
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pRenderModel = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
     m_pRenderModel->setFrameW(SOUTH);
+    m_iDirection = SOUTH;
     m_pCurAction = new WanderAction(this);//NoAction();
     m_pPhysicsModel->setListener(m_pCurAction);
 
@@ -89,15 +91,12 @@ Character::moveTowards(const Point &pt, float speed) {
     m_pPhysicsModel->applyForce(ptDiff * WALK_FORCE * speed);
 
     //Face the correct direction
-    float theta = atan2(ptDiff.x, ptDiff.z);
-    if(theta > 3 * M_PI / 4.f || theta < -3 * M_PI / 4.f) {
-        m_iDirection = NORTH;
-    } else if(theta > M_PI / 4.f && theta < 3 * M_PI / 4.f) {
-        m_iDirection = EAST;
-    } else if(theta > -M_PI / 4.f && theta < M_PI / 4.f) {
-        m_iDirection = SOUTH;
-    } else {
-        m_iDirection = WEST;
+    float theta = atan2(ptDiff.z, ptDiff.x) - D3RE::get()->getLookAngle();
+    m_iDirection = (int)floor((theta + SECTION / 2.f) / SECTION) + 4;
+    if(m_iDirection < 1) {
+        m_iDirection += NUM_CARDINAL_DIRECTIONS;
+    } else if(m_iDirection >= NUM_CARDINAL_DIRECTIONS) {
+        m_iDirection -= NUM_CARDINAL_DIRECTIONS;
     }
 
     m_pRenderModel->setFrameW(m_iDirection);

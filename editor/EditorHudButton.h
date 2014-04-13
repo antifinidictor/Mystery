@@ -12,7 +12,7 @@
 
 class EditorHudButton : public D3HudRenderModel, public Listener {
 public:
-    EditorHudButton(RenderModel *parent, uint uiEventId, const std::string &label, const Point &ptPos, float textSize = 1.f)
+    EditorHudButton(Positionable *parent, uint uiEventId, const std::string &label, const Point &ptPos, float textSize = 1.f)
         : D3HudRenderModel(IMG_BUTTON,
                            Rect(ptPos.x, ptPos.y, BUTTON_WIDTH, BUTTON_HEIGHT),
                            label,
@@ -77,7 +77,7 @@ private:
         return status;
     }
 
-    RenderModel *m_pParent;
+    Positionable *m_pParent;
 
     uint m_uiId, m_uiEventId, m_uiHudId;
     static uint s_uiHudId;

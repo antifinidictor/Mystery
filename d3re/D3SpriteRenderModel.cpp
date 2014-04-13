@@ -50,7 +50,8 @@ D3SpriteRenderModel::render(RenderEngine *re) {
           fTexBottom = m_iFrameH * 1.0F / pImage->m_iNumFramesH + m_iRepsH * 1.0F / pImage->m_iNumFramesH;
 
     Point ptPos = m_pParent->getPosition();
-    glTranslatef((ptPos.x + m_rcDrawArea.x), (ptPos.y + m_rcDrawArea.y), (ptPos.z));
+    glTranslatef((ptPos.x), (ptPos.y), (ptPos.z));
+    glRotatef(-D3RE::get()->getLookAngle() * 180 / M_PI + 90, 0.f, 1.f, 0.f);
 
     //Bind the texture to which subsequent calls refer to
     glBindTexture( GL_TEXTURE_2D, pImage->m_uiTexture );
@@ -61,19 +62,19 @@ D3SpriteRenderModel::render(RenderEngine *re) {
         glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);
         //Top-left vertex (corner)
         glTexCoord2f(fTexLeft, fTexTop);
-        glVertex3f(0.f, m_rcDrawArea.h, 0.f);
+        glVertex3f(m_rcDrawArea.x, m_rcDrawArea.y + m_rcDrawArea.h, 0.f);
 
         //Top-right vertex (corner)
         glTexCoord2f(fTexRight, fTexTop);
-        glVertex3f(m_rcDrawArea.w, m_rcDrawArea.h, 0.f);
+        glVertex3f(m_rcDrawArea.x + m_rcDrawArea.w, m_rcDrawArea.y + m_rcDrawArea.h, 0.f);
 
         //Bottom-right vertex (corner)
         glTexCoord2f(fTexRight, fTexBottom);
-        glVertex3f(m_rcDrawArea.w, 0.f, 0.f);
+        glVertex3f(m_rcDrawArea.x + m_rcDrawArea.w, m_rcDrawArea.y, 0.f);
 
         //Bottom-left vertex (corner)
         glTexCoord2f(fTexLeft, fTexBottom);
-        glVertex3f(0.f, 0.f, 0.f);
+        glVertex3f(m_rcDrawArea.x, m_rcDrawArea.y, 0.f);
     glEnd();
     //billboardEnd();
     //glDepthMask(GL_TRUE);

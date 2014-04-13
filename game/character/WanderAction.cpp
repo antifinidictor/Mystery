@@ -30,11 +30,13 @@ WanderAction::update(unsigned int time) {
         if(m_uiTimer > WAIT_LENGTH) {
             m_eState = WANDER_WALKING;
             m_uiTimer = 0;
+
             int xdir, zdir;
             do {    //Should rarely execute more than once
                 xdir = (rand() % 3) - 1;
                 zdir = (rand() % 3) - 1;
             } while(xdir == zdir && xdir == 0);
+
             m_ptDest = m_pActor->getPhysicsModel()->getPosition()
                 + Point(xdir * 3.f, 0.f, zdir * 3.f);
         } else {

@@ -29,7 +29,7 @@ public:
 private:
     void renderFace(uint texId, const Point &tl, const Point &tr, const Point &bl, const Point &br);
 
-    uint m_aTextures[6];    //One for each side
+    uint m_aTextures[NUM_DIRECTIONS];    //One for each side
     Box m_bxVolume;
 
     Color m_crColor;

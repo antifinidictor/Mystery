@@ -43,6 +43,7 @@ DraggableItem::~DraggableItem()
 void
 DraggableItem::onStartDragging() {
     m_ptSnapPosition = m_pParent->getPosition();
+    m_fTotalDragDistance = 0.f;
     //printf("Picked up at (%f,%f)\n", m_ptSnapPosition.x, m_ptSnapPosition.y);
 }
 
@@ -60,6 +61,7 @@ DraggableItem::onEndDragging() {
             event.item = m_pItem;
             event.itemOldIndex = m_uiIndex;
             event.itemNewIndex = index;
+            event.distance = m_fTotalDragDistance;
 
             //Ask the listener for permission
             int retCode = m_pDropListener->callBack(getId(), &event, ON_ITEM_DROPPED);
@@ -78,6 +80,13 @@ DraggableItem::onEndDragging() {
     }
     //printf("Dropped at (%f,%f) (snap was (%f,%f))\n", ptCurPos.x, ptCurPos.y, m_ptSnapPosition.x, m_ptSnapPosition.y);
     onFollow(m_ptSnapPosition - ptCurPos);
+}
+
+
+void
+DraggableItem::onFollow(const Point &diff) {
+    Draggable::onFollow(diff);
+    m_fTotalDragDistance += diff.magnitude();
 }
 
 

@@ -9,7 +9,7 @@ D3PrismRenderModel::D3PrismRenderModel(Positionable *parent, Box bxVolume) {
     m_bxVolume = bxVolume;
     m_pParent = parent;
 
-    for(uint i = 0; i < 6; ++i) {
+    for(uint i = 0; i < NUM_DIRECTIONS; ++i) {
         m_aTextures[i] = 0;
     }
 

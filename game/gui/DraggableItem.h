@@ -18,7 +18,7 @@ public:
     virtual uint getId() { return m_pItem->getId(); }
 
     //Draggable functions
-    //virtual void onFollow(const Point &diff);
+    virtual void onFollow(const Point &diff);
     virtual void onStartDragging();
     virtual void onEndDragging();
     virtual void onMouseIn();
@@ -36,6 +36,7 @@ private:
     Point m_ptSnapPosition;
     Listener *m_pDropListener;
     uint m_uiIndex;
+    float m_fTotalDragDistance;
 };
 
 #endif // DRAGGABLEITEM_H

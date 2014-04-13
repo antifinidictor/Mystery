@@ -75,7 +75,7 @@ private:
     D3SpriteRenderModel *m_pRenderModel;
     TimePhysicsModel   *m_pPhysicsModel;
 
-    float dx, dy;
+    float m_iStrafeSpeed, m_iForwardSpeed;
     int m_iDirection;
     int m_iAnimTimer, m_iAnimState;
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas
@@ -94,6 +94,8 @@ private:
     uint m_uiClimbObjCmdlId;
     uint m_uiClimbObjId;    //ID of the object player is climbing up
     bool m_bCanClimb;
+
+    bool m_bSprinting;
 
     uint m_uiHealth;
     uint m_uiMaxHealth;

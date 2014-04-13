@@ -57,6 +57,10 @@ public:
 
     void adjustCamDist(float delta);
     void adjustCamAngle(float delta);
+    void setLookAngle(float fLookAngle) { m_fDesiredLookAngle = fLookAngle; }
+    void adjustLookAngle(float fLookAngle) { m_fDesiredLookAngle += fLookAngle; }
+    float getLookAngle() { return m_fLookAngle; }
+    float getDesiredLookAngle() { return m_fDesiredLookAngle; }
 
     void prepCamera();
     void prepHud();
@@ -110,6 +114,7 @@ private:
     Color m_crWorld;
     float m_fColorWeight;
     float m_fCamDist, m_fCamAngle;
+    float m_fLookAngle, m_fDesiredLookAngle;    //Angle at which the camera looks
     int m_iMouseX, m_iMouseY;
     uint m_uiWidth, m_uiHeight;
 
