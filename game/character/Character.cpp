@@ -5,7 +5,6 @@
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
 #define WALK_FORCE 0.5f
 #define ANIM_TIMER_MAX 3
-#define SECTION (M_PI / 4)
 
 enum NpcAnim {
     NPC_STANDING,
@@ -91,15 +90,11 @@ Character::moveTowards(const Point &pt, float speed) {
     m_pPhysicsModel->applyForce(ptDiff * WALK_FORCE * speed);
 
     //Face the correct direction
-    float theta = atan2(ptDiff.z, ptDiff.x) - D3RE::get()->getLookAngle();
-    m_iDirection = (int)floor((theta + SECTION / 2.f) / SECTION) + 4;
-    if(m_iDirection < 1) {
-        m_iDirection += NUM_CARDINAL_DIRECTIONS;
-    } else if(m_iDirection >= NUM_CARDINAL_DIRECTIONS) {
-        m_iDirection -= NUM_CARDINAL_DIRECTIONS;
-    }
+    float myAngle = atan2(ptDiff.z, ptDiff.x);
+    float myRelativeAngle = myAngle - D3RE::get()->getLookAngle();
 
-    m_pRenderModel->setFrameW(m_iDirection);
+    m_iDirection = angle2dir(myAngle - M_PI / 2);
+    m_pRenderModel->setFrameW(angle2dir(myRelativeAngle));
 
     //Animate walking
     if(m_iAnimTimer < 0) {

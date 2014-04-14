@@ -322,11 +322,26 @@ int order(const PT &pt1, const PT &pt2) {
 	}
 }
 
+#define SECTION (M_PI / 4)
+
+int angle2dir(float angle) {
+    int dir = (int)floor((angle + SECTION / 2.f) / SECTION) + 4;
+    if(dir < 1) {
+        dir += NUM_CARDINAL_DIRECTIONS;
+    } else if(dir >= NUM_CARDINAL_DIRECTIONS) {
+        dir -= NUM_CARDINAL_DIRECTIONS;
+    }
+    return dir;
+}
+
+double distSq(const PT &ptHere, const PT &ptThere) {
+	return (ptThere.x - ptHere.x) * (ptThere.x - ptHere.x) +
+           (ptThere.y - ptHere.y) * (ptThere.y - ptHere.y) +
+           (ptThere.z - ptHere.z) * (ptThere.z - ptHere.z);
+}
 
 double dist(const PT &ptHere, const PT &ptThere) {
-	return sqrt((ptThere.x - ptHere.x) * (ptThere.x - ptHere.x) +
-				(ptThere.y - ptHere.y) * (ptThere.y - ptHere.y) +
-				(ptThere.z - ptHere.z) * (ptThere.z - ptHere.z));
+	return sqrt(distSq(ptHere, ptThere));
 }
 
 bool equal(PT &pt1, PT &pt2, float offset) {

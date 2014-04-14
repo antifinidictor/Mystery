@@ -13,7 +13,6 @@ using namespace std;
 #define SPELL_DURATION 300
 #define ANIM_TIMER_MAX 3
 #define SPRINT_ANIM_TIMER_MAX 1
-#define SECTION (M_PI / 4)
 
 enum PlayerAnims {
     PANIM_STANDING = 0,     //1 frame
@@ -214,13 +213,12 @@ Player::updateNormal(uint time) {
 
         //Player faces mouse
         float fLookAngle = D3RE::get()->getLookAngle();
-        float theta = atan2(mov.z, mov.x) - fLookAngle;
-        m_iDirection = (int)floor((theta + SECTION / 2.f) / SECTION) + 4;
-        if(m_iDirection < 1) {
-            m_iDirection += NUM_CARDINAL_DIRECTIONS;
-        } else if(m_iDirection >= NUM_CARDINAL_DIRECTIONS) {
-            m_iDirection -= NUM_CARDINAL_DIRECTIONS;
-        }
+        float myAngle = atan2(mov.z, mov.x);
+        float myRelativeAngle = myAngle - fLookAngle;
+
+        //Player direction separate from screen-relative direction
+        m_iDirection = angle2dir(myAngle - M_PI / 2);
+        m_pRenderModel->setFrameW(angle2dir(myRelativeAngle));
     } else if(m_iStrafeSpeed != 0 || m_iForwardSpeed != 0) {
         //Move according to the movement keys
         float fLookAngle = D3RE::get()->getLookAngle();
@@ -232,13 +230,12 @@ Player::updateNormal(uint time) {
         mov.normalize();
 
         //Player faces direction of arrow keys
-        float theta = atan2(mov.z, mov.x) - fLookAngle;
-        m_iDirection = (int)floor((theta + SECTION / 2.f) / SECTION) + 4;
-        if(m_iDirection < 1) {
-            m_iDirection += NUM_CARDINAL_DIRECTIONS;
-        } else if(m_iDirection >= NUM_CARDINAL_DIRECTIONS) {
-            m_iDirection -= NUM_CARDINAL_DIRECTIONS;
-        }
+        float myAngle = atan2(mov.z, mov.x);
+        float myRelativeAngle = myAngle - fLookAngle;
+
+        //Player direction separate from screen-relative direction
+        m_iDirection = angle2dir(myAngle - M_PI / 2);
+        m_pRenderModel->setFrameW(angle2dir(myRelativeAngle));
     }
     float fSpeed = m_bSprinting ? SPRINT_FORCE : WALK_FORCE;
     m_pPhysicsModel->applyForce(mov * fSpeed);
@@ -247,7 +244,6 @@ Player::updateNormal(uint time) {
     D3RE::get()->adjustCamAngle(m_fDeltaPitch);
     D3RE::get()->adjustCamDist(m_fDeltaZoom);
 
-    m_pRenderModel->setFrameW(m_iDirection);
     if(m_iStrafeSpeed == 0 && m_iForwardSpeed == 0) {
         m_pRenderModel->setFrameH(PANIM_STANDING);
         m_iAnimTimer = -1;
@@ -306,23 +302,19 @@ Player::updateCasting(uint time) {
     //    ptMouse = D3RE::get()->getMousePos();
     //}
 
+    //Calculate player look direction
     Point ptPos = m_pPhysicsModel->getPosition();
     Vec3f v3Diff = ptMouse - ptPos;
-    float theta = atan2(v3Diff.x, v3Diff.z);
-    if(theta > 3 * M_PI / 4.f || theta < -3 * M_PI / 4.f) {
-        m_iDirection = NORTH;
-    } else if(theta > M_PI / 4.f && theta < 3 * M_PI / 4.f) {
-        m_iDirection = EAST;
-    } else if(theta > -M_PI / 4.f && theta < M_PI / 4.f) {
-        m_iDirection = SOUTH;
-    } else {
-        m_iDirection = WEST;
-    }
+    float fLookAngle = D3RE::get()->getLookAngle();
+    float myAngle = atan2(v3Diff.z, v3Diff.x);
+    float myRelativeAngle = myAngle - fLookAngle;
+
+    //Player direction separate from screen-relative direction
+    m_iDirection = angle2dir(myAngle - M_PI / 2);
+    m_pRenderModel->setFrameW(angle2dir(myRelativeAngle));
 
     Point ptScreenPos = (ptPos + ptMouse) / 2.f;
     D3RE::get()->moveScreenTo(ptScreenPos);
-
-    m_pRenderModel->setFrameW(m_iDirection);
 }
 
 

@@ -1597,7 +1597,7 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1397372961 source:k:\projects\games\mge\mystery\game\player.cpp
+1397422920 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/tpe.h"
@@ -1608,7 +1608,7 @@
 
 1379968751 AudioEngine.h"
 
-1397075773 k:\projects\games\mge\mystery\game\player.h
+1397375049 k:\projects\games\mge\mystery\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1741,14 +1741,14 @@
 	"ModularEngine.h"
 	"defs.h"
 
-1397370619 k:\projects\games\mge\mystery\mge\defs.h
+1397422378 k:\projects\games\mge\mystery\mge\defs.h
 	<math.h>
 	<stdio.h>
 	<stdarg.h>
 	<vector>
 	<ostream>
 
-1388428333 source:k:\projects\games\mge\mystery\mge\defs.cpp
+1397422674 source:k:\projects\games\mge\mystery\mge\defs.cpp
 	"defs.h"
 
 1376280198 source:k:\projects\games\mge\mystery\ore\edgerendermodel.cpp
@@ -1827,7 +1827,7 @@
 
 1380093195 k:\projects\games\mge\mystery\\mge\audioengine.h
 
-1397370619 k:\projects\games\mge\mystery\\mge\defs.h
+1397422378 k:\projects\games\mge\mystery\\mge\defs.h
 	<math.h>
 	<stdio.h>
 	<stdarg.h>
@@ -14720,7 +14720,7 @@
 	<list>
 	"game/game_defs.h"
 
-1397374843 source:k:\projects\games\mge\mystery\game\character\character.cpp
+1397422892 source:k:\projects\games\mge\mystery\game\character\character.cpp
 	"Character.h"
 	"Action.h"
 	"WanderAction.h"
@@ -15452,11 +15452,11 @@
 1388800002 k:\projects\games\mge\mystery\game\character\action.h
 	"Character.h"
 
-1397374538 source:k:\projects\games\mge\mystery\game\character\wanderaction.cpp
+1397423064 source:k:\projects\games\mge\mystery\game\character\wanderaction.cpp
 	"WanderAction.h"
 	"Character.h"
 
-1388800066 k:\projects\games\mge\mystery\game\character\wanderaction.h
+1397421160 k:\projects\games\mge\mystery\game\character\wanderaction.h
 	"Action.h"
 	"game/game_defs.h"
 
@@ -15647,7 +15647,7 @@
 1397348432 source:k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.cpp
 	"FluidOctree3d.h"
 
-1397348199 k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.h
+1397406866 k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.h
 	"Vorton.h"
 	<map>
 
@@ -15655,9 +15655,16 @@
 	"defs.h"
 	<map>
 
-1397366629 k:\projects\games\mge\mystery\tpe\fluids\vorton.h
+1397425060 k:\projects\games\mge\mystery\tpe\fluids\vorton.h
+	"mgeMath.h"
+	"SpacePartitionedContainer.h"
 	"mge/defs.h"
 
-1397289536 source:k:\projects\games\mge\mystery\tpe\fluids\vorton.cpp
+1397425116 source:k:\projects\games\mge\mystery\tpe\fluids\vorton.cpp
 	"Vorton.h"
+
+1397461006 k:\projects\games\mge\mystery\tpe\fluids\mgemath.h
+
+1397425098 k:\projects\games\mge\mystery\tpe\fluids\spacepartitionedcontainer.h
+	"mge/defs.h"
 

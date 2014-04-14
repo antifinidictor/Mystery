@@ -22,7 +22,7 @@ private:
     bool isNear(const Point &pos, const Point &dest, float discr = 0.1f);
     void handleCollision(HandleCollisionData *data);
 
-    Point m_ptDest;
+    Point m_ptDestDir;
     uint m_uiTimer;
     WanderState m_eState;
 };

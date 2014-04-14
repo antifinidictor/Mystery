@@ -4,7 +4,7 @@
 WanderAction::WanderAction(Character *pActor)
   : Action(pActor)
 {
-    m_ptDest = Point();
+    m_ptDestDir = Point();
     m_uiTimer = rand() % WAIT_LENGTH;
     m_eState = WANDER_WAITING;
 }
@@ -23,7 +23,7 @@ WanderAction::update(unsigned int time) {
             m_uiTimer = 0;
         } else {
             m_uiTimer++;
-            m_pActor->moveTowards(m_ptDest, 0.5f);
+            m_pActor->moveTowards(m_ptDestDir + m_pActor->getPhysicsModel()->getPosition(), 0.5f);
         }
         break;
     case WANDER_WAITING:
@@ -31,14 +31,16 @@ WanderAction::update(unsigned int time) {
             m_eState = WANDER_WALKING;
             m_uiTimer = 0;
 
+            //Use ints to avoid floating point rounding errors
             int xdir, zdir;
             do {    //Should rarely execute more than once
                 xdir = (rand() % 3) - 1;
                 zdir = (rand() % 3) - 1;
             } while(xdir == zdir && xdir == 0);
 
-            m_ptDest = m_pActor->getPhysicsModel()->getPosition()
-                + Point(xdir * 3.f, 0.f, zdir * 3.f);
+            m_ptDestDir.x = xdir;
+            m_ptDestDir.z = zdir;
+
         } else {
             m_uiTimer++;
         }
@@ -57,20 +59,33 @@ WanderAction::callBack(uint cID, void *data, uint uiEventId) {
 }
 void
 WanderAction::handleCollision(HandleCollisionData *data) {
-    if(m_eState == WANDER_WALKING && (data->iDirection & BIT(m_pActor->getDirection()))) {
+    //You can collide and bounce with a wall in any of the three local cardinal directions
+    uint uiMyDirection = m_pActor->getDirection();
+    uint uiMyLeft = (uiMyDirection + 1) % NUM_CARDINAL_DIRECTIONS;
+    uint uiMyRight = (uiMyDirection + NUM_CARDINAL_DIRECTIONS - 1) % NUM_CARDINAL_DIRECTIONS;
+    uint uiMyCollisionDirs = BIT(uiMyDirection) | BIT(uiMyLeft) | BIT(uiMyRight);
+    uint uiEquivCollisionDirs = data->iDirection & uiMyCollisionDirs;
+
+    //Did we collide in any of those directions?
+    if(m_eState == WANDER_WALKING && (uiEquivCollisionDirs != 0)) {
+        //Unbit the direction: Find the first nonzero bit
+        int dirBit;
+        for(dirBit = 0; dirBit < 32; ++dirBit) {
+            if(BIT(dirBit) & uiEquivCollisionDirs) {
+                break;
+            }
+        }
         //"Bounce" away from collision object
-        switch(m_pActor->getDirection()) {
-        case NORTH:
-            m_ptDest.z += 6.f;
-            break;
+        switch(dirBit) {//m_pActor->getDirection()) {
         case SOUTH:
-            m_ptDest.z -= 6.f;
-            break;
-        case WEST:
-            m_ptDest.x += 6.f;
+        case NORTH:
+            m_ptDestDir.z *= -1.f;
             break;
         case EAST:
-            m_ptDest.x += -6.f;
+        case WEST:
+            m_ptDestDir.x *= -1.f;
+            break;
+        default:
             break;
         }
     }

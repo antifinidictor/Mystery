@@ -244,6 +244,8 @@
 		<Unit filename="game/spells/SourceSinkSpell.cpp" />
 		<Unit filename="game/spells/SourceSinkSpell.h" />
 		<Unit filename="game/spells/Spell.h" />
+		<Unit filename="game/spells/VortexSpell.cpp" />
+		<Unit filename="game/spells/VortexSpell.h" />
 		<Unit filename="game/spells/WaterElementalVolume.cpp" />
 		<Unit filename="game/spells/WaterElementalVolume.h" />
 		<Unit filename="game/world/AreaLinkObject.cpp" />
@@ -271,6 +273,7 @@
 		<Unit filename="mge/Image.h" />
 		<Unit filename="mge/ModularEngine.cpp" />
 		<Unit filename="mge/ModularEngine.h" />
+		<Unit filename="mge/Octree3d.h" />
 		<Unit filename="mge/PhysicsEngine.h" />
 		<Unit filename="mge/PhysicsModel.h" />
 		<Unit filename="mge/PixelMap.cpp" />
@@ -289,6 +292,12 @@
 		<Unit filename="tpe/TimePhysicsEngine.h" />
 		<Unit filename="tpe/TimePhysicsModel.cpp" />
 		<Unit filename="tpe/TimePhysicsModel.h" />
+		<Unit filename="tpe/fluids/FluidOctree3d.cpp" />
+		<Unit filename="tpe/fluids/FluidOctree3d.h" />
+		<Unit filename="tpe/fluids/SpacePartitionedContainer.h" />
+		<Unit filename="tpe/fluids/Vorton.cpp" />
+		<Unit filename="tpe/fluids/Vorton.h" />
+		<Unit filename="tpe/fluids/mgeMath.h" />
 		<Unit filename="tpe/tpe.h" />
 		<Unit filename="windows/pgl.h">
 			<Option target="Debug" />

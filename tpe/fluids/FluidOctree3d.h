@@ -5,6 +5,10 @@
 #include "Vorton.h"
 #include <map>
 
+/*
+ * Design thanks to Intel's fluid physics for games article
+ */
+
 class FluidOctree3d
 {
 public:
