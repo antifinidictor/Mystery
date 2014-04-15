@@ -19,7 +19,7 @@ public:
     static TextDisplay *get() { return m_pInstance; }
 
     void registerText(const std::string &text, OnTextDoneCallback cb, float fRate = DEFAULT_RATE);
-    void update(uint time);
+    void update(float fDeltaTime);
 
 private:
     TextDisplay();

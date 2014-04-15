@@ -32,7 +32,7 @@ public:
     virtual uint getId() { return m_uiId; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
-    virtual bool update(uint time)              { return false; }
+    virtual bool update(float fDeltaTime)              { return false; }
     virtual uint getType() { return TYPE_GENERAL; }
     virtual const std::string getClass()        { return getClassName(); }
     static const std::string getClassName()     { return "Wall"; }

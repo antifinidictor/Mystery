@@ -25,7 +25,7 @@ public:
     virtual void write(boost::property_tree::ptree &pt, const std::string &keyBase);
 
     //General
-    virtual bool update(uint time);
+    virtual bool update(float fDeltaTime);
 
     virtual uint getId()                        { return m_uiId; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
@@ -57,9 +57,9 @@ private:
         NUM_PLAYER_ACTIONS
     };
 
-    void updateNormal(uint time);
-    void updateCasting(uint time);
-    void updateClimbingTrans(uint time);
+    void updateNormal(float fDeltaTime);
+    void updateCasting(float fDeltaTime);
+    void updateClimbingTrans(float fDeltaTime);
     void updateSpells();
     void upateHud();
 

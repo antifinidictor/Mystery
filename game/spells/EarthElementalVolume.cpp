@@ -75,7 +75,7 @@ EarthElementalVolume::write(boost::property_tree::ptree &pt, const std::string &
     pt.put(keyBase + ".density", m_pPhysicsModel->getDensity());
 }
 bool
-EarthElementalVolume::update(uint time) {
+EarthElementalVolume::update(float fDeltaTime) {
     Point ptMousePos = D3RE::get()->getMousePos();
     if(ptInXZRect(ptMousePos, m_pPhysicsModel->getCollisionVolume())) {
         //m_pRenderModel->setColor(Color(0x00,0xFF,0xFF));

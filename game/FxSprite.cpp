@@ -26,7 +26,7 @@ FxSprite::~FxSprite() {
 }
 
 bool
-FxSprite::update(uint time) {
+FxSprite::update(float fDeltaTime) {
     //Animate
     uint curFrame = (m_iMaxTimeToLive - m_iTimeToLive) * m_uiMaxFramesH / m_iMaxTimeToLive;
     m_pRenderModel->setFrameH(curFrame);

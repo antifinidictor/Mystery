@@ -47,7 +47,7 @@ EditorManager::write(boost::property_tree::ptree &pt, const std::string &keyBase
 }
 
 bool
-EditorManager::update(uint time) {
+EditorManager::update(float fDeltaTime) {
     //Handle events
     while(!m_qEvents.empty()) {
         uint eventId = m_qEvents.front();

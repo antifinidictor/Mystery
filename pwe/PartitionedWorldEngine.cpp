@@ -88,24 +88,24 @@ PartitionedWorldEngine::reserveId(uint id) {
 }
 
 void
-PartitionedWorldEngine::update(uint time) {
+PartitionedWorldEngine::update(float fDeltaTime) {
     list<GameObject*> lsHasMoved;
 
     //Manager is always updated
     if(m_pManagerObject != NULL) {
-        m_pManagerObject->update(time);
+        m_pManagerObject->update(fDeltaTime);
     }
 
     if(m_eState == PWE_RUNNING) {   //State can be disabled
         //Update the physics engine clock
-        pe->update(time);
+        pe->update(fDeltaTime);
 
         //Update the world (including non-physics updates)
         for(map<uint, GameObject*>::iterator it = m_pCurArea->m_mCurArea.begin();
                 it != m_pCurArea->m_mCurArea.end(); ++it) {
 
             //Update non-physics bit first
-            if(it->second->update(time)) {
+            if(it->second->update(fDeltaTime)) {
                 m_lsObjsToDelete.push_back(pair<uint,uint>(it->second->getId(), m_uiCurArea));
                 /*
                 //This object requested that it be removed

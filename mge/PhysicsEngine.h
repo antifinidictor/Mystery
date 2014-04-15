@@ -8,7 +8,7 @@ class GameObject;
 class PhysicsEngine {
 public:
     virtual ~PhysicsEngine() {}
-    virtual void update(uint time) = 0;
+    virtual void update(float fDeltaTime) = 0;
 
     virtual bool applyPhysics(GameObject *obj) = 0;
     virtual void applyPhysics(GameObject *obj1, GameObject *obj2) = 0;

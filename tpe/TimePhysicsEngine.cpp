@@ -22,10 +22,10 @@ TimePhysicsEngine::~TimePhysicsEngine() {
 
 
 
-void TimePhysicsEngine::update(uint time) {
+void TimePhysicsEngine::update(float fDeltaTime) {
     //m_uiDeltaTime = time - m_uiLastUpdated;
     m_uiDeltaTime = 12;
-    m_uiLastUpdated = time;
+    //m_uiLastUpdated = time;
 }
 
 bool TimePhysicsEngine::applyPhysics(GameObject *obj) {

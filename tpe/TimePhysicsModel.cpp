@@ -60,9 +60,9 @@ void TimePhysicsModel::applyForce(const Point &ptForce) {
 }
 
 
-void TimePhysicsModel::update(uint uiDeltaTime) {
+void TimePhysicsModel::update(float fDeltaTime) {
     //The time divisor can be affected by other objects
-    float dt = uiDeltaTime / m_fTimeDivisor;
+    float dt = fDeltaTime / m_fTimeDivisor;
 
     //Move the physics model
     m_ptLastMotion = Point();

@@ -31,6 +31,8 @@
 #include "mge/PixelMap.h"
 #include "game/gui/TextDisplay.h"
 #include "game/gui/DraggableHud.h"
+#include "tpe/fluids/mgeMath.h"
+#include "tpe/fluids/BruteForceFluidTest.h"
 
 using namespace std;
 
@@ -149,6 +151,14 @@ void initWorld() {
     //Test text
     //testTextCb(0);
     //testTextCb2(0);
+    BruteForceFluidTest *bfft = new BruteForceFluidTest(
+        NULL,                               //Pixel map
+        Box(1.f, 1.f, 5.f, 5.f, 1.f, 5.f),  //Bounds
+        10,                                 //Num vortons
+        0.1f,                               //Cell size
+        0.1f                                 //Viscocity
+    );
+    PWE::get()->add(bfft);
 }
 
 

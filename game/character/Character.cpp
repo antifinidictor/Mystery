@@ -69,8 +69,8 @@ Character::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 }
 
 bool
-Character::update(uint time) {
-    m_pCurAction->update(time);
+Character::update(float fDeltaTime) {
+    m_pCurAction->update(fDeltaTime);
     return false;
 }
 

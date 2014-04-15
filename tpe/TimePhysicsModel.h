@@ -27,7 +27,7 @@ public:
     virtual void clearVerticalVelocity() = 0;
     virtual bool wasPushed() = 0;
     virtual void setWasPushed(bool pushed) = 0;
-    virtual void update(uint time) = 0;
+    virtual void update(float fDeltaTime) = 0;
     virtual void handleCollisionEvent(HandleCollisionData *dat) = 0;
     virtual float getDensity() = 0;
     virtual float getVolume() = 0;
@@ -61,7 +61,7 @@ public:
     virtual void  applyForce(const Point &ptForce);
 
     virtual void  handleCollisionEvent(HandleCollisionData *dat);
-    virtual void  update(uint time);
+    virtual void  update(float fDeltaTime);
 
     //Time physics model properties
     virtual void mulTimeDivisor(float fTimeEffect) { m_fTimeDivisor *= fTimeEffect; }
@@ -127,7 +127,7 @@ public:
     virtual void  applyForce(const Point &ptForce) {}
 
     virtual void  handleCollisionEvent(HandleCollisionData *dat) {}
-    virtual void  update(uint time) {}
+    virtual void  update(float fDeltaTime) {}
 
     //Time physics model properties
     virtual void mulTimeDivisor(float fTimeEffect) { }

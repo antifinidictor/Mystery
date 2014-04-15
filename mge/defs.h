@@ -209,8 +209,11 @@ typedef struct Vec3f {
 	Vec3f operator/(const float val) const{
 	    return Vec3f(x / val, y / val, z / val);
 	}
+	float magSq() const {
+	    return (this->x * this->x + this->y * this->y + this->z * this->z);
+	}
     float magnitude() const {
-        return sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
+        return sqrt(magSq());
     }
     friend std::ostream& operator<< (std::ostream& stream, const Vec3f& v);
 

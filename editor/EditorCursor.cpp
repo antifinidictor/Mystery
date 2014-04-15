@@ -54,7 +54,7 @@ EditorCursor::write(boost::property_tree::ptree &pt, const std::string &keyBase)
 }
 
 bool
-EditorCursor::update(uint time) {
+EditorCursor::update(float fDeltaTime) {
     switch(m_eState) {
     case EDC_STATE_STATIC:
         staticUpdate();

@@ -20,7 +20,7 @@ public:
     virtual uint getId() { return m_uiId; }
     virtual bool getFlag(uint flag)             { return GET_FLAG(m_uiFlags, flag); }
     virtual void setFlag(uint flag, bool value) { m_uiFlags = SET_FLAG(m_uiFlags, flag, value); }
-    virtual bool update(uint time);
+    virtual bool update(float fDeltaTime);
     virtual uint getType() { return TYPE_ITEM; }
     virtual const std::string getClass()        { return getClassName(); }
     static const std::string getClassName()     { return "Item"; }

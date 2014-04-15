@@ -101,7 +101,7 @@ SimpleResettableObject::reset() {
 
 
 bool
-SimpleResettableObject::update(uint time) {
+SimpleResettableObject::update(float fDeltaTime) {
     #define MIN_SHIFT_FOR_SOUND 0.001f
     if(m_iSoundChannel >= 0 &&
            (m_pPhysicsModel->getSurface() == NULL ||

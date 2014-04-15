@@ -18,7 +18,7 @@ public:
     static GameObject* read(const boost::property_tree::ptree &pt, const std::string &keyBase);
     virtual void write(boost::property_tree::ptree &pt, const std::string &keyBase);
 
-    virtual bool update(uint time);
+    virtual bool update(float fDeltaTime);
     virtual const std::string getClass()        { return getClassName(); }
     static const std::string getClassName()     { return "EarthElementalVolume"; }
 

@@ -49,7 +49,7 @@ public:
     static void clean() { delete tpe; }
     static TimePhysicsEngine *get() { return tpe; }
 
-    virtual void update(uint time);
+    virtual void update(float fDeltaTime);
 
     virtual bool applyPhysics(GameObject *obj);
     virtual void applyPhysics(GameObject *obj1, GameObject *obj2);

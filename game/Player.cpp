@@ -104,20 +104,20 @@ Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     //Read m_iAnimState information here
 }
 
-bool Player::update(uint time) {
+bool Player::update(float fDeltaTime) {
     //Currently needs to occur in any m_iAnimState that isn't "paused"
     updateSpells();
     upateHud();
 
     switch(m_eState) {
     case PLAYER_CASTING:
-        updateCasting(time);
+        updateCasting(fDeltaTime);
         break;
     case PLAYER_NORMAL:
-        updateNormal(time);
+        updateNormal(fDeltaTime);
         break;
     case PLAYER_CLIMBING_TRANS:
-        updateClimbingTrans(time);
+        updateClimbingTrans(fDeltaTime);
         break;
     default:
         //Unhandled m_iAnimState
@@ -190,7 +190,7 @@ Player::callBack(uint cID, void *data, uint uiEventId) {
 
 
 void
-Player::updateNormal(uint time) {
+Player::updateNormal(float fDeltaTime) {
     Point mov;
     if(m_bMouseDown) {
         Point ptMouseVec = D3RE::get()->getMouseRay();
@@ -270,7 +270,7 @@ Player::updateNormal(uint time) {
 }
 
 void
-Player::updateCasting(uint time) {
+Player::updateCasting(float fDeltaTime) {
     //Update animation
     if(m_uiAnimFrameStart == PANIM_THROWING) {
         if(m_iAnimTimer < 0) {
@@ -319,7 +319,7 @@ Player::updateCasting(uint time) {
 
 
 void
-Player::updateClimbingTrans(uint time) {
+Player::updateClimbingTrans(float fDeltaTime) {
     Point ptObjShift = Point();
     GameObject *obj = PWE::get()->find(m_uiClimbObjId);
     if(obj != NULL) {

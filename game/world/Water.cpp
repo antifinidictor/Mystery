@@ -81,7 +81,7 @@ Water::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 }
 
 bool
-Water::update(uint time) {
+Water::update(float fDeltaTime) {
     if(m_iTimer < MAX_EXPANSION_TIME) {
         m_iTimer++;
     } else {

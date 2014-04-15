@@ -21,7 +21,7 @@ HmapSurface::~HmapSurface()
 }
 
 bool
-HmapSurface::update(uint time) {
+HmapSurface::update(float fDeltaTime) {
     return false;
 }
 

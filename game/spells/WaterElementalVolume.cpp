@@ -80,7 +80,7 @@ WaterElementalVolume::write(boost::property_tree::ptree &pt, const std::string &
 }
 
 bool
-WaterElementalVolume::update(uint time) {
+WaterElementalVolume::update(float fDeltaTime) {
     Point ptMousePos = D3RE::get()->getMousePos();
     if(ptInXZRect(ptMousePos, m_pPhysicsModel->getCollisionVolume())) {
         m_pRenderModel->setColor(Color(0x00,0xFF,0xFF));
@@ -91,7 +91,7 @@ WaterElementalVolume::update(uint time) {
     }
 
     //Update swells
-    float fTime = time / 1000.f;
+    float fTime = fDeltaTime / 1000.f;
     for(uint x = 0; x < m_pxMap->m_uiW; ++x) {
         for(uint z = 0; z < m_pxMap->m_uiH; ++z) {
             m_pxMap->m_pData[x][z] = ((m_fSwellSize / 2.f)

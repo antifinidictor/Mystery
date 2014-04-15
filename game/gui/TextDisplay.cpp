@@ -32,7 +32,7 @@ TextDisplay::registerText(const std::string &text, OnTextDoneCallback cb, float 
 }
 
 void
-TextDisplay::update(uint time) {
+TextDisplay::update(float fDeltaTime) {
     //Make the text scroll
     ContainerRenderModel *panel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_BOTTOMBAR);
     list<TextInfo>::iterator it;

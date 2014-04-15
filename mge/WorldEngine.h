@@ -9,7 +9,7 @@ class GameObject;
 class WorldEngine {
 public:
     virtual ~WorldEngine() {}
-    virtual void update(uint time) = 0;
+    virtual void update(float fDeltaTime) = 0;
     virtual void add(GameObject *obj) = 0;
     virtual void remove(uint id) = 0;
     virtual uint genId() = 0;               //Returns a free ID

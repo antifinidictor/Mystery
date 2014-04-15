@@ -59,10 +59,10 @@ GameManager::write(boost::property_tree::ptree &pt, const std::string &keyBase) 
 }
 
 bool
-GameManager::update(uint time) {
-    TextDisplay::get()->update(time);
+GameManager::update(float fDeltaTime) {
+    TextDisplay::get()->update(fDeltaTime);
 
-    m_pPlayerListener->callBack(getId(), &time, ON_UPDATE_HUD);
+    m_pPlayerListener->callBack(getId(), &fDeltaTime, ON_UPDATE_HUD);
 
     switch(m_skState.top()) {
     case GM_START:

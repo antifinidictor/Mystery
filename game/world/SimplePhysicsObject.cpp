@@ -97,7 +97,7 @@ SimplePhysicsObject::callBack(uint uiId, void *data, uint uiEventId) {
 }
 
 bool
-SimplePhysicsObject::update(uint time) {
+SimplePhysicsObject::update(float fDeltaTime) {
     //Useful place to put test code
     #define MIN_SHIFT_FOR_SOUND 0.01f
     if(m_iSoundChannel >= 0 &&

@@ -41,7 +41,7 @@ public:
     virtual void freeId(uint id);
     virtual uint reserveId(uint id);
 
-    virtual void update(uint time);
+    virtual void update(float fDeltaTime);
     virtual void add(GameObject *obj);      //Adds object to current area
     virtual void remove(uint id);           //Removes object from current area and the screen
 

@@ -44,7 +44,7 @@ Item::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 }
 
 bool
-Item::update(uint time) {
+Item::update(float fDeltaTime) {
     //animation
     if(m_iAnimTimer < 0) {
         m_iAnimTimer = ANIM_TIMER_MAX;

@@ -23,7 +23,7 @@ public:
     //virtual uint getId() = 0;
     virtual bool getFlag(uint flag) = 0;
     virtual void setFlag(uint flag, bool value) = 0;
-    virtual bool update(uint time) = 0; //Returns true if the object should be deleted after this turn
+    virtual bool update(float fDeltaTime) = 0; //Returns true if the object should be deleted after this turn
     virtual uint getType() = 0;         //Returns some identifier indicating the object's class
     virtual const std::string getClass() = 0;   //Returns the human-readable class name
     virtual const std::string getName() {
