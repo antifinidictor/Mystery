@@ -114,5 +114,7 @@ struct Matrix {
 Matrix<3,1> toMatrix(const Point &pt);
 
 Point toPoint(const Matrix<3,1> &mat);
+Vec3f matMult(const Matrix<3,3> &mat, const Vec3f &v);
+Vec3f matMult(const Vec3f &v, const Matrix<3,3> &mat);
 
 #endif // MGE_MATH_H

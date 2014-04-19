@@ -22,14 +22,14 @@ BruteForceFluidTest::BruteForceFluidTest(PixelMap *pxHmap, Box bxBounds, int num
 
     for(int i = 0; i < numVortons; ++i) {
         Point ptPos = Point(
-            rand() % w + bxBounds.x,
-            rand() % h + bxBounds.y,
-            rand() % l + bxBounds.z
+            (rand() % (int)w) + bxBounds.x,
+            (rand() % (int)h) + bxBounds.y,
+            (rand() % (int)l) + bxBounds.z
         );
         Point ptInitVorticity = Point(
-            (rand() % 2 - 1.f) * 0.1f,
-            (rand() % 2 - 1.f) * 0.1f,
-            (rand() % 2 - 1.f) * 0.1f
+            ((rand() % 2) - 1.f) * 0.1f,
+            ((rand() % 2) - 1.f) * 0.1f,
+            ((rand() % 2) - 1.f) * 0.1f
         );
         float fVortonRadius = 0.01f;
         m_vVortons[i] = (Vorton(i, ptPos,fVortonRadius,ptInitVorticity));
@@ -65,33 +65,29 @@ BruteForceFluidTest::update(float fDeltaTime) {
     #define iter_t vector<Vorton>::iterator
 
     //Create an interpolatable velocity grid
+    uint compVelTime, compJacTime, updateVortTime, shareVelTime;
+    compVelTime = SDL_GetTicks();
     computeVelocities();
+    compVelTime = SDL_GetTicks() - compVelTime;
 
     //Create an interpolatable Jacobian grid
+    compJacTime = SDL_GetTicks();
     computeJacobians();
+    compJacTime = SDL_GetTicks() - compJacTime;
 
-    //Share vorticities among themselves
-    for(iter_t v0 = m_vVortons.begin(); v0 != m_vVortons.end(); ++v0) {
-        iter_t v1 = v0;
-        v1++;
-        for(; v1 != m_vVortons.end(); ++v1) {
-            v0->exchangeVorticityWith(m_fViscocity, &*v1);
-        }
-    }
+    shareVelTime = SDL_GetTicks();
+    shareVorticities(fDeltaTime);
+    shareVelTime = SDL_GetTicks() - shareVelTime;
 
-    //Update vortons: Stretch & Tilt, advection
-    for(iter_t v0 = m_vVortons.begin(); v0 != m_vVortons.end(); ++v0) {
-        Point ptPosition = v0->getPosition();
+    updateVortTime = SDL_GetTicks();
+    updateVortons(fDeltaTime);
+    updateVortTime = SDL_GetTicks() - updateVortTime;
 
-        Vec3f v3Velocity = m_cgVelocities.getAt(ptPosition);
-        Mat33 matJacobian = m_cgJacobians.getAt(ptPosition);
-
-        v0->update(1.f, matJacobian, v3Velocity);
-    }
+    printf("Vel: %d Jac: %d Share: %d Update: %d\n", compVelTime, compJacTime, shareVelTime, updateVortTime);
 
     //Update tracer particles
-
-cin.get();
+//printf(__FILE__" %d (press enter to take a step)\n",__LINE__);
+//cin.get();
     return false;
 }
 
@@ -193,10 +189,45 @@ BruteForceFluidTest::computeVelocities() {
 
                 //Calculate the velocity at this point
                 Vec3f &v3Velocity = m_cgVelocities.at(x,y,z);
+                v3Velocity = Point();
                 for(iter_t v1 = m_vVortons.begin(); v1 != m_vVortons.end(); ++v1) {
                     v3Velocity += v1->velocityAt(ptPosition);
                 }
             }
         }
+    }
+}
+
+void
+BruteForceFluidTest::shareVorticities(float fDeltaTime) {
+
+    //Share vorticities among themselves
+    for(iter_t v0 = m_vVortons.begin(); v0 != m_vVortons.end(); ++v0) {
+        iter_t v1 = v0;
+        v1++;
+        for(; v1 != m_vVortons.end(); ++v1) {
+            v0->exchangeVorticityWith(m_fViscocity, &*v1);
+        }
+    }
+}
+
+void
+BruteForceFluidTest::updateVortons(float fDeltaTime) {
+
+    //Update vortons: Stretch & Tilt, advection
+    for(iter_t v0 = m_vVortons.begin(); v0 != m_vVortons.end(); ++v0) {
+        Point ptPosition = v0->getPosition();
+
+        Vec3f v3Velocity = m_cgVelocities.getAt(ptPosition);
+        Mat33 matJacobian = m_cgJacobians.getAt(ptPosition);
+
+        v0->update(fDeltaTime, matJacobian, v3Velocity);
+
+        Point ptVorticity = v0->getVorticity();
+        Point ptDiff = v0->getPosition() - ptPosition;
+        printf("v%d's vorticity: (%2.2f,%2.2f,%2.2f), move by (%2.2f,%2.2f,%2.2f)\n",
+               v0->getId(),
+               ptVorticity.x, ptVorticity.y, ptVorticity.z,
+               ptDiff.x, ptDiff.y, ptDiff.z);
     }
 }

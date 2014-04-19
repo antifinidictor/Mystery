@@ -25,12 +25,14 @@ enum PlayerAnims {
 
 Player::Player(uint uiId, const Point &ptPos)
 {
+printf(__FILE__" %d\n", __LINE__);
     Image *img = D3RE::get()->getImage("player");
     int iw = img->h / img->m_iNumFramesH;
     float w = WORLD_TILE_SIZE / 2;    //img->w / img->m_iNumFramesW,
     float h = iw / (float)TEXTURE_TILE_SIZE;    //img->h / img->m_iNumFramesH;
     m_uiId = uiId;
     m_uiFlags = 0;
+printf(__FILE__" %d\n", __LINE__);
 
     Rect rcDrawArea = Rect(-w / 2, 0, w, h);
     Box bxVolume = Box(-w / 3, 0, -w / 8, 2 * w / 3, 3 * h / 4, w / 4);
@@ -38,6 +40,7 @@ Player::Player(uint uiId, const Point &ptPos)
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pRenderModel  = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
 
+printf(__FILE__" %d\n", __LINE__);
     m_iStrafeSpeed = m_iForwardSpeed = 0;
     m_fDeltaPitch = m_fDeltaZoom = 0.f;
     m_iAnimState = m_iAnimTimer = 0;
@@ -47,6 +50,7 @@ Player::Player(uint uiId, const Point &ptPos)
     m_pPhysicsModel->setListener(this);
     m_bMouseDown = false;
 
+printf(__FILE__" %d\n", __LINE__);
     m_eState = PLAYER_NORMAL;
     //PWE::get()->addListener(this, ON_BUTTON_INPUT);
 
@@ -61,14 +65,17 @@ Player::Player(uint uiId, const Point &ptPos)
     m_bCanClimb = false;
     m_bSprinting = false;
 
+printf(__FILE__" %d\n", __LINE__);
     m_uiHealth = 10;
     m_uiMaxHealth = 20;
     setFlag(GAM_CAN_LINK, true);
 
+printf(__FILE__" %d\n", __LINE__);
     //TODO: How can we design this better?
     GameManager::get()->registerPlayer(this);
     m_pHud = new DraggableHud(PWE::get()->genId()); //The DraggableHud manages its own memory
     m_pHud->registerPlayer(this);
+printf(__FILE__" %d\n", __LINE__);
 }
 
 Player::~Player() {

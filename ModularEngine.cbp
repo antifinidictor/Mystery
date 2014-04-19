@@ -292,11 +292,21 @@
 		<Unit filename="tpe/TimePhysicsEngine.h" />
 		<Unit filename="tpe/TimePhysicsModel.cpp" />
 		<Unit filename="tpe/TimePhysicsModel.h" />
+		<Unit filename="tpe/fluids/BruteForceFluidTest.cpp">
+			<Option target="Debug" />
+			<Option target="LinuxDebug" />
+		</Unit>
+		<Unit filename="tpe/fluids/BruteForceFluidTest.h">
+			<Option target="Debug" />
+			<Option target="LinuxDebug" />
+		</Unit>
+		<Unit filename="tpe/fluids/CellGrid.h" />
 		<Unit filename="tpe/fluids/FluidOctree3d.cpp" />
 		<Unit filename="tpe/fluids/FluidOctree3d.h" />
 		<Unit filename="tpe/fluids/SpacePartitionedContainer.h" />
 		<Unit filename="tpe/fluids/Vorton.cpp" />
 		<Unit filename="tpe/fluids/Vorton.h" />
+		<Unit filename="tpe/fluids/mgeMath.cpp" />
 		<Unit filename="tpe/fluids/mgeMath.h" />
 		<Unit filename="tpe/tpe.h" />
 		<Unit filename="windows/pgl.h">

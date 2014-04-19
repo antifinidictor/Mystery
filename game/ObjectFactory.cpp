@@ -48,6 +48,7 @@ ObjectFactory::initClass(const std::string &className) {
 
 GameObject *
 ObjectFactory::createFromAttributes() {
+printf(__FILE__" %d %s\n", __LINE__, m_pCurFactory->data.m_sClassName.c_str());
     GameObject *obj = m_pCurFactory->readFunc(m_pCurFactory->data.m_pt, m_pCurFactory->data.m_sObjName);
     m_pCurFactory->data.m_pt.clear();
     return obj;
@@ -56,6 +57,7 @@ ObjectFactory::createFromAttributes() {
 
 GameObject *
 ObjectFactory::createFromTree(const boost::property_tree::ptree &pt, const std::string &keyBase) {
+printf(__FILE__" %d %s\n", __LINE__, m_pCurFactory->data.m_sClassName.c_str());
     return m_pCurFactory->readFunc(pt, keyBase);
 }
 

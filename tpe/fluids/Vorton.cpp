@@ -28,12 +28,10 @@ Vorton::~Vorton()
 void
 Vorton::update(float fTimeQuantum, const Matrix<3,3> &matJacobian, const Point &ptVelocity) {
     //Stretching and tilting (halve this to preserve stability)
-    Matrix<3,1> matVorticity = toMatrix(m_ptVorticity);
-    Matrix<1,3> matDeltaVorticity = matVorticity.transpose() * matJacobian;
-    m_ptDeltaVorticity += toPoint(matDeltaVorticity.transpose()) * 0.5f;
+    m_ptDeltaVorticity += matMult(m_ptVorticity, matJacobian);
 
     //Mix in adjusted vorticity
-    m_ptVorticity += m_ptDeltaVorticity * fTimeQuantum;
+    m_ptVorticity += m_ptDeltaVorticity * fTimeQuantum * 0.05f;
     m_ptDeltaVorticity = Point();
 
     //Advect each vorton
@@ -44,13 +42,22 @@ Vorton::update(float fTimeQuantum, const Matrix<3,3> &matJacobian, const Point &
 void
 Vorton::exchangeVorticityWith(float fViscocity, Vorton *v) {
     Point ptVorticityExchange = (m_ptVorticity - v->m_ptVorticity) *  fViscocity;
+    float fRemainingVorticity = 1.f - fViscocity;
     //Adjust delta vorticity of me
-    m_ptDeltaVorticity += ptVorticityExchange;
-
+    m_ptVorticity = m_ptVorticity * fRemainingVorticity + ptVorticityExchange;
+//float meBefore, meAfter, themBefore, themAfter;
+//meBefore = m_ptDeltaVorticity.magnitude();
+//themBefore = v->m_ptDeltaVorticity.magnitude();
+//    m_ptDeltaVorticity += ptVorticityExchange;
     //Adjust delta vorticity of them
-    v->m_ptDeltaVorticity -= ptVorticityExchange;
-}
+    v->m_ptVorticity = v->m_ptVorticity * fRemainingVorticity - ptVorticityExchange;
+//    v->m_ptDeltaVorticity -= ptVorticityExchange;
+//meAfter = m_ptDeltaVorticity.magnitude();
+//themAfter = v->m_ptDeltaVorticity.magnitude();
+//printf("Mag = %f, me: %f/%f, them: %f/%f\n", m_ptDeltaVorticity.magnitude(), meBefore, meAfter, themBefore, themAfter);
 
+}
+#if 0
 #define VORTON_ACCUMULATE_VELOCITY_private( vVelocity , vPosQuery , mPosition , mVorticity , mRadius )      \
 {                                                                                                           \
     const Vec3          vNeighborToSelf     = vPosQuery - mPosition ;                                       \
@@ -67,7 +74,7 @@ Vorton::exchangeVorticityWith(float fViscocity, Vorton *v) {
                                                 ( oneOverDist / dist2 ) ;                                   \
     vVelocity +=  OneOverFourPi * ( 8.0f * radius2 * mRadius ) * mVorticity ^ vNeighborToSelf * distLaw ;   \
 }
-
+#endif
 
 Point
 Vorton::velocityAt(const Point &pos) {

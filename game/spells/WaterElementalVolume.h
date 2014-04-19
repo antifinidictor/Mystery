@@ -13,6 +13,7 @@
 #include "tpe/tpe.h"
 #include "d3re/d3re.h"
 #include "game/game_defs.h"
+#include "tpe/fluids/CellGrid.h"
 
 class WaterElementalVolume : public ElementalVolume {
 public:
@@ -53,6 +54,10 @@ private:
     float m_fSwellRes;
     float m_fOriginalVolume;
     float m_fTargetVolume;
+    uint m_uiCurVelGrid;
+    CellGrid<Vec3f> *m_pVelocityGrids[2];
+    CellGrid<float> *m_pPressureGrid;
+    //vector<Vorton> m_vVortons;
 };
 
 

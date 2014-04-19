@@ -19,12 +19,16 @@ public:
             m_pParent(pParent),
             m_vItems(m_iNumX * m_iNumY * m_iNumZ)
     {
-        //Get the cell size closest to the one requested without any partial cells
-        /*
-        m_iNumX = (int)(bxRelativeBounds.w / fCellSize);
-        m_iNumY = (int)(bxRelativeBounds.h / fCellSize);
-        m_iNumZ = (int)(bxRelativeBounds.l / fCellSize);
-        */
+    }
+
+    CellGrid(Positionable *pParent, Box bxRelativeBounds, int numX, int numY, int numZ)
+        :   m_iNumX(numX),
+            m_iNumY(numY),
+            m_iNumZ(numZ),
+            m_bxBounds(bxRelativeBounds),
+            m_pParent(pParent),
+            m_vItems(m_iNumX * m_iNumY * m_iNumZ)
+    {
     }
 
     virtual ~CellGrid() {

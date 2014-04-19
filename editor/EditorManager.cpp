@@ -281,7 +281,7 @@ EditorManager::update(float fDeltaTime) {
     }
 
     if(m_pEditorCursor != NULL) {
-        m_pEditorCursor->update(time);
+        m_pEditorCursor->update(fDeltaTime);
     }
 
     return false;

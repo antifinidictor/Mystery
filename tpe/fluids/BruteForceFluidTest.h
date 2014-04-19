@@ -46,6 +46,8 @@ private:
 
     void computeJacobians();
     void computeVelocities();
+    void shareVorticities(float fDeltaTime);
+    void updateVortons(float fDeltaTime);
 
     uint m_uiId, m_uiFlags;
     ContainerRenderModel *m_pRenderModel;

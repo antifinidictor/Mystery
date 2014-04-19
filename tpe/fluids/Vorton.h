@@ -30,6 +30,8 @@ public:
     /** Determine the velocity due to this vorton at some position */
     Point velocityAt(const Point &pos);
 
+    Point getVorticity() { return m_ptVorticity; }
+
 protected:
 private:
     uint m_uiId;

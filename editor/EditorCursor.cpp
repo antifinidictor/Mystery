@@ -8,7 +8,7 @@
 using namespace std;
 
 #define UNUSED_TEXTURE_ID 0xFFFFFFFF
-#define MOVE_SPEED 0.03 //in meters
+#define MOVE_SPEED 0.1 //in meters
 
 EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
     m_uiId = uiId;
@@ -288,12 +288,12 @@ EditorCursor::selectRectUpdate() {
 void
 EditorCursor::typeUpdate() {
     m_uiBlinkTimer++;
-    if(m_uiBlinkTimer == 50) {
+    if(m_uiBlinkTimer == 10) {
         D3RE::get()->getHudContainer()
             ->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE)
             ->get<D3HudRenderModel*>(ED_HUD_FIELD_TEXT)
             ->updateText(m_sInput + "_");
-    } else if(m_uiBlinkTimer >= 100) {
+    } else if(m_uiBlinkTimer >= 20) {
         D3RE::get()->getHudContainer()
             ->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE)
             ->get<D3HudRenderModel*>(ED_HUD_FIELD_TEXT)
