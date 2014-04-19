@@ -4,7 +4,7 @@
 #include "mge/PixelMap.h"
 #include "mge/GameObject.h"
 #include "Vorton.h"
-#include "CellGrid.h"
+#include "InterpGrid.h"
 #include "game/game_defs.h"
 #include "d3re/ContainerRenderModel.h"
 #include "tpe/TimePhysicsModel.h"
@@ -57,8 +57,8 @@ private:
     float m_fViscocity;
 
     std::vector<Vorton> m_vVortons;
-    CellGrid<Vec3f> m_cgVelocities;
-    CellGrid<Mat33> m_cgJacobians;
+    InterpGrid<Vec3f> m_cgVelocities;
+    InterpGrid<Mat33> m_cgJacobians;
 };
 
 #endif // BRUTEFORCEFLUIDTEST_H

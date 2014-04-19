@@ -1671,7 +1671,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1397863288 source:k:\projects\games\mge\mystery\game\game.cpp
+1397934128 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	"pgl.h"
@@ -14535,13 +14535,13 @@
 1396294682 k:\projects\games\mge\mystery\tpe\collisionmodel.h
 	"mge/PixelMap.h"
 
-1397862170 k:\projects\games\mge\mystery\\game\spells\waterelementalvolume.h
+1397934313 k:\projects\games\mge\mystery\\game\spells\waterelementalvolume.h
 	"ElementalVolume.h"
 	"mge/GameObject.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
 	"game/game_defs.h"
-	"tpe/fluids/CellGrid.h"
+	"tpe/fluids/InterpGrid.h"
 
 1397550100 k:\projects\games\mge\mystery\\game\spells\elementalvolume.h
 	"mge/GameObject.h"
@@ -15651,8 +15651,9 @@
 1397348432 source:k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.cpp
 	"FluidOctree3d.h"
 
-1397406866 k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.h
+1397934943 k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.h
 	"Vorton.h"
+	"mge/defs.h"
 	<map>
 
 1397347525 k:\projects\games\mge\mystery\\mge\octree3d.h
@@ -15665,7 +15666,7 @@
 	"mge/defs.h"
 	"mge/Positionable.h"
 
-1397863312 source:k:\projects\games\mge\mystery\tpe\fluids\vorton.cpp
+1397891351 source:k:\projects\games\mge\mystery\tpe\fluids\vorton.cpp
 	"Vorton.h"
 
 1397719196 k:\projects\games\mge\mystery\tpe\fluids\mgemath.h
@@ -15680,11 +15681,11 @@
 	"d3re/d3re.h"
 	"tpe/tpe.h"
 
-1397720448 k:\projects\games\mge\mystery\tpe\fluids\bruteforcefluidtest.h
+1397934313 k:\projects\games\mge\mystery\tpe\fluids\bruteforcefluidtest.h
 	"mge/PixelMap.h"
 	"mge/GameObject.h"
 	"Vorton.h"
-	"CellGrid.h"
+	"InterpGrid.h"
 	"game/game_defs.h"
 	"d3re/ContainerRenderModel.h"
 	"tpe/TimePhysicsModel.h"
@@ -15701,11 +15702,11 @@
 	"mge/Positionable.h"
 	<vector>
 
-1397720448 k:\projects\games\mge\mystery\\tpe\fluids\bruteforcefluidtest.h
+1397934313 k:\projects\games\mge\mystery\\tpe\fluids\bruteforcefluidtest.h
 	"mge/PixelMap.h"
 	"mge/GameObject.h"
 	"Vorton.h"
-	"CellGrid.h"
+	"InterpGrid.h"
 	"game/game_defs.h"
 	"d3re/ContainerRenderModel.h"
 	"tpe/TimePhysicsModel.h"
@@ -15721,6 +15722,16 @@
 	"mge/defs.h"
 
 1397697201 k:\projects\games\mge\mystery\\tpe\fluids\cellgrid.h
+	"mge/defs.h"
+	"mge/Positionable.h"
+	<vector>
+
+1397934313 k:\projects\games\mge\mystery\\tpe\fluids\interpgrid.h
+	"mge/defs.h"
+	"mge/Positionable.h"
+	<vector>
+
+1397934313 k:\projects\games\mge\mystery\tpe\fluids\interpgrid.h
 	"mge/defs.h"
 	"mge/Positionable.h"
 	<vector>

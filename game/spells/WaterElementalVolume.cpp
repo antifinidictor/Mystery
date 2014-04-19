@@ -25,8 +25,8 @@ printf(__FILE__" %d\n",__LINE__);
     m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
     m_pPhysicsModel->setListener(this);
 
-    m_pVelocityGrids[0] = new CellGrid<Vec3f>(m_pPhysicsModel, bxRelativeVol, bxRelativeVol.w / m_fSwellRes, 1, bxRelativeVol.l / m_fSwellRes);
-    m_pVelocityGrids[1] = new CellGrid<Vec3f>(m_pPhysicsModel, bxRelativeVol, bxRelativeVol.w / m_fSwellRes, 1, bxRelativeVol.l / m_fSwellRes);
+    m_pVelocityGrids[0] = new InterpGrid<Vec3f>(m_pPhysicsModel, bxRelativeVol, bxRelativeVol.w / m_fSwellRes, 1, bxRelativeVol.l / m_fSwellRes);
+    m_pVelocityGrids[1] = new InterpGrid<Vec3f>(m_pPhysicsModel, bxRelativeVol, bxRelativeVol.w / m_fSwellRes, 1, bxRelativeVol.l / m_fSwellRes);
     m_uiCurVelGrid = 0;
 
     m_pRenderModel = new D3HeightmapRenderModel(m_pPhysicsModel, texId, m_pxMap, bxRelativeVol);
@@ -123,7 +123,7 @@ WaterElementalVolume::update(float fDeltaTime) {
     }
 
     //Update swells
-    float fTime = fDeltaTime / 1000.f;
+    //float fTime = fDeltaTime / 1000.f;
     uint sizeX = m_pVelocityGrids[m_uiCurVelGrid]->getSizeX();
     uint sizeY = m_pVelocityGrids[m_uiCurVelGrid]->getSizeY();
     uint sizeZ = m_pVelocityGrids[m_uiCurVelGrid]->getSizeZ();

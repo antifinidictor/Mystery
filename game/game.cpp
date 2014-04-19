@@ -156,7 +156,7 @@ void initWorld() {
         NULL,                               //Pixel map
         Box(1.f, 1.f, 5.f, 5.f, 1.f, 5.f),  //Bounds
         5,                                 //Num vortons
-        0.1f,                               //Cell size
+        0.1,                               //Cell size
         0.01f                                 //Viscocity
     );
     PWE::get()->add(bfft);

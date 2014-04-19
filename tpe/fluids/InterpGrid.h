@@ -1,5 +1,5 @@
-#ifndef CELLGRID_H
-#define CELLGRID_H
+#ifndef INTERPGRID_H
+#define INTERPGRID_H
 
 #include "mge/defs.h"
 #include "mge/Positionable.h"
@@ -8,10 +8,10 @@
 //Based on UniformGrid from the Intel fluid simulation article
 //Maintains one item at each grid point.  Gets the interpolated value at the specified points.
 template<class ItemType>
-class CellGrid
+class InterpGrid
 {
 public:
-    CellGrid(Positionable *pParent, Box bxRelativeBounds, float fCellSize)
+    InterpGrid(Positionable *pParent, Box bxRelativeBounds, float fCellSize)
         :   m_iNumX((int)(bxRelativeBounds.w / fCellSize)),
             m_iNumY((int)(bxRelativeBounds.h / fCellSize)),
             m_iNumZ((int)(bxRelativeBounds.l / fCellSize)),
@@ -21,7 +21,7 @@ public:
     {
     }
 
-    CellGrid(Positionable *pParent, Box bxRelativeBounds, int numX, int numY, int numZ)
+    InterpGrid(Positionable *pParent, Box bxRelativeBounds, int numX, int numY, int numZ)
         :   m_iNumX(numX),
             m_iNumY(numY),
             m_iNumZ(numZ),
@@ -31,7 +31,7 @@ public:
     {
     }
 
-    virtual ~CellGrid() {
+    virtual ~InterpGrid() {
         m_vItems.clear();
     }
 
@@ -122,4 +122,4 @@ private:
     std::vector<ItemType> m_vItems;
 };
 
-#endif // CELLGRID_H
+#endif // INTERPGRID_H
