@@ -3,11 +3,72 @@
 
 //#include "mge/Octree3d.h"
 #include "Vorton.h"
+#include "mge/defs.h"
 #include <map>
+#include <list>
+
+class GameObject;
 
 /*
  * Design thanks to Intel's fluid physics for games article
  */
+
+class FluidOctreeNode {
+public:
+protected:
+    enum QuadrantNames {
+        QUAD_FIRST = 0,                     //Used for iterating
+        QUAD_POSX_POSY_POSZ = QUAD_FIRST,
+        QUAD_POSX_POSY_NEGZ,
+        QUAD_POSX_NEGY_POSZ,
+        QUAD_POSX_NEGY_NEGZ,
+        QUAD_NEGX_POSY_POSZ,
+        QUAD_NEGX_POSY_NEGZ,
+        QUAD_NEGX_NEGY_POSZ,
+        QUAD_NEGX_NEGY_NEGZ,
+        QUAD_NUM_QUADS      //Used for iterating
+    };
+
+    //Octree node information
+    Box m_bxBounds;                                 //Non-relative bounds.  Fluids may expand, but they don't actually move.
+    FluidOctreeNode *m_pParent;
+    FluidOctreeNode *m_apChildren[QUAD_NUM_QUADS];
+
+    //Fluid physics
+    Vorton m_vrtAggregate;
+
+    //Actual container portion
+    std::map<uint,GameObject *> m_mContents;
+};
+
+class FluidOctreeRoot : public FluidOctreeNode {
+public:
+protected:
+    FluidOctreeRoot *neighbors[NUM_CARDINAL_DIRECTIONS];
+    //TimeField field;
+
+    //Object management structures
+    std::list<uint> m_lsObjsToRemove;
+    std::list<uint> m_lsObjsToErase;
+    std::list<GameObject*> m_lsObjsToAdd;
+};
+
+class FluidOctreeLeaf : public FluidOctreeNode {
+public:
+protected:
+    std::list<Vorton> m_lsVortons;
+};
+
+
+
+
+
+
+
+
+
+
+
 
 class FluidOctree3d
 {

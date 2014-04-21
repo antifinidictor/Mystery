@@ -80,6 +80,7 @@ void initWorld() {
 
     ObjectFactory::init();
     EditorManager::init();
+    GameManager::init();
     we->setManager(EditorManager::get());
 
     registerClasses();
@@ -129,7 +130,7 @@ void initWorld() {
     */
 
     //Load audio resources
-    BAE::get()->loadSound(AUD_STEP, "res/audio/step.wav");
+    //BAE::get()->loadSound(AUD_STEP, "res/audio/step.wav");
 
     //Other singleton initializations
     TextRenderer::init();

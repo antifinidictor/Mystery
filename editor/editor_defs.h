@@ -71,7 +71,7 @@ enum EditorCursorState {
 
 //First container layer huds
 enum EditorHudBaseIds {
-    ED_HUD_CURSOR_POS,  //Created and accessed by EditorCursor
+    ED_HUD_CURSOR_POS = NUM_HUD_ELEMENTS,  //Created and accessed by EditorCursor
     ED_HUD_RIGHT_PANE,  //Right pane: contains possible actions
     ED_HUD_MIDDLE_PANE, //Middle pane: contains fields during field entry
     ED_HUD_LEFT_PANE,   //Left pane: contains list of areas
