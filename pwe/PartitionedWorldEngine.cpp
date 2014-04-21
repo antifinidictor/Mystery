@@ -90,7 +90,6 @@ PartitionedWorldEngine::reserveId(uint id) {
 void
 PartitionedWorldEngine::update(float fDeltaTime) {
     list<GameObject*> lsHasMoved;
-
     //Manager is always updated
     if(m_pManagerObject != NULL) {
         m_pManagerObject->update(fDeltaTime);

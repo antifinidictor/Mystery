@@ -87,20 +87,19 @@
 				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="K:/projects/games/mge/Mystery/windows" />
+					<Add directory="/home/naheisey/Documents/projects/games/Mystery/" />
+					<Add directory="linux" />
+					<Add directory="/usr/include/GL" />
 				</Compiler>
 				<Linker>
-					<Add library="mingw32" />
-					<Add library="SDLmain" />
-					<Add library="SDL_image" />
-					<Add library="SDL_mixer" />
-					<Add library="SDL.dll" />
-					<Add library="opengl32" />
-					<Add library="glu32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="winmm" />
-					<Add library="dxguid" />
+					<Add library="SDL2" />
+					<Add library="SDL2main" />
+					<Add library="SDL2_image" />
+					<Add library="SDL2_mixer" />
+					<Add library="GL" />
+					<Add library="GLU" />
+					<Add directory="/home/naheisey/Documents/projects/games/Mystery/" />
+					<Add directory="/usr/lib" />
 				</Linker>
 			</Target>
 			<Target title="LinuxEditor">
@@ -118,11 +117,6 @@
 					<Add directory="K:/projects/games/mge/Mystery/linux" />
 				</Compiler>
 				<Linker>
-					<Add library="SDLmain" />
-					<Add library="SDL_image" />
-					<Add library="SDL_mixer" />
-					<Add library="GL" />
-					<Add library="GLU" />
 					<Add directory="/media/DATA/projects/games/mge/Mystery/lib" />
 				</Linker>
 			</Target>
@@ -292,11 +286,15 @@
 		<Unit filename="tpe/TimePhysicsEngine.h" />
 		<Unit filename="tpe/TimePhysicsModel.cpp" />
 		<Unit filename="tpe/TimePhysicsModel.h" />
+		<Unit filename="tpe/fluids/BruteForceFluidTest.cpp" />
+		<Unit filename="tpe/fluids/BruteForceFluidTest.h" />
+		<Unit filename="tpe/fluids/CellGrid.h" />
 		<Unit filename="tpe/fluids/FluidOctree3d.cpp" />
 		<Unit filename="tpe/fluids/FluidOctree3d.h" />
 		<Unit filename="tpe/fluids/SpacePartitionedContainer.h" />
 		<Unit filename="tpe/fluids/Vorton.cpp" />
 		<Unit filename="tpe/fluids/Vorton.h" />
+		<Unit filename="tpe/fluids/mgeMath.cpp" />
 		<Unit filename="tpe/fluids/mgeMath.h" />
 		<Unit filename="tpe/tpe.h" />
 		<Unit filename="windows/pgl.h">
