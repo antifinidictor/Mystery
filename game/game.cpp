@@ -151,7 +151,7 @@ void initWorld() {
     //Test text
     //testTextCb(0);
     //testTextCb2(0);
-#if 1
+#if 0
     BruteForceFluidTest *bfft = new BruteForceFluidTest(
         NULL,                               //Pixel map
         Box(1.f, 1.f, 5.f, 5.f, 1.f, 5.f),  //Bounds

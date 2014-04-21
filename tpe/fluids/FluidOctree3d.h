@@ -5,6 +5,7 @@
 #include "Vorton.h"
 #include "mge/defs.h"
 #include <map>
+#include <list>
 
 class GameObject;
 
@@ -45,6 +46,11 @@ public:
 protected:
     FluidOctreeRoot *neighbors[NUM_CARDINAL_DIRECTIONS];
     //TimeField field;
+
+    //Object management structures
+    std::list<uint> m_lsObjsToRemove;
+    std::list<uint> m_lsObjsToErase;
+    std::list<GameObject*> m_lsObjsToAdd;
 };
 
 class FluidOctreeLeaf : public FluidOctreeNode {
