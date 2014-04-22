@@ -8,10 +8,7 @@
 #include <list>
 
 class GameObject;
-
-/*
- * Design thanks to Intel's fluid physics for games article
- */
+class Scheduler;
 
 class FluidOctreeNode {
 public:
@@ -29,6 +26,9 @@ public:
 
     //Returns a reference to the appropriate object
     GameObject *find(uint uiObjId);
+
+    //WARNING: ONLY SCHEDULER SHOULD CALL
+    void update(float fTime);
 
 protected:
     enum QuadrantNames {
@@ -50,9 +50,9 @@ protected:
     typedef std::list<GameObject*> objlist_t;       //Used in case a different STL container is faster for these operations
     typedef std::list<GameObject*>::iterator objlist_iter_t;
 
-    void update(float fTime);
     void updateContents(float fTime);   //Performs old-school update & collision checks
     void handleChildrenUpdateResults();
+    void recursiveScheduleUpdates(Scheduler *s);
 
     bool addToChildren(GameObject *obj);
     void addNow(GameObject *obj);   //Adds object to this node's contents
@@ -94,19 +94,20 @@ protected:
 
 class FluidOctreeRoot : public FluidOctreeNode {
 public:
+    FluidOctreeRoot(const Box &bxBounds, float fMinResolution = 1.f);
+    virtual ~FluidOctreeRoot();
+
+    void scheduleUpdates(Scheduler *s) { FluidOctreeNode::recursiveScheduleUpdates(s); }
+
 protected:
     FluidOctreeRoot *neighbors[NUM_CARDINAL_DIRECTIONS];
     //TimeField field;
-
-    //Object management structures
-    std::list<uint> m_lsObjsToRemove;
-    std::list<uint> m_lsObjsToErase;
-    std::list<std::pair<GameObject*,bool> > m_lsObjsToAdd;
 };
 
 class FluidOctreeLeaf : public FluidOctreeNode {
 public:
     FluidOctreeLeaf(const Box &bxBounds, float fMinResolution = 1.f);
+    virtual ~FluidOctreeLeaf();
 
     //Adding to a leaf node is much simpler than adding to a general node
     virtual bool add(GameObject *obj, bool bForce = false);
@@ -116,7 +117,26 @@ protected:
 };
 
 
+class Scheduler {
+public:
+    virtual void scheduleUpdate(FluidOctreeNode *node) = 0;
+};
 
+class BasicScheduler : public Scheduler {
+    static BasicScheduler *m_pInstance;
+    float m_fTime;
+
+public:
+    static BasicScheduler *get(float fTime = -1.f) {
+        if(fTime >= 0.f) {
+            m_pInstance->m_fTime = fTime;
+        }
+        return m_pInstance;
+    }
+    virtual void scheduleUpdate(FluidOctreeNode *node) {
+        node->update(m_fTime);
+    }
+};
 
 
 

@@ -1,10 +1,13 @@
 #include "FluidOctree3d.h"
 #include "mge/GameObject.h"
 #include "tpe/tpe.h"
+#include "d3re/d3re.h"
 
 using namespace std;
 
 #define DEFAULT_VORTON_RADIUS 0.1
+
+BasicScheduler *BasicScheduler::m_pInstance = new BasicScheduler();
 
 FluidOctreeNode::FluidOctreeNode(const Box &bxBounds, float fMinResolution)
     : m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Point())
@@ -30,6 +33,7 @@ FluidOctreeNode::~FluidOctreeNode() {
     for(it = m_mContents.begin(); it != m_mContents.end(); ++it) {
         delete it->second;
     }
+    m_mContents.clear();
 }
 
 //Adds object to the appropriate list
@@ -131,14 +135,13 @@ FluidOctreeNode::find(uint uiObjId) {
 }
 
 
-
 void
 FluidOctreeNode::update(float fTime) {
     //Update internal container elements
-    updateContents(fTime);
+    //updateContents(fTime);
 
     //Deal with childrens' update-results
-    handleChildrenUpdateResults();
+    //handleChildrenUpdateResults();
 
     //Erase queued objects from the container
     for(list<uint>::iterator itObjId = m_lsObjsToErase.begin(); itObjId != m_lsObjsToErase.end(); ++itObjId) {
@@ -159,7 +162,6 @@ FluidOctreeNode::update(float fTime) {
     m_lsObjsToAdd.clear();
     updateEmptiness();
 }
-
 
 void
 FluidOctreeNode::updateContents(float fTime) {
@@ -206,6 +208,10 @@ FluidOctreeNode::updateContents(float fTime) {
             for(objlist_iter_t mv = m_lsDynamicObjs.begin(); mv != m_lsDynamicObjs.end(); ++mv) {
                 pe->applyPhysics(it->second, (*mv));
             }
+        }
+
+        if(bHasMoved || D3RE::get()->screenHasMoved()) {
+            D3RE::get()->manageObjOnScreen(it->second);
         }
     }
 
@@ -289,6 +295,16 @@ FluidOctreeNode::handleChildrenUpdateResults() {
     }
 }
 
+void
+FluidOctreeNode::recursiveScheduleUpdates(Scheduler *s) {
+    //Updates are scheduled as a stack, with children getting updated first
+    for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
+        if(m_apChildren[q] != NULL) {
+            s->scheduleUpdate(m_apChildren[q]);
+        }
+    }
+    s->scheduleUpdate(this);
+}
 
 bool
 FluidOctreeNode::addToChildren(GameObject *obj) {
@@ -432,7 +448,19 @@ FluidOctreeNode::updateEmptiness() {
 
 
 /*
- * FluidOctreeLeafNode
+ * FluidOctreeRoot
+ */
+
+FluidOctreeRoot::FluidOctreeRoot(const Box &bxBounds, float fMinResolution)
+    : FluidOctreeNode(bxBounds, fMinResolution)
+{
+}
+
+FluidOctreeRoot::~FluidOctreeRoot() {
+}
+
+/*
+ * FluidOctreeLeaf
  */
 
 FluidOctreeLeaf::FluidOctreeLeaf(const Box &bxBounds, float fMinResolution)
@@ -440,6 +468,8 @@ FluidOctreeLeaf::FluidOctreeLeaf(const Box &bxBounds, float fMinResolution)
 {
 }
 
+FluidOctreeLeaf::~FluidOctreeLeaf() {
+}
 
 bool
 FluidOctreeLeaf::add(GameObject *obj, bool bForce) {

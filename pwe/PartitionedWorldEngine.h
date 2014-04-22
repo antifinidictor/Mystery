@@ -15,6 +15,8 @@
 #include "mge/GameObject.h"
 #include "mge/Event.h"
 
+#include "tpe/fluids/FluidOctree3d.h"
+
 enum WorldState {
     PWE_PAUSED,
     PWE_RUNNING,
@@ -88,12 +90,15 @@ private:
     struct M_Area {
         M_Area() {
             m_sName = "";
+            m_pOctree = NULL;
         }
         M_Area(const std::string &sName) {
             m_sName = sName;
+            m_pOctree = NULL;
         }
         std::string m_sName;
         std::map<uint, GameObject *> m_mCurArea;
+        FluidOctreeRoot *m_pOctree;
         std::map<uint, Listener*> m_mMouseMoveListeners;
         std::map<uint, Listener*> m_mButtonInputListeners;
         std::map<uint, Listener*> m_mAreaChangeListeners;
@@ -116,7 +121,7 @@ private:
     RenderEngine  *re;
 
     std::map<uint, M_Area> m_mWorld;
-    std::map<uint, GameObject *> *m_mCurArea;
+    //std::map<uint, GameObject *> *m_mCurArea;
     uint m_uiCurArea, m_uiNextArea, m_uiEffectiveArea;
     bool m_bFirstRun;
 

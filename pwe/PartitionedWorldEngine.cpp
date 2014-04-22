@@ -89,11 +89,21 @@ PartitionedWorldEngine::reserveId(uint id) {
 
 void
 PartitionedWorldEngine::update(float fDeltaTime) {
-    list<GameObject*> lsHasMoved;
     //Manager is always updated
     if(m_pManagerObject != NULL) {
         m_pManagerObject->update(fDeltaTime);
     }
+
+
+    if(m_eState == PWE_RUNNING) {   //State can be disabled
+        m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime));
+    }
+
+#if 0
+    if(m_eState == PWE_RUNNING) {   //State can be disabled
+    }
+#else
+    list<GameObject*> lsHasMoved;
 
     if(m_eState == PWE_RUNNING) {   //State can be disabled
         //Update the physics engine clock
@@ -185,6 +195,7 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         addToNow(itObjAreaId->first, itObjAreaId->second);
     }
     m_lsObjsToAdd.clear();
+#endif
 
     //If necessary, set the current area (we wanted to finish this update first)
     if(m_uiCurArea != m_uiNextArea) {
@@ -353,6 +364,10 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
         generateArea(uiAreaId);
     }
 
+    Point ptObjMin;
+    Point ptObjMax;
+    list<GameObject *> lsObjsToAdd;
+
     using boost::property_tree::ptree;
     string className, key;
     BOOST_FOREACH(ptree::value_type &c, pt.get_child(keyBase)) {
@@ -364,9 +379,50 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
 //printf(__FILE__" %d %s\n",__LINE__, className.c_str());
             GameObject *obj = ObjectFactory::get()->createFromTree(pt, key + "." + o.first.data());
             if(obj != NULL) {
-                addTo(obj, uiAreaId);
+                //addTo(obj, uiAreaId);
+                lsObjsToAdd.push_back(obj);
+
+                //Calculate base size of octree
+                Box bxVolume = obj->getPhysicsModel()->getCollisionVolume();
+                if(bxVolume.x < ptObjMin.x) {
+                    ptObjMin.x = bxVolume.x;
+                } else if(bxVolume.x + bxVolume.w > ptObjMax.x) {
+                    ptObjMax.x = bxVolume.x;
+                }
+                if(bxVolume.y < ptObjMin.y) {
+                    ptObjMin.y = bxVolume.y;
+                } else if(bxVolume.y + bxVolume.h > ptObjMax.y) {
+                    ptObjMax.y = bxVolume.y;
+                }
+                if(bxVolume.z < ptObjMin.z) {
+                    ptObjMin.z = bxVolume.z;
+                } else if(bxVolume.z + bxVolume.l > ptObjMax.z) {
+                    ptObjMax.z = bxVolume.z;
+                }
             }
         }
+    }
+
+    //Octree bounds will be nearest whole integers
+    Box bxBounds = Box(
+        floor(ptObjMin.x),
+        floor(ptObjMin.y),
+        floor(ptObjMin.z),
+        ceil(ptObjMax.z) - floor(ptObjMin.x),
+        ceil(ptObjMax.z) - floor(ptObjMin.y),
+        ceil(ptObjMax.z) - floor(ptObjMin.z)
+    );
+
+    //Now we create the octree
+    itArea->second.m_pOctree = new FluidOctreeRoot(bxBounds);
+
+    //Fill the octree
+    for(list<GameObject*>::iterator it = lsObjsToAdd.begin(); it != lsObjsToAdd.end(); ++it) {
+        //Old add code
+        addTo(*it, uiAreaId);
+
+        //New add code
+        itArea->second.m_pOctree->add(*it);
     }
 
 }
