@@ -99,10 +99,12 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime));
     }
 
-#if 0
-    if(m_eState == PWE_RUNNING) {   //State can be disabled
+    for(map<uint, GameObject*>::iterator it = m_pCurArea->m_mCurArea.begin();
+            it != m_pCurArea->m_mCurArea.end(); ++it) {
+        re->manageObjOnScreen(it->second);
     }
-#else
+
+#if 0
     list<GameObject*> lsHasMoved;
 
     if(m_eState == PWE_RUNNING) {   //State can be disabled
@@ -259,6 +261,7 @@ PartitionedWorldEngine::generateArea(uint uiAreaId) {
     std::ostringstream name;
     name << "Area" << uiAreaId;
     m_mWorld[uiAreaId] = M_Area(name.str());
+printf(__FILE__" %d: New area %d, null octree\n",__LINE__, uiAreaId);
 }
 
 void
@@ -362,6 +365,7 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea == m_mWorld.end()) {
         generateArea(uiAreaId);
+        itArea = m_mWorld.find(uiAreaId);   //Used for setting up octree
     }
 
     Point ptObjMin;
@@ -403,7 +407,7 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
         }
     }
 
-    //Octree bounds will be nearest whole integers
+    //Octree bounds will be converted to nearest power-of-2s
     Box bxBounds = Box(
         floor(ptObjMin.x),
         floor(ptObjMin.y),
@@ -412,6 +416,8 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
         ceil(ptObjMax.z) - floor(ptObjMin.y),
         ceil(ptObjMax.z) - floor(ptObjMin.z)
     );
+
+    toPowerOfTwo(bxBounds);
 
     //Now we create the octree
     itArea->second.m_pOctree = new FluidOctreeRoot(bxBounds);
@@ -642,4 +648,28 @@ PartitionedWorldEngine::addToNow(GameObject *obj, uint uiAreaId) {
         printf("ERROR %s %d: Tried to add object to nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;
     }
+}
+
+void
+PartitionedWorldEngine::toPowerOfTwo(Box &bx) {
+    int w = (int)ceil(bx.w);
+    int h = (int)ceil(bx.h);
+    int l = (int)ceil(bx.l);
+
+    //Convert each to a power of two
+    int logw = 0, logh = 0, logl = 0;
+    while(w >>= 1) { logw++; }
+    while(h >>= 1) { logh++; }
+    while(l >>= 1) { logl++; }
+    w = 1 << (logw + 1);
+    h = 1 << (logh + 1);
+    l = 1 << (logl + 1);
+
+    Point ptCenter = bxCenter(bx);
+    bx.x = floor(ptCenter.x) - w / 2;
+    bx.y = floor(ptCenter.y) - h / 2;
+    bx.z = floor(ptCenter.z) - l / 2;
+    bx.w = w;
+    bx.h = h;
+    bx.l = l;
 }

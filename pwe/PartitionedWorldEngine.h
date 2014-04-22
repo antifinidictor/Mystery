@@ -115,6 +115,8 @@ private:
     void deleteFromNow(uint uiObjId, uint uiAreaId);
     void addToNow(GameObject *obj, uint uiAreaId);
 
+    void toPowerOfTwo(Box &in);
+
     static PartitionedWorldEngine *pwe;
 
     PhysicsEngine *pe;

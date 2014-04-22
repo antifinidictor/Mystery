@@ -16,7 +16,7 @@ public:
     virtual ~FluidOctreeNode();
 
     //Schedules object for appending to the appropriate node and returns true if it can be done
-    bool add(GameObject *obj, bool bForce = true);
+    virtual bool add(GameObject *obj, bool bForce = true);
 
     //Schedules object for removal from the list if it can be found, but does not delete
     bool remove(uint uiObjId);

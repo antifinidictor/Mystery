@@ -138,10 +138,10 @@ FluidOctreeNode::find(uint uiObjId) {
 void
 FluidOctreeNode::update(float fTime) {
     //Update internal container elements
-    //updateContents(fTime);
+    updateContents(fTime);
 
     //Deal with childrens' update-results
-    //handleChildrenUpdateResults();
+    handleChildrenUpdateResults();
 
     //Erase queued objects from the container
     for(list<uint>::iterator itObjId = m_lsObjsToErase.begin(); itObjId != m_lsObjsToErase.end(); ++itObjId) {
@@ -295,6 +295,7 @@ FluidOctreeNode::handleChildrenUpdateResults() {
     }
 }
 
+
 void
 FluidOctreeNode::recursiveScheduleUpdates(Scheduler *s) {
     //Updates are scheduled as a stack, with children getting updated first
@@ -311,6 +312,17 @@ FluidOctreeNode::addToChildren(GameObject *obj) {
     //Try adding this object to my children.  Note that they won't actually get
     // added to the contents here, only scheduled for addition.
     Box bxObjBounds = obj->getPhysicsModel()->getCollisionVolume();
+
+
+static int dbg_level = 0;
+string spaces(dbg_level++,'\t');
+printf("%sInserting obj %d @ level %d (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f) vs (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)\n",
+    spaces.c_str(), obj->getId(), dbg_level,
+    m_bxBounds.x, m_bxBounds.y, m_bxBounds.z,
+    m_bxBounds.w, m_bxBounds.h, m_bxBounds.l,
+    bxObjBounds.x, bxObjBounds.y, bxObjBounds.z,
+    bxObjBounds.w, bxObjBounds.h, bxObjBounds.l
+);
 
     bool bSomeChildCanAdd = false;
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
@@ -341,6 +353,7 @@ FluidOctreeNode::addToChildren(GameObject *obj) {
             break;
         }
     }
+dbg_level--;
     return bSomeChildCanAdd;
 }
 
@@ -475,7 +488,6 @@ bool
 FluidOctreeLeaf::add(GameObject *obj, bool bForce) {
     Box bxObjBounds = obj->getPhysicsModel()->getCollisionVolume();
     bool bCanAdd = bForce;
-
     char dirs = bxOutOfBounds(bxObjBounds, m_bxBounds);
     if(dirs) {
         //It doesn't fit in me, but if forced I will add it to me
@@ -489,5 +501,9 @@ FluidOctreeLeaf::add(GameObject *obj, bool bForce) {
         m_lsObjsToAdd.push_back(obj);
         bCanAdd = true;
     }
+
+if(bCanAdd) {
+printf("--leaf insert of obj %d--\n", obj->getId());
+}
     return bCanAdd;
 }
