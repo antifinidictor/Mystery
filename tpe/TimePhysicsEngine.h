@@ -54,6 +54,8 @@ public:
     virtual bool applyPhysics(GameObject *obj);
     virtual void applyPhysics(GameObject *obj1, GameObject *obj2);
 
+    virtual void applyCollisionPhysics(std::list<GameObject*> &ls1, std::list<GameObject*> &ls2);
+
 private:
     TimePhysicsEngine();
     virtual ~TimePhysicsEngine();

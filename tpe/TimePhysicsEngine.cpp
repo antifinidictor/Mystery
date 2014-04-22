@@ -86,6 +86,18 @@ TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
     }
 }
 
+
+void
+TimePhysicsEngine::applyCollisionPhysics(list<GameObject*> &ls1, list<GameObject*> &ls2) {
+    for(list<GameObject*>::iterator it1 = ls1.begin(); it1 != ls1.end(); ++it1) {
+        for(list<GameObject*>::iterator it2 = ls2.begin(); it2 != ls2.end(); ++it2) {
+            if((*it1)->getId() != (*it2)->getId()) {
+                applyPhysics(*it1, *it2);
+            }
+        }
+    }
+}
+
 void
 TimePhysicsEngine::boxOnUnknownCollision(GameObject *obj1, GameObject *obj2, uint uiMdl1) {
     AbstractTimePhysicsModel *tpm2 = (AbstractTimePhysicsModel*)(obj2->getPhysicsModel());
