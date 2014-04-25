@@ -12,7 +12,7 @@ class Scheduler;
 
 class FluidOctreeNode {
 public:
-    FluidOctreeNode(const Box &bxBounds, float fMinResolution = 1.f);
+    FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution = 1.f);
     virtual ~FluidOctreeNode();
 
     //Schedules object for appending to the appropriate node and returns true if it can be done
@@ -81,6 +81,9 @@ protected:
     Vorton m_vrtAggregate;
 
     //Container information
+    uint m_uiEngineId;
+    uint m_uiAreaId;
+    uint m_uiLevel;
     std::map<uint,GameObject *> m_mContents;
     std::list<GameObject *> m_lsObjsToAdd;
     std::list<uint> m_lsObjsToErase;
@@ -94,10 +97,11 @@ protected:
 
 class FluidOctreeRoot : public FluidOctreeNode {
 public:
-    FluidOctreeRoot(const Box &bxBounds, float fMinResolution = 1.f);
+    FluidOctreeRoot(uint uiEngineId, uint uiAreaId, const Box &bxBounds, float fMinResolution = 1.f);
     virtual ~FluidOctreeRoot();
 
     void scheduleUpdates(Scheduler *s) { FluidOctreeNode::recursiveScheduleUpdates(s); }
+    virtual int tempGetClassId() { return -1; }
 
 protected:
     FluidOctreeRoot *neighbors[NUM_CARDINAL_DIRECTIONS];
@@ -106,11 +110,12 @@ protected:
 
 class FluidOctreeLeaf : public FluidOctreeNode {
 public:
-    FluidOctreeLeaf(const Box &bxBounds, float fMinResolution = 1.f);
+    FluidOctreeLeaf(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution = 1.f);
     virtual ~FluidOctreeLeaf();
 
     //Adding to a leaf node is much simpler than adding to a general node
     virtual bool add(GameObject *obj, bool bForce = false);
+    virtual int tempGetClassId() { return 1; }
 
 protected:
     std::list<Vorton> m_lsVortons;

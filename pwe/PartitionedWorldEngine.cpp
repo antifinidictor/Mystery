@@ -96,6 +96,9 @@ PartitionedWorldEngine::update(float fDeltaTime) {
 
 
     if(m_eState == PWE_RUNNING) {   //State can be disabled
+        //Update the physics engine clock
+        pe->update(fDeltaTime);
+
         m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime));
     }
 
@@ -420,7 +423,7 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
     toPowerOfTwo(bxBounds);
 
     //Now we create the octree
-    itArea->second.m_pOctree = new FluidOctreeRoot(bxBounds);
+    itArea->second.m_pOctree = new FluidOctreeRoot(getId(), itArea->first, bxBounds);
 
     //Fill the octree
     for(list<GameObject*>::iterator it = lsObjsToAdd.begin(); it != lsObjsToAdd.end(); ++it) {

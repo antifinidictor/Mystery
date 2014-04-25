@@ -69,9 +69,11 @@ void TimePhysicsModel::update(float fDeltaTime) {
     float fx = 0.5 * m_ptAcceleration.x * dt * dt + m_ptVelocity.x * dt;
     float fy = 0.5 * m_ptAcceleration.y * dt * dt + m_ptVelocity.y * dt;
     float fz = 0.5 * m_ptAcceleration.z * dt * dt + m_ptVelocity.z * dt;
+
     m_ptVelocity.x = m_ptAcceleration.x * dt + m_ptVelocity.x * m_fFrictionAffect;
     m_ptVelocity.y = m_ptAcceleration.y * dt + m_ptVelocity.y * m_fFrictionAffect;
     m_ptVelocity.z = m_ptAcceleration.z * dt + m_ptVelocity.z * m_fFrictionAffect;
+
     moveBy(Point(fx, fy, fz));
 
     //Reset values changed each turn

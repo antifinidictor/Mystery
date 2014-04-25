@@ -2,6 +2,7 @@
 #include "mge/GameObject.h"
 #include "tpe/tpe.h"
 #include "d3re/d3re.h"
+#include "pwe/PartitionedWorldEngine.h"
 
 using namespace std;
 
@@ -9,9 +10,13 @@ using namespace std;
 
 BasicScheduler *BasicScheduler::m_pInstance = new BasicScheduler();
 
-FluidOctreeNode::FluidOctreeNode(const Box &bxBounds, float fMinResolution)
+FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution)
     : m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Point())
 {
+    m_uiEngineId = uiEngineId;
+    m_uiAreaId = uiAreaId;
+    m_uiLevel = uiLevel;
+
     m_bEmpty = true;
     m_bxBounds = bxBounds;
     m_fMinResolution = fMinResolution;
@@ -301,7 +306,7 @@ FluidOctreeNode::recursiveScheduleUpdates(Scheduler *s) {
     //Updates are scheduled as a stack, with children getting updated first
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         if(m_apChildren[q] != NULL) {
-            s->scheduleUpdate(m_apChildren[q]);
+            m_apChildren[q]->recursiveScheduleUpdates(s);    //The node should schedule itself
         }
     }
     s->scheduleUpdate(this);
@@ -313,11 +318,9 @@ FluidOctreeNode::addToChildren(GameObject *obj) {
     // added to the contents here, only scheduled for addition.
     Box bxObjBounds = obj->getPhysicsModel()->getCollisionVolume();
 
-
-static int dbg_level = 0;
-string spaces(dbg_level++,'\t');
-printf("%sInserting obj %d @ level %d (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f) vs (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)\n",
-    spaces.c_str(), obj->getId(), dbg_level,
+string spaces(m_uiLevel,'\t');
+printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f) vs (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)\n",
+    spaces.c_str(), obj->getId(), m_uiEngineId, m_uiLevel,
     m_bxBounds.x, m_bxBounds.y, m_bxBounds.z,
     m_bxBounds.w, m_bxBounds.h, m_bxBounds.l,
     bxObjBounds.x, bxObjBounds.y, bxObjBounds.z,
@@ -334,13 +337,27 @@ printf("%sInserting obj %d @ level %d (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f) vs (%.1f,
             //If we could make a valid child here and it would be inside this child
             if(getChildBounds(q, bxChildBounds) && bxOutOfBounds(bxObjBounds, bxChildBounds) == 0) {
                 //Create a new child octree here
+                uint uiNewLevel = m_uiLevel + 1;
+                uint uiNewEngineId = (q << (uiNewLevel * 4)) | m_uiEngineId;
                 if(childIsLeafNode(bxChildBounds)) {
                     //Leaf octree node
-                    m_apChildren[q] = new FluidOctreeLeaf(bxChildBounds, m_fMinResolution);
+                    m_apChildren[q] = new FluidOctreeLeaf(
+                        uiNewEngineId,
+                        m_uiAreaId,
+                        uiNewLevel,
+                        bxChildBounds,
+                        m_fMinResolution
+                    );
 
                 } else {
                     //Generic octree node
-                    m_apChildren[q] = new FluidOctreeNode(bxChildBounds, m_fMinResolution);
+                    m_apChildren[q] = new FluidOctreeNode(
+                        uiNewEngineId,
+                        m_uiAreaId,
+                        uiNewLevel,
+                        bxChildBounds,
+                        m_fMinResolution
+                    );
                 }
 
                 //Add to child
@@ -353,7 +370,6 @@ printf("%sInserting obj %d @ level %d (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f) vs (%.1f,
             break;
         }
     }
-dbg_level--;
     return bSomeChildCanAdd;
 }
 
@@ -361,12 +377,14 @@ dbg_level--;
 void
 FluidOctreeNode::addNow(GameObject *obj) {
     m_mContents[obj->getId()] = obj;
+    obj->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ADDED_TO_AREA);
 }
 
 void
 FluidOctreeNode::removeNow(uint uiObjId) {
     iter_t itFoundObj = m_mContents.find(uiObjId);
     if(itFoundObj != m_mContents.end()) {
+        itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_REMOVED_FROM_AREA);
         m_mContents.erase(itFoundObj);
     } else {
         printf(__FILE__" %d ERROR: Failed to remove object %d from octree; obj does not exist\n", __LINE__, uiObjId);
@@ -377,6 +395,7 @@ void
 FluidOctreeNode::eraseNow(uint uiObjId) {
     iter_t itFoundObj = m_mContents.find(uiObjId);
     if(itFoundObj != m_mContents.end()) {
+        itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ERASED_FROM_AREA);
         delete itFoundObj->second;
         m_mContents.erase(itFoundObj);
     } else {
@@ -464,8 +483,8 @@ FluidOctreeNode::updateEmptiness() {
  * FluidOctreeRoot
  */
 
-FluidOctreeRoot::FluidOctreeRoot(const Box &bxBounds, float fMinResolution)
-    : FluidOctreeNode(bxBounds, fMinResolution)
+FluidOctreeRoot::FluidOctreeRoot(uint uiEngineId, uint uiAreaId, const Box &bxBounds, float fMinResolution)
+    : FluidOctreeNode(uiEngineId, uiAreaId, 0, bxBounds, fMinResolution)
 {
 }
 
@@ -476,8 +495,8 @@ FluidOctreeRoot::~FluidOctreeRoot() {
  * FluidOctreeLeaf
  */
 
-FluidOctreeLeaf::FluidOctreeLeaf(const Box &bxBounds, float fMinResolution)
-    : FluidOctreeNode(bxBounds, fMinResolution)
+FluidOctreeLeaf::FluidOctreeLeaf(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution)
+    : FluidOctreeNode(uiEngineId, uiAreaId, uiLevel, bxBounds, fMinResolution)
 {
 }
 
@@ -503,7 +522,8 @@ FluidOctreeLeaf::add(GameObject *obj, bool bForce) {
     }
 
 if(bCanAdd) {
-printf("--leaf insert of obj %d--\n", obj->getId());
+string spaces(m_uiLevel,'\t');
+printf("%sInserting obj %d @ node %x (level %d)\n", spaces.c_str(), obj->getId(), m_uiEngineId, m_uiLevel);
 }
     return bCanAdd;
 }
