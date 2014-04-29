@@ -102,7 +102,6 @@ private:
             m_pOctree = NULL;
         }
         std::string m_sName;
-        std::map<uint, GameObject *> m_mCurArea;
         FluidOctreeRoot *m_pOctree;
         std::map<uint, Listener*> m_mMouseMoveListeners;
         std::map<uint, Listener*> m_mButtonInputListeners;
@@ -116,9 +115,6 @@ private:
 
     void cleanAllAreas();
     void cleanAreaNow(uint uiAreaId);
-    void removeFromNow(uint uiObjId, uint uiAreaId);
-    void deleteFromNow(uint uiObjId, uint uiAreaId);
-    void addToNow(GameObject *obj, uint uiAreaId);
 
     void toPowerOfTwo(Box &in);
 
@@ -128,15 +124,11 @@ private:
     RenderEngine  *re;
 
     std::map<uint, M_Area> m_mWorld;
-    //std::map<uint, GameObject *> *m_mCurArea;
     uint m_uiCurArea, m_uiNextArea, m_uiEffectiveArea;
     bool m_bFirstRun;
 
     //Scheduled events
     std::list<uint> m_lsAreasToClean;
-    std::list<std::pair<uint,uint> > m_lsObjsToRemove;
-    std::list<std::pair<uint,uint> > m_lsObjsToDelete;
-    std::list<std::pair<GameObject*,uint> > m_lsObjsToAdd;
 
     std::list<uint> m_lsFreeIds;
 

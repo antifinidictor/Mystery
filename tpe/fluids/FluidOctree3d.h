@@ -6,6 +6,7 @@
 #include "mge/defs.h"
 #include <map>
 #include <list>
+#include <boost/property_tree/ptree.hpp>
 
 class GameObject;
 class Scheduler;
@@ -27,6 +28,9 @@ public:
 
     //Returns a reference to the appropriate object
     GameObject *find(uint uiObjId);
+
+
+    void write(boost::property_tree::ptree &pt, const std::string &keyBase);
 
     //WARNING: ONLY SCHEDULER SHOULD CALL
     void update(float fTime);

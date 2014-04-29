@@ -147,6 +147,22 @@ FluidOctreeNode::find(uint uiObjId) {
 
 
 void
+FluidOctreeNode::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
+    //Write contents
+    for(iter_t it = m_mContents.begin(); it != m_mContents.end(); ++it) {
+        GameObject *obj = it->second;
+        obj->write(pt, keyBase + "." + obj->getClass() + "." + obj->getName());
+    }
+
+    //Write children
+    for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
+        if(m_apChildren[q] != NULL && !m_apChildren[q]->empty()) {
+            m_apChildren[q]->write(pt, keyBase);
+        }
+    }
+}
+
+void
 FluidOctreeNode::update(float fTime) {
     SDL_LockMutex(m_mutex);
 
@@ -246,7 +262,7 @@ void
 FluidOctreeNode::handleChildrenUpdateResults() {
     TimePhysicsEngine *pe = TimePhysicsEngine::get();
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
-        if(m_apChildren[q] != NULL) {
+        if(m_apChildren[q] != NULL/* && !m_apChildren[q]->empty()*/) {
             SDL_LockMutex(m_apChildren[q]->m_mutex);
             //To get here, the child must have already been updated
             //Perform collision checks on relevant lists
@@ -318,7 +334,7 @@ void
 FluidOctreeNode::recursiveScheduleUpdates(Scheduler *s) {
     //Updates are scheduled as a stack, with children getting updated first
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
-        if(m_apChildren[q] != NULL) {
+        if(m_apChildren[q] != NULL/* && !m_apChildren[q]->empty()*/) {
             m_apChildren[q]->recursiveScheduleUpdates(s);    //The node should schedule itself
         }
     }
@@ -331,6 +347,7 @@ FluidOctreeNode::addToChildren(GameObject *obj) {
     // added to the contents here, only scheduled for addition.
     Box bxObjBounds = obj->getPhysicsModel()->getCollisionVolume();
 
+#ifdef DEBUG_OCTREE
 string spaces(m_uiLevel,'\t');
 printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f) vs (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)\n",
     spaces.c_str(), obj->getId(), m_uiEngineId, m_uiLevel,
@@ -339,6 +356,7 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
     bxObjBounds.x, bxObjBounds.y, bxObjBounds.z,
     bxObjBounds.w, bxObjBounds.h, bxObjBounds.l
 );
+#endif
 
     bool bSomeChildCanAdd = false;
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
@@ -406,6 +424,7 @@ FluidOctreeNode::removeNow(uint uiObjId) {
         if(itFoundObj->second->getFlag(PWE_INFORM_OBJ)) {
             itFoundObj->second->setFlag(PWE_INFORM_OBJ, false);
             itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_REMOVED_FROM_AREA);
+            D3RE::get()->remove(itFoundObj->second);
         }
 
         //Object exists, remove it
@@ -420,11 +439,10 @@ FluidOctreeNode::eraseNow(uint uiObjId) {
     //Does the object even exist in this node?
     iter_t itFoundObj = m_mContents.find(uiObjId);
     if(itFoundObj != m_mContents.end()) {
-        //TODO: Is there a better way to do this?
-        if(itFoundObj->second->getFlag(PWE_INFORM_OBJ)) {
-            itFoundObj->second->setFlag(PWE_INFORM_OBJ, false);
-            itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ERASED_FROM_AREA);
-        }
+        D3RE::get()->remove(itFoundObj->second);
+
+        //TODO: Always inform objects of imminent erasure
+        itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ERASED_FROM_AREA);
 
         //Object exists, delete it
         delete itFoundObj->second;
@@ -598,10 +616,11 @@ FluidOctreeLeaf::add(GameObject *obj, bool bForce) {
         m_lsObjsToAdd.push_back(obj);
         bCanAdd = true;
     }
-
+#ifdef DEBUG_OCTREE
 if(bCanAdd) {
 string spaces(m_uiLevel,'\t');
 printf("%sInserting obj %d @ node %x (level %d)\n", spaces.c_str(), obj->getId(), m_uiEngineId, m_uiLevel);
 }
+#endif
     return bCanAdd;
 }

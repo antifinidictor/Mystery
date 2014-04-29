@@ -103,100 +103,10 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime));
     }
 
-#if 0
-    list<GameObject*> lsHasMoved;
-
-    if(m_eState == PWE_RUNNING) {   //State can be disabled
-        //Update the physics engine clock
-        pe->update(fDeltaTime);
-
-        //Update the world (including non-physics updates)
-        for(map<uint, GameObject*>::iterator it = m_pCurArea->m_mCurArea.begin();
-                it != m_pCurArea->m_mCurArea.end(); ++it) {
-
-            //Update non-physics bit first
-            if(it->second->update(fDeltaTime)) {
-                m_lsObjsToDelete.push_back(pair<uint,uint>(it->second->getId(), m_uiCurArea));
-                /*
-                //This object requested that it be removed
-
-                //Get the previous iterator, then go back to the next element
-                map<uint, GameObject*>::iterator itTemp = (--it)++;
-
-                //Remove the object from the world map, the screen, and memory
-                m_pCurArea->m_mCurArea.erase(it);
-                re->remove(obj);
-                delete obj;
-
-                //Restore the iterator to a valid position in the map
-                it = itTemp;
-                */
-                continue;
-            }
-
-            //Update physics.  If it returns true, it has moved and needs collision checks.
-            bool bHasMoved = pe->applyPhysics(it->second);
-
-            //Apply joint physics
-            if(bHasMoved) {
-                lsHasMoved.push_back(it->second);
-            } else {
-                for(list<GameObject*>::iterator mv = lsHasMoved.begin();
-                        mv != lsHasMoved.end(); ++mv) {
-                    pe->applyPhysics(it->second, (*mv));
-                }
-            }
-
-            if(bHasMoved || re->screenHasMoved()) {
-                re->manageObjOnScreen(it->second);
-            }
-        }
-
-        //Collision check the remaining objects
-        for(list<GameObject*>::iterator mv = lsHasMoved.begin();
-                mv != lsHasMoved.end(); ++mv) {
-            for(map<uint, GameObject*>::iterator it = m_pCurArea->m_mCurArea.begin();
-                    it != m_pCurArea->m_mCurArea.end(); ++it) {
-                if(it->second->getId() == (*mv)->getId()) {
-                    break;
-                }
-                pe->applyPhysics(it->second, *mv);
-            }
-        }
-
-        //Clear the list of moved objects
-        lsHasMoved.clear();
-    } else {
-        for(map<uint, GameObject*>::iterator it = m_pCurArea->m_mCurArea.begin();
-                it != m_pCurArea->m_mCurArea.end(); ++it) {
-            re->manageObjOnScreen(it->second);
-        }
-    }
-
-    //Scheduled events
     list<uint>::iterator itAreaId;
-    list<pair<uint,uint> >::iterator itObjIdAreaId;
-    list<pair<GameObject*,uint> >::iterator itObjAreaId;
-    for(itObjIdAreaId = m_lsObjsToDelete.begin(); itObjIdAreaId != m_lsObjsToDelete.end(); ++itObjIdAreaId) {
-        deleteFromNow(itObjIdAreaId->first, itObjIdAreaId->second);
-    }
-    m_lsObjsToDelete.clear();
-
-    for(itObjIdAreaId = m_lsObjsToRemove.begin(); itObjIdAreaId != m_lsObjsToRemove.end(); ++itObjIdAreaId) {
-        removeFromNow(itObjIdAreaId->first, itObjIdAreaId->second);
-    }
-    m_lsObjsToRemove.clear();
-
     for(itAreaId = m_lsAreasToClean.begin(); itAreaId != m_lsAreasToClean.end(); ++itAreaId) {
         cleanAreaNow(*itAreaId);
     }
-    m_lsAreasToClean.clear();
-
-    for(itObjAreaId = m_lsObjsToAdd.begin(); itObjAreaId != m_lsObjsToAdd.end(); ++itObjAreaId) {
-        addToNow(itObjAreaId->first, itObjAreaId->second);
-    }
-    m_lsObjsToAdd.clear();
-#endif
 
     //If necessary, set the current area (we wanted to finish this update first)
     if(m_uiCurArea != m_uiNextArea) {
@@ -236,13 +146,7 @@ PartitionedWorldEngine::findIn(uint uiObjId, uint uiAreaId) {
         return NULL;
     }
 
-    itObj = itArea->second.m_mCurArea.find(uiObjId);
-    if(itObj != itArea->second.m_mCurArea.end()) {
-        return itObj->second;
-    } else {
-        printf("ERROR %s %d: Tried to find nonexistent object %d\n", __FILE__, __LINE__, uiObjId);
-        return NULL;
-    }
+    return itArea->second.m_pOctree->find(uiObjId);
 }
 
 uint
@@ -307,12 +211,36 @@ PartitionedWorldEngine::moveObjectToArea(uint uiObjId, uint uiStartAreaId, uint 
 
 void
 PartitionedWorldEngine::addTo(GameObject *obj, uint uiAreaId) {
-    m_lsObjsToAdd.push_back(pair<GameObject*,uint>(obj, uiAreaId));
+    //m_lsObjsToAdd.push_back(pair<GameObject*,uint>(obj, uiAreaId));
+    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
+    if(itArea != m_mWorld.end()) {
+        //itArea->second.m_mCurArea[obj->getId()] = obj;
+        //obj->callBack(getId(), &uiAreaId, PWE_ON_ADDED_TO_AREA);
+        obj->setFlag(PWE_INFORM_OBJ, true); //So the object is informed of its new place
+        itArea->second.m_pOctree->add(obj);
+    } else {
+        printf("ERROR %s %d: Tried to add object to nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
+        return;
+    }
 }
 
 void
 PartitionedWorldEngine::removeFrom(uint uiObjId, uint uiAreaId) {
-    m_lsObjsToRemove.push_back(pair<uint,uint>(uiObjId, uiAreaId));
+    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
+    if(itArea == m_mWorld.end()) {
+        printf("ERROR %s %d: Tried to remove object from nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
+        return;
+    }
+
+    //TODO: Make less hacky
+    GameObject *obj = itArea->second.m_pOctree->find(uiObjId);
+    if(obj != NULL) {
+        obj->setFlag(PWE_INFORM_OBJ, true);
+        itArea->second.m_pOctree->remove(uiObjId);
+    } else {
+        printf("ERROR %s %d: Tried to remove nonexistent object %d\n", __FILE__, __LINE__, uiObjId);
+        return;
+    }
 }
 
 void
@@ -352,10 +280,7 @@ PartitionedWorldEngine::writeArea(uint uiAreaId, boost::property_tree::ptree &pt
     //Key-base should already be the area name
     pt.put(keyBase, uiAreaId);
 
-    for(itObj = itArea->second.m_mCurArea.begin(); itObj != itArea->second.m_mCurArea.end(); ++itObj) {
-        GameObject *obj = itObj->second;
-        itObj->second->write(pt, keyBase + "." + obj->getClass() + "." + obj->getName());
-    }
+    itArea->second.m_pOctree->write(pt, keyBase);
 }
 
 
@@ -428,7 +353,7 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
     //Fill the octree
     for(list<GameObject*>::iterator it = lsObjsToAdd.begin(); it != lsObjsToAdd.end(); ++it) {
         //Old add code
-        addTo(*it, uiAreaId);
+        //addTo(*it, uiAreaId);
 
         //New add code
         itArea->second.m_pOctree->add(*it);
@@ -587,12 +512,10 @@ PartitionedWorldEngine::cleanAreaNow(uint uiAreaId) {
     }
 
     //Delete the objects from the area
-    for(itObj = itArea->second.m_mCurArea.begin(); itObj != itArea->second.m_mCurArea.end(); ++itObj) {
-        delete (itObj->second);
-    }
+    //TODO: This may be the cause of a segfault.  Do we want to just erase the objects, or erase the octree?
+    delete itArea->second.m_pOctree;
 
     //Clear the lists of the bad pointers
-    itArea->second.m_mCurArea.clear();
     itArea->second.m_mMouseMoveListeners.clear();
     itArea->second.m_mButtonInputListeners.clear();
 
@@ -600,58 +523,6 @@ PartitionedWorldEngine::cleanAreaNow(uint uiAreaId) {
     // why you should never call this function on the current area
 }
 
-void
-PartitionedWorldEngine::removeFromNow(uint uiObjId, uint uiAreaId) {
-    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
-    map<uint, GameObject*>::iterator itObj;
-    if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to remove object from nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
-        return;
-    }
-
-    itObj = itArea->second.m_mCurArea.find(uiObjId);
-    if(itObj != itArea->second.m_mCurArea.end()) {
-        GameObject *obj = itObj->second;
-        re->remove(obj);
-        itArea->second.m_mCurArea.erase(itObj);
-        obj->callBack(0, &uiAreaId, PWE_ON_REMOVED_FROM_AREA);
-    } else {
-        printf("ERROR %s %d: Tried to erase nonexistent object %d\n", __FILE__, __LINE__, uiObjId);
-        return;
-    }
-}
-
-void
-PartitionedWorldEngine::deleteFromNow(uint uiObjId, uint uiAreaId) {
-    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
-    map<uint, GameObject*>::iterator itObj;
-    if(itArea == m_mWorld.end()) {
-        printf("ERROR %s %d: Tried to remove object from nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
-        return;
-    }
-
-    itObj = itArea->second.m_mCurArea.find(uiObjId);
-    if(itObj != itArea->second.m_mCurArea.end()) {
-        re->remove(itObj->second);  //Make sure the object isn't on screen
-        delete (itObj->second);
-        itArea->second.m_mCurArea.erase(itObj);
-    } else {
-        printf("ERROR %s %d: Tried to erase nonexistent object %d\n", __FILE__, __LINE__, uiObjId);
-        return;
-    }
-}
-
-void
-PartitionedWorldEngine::addToNow(GameObject *obj, uint uiAreaId) {
-    map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
-    if(itArea != m_mWorld.end()) {
-        itArea->second.m_mCurArea[obj->getId()] = obj;
-        obj->callBack(getId(), &uiAreaId, PWE_ON_ADDED_TO_AREA);
-    } else {
-        printf("ERROR %s %d: Tried to add object to nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
-        return;
-    }
-}
 
 void
 PartitionedWorldEngine::toPowerOfTwo(Box &bx) {
