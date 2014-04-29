@@ -125,8 +125,8 @@ bool Player::update(float fDeltaTime) {
     }
 
 
-    Point pos = m_pPhysicsModel->getPosition();
-    printf("Player position (line %d): (%f,%f,%f)\n", __LINE__, pos.x, pos.y, pos.z);
+    //Point pos = m_pPhysicsModel->getPosition();
+    //printf("Player position (line %d): (%f,%f,%f)\n", __LINE__, pos.x, pos.y, pos.z);
 
     m_bFirst = false;
     return false;

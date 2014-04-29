@@ -9,6 +9,7 @@
 
 class GameObject;
 class Scheduler;
+struct SDL_mutex;
 
 class FluidOctreeNode {
 public:
@@ -59,7 +60,7 @@ protected:
     void removeNow(uint uiObjId);   //Removes from this object's contents
     void eraseNow(uint uiObjId);    //Erases from this object's contents
 
-    bool getChildBounds(int iQuadName, Box &bx);
+    bool getChildBounds(int iQuadName, const Box &bxMyBounds, Box &bxChildBounds);
     bool childIsLeafNode(const Box &bxChildBounds);
     void updateEmptiness();
     bool empty() { return m_bEmpty; }
@@ -72,7 +73,7 @@ protected:
 
     //Octree node information
     Box m_bxBounds;                                 //Non-relative bounds.  Fluids may expand, but they don't actually move.
-    FluidOctreeNode *m_pParent;
+    //FluidOctreeNode *m_pParent;
     FluidOctreeNode *m_apChildren[QUAD_NUM_QUADS];
     bool m_bEmpty;
     float m_fMinResolution;
@@ -90,6 +91,7 @@ protected:
     std::list<uint> m_lsObjsToRemove;
 
     //Information calculated on each scheduled update event, used by parents in their update event, cleared by parents
+    SDL_mutex *m_mutex;
     objlist_t m_lsDynamicObjs;      //These objects have moved and must be compared against all objects
     objlist_t m_lsStaticObjs;       //These objects have not moved and must be compared against
     objlist_t m_lsObjsLeftQuadrant; //These objects left their quadrant and need to be added to the next level up
@@ -102,6 +104,8 @@ public:
 
     void scheduleUpdates(Scheduler *s) { FluidOctreeNode::recursiveScheduleUpdates(s); }
     virtual int tempGetClassId() { return -1; }
+
+    void debugPrintBounds();
 
 protected:
     FluidOctreeRoot *neighbors[NUM_CARDINAL_DIRECTIONS];

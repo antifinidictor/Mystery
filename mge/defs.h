@@ -24,6 +24,16 @@ const int SCREEN_WIDTH = 640;
 #define FLIP_BIT(val, bit)  (val ^  BIT(bit))
 
 //Constants
+/*
+    +y (UP)
+    |
+    |
+    |___ +x (EAST)
+   /
+  /
++z (SOUTH)
+
+ */
 enum Directions {
     NORTH,
     NORTHEAST,
@@ -327,8 +337,8 @@ char  rcOutOfBounds(const RC &rc, const RC &rcBounds);
 char  ptOutOfBounds(const PT &pt, const RC &rcBounds);
 bool  bxIntersects(const BX &bx1, const BX &bx2);
 bool  bxIntersectsEq(const BX &bx1, const BX &bx2);
-char  bxOutOfBounds(const BX &bx, const BX &bxBounds);
-char  ptOutOfBounds(const PT &pt, const BX &bxBounds);
+uint  bxOutOfBounds(const BX &bx, const BX &bxBounds);
+uint  ptOutOfBounds(const PT &pt, const BX &bxBounds);
 bool  ptInRect(const PT &pt, const RC &rc);
 bool  ptInXZRect(const PT &pt, const BX &bx);
 PT    bxCenter(const BX &bx);

@@ -208,14 +208,21 @@ bool bxIntersectsEq(const Box &bx1, const Box &bx2) {
  * Returns true if any part of the first box is outside of the second
  * (boundary) box.  You can use the output to tell which boundaries the
  * box has crossed.
+    +y (UP)
+    |
+    |
+    |___ +x (EAST)
+   /
+  /
++z (SOUTH)
  */
-char bxOutOfBounds(const Box &bx, const Box &bxBounds) {
-    return  ((bx.y < bxBounds.y) << NORTH) |
+uint bxOutOfBounds(const Box &bx, const Box &bxBounds) {
+    return  ((bx.z        < bxBounds.z)              << NORTH) |
             ((bx.x + bx.w > bxBounds.x + bxBounds.w) << EAST) |
-            ((bx.y + bx.h > bxBounds.y + bxBounds.h) << SOUTH) |
-            ((bx.x < bxBounds.x) << WEST) |
-            ((bx.z + bx.l > bxBounds.z + bxBounds.l) << UP) |
-            ((bx.z < bxBounds.z) << DOWN);
+            ((bx.z + bx.l > bxBounds.z + bxBounds.l) << SOUTH) |
+            ((bx.x        < bxBounds.x)              << WEST) |
+            ((bx.y + bx.h > bxBounds.y + bxBounds.h) << UP) |
+            ((bx.y        < bxBounds.y)              << DOWN);
 }
 
 /*
@@ -223,13 +230,13 @@ char bxOutOfBounds(const Box &bx, const Box &bxBounds) {
  * Returns true if any part of the point is outside of the boundary box.
  * You can use the output to tell which boundaries the point has crossed.
  */
-char ptOutOfBounds(const Point &pt, const Box &bxBounds) {
-    return  ((pt.y < bxBounds.y) << NORTH) |
+uint ptOutOfBounds(const Point &pt, const Box &bxBounds) {
+    return  ((pt.z < bxBounds.z)              << NORTH) |
             ((pt.x > bxBounds.x + bxBounds.w) << EAST) |
-            ((pt.y > bxBounds.y + bxBounds.h) << SOUTH) |
-            ((pt.x < bxBounds.x) << WEST) |
-            ((pt.z > bxBounds.z + bxBounds.l) << UP) |
-            ((pt.z < bxBounds.z) << DOWN);
+            ((pt.z > bxBounds.z + bxBounds.l) << SOUTH) |
+            ((pt.x < bxBounds.x)              << WEST) |
+            ((pt.y > bxBounds.y + bxBounds.h) << UP) |
+            ((pt.y < bxBounds.y)              << DOWN);
 }
 
 

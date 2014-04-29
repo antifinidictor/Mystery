@@ -3,6 +3,7 @@
 #include "tpe/tpe.h"
 #include "d3re/d3re.h"
 #include "pwe/PartitionedWorldEngine.h"
+#include "SDL.h"    //for the threading stuff
 
 using namespace std;
 
@@ -17,6 +18,8 @@ FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, c
     m_uiAreaId = uiAreaId;
     m_uiLevel = uiLevel;
 
+    m_mutex = SDL_CreateMutex();    //Used for ensuring update ops don't overlap
+
     m_bEmpty = true;
     m_bxBounds = bxBounds;
     m_fMinResolution = fMinResolution;
@@ -28,6 +31,7 @@ FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, c
 }
 
 FluidOctreeNode::~FluidOctreeNode() {
+    SDL_LockMutex(m_mutex); //TODO: Necessary?
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         if(m_apChildren[q] != NULL) {
             delete m_apChildren[q];
@@ -39,6 +43,8 @@ FluidOctreeNode::~FluidOctreeNode() {
         delete it->second;
     }
     m_mContents.clear();
+    SDL_UnlockMutex(m_mutex);
+    SDL_DestroyMutex(m_mutex);
 }
 
 //Adds object to the appropriate list
@@ -142,11 +148,13 @@ FluidOctreeNode::find(uint uiObjId) {
 
 void
 FluidOctreeNode::update(float fTime) {
+    SDL_LockMutex(m_mutex);
+
     //Update internal container elements
     updateContents(fTime);
 
     //Deal with childrens' update-results
-    handleChildrenUpdateResults();
+    handleChildrenUpdateResults();  //Children mutex's acquired in here
 
     //Erase queued objects from the container
     for(list<uint>::iterator itObjId = m_lsObjsToErase.begin(); itObjId != m_lsObjsToErase.end(); ++itObjId) {
@@ -166,6 +174,8 @@ FluidOctreeNode::update(float fTime) {
     }
     m_lsObjsToAdd.clear();
     updateEmptiness();
+
+    SDL_UnlockMutex(m_mutex);
 }
 
 void
@@ -237,6 +247,7 @@ FluidOctreeNode::handleChildrenUpdateResults() {
     TimePhysicsEngine *pe = TimePhysicsEngine::get();
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         if(m_apChildren[q] != NULL) {
+            SDL_LockMutex(m_apChildren[q]->m_mutex);
             //To get here, the child must have already been updated
             //Perform collision checks on relevant lists
             //Dynamic objects from child must be checked against my static objects
@@ -296,6 +307,8 @@ FluidOctreeNode::handleChildrenUpdateResults() {
 
             //Clear child lists
             m_apChildren[q]->cleanResults();
+
+            SDL_UnlockMutex(m_apChildren[q]->m_mutex);
         }
     }
 }
@@ -335,7 +348,7 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
             //See if we want to make a new child (can create child bounds & obj is inside bounds)
             Box bxChildBounds;
             //If we could make a valid child here and it would be inside this child
-            if(getChildBounds(q, bxChildBounds) && bxOutOfBounds(bxObjBounds, bxChildBounds) == 0) {
+            if(getChildBounds(q, m_bxBounds, bxChildBounds) && bxOutOfBounds(bxObjBounds, bxChildBounds) == 0) {
                 //Create a new child octree here
                 uint uiNewLevel = m_uiLevel + 1;
                 uint uiNewEngineId = (q << (uiNewLevel * 4)) | m_uiEngineId;
@@ -377,14 +390,25 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
 void
 FluidOctreeNode::addNow(GameObject *obj) {
     m_mContents[obj->getId()] = obj;
-    obj->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ADDED_TO_AREA);
+
+    //TODO: Is there a better way to do this?
+    if(obj->getFlag(PWE_INFORM_OBJ)) {
+        obj->setFlag(PWE_INFORM_OBJ, false);
+        obj->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ADDED_TO_AREA);
+    }
 }
 
 void
 FluidOctreeNode::removeNow(uint uiObjId) {
     iter_t itFoundObj = m_mContents.find(uiObjId);
     if(itFoundObj != m_mContents.end()) {
-        itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_REMOVED_FROM_AREA);
+        //TODO: Is there a better way to do this?
+        if(itFoundObj->second->getFlag(PWE_INFORM_OBJ)) {
+            itFoundObj->second->setFlag(PWE_INFORM_OBJ, false);
+            itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_REMOVED_FROM_AREA);
+        }
+
+        //Object exists, remove it
         m_mContents.erase(itFoundObj);
     } else {
         printf(__FILE__" %d ERROR: Failed to remove object %d from octree; obj does not exist\n", __LINE__, uiObjId);
@@ -393,9 +417,16 @@ FluidOctreeNode::removeNow(uint uiObjId) {
 
 void
 FluidOctreeNode::eraseNow(uint uiObjId) {
+    //Does the object even exist in this node?
     iter_t itFoundObj = m_mContents.find(uiObjId);
     if(itFoundObj != m_mContents.end()) {
-        itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ERASED_FROM_AREA);
+        //TODO: Is there a better way to do this?
+        if(itFoundObj->second->getFlag(PWE_INFORM_OBJ)) {
+            itFoundObj->second->setFlag(PWE_INFORM_OBJ, false);
+            itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ERASED_FROM_AREA);
+        }
+
+        //Object exists, delete it
         delete itFoundObj->second;
         m_mContents.erase(itFoundObj);
     } else {
@@ -404,11 +435,11 @@ FluidOctreeNode::eraseNow(uint uiObjId) {
 }
 
 bool
-FluidOctreeNode::getChildBounds(int iQuadName, Box &bx) {
+FluidOctreeNode::getChildBounds(int iQuadName, const Box &bxMyBounds, Box &bxChildBounds) {
     //Half-widths
-    float hw = m_bxBounds.w / 2;
-    float hh = m_bxBounds.h / 2;
-    float hl = m_bxBounds.l / 2;
+    float hw = bxMyBounds.w / 2;
+    float hh = bxMyBounds.h / 2;
+    float hl = bxMyBounds.l / 2;
 
     if(hw < m_fMinResolution && hh < m_fMinResolution && hl < m_fMinResolution) {
         //The parent of this 'child' is really a leaf node
@@ -416,41 +447,41 @@ FluidOctreeNode::getChildBounds(int iQuadName, Box &bx) {
     }
 
     if((iQuadName & QUAD_X_MASK) != 0) {  //negative
-        bx.x = m_bxBounds.x;
-        bx.w = (hw < m_fMinResolution) ? m_bxBounds.w : hw;
+        bxChildBounds.x = bxMyBounds.x;
+        bxChildBounds.w = (hw < m_fMinResolution) ? bxMyBounds.w : hw;
     } else {                            //positive
         if(hw < m_fMinResolution) {
             //Invalid child: Positive
             return false;
         } else {
-            bx.x = m_bxBounds.x + hw;
-            bx.w = hw;
+            bxChildBounds.x = bxMyBounds.x + hw;
+            bxChildBounds.w = hw;
         }
     }
 
     if((iQuadName & QUAD_Y_MASK) != 0) {  //negative
-        bx.y = m_bxBounds.y;
-        bx.h = (hh < m_fMinResolution) ? m_bxBounds.h : hh;
+        bxChildBounds.y = bxMyBounds.y;
+        bxChildBounds.h = (hh < m_fMinResolution) ? bxMyBounds.h : hh;
     } else {                            //positive
         if(hh < m_fMinResolution) {
             //Invalid child: Positive
             return false;
         } else {
-            bx.y = m_bxBounds.y + hh;
-            bx.h = hh;
+            bxChildBounds.y = bxMyBounds.y + hh;
+            bxChildBounds.h = hh;
         }
     }
 
     if((iQuadName & QUAD_Z_MASK) != 0) {  //negative
-        bx.z = m_bxBounds.z;
-        bx.l = (hl < m_fMinResolution) ? m_bxBounds.l : hl;
+        bxChildBounds.z = bxMyBounds.z;
+        bxChildBounds.l = (hl < m_fMinResolution) ? bxMyBounds.l : hl;
     } else {                            //positive
         if(hl < m_fMinResolution) {
             //Invalid child: Positive
             return false;
         } else {
-            bx.z = m_bxBounds.z + hl;
-            bx.l = hl;
+            bxChildBounds.z = bxMyBounds.z + hl;
+            bxChildBounds.l = hl;
         }
     }
 
@@ -489,6 +520,53 @@ FluidOctreeRoot::FluidOctreeRoot(uint uiEngineId, uint uiAreaId, const Box &bxBo
 }
 
 FluidOctreeRoot::~FluidOctreeRoot() {
+}
+
+struct TempDebugInfo {
+    Box bounds;
+    int level;
+    uint id;
+    TempDebugInfo(uint i, int l, Box bx) {
+        bounds = bx;
+        level = l;
+        id = i;
+    }
+};
+
+void
+FluidOctreeRoot::debugPrintBounds() {
+    printf("Size of each node: Root = %d, node = %d, leaf = %d\n", sizeof(FluidOctreeRoot), sizeof(FluidOctreeNode), sizeof(FluidOctreeLeaf));
+    printf("Base bounds: (%f,%f,%f; %f,%f,%f)\n",
+        m_bxBounds.x, m_bxBounds.y, m_bxBounds.z,
+        m_bxBounds.x + m_bxBounds.w, m_bxBounds.y + m_bxBounds.l, m_bxBounds.z + m_bxBounds.h
+    );
+    list<TempDebugInfo> boxes;  //queue of boxes to have their children printed
+    boxes.push_back(TempDebugInfo(0,0, m_bxBounds));
+    do {
+        TempDebugInfo info = boxes.front();
+        int level = info.level + 1;
+        boxes.pop_front();
+
+        for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
+            Box bxChild;
+            uint id = (q << (level * 4)) | info.id;
+            string s(level, '\t');
+
+            if(getChildBounds(q, info.bounds, bxChild)) {
+                printf("%sBounds for %x (child %x, lvl %d): (%f,%f,%f; %f,%f,%f)\n", s.c_str(), id, q, level,
+                    bxChild.x, bxChild.y, bxChild.z,
+                    bxChild.x + bxChild.w, bxChild.y + bxChild.l, bxChild.z + bxChild.h
+                );
+
+                if(!childIsLeafNode(bxChild)) {
+                    boxes.push_back(TempDebugInfo(id, level, bxChild));
+                }
+            } else {
+                printf("%sNode %x (child %x, lvl %d) is invalid\n",s.c_str(), id, q, level);
+            }
+        }
+    } while(boxes.size() > 0);
+    //For every level thereafter
 }
 
 /*

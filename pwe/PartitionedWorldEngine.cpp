@@ -7,6 +7,7 @@
 #include "game/ObjectFactory.h"
 #include <list>
 #include <boost/foreach.hpp>
+#include "tpe/fluids/FluidOctree3d.h"
 using namespace std;
 
 PartitionedWorldEngine *PartitionedWorldEngine::pwe;
@@ -100,11 +101,6 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         pe->update(fDeltaTime);
 
         m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime));
-    }
-
-    for(map<uint, GameObject*>::iterator it = m_pCurArea->m_mCurArea.begin();
-            it != m_pCurArea->m_mCurArea.end(); ++it) {
-        re->manageObjOnScreen(it->second);
     }
 
 #if 0
@@ -393,18 +389,21 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
                 Box bxVolume = obj->getPhysicsModel()->getCollisionVolume();
                 if(bxVolume.x < ptObjMin.x) {
                     ptObjMin.x = bxVolume.x;
-                } else if(bxVolume.x + bxVolume.w > ptObjMax.x) {
-                    ptObjMax.x = bxVolume.x;
+                }
+                if(bxVolume.x + bxVolume.w > ptObjMax.x) {
+                    ptObjMax.x = bxVolume.x + bxVolume.w;
                 }
                 if(bxVolume.y < ptObjMin.y) {
                     ptObjMin.y = bxVolume.y;
-                } else if(bxVolume.y + bxVolume.h > ptObjMax.y) {
-                    ptObjMax.y = bxVolume.y;
+                }
+                if(bxVolume.y + bxVolume.h > ptObjMax.y) {
+                    ptObjMax.y = bxVolume.y + bxVolume.h;
                 }
                 if(bxVolume.z < ptObjMin.z) {
                     ptObjMin.z = bxVolume.z;
-                } else if(bxVolume.z + bxVolume.l > ptObjMax.z) {
-                    ptObjMax.z = bxVolume.z;
+                }
+                if(bxVolume.z + bxVolume.l > ptObjMax.z) {
+                    ptObjMax.z = bxVolume.z + bxVolume.l;
                 }
             }
         }
@@ -415,8 +414,8 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
         floor(ptObjMin.x),
         floor(ptObjMin.y),
         floor(ptObjMin.z),
-        ceil(ptObjMax.z) - floor(ptObjMin.x),
-        ceil(ptObjMax.z) - floor(ptObjMin.y),
+        ceil(ptObjMax.x) - floor(ptObjMin.x),
+        ceil(ptObjMax.y) - floor(ptObjMin.y),
         ceil(ptObjMax.z) - floor(ptObjMin.z)
     );
 
@@ -424,6 +423,7 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
 
     //Now we create the octree
     itArea->second.m_pOctree = new FluidOctreeRoot(getId(), itArea->first, bxBounds);
+    //itArea->second.m_pOctree->debugPrintBounds();
 
     //Fill the octree
     for(list<GameObject*>::iterator it = lsObjsToAdd.begin(); it != lsObjsToAdd.end(); ++it) {
@@ -658,7 +658,7 @@ PartitionedWorldEngine::toPowerOfTwo(Box &bx) {
     int w = (int)ceil(bx.w);
     int h = (int)ceil(bx.h);
     int l = (int)ceil(bx.l);
-
+printf("Before: %d,%d,%d\n",w,h,l);
     //Convert each to a power of two
     int logw = 0, logh = 0, logl = 0;
     while(w >>= 1) { logw++; }
@@ -667,6 +667,7 @@ PartitionedWorldEngine::toPowerOfTwo(Box &bx) {
     w = 1 << (logw + 1);
     h = 1 << (logh + 1);
     l = 1 << (logl + 1);
+printf("After: %d,%d,%d\n",w,h,l);
 
     Point ptCenter = bxCenter(bx);
     bx.x = floor(ptCenter.x) - w / 2;

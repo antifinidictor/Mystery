@@ -15,7 +15,7 @@
 #include "mge/GameObject.h"
 #include "mge/Event.h"
 
-#include "tpe/fluids/FluidOctree3d.h"
+class FluidOctreeRoot;
 
 enum WorldState {
     PWE_PAUSED,
@@ -29,6 +29,10 @@ enum WorldEvents {
     PWE_ON_REMOVED_FROM_AREA,
     PWE_ON_ERASED_FROM_AREA,
     PWE_NUM_EVENT_IDS
+};
+
+enum WorldFlags {
+    PWE_INFORM_OBJ = WORLD_FLAGS_BEGIN,
 };
 
 class PartitionedWorldEngine : public WorldEngine, public Listener, public EventHandler {
