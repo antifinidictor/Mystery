@@ -335,7 +335,7 @@ FluidOctreeNode::handleChildrenUpdateResults() {
 
 int
 FluidOctreeNode::recursiveScheduleUpdates(Scheduler *s) {
-    int numUpdatesScheduled = m_mContents.size();
+    int numUpdatesScheduled = 1;
     //Updates are scheduled as a stack, with children getting updated first
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         if(m_apChildren[q] != NULL && !m_apChildren[q]->empty()) {
