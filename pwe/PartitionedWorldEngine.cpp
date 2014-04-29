@@ -347,7 +347,7 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
     toPowerOfTwo(bxBounds);
 
     //Now we create the octree
-    itArea->second.m_pOctree = new FluidOctreeRoot(getId(), itArea->first, bxBounds);
+    itArea->second.m_pOctree = new FluidOctreeRoot(getId(), itArea->first, bxBounds, 2.f);
     //itArea->second.m_pOctree->debugPrintBounds();
 
     //Fill the octree
