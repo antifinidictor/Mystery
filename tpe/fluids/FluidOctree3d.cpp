@@ -72,6 +72,9 @@ FluidOctreeNode::add(GameObject *obj, bool bForce) {
             bCanAdd = true;
         }
     }
+
+    //Update emptiness
+    m_bEmpty = m_bEmpty && !bCanAdd;
     return bCanAdd;
 }
 
@@ -330,15 +333,17 @@ FluidOctreeNode::handleChildrenUpdateResults() {
 }
 
 
-void
+int
 FluidOctreeNode::recursiveScheduleUpdates(Scheduler *s) {
+    int numUpdatesScheduled = m_mContents.size();
     //Updates are scheduled as a stack, with children getting updated first
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
-        if(m_apChildren[q] != NULL/* && !m_apChildren[q]->empty()*/) {
-            m_apChildren[q]->recursiveScheduleUpdates(s);    //The node should schedule itself
+        if(m_apChildren[q] != NULL && !m_apChildren[q]->empty()) {
+            numUpdatesScheduled += m_apChildren[q]->recursiveScheduleUpdates(s);    //The node should schedule itself
         }
     }
     s->scheduleUpdate(this);
+    return numUpdatesScheduled;
 }
 
 bool
@@ -518,7 +523,8 @@ FluidOctreeNode::childIsLeafNode(const Box &bxChildBounds) {
 
 void
 FluidOctreeNode::updateEmptiness() {
-    m_bEmpty = m_mContents.size() == 0;
+    //Emptiness has to do with both actual empty status and potential empty status
+    m_bEmpty = m_mContents.size() == 0 && m_lsObjsToAdd.size() == 0;
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         if(m_apChildren[q] != NULL) {
             //Only empty if we have nothing and children are empty too
@@ -616,6 +622,7 @@ FluidOctreeLeaf::add(GameObject *obj, bool bForce) {
         m_lsObjsToAdd.push_back(obj);
         bCanAdd = true;
     }
+    m_bEmpty = m_bEmpty && !bCanAdd;
 #ifdef DEBUG_OCTREE
 if(bCanAdd) {
 string spaces(m_uiLevel,'\t');

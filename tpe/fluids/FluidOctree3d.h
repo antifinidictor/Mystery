@@ -57,7 +57,7 @@ protected:
 
     void updateContents(float fTime);   //Performs old-school update & collision checks
     void handleChildrenUpdateResults();
-    void recursiveScheduleUpdates(Scheduler *s);
+    int recursiveScheduleUpdates(Scheduler *s);
 
     bool addToChildren(GameObject *obj);
     void addNow(GameObject *obj);   //Adds object to this node's contents
@@ -106,7 +106,10 @@ public:
     FluidOctreeRoot(uint uiEngineId, uint uiAreaId, const Box &bxBounds, float fMinResolution = 1.f);
     virtual ~FluidOctreeRoot();
 
-    void scheduleUpdates(Scheduler *s) { FluidOctreeNode::recursiveScheduleUpdates(s); }
+    void scheduleUpdates(Scheduler *s) {
+        int updates = FluidOctreeNode::recursiveScheduleUpdates(s);
+        //printf("%d updates scheduled\n", updates);
+    }
     virtual int tempGetClassId() { return -1; }
 
     void debugPrintBounds();

@@ -134,7 +134,6 @@ void
 D3RenderEngine::render() {
     glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
     //Update look direction
     if(m_fDesiredLookAngle < m_fLookAngle - CAM_ROTATE_SPEED) {
         m_fLookAngle -= CAM_ROTATE_SPEED;
