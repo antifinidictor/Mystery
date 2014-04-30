@@ -8,8 +8,8 @@
 using namespace std;
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
-#define WALK_FORCE 0.5f
-#define SPRINT_FORCE 0.8f
+#define WALK_FORCE 1.0f
+#define SPRINT_FORCE (2 * WALK_FORCE)
 #define SPELL_DURATION 300
 #define ANIM_TIMER_MAX 3
 #define SPRINT_ANIM_TIMER_MAX 1
@@ -32,8 +32,11 @@ Player::Player(uint uiId, const Point &ptPos)
     m_uiId = uiId;
     m_uiFlags = 0;
 
+    float fBxWidth = 2 * w / 3;
+    float fBxHeight = 3 * h / 4;
+
     Rect rcDrawArea = Rect(-w / 2, 0, w, h);
-    Box bxVolume = Box(-w / 3, 0, -w / 8, 2 * w / 3, 3 * h / 4, w / 4);
+    Box bxVolume = Box(-fBxWidth / 2, 0, -fBxWidth / 2, fBxWidth, fBxHeight, fBxWidth);
     m_pPhysicsModel = new TimePhysicsModel(ptPos, DENSITY);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pRenderModel  = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
@@ -104,7 +107,8 @@ Player::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     //Read m_iAnimState information here
 }
 
-bool Player::update(float fDeltaTime) {
+bool
+Player::update(float fDeltaTime) {
     //Currently needs to occur in any m_iAnimState that isn't "paused"
     updateSpells();
     upateHud();
@@ -564,6 +568,13 @@ Player::getObjHeight(TimePhysicsModel *pmdl, uint uiCmdlId) {
 
 void
 Player::handleCollision(HandleCollisionData *data) {
+/*
+    uint uiMyLeft = (m_iDirection + 1) % NUM_CARDINAL_DIRECTIONS;
+    uint uiMyRight = (m_iDirection + NUM_CARDINAL_DIRECTIONS - 1) % NUM_CARDINAL_DIRECTIONS;
+    uint uiMyCollisionDirs = BIT(m_iDirection) | BIT(uiMyLeft) | BIT(uiMyRight);
+    uint uiEquivCollisionDirs = data->iDirection & uiMyCollisionDirs;
+*/
+
     if(data->obj->getType() == TYPE_ITEM && data->obj->getFlag(GAM_CAN_PICK_UP)) {
         //Pick up the item
         Item *item = (Item*)data->obj;

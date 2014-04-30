@@ -333,7 +333,7 @@ int order(const PT &pt1, const PT &pt2) {
 
 int angle2dir(float angle) {
     int dir = (int)floor((angle + SECTION / 2.f) / SECTION) + 4;
-    if(dir < 1) {
+    if(dir < 0) {
         dir += NUM_CARDINAL_DIRECTIONS;
     } else if(dir >= NUM_CARDINAL_DIRECTIONS) {
         dir -= NUM_CARDINAL_DIRECTIONS;

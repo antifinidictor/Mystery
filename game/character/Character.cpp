@@ -3,7 +3,7 @@
 #include "WanderAction.h"
 #include "pwe/PartitionedWorldEngine.h"
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
-#define WALK_FORCE 0.5f
+#define WALK_FORCE 1.0f
 #define ANIM_TIMER_MAX 3
 
 enum NpcAnim {
@@ -23,8 +23,11 @@ Character::Character(uint uiId, uint uiImageId, Point ptPos) {
     m_uiId = uiId;
     m_uiFlags = 0;
 
+    float fBxWidth = 2 * w / 3;
+    float fBxHeight = 3 * h / 4;
+
     Rect rcDrawArea = Rect(-w / 2, 0, w, h);
-    Box bxVolume = Box(-w / 3, 0, -w / 3, 2 * w / 3, 3 * h / 4, 2 * w / 3);
+    Box bxVolume = Box(-fBxWidth / 2, 0, -fBxWidth / 2, fBxWidth, fBxHeight, fBxWidth);
     m_pPhysicsModel = new TimePhysicsModel(ptPos, DENSITY);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pRenderModel = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
