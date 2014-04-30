@@ -46,17 +46,25 @@ TimePhysicsModel::~TimePhysicsModel() {
 void TimePhysicsModel::moveBy(const Point &ptShift) {
     m_ptPos += ptShift;
     m_ptLastMotion += ptShift;
-
+/*
     list<AbstractTimePhysicsModel*>::iterator iter;
     for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
         (*iter)->moveBy(ptShift);    //TODO: Why doesn't this work?
     }
+*/
 }
 
 //F = ma
 //a_new = F / m
 void TimePhysicsModel::applyForce(const Point &ptForce) {
-    m_ptAcceleration += ptForce / m_fMass;
+    Point ptAccel = ptForce / m_fMass;
+    m_ptAcceleration += ptAccel;
+
+    //Try accelerating objects on me as much
+    list<AbstractTimePhysicsModel*>::iterator iter;
+    for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
+        (*iter)->applyForce(ptAccel * (*iter)->getMass());
+    }
 }
 
 
