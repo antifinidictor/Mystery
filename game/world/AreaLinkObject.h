@@ -11,6 +11,7 @@
 #include "tpe/TimePhysicsModel.h"
 #include "d3re/d3re.h"
 #include "game/game_defs.h"
+#include <list>
 
 class AreaLinkObject : public GameObject {
 public:
@@ -41,8 +42,11 @@ private:
     uint m_uiID;
     flag_t m_uiFlags;
     uint m_uiDestAreaId;
+    uint m_uiSrcAreaId;
     uint m_uiDirections;
     Point m_ptDestPos;
+
+    std::list<GameObject*> m_lsDelayedObjs;
 
     D3PrismRenderModel *m_pRenderModel;
     TimePhysicsModel  *m_pPhysicsModel;

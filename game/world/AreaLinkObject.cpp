@@ -5,6 +5,7 @@
 #include "AreaLinkObject.h"
 #include "tpe/tpe.h"
 #include "pwe/PartitionedWorldEngine.h"
+using namespace std;
 
 AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPos, const Box &bxTriggerVolume) {
     m_uiID = id;
@@ -25,6 +26,7 @@ AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPo
     m_pRenderModel->setTexture(UP,    IMG_NONE);
     m_pRenderModel->setTexture(DOWN,  IMG_NONE);
 
+    m_uiSrcAreaId = 0;  //To be filled out later
     m_uiDestAreaId = uiDestAreaId;
     m_ptDestPos = ptDestPos;
 
@@ -90,10 +92,28 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
         PWE *we = PWE::get();
 
         if(hcd->obj->getFlag(GAM_CAN_LINK)/*&& (hcd->iDirection & m_uiDirections)*/) {
-            Point ptPosDelta = m_ptDestPos - hcd->obj->getPhysicsModel()->getPosition();
-            hcd->obj->moveBy(ptPosDelta);
-            we->moveObjectToArea(hcd->obj->getId(), we->getCurrentArea(), m_uiDestAreaId);
+            we->moveObjectToArea(hcd->obj->getId(), m_uiSrcAreaId, m_uiDestAreaId);
+            if(hcd->obj->getType() == TYPE_PLAYER) {
+                m_lsDelayedObjs.push_back(hcd->obj);    //Later we may have more of these
+            } else {
+                Point ptPosDelta = m_ptDestPos - hcd->obj->getPhysicsModel()->getPosition();
+                hcd->obj->moveBy(ptPosDelta);
+            }
         }
+        break;
+      }
+    case PWE_ON_ADDED_TO_AREA: {
+        m_uiSrcAreaId = *(uint*)data;
+        PWE::get()->addListener(this, PWE_ON_AREA_SWITCH_FROM, m_uiSrcAreaId);
+      }
+    case PWE_ON_AREA_SWITCH_FROM: {
+        //TODO: Could cause mem bugs, should be using find
+        for(list<GameObject*>::iterator it = m_lsDelayedObjs.begin(); it != m_lsDelayedObjs.end(); ++it) {
+            Point ptPosDelta = m_ptDestPos - (*it)->getPhysicsModel()->getPosition();
+            (*it)->moveBy(ptPosDelta);
+        }
+        m_lsDelayedObjs.clear();
+        status = EVENT_DROPPED;
         break;
       }
     default:

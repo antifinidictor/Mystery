@@ -27,7 +27,7 @@ EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
 
     //PWE *we = PWE::get();
     //we->addListener(this, ON_BUTTON_INPUT, m_uiAreaId);
-    //we->addListener(this, PWE_ON_AREA_SWITCH, m_uiAreaId);
+    //we->addListener(this, PWE_ON_AREA_SWITCH_TO, m_uiAreaId);
 
     D3HudRenderModel *posText = new D3HudRenderModel(UNUSED_TEXTURE_ID, Rect(0,0,BUTTON_WIDTH,BUTTON_HEIGHT), "(?,?,?)", Point());
     D3RE::get()->getHudContainer()->add(ED_HUD_CURSOR_POS, posText);
@@ -40,7 +40,7 @@ EditorCursor::~EditorCursor() {
 
     PWE *we = PWE::get();
     we->removeListener(this->getId(), ON_BUTTON_INPUT, m_uiAreaId);
-    we->removeListener(this->getId(), PWE_ON_AREA_SWITCH, m_uiAreaId);
+    we->removeListener(this->getId(), PWE_ON_AREA_SWITCH_TO, m_uiAreaId);
 }
 
 
@@ -83,7 +83,7 @@ int
 EditorCursor::callBack(uint cID, void *data, uint eventId) {
     int status = EVENT_CAUGHT;
     switch(eventId) {
-    case PWE_ON_AREA_SWITCH: {
+    case PWE_ON_AREA_SWITCH_TO: {
         EditorManager::get()->setEditorCursor(this);
         break;
       }
@@ -185,13 +185,13 @@ void
 EditorCursor::moveToArea(uint uiAreaTo) {
     PWE *we = PWE::get();
     //we->removeListener(this->getId(), ON_BUTTON_INPUT, m_uiAreaId);
-    //we->removeListener(this->getId(), PWE_ON_AREA_SWITCH, m_uiAreaId);
+    //we->removeListener(this->getId(), PWE_ON_AREA_SWITCH_TO, m_uiAreaId);
 
     we->moveObjectToArea(getId(), m_uiAreaId, uiAreaTo);
 
     m_uiAreaId = uiAreaTo;
     //we->addListener(this, ON_BUTTON_INPUT, m_uiAreaId);
-    //we->addListener(this, PWE_ON_AREA_SWITCH, m_uiAreaId);
+    //we->addListener(this, PWE_ON_AREA_SWITCH_TO, m_uiAreaId);
 
     //Handle any other state-change stuff here
 }

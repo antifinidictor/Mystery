@@ -221,17 +221,31 @@ void
 PartitionedWorldEngine::setCurrentArea() {
     map<uint, M_Area>::iterator it = m_mWorld.find(m_uiNextArea);
     if(it != m_mWorld.end()) {
+        //Inform listeners of old current area that we are switching away
+        map<uint, Listener*>::iterator iter;
+        if(m_pCurArea) {
+            for(iter = m_pCurArea->m_mAreaChangeListeners.begin();
+                iter != m_pCurArea->m_mAreaChangeListeners.end();
+                ++iter ) {
+                int status = iter->second->callBack(ID_MODULAR_ENGINE, NULL, PWE_ON_AREA_SWITCH_FROM);
+                if(status == EVENT_CAUGHT) {
+                    break;
+                }
+            }
+		}
+
+        //Switch away
         m_pCurArea = &(it->second);
         m_uiCurArea = m_uiNextArea;
         m_uiEffectiveArea = m_uiNextArea;
         re->clearScreen();
         re->moveScreenTo(Point());
 
-        map<uint, Listener*>::iterator iter;
+        //Inform listeners of new current area that we are switching to
 		for(iter = m_pCurArea->m_mAreaChangeListeners.begin();
 			iter != m_pCurArea->m_mAreaChangeListeners.end();
 			++iter ) {
-			int status = iter->second->callBack(ID_MODULAR_ENGINE, NULL, PWE_ON_AREA_SWITCH);
+			int status = iter->second->callBack(ID_MODULAR_ENGINE, NULL, PWE_ON_AREA_SWITCH_TO);
 			if(status == EVENT_CAUGHT) {
                 break;
 			}
@@ -418,7 +432,8 @@ PartitionedWorldEngine::addListener(Listener *pListener, uint id, uint uiAreaId,
 	case ON_BUTTON_INPUT:
 		itArea->second.m_mButtonInputListeners[pListener->getId()] = pListener;
 		break;
-    case PWE_ON_AREA_SWITCH:
+    case PWE_ON_AREA_SWITCH_TO:
+    case PWE_ON_AREA_SWITCH_FROM:
         itArea->second.m_mAreaChangeListeners[pListener->getId()] = pListener;
         break;
 	default:
@@ -450,7 +465,8 @@ PartitionedWorldEngine::removeListener(uint uiListenerId, uint eventId, uint uiA
             return true;
         }
 		break;
-    case PWE_ON_AREA_SWITCH:
+    case PWE_ON_AREA_SWITCH_TO:
+    case PWE_ON_AREA_SWITCH_FROM:
         iter = itArea->second.m_mAreaChangeListeners.find(uiListenerId);
         if(iter != itArea->second.m_mAreaChangeListeners.end()) {
             itArea->second.m_mAreaChangeListeners.erase(iter);

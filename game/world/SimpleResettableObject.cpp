@@ -31,7 +31,7 @@ SimpleResettableObject::SimpleResettableObject(uint id, uint texId, Box bxVolume
 
 SimpleResettableObject::~SimpleResettableObject() {
     PWE::get()->freeId(getId());
-    PWE::get()->removeListener(getId(), PWE_ON_AREA_SWITCH, m_uiArea);
+    PWE::get()->removeListener(getId(), PWE_ON_AREA_SWITCH_TO, m_uiArea);
     delete m_pRenderModel;
     delete m_pPhysicsModel;
 }
@@ -81,9 +81,9 @@ SimpleResettableObject::callBack(uint uiId, void *data, uint uiEventId) {
     switch(uiEventId) {
     case PWE_ON_ADDED_TO_AREA:
         m_uiArea = *(uint*)data;
-        PWE::get()->addListener(this, PWE_ON_AREA_SWITCH, m_uiArea);
+        PWE::get()->addListener(this, PWE_ON_AREA_SWITCH_TO, m_uiArea);
         break;
-    case PWE_ON_AREA_SWITCH:
+    case PWE_ON_AREA_SWITCH_TO:
         reset();
         break;
     default:
