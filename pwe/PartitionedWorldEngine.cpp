@@ -164,7 +164,7 @@ PartitionedWorldEngine::removeFrom(uint uiObjId, uint uiAreaId) {
     //TODO: Make less hacky
     GameObject *obj = itArea->second.m_pOctree->find(uiObjId);
     if(obj != NULL) {
-        //obj->setFlag(PWE_INFORM_OBJ_REMOVE, true);
+        obj->setFlag(PWE_INFORM_OBJ_REMOVE, true);
         itArea->second.m_pOctree->remove(uiObjId);
         obj->callBack(getId(), &uiAreaId, PWE_ON_REMOVED_FROM_AREA);
     } else {

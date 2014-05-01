@@ -190,13 +190,19 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
 
         if(!bNoCollide) {
             if(bx2.y < bx1.y) {
-                obj1->setFlag(TPE_FALLING, false);
+                //obj1->setFlag(TPE_FALLING, false);
                 tpm1->clearVerticalVelocity();
                 tpm1->setSurface(tpm2);
+
+                //Apply normal force
+                tpm1->applyForce(Point(0,GRAV_ACCEL * tpm1->getMass(),0));
             } else {
-                obj2->setFlag(TPE_FALLING, false);
+                //obj2->setFlag(TPE_FALLING, false);
                 tpm2->clearVerticalVelocity();
                 tpm2->setSurface(tpm1);
+
+                //Apply normal force
+                tpm2->applyForce(Point(0,GRAV_ACCEL * tpm2->getMass(),0));
             }
         }
         bApplyForce = false;
@@ -250,6 +256,10 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
     //Now, get the position and the y-shift
     float y = hmdl->getHeightAtPoint(tpmBox->getPosition() - tpmHmap->getPosition()) + tpmHmap->getPosition().y;
     float fYShift = (bx1.y + bx1.h > bx2.y) ? y - bx1.y : 0.f;
+
+    if(y < bx1.y) {
+        return;
+    }
 
     //Get the box shifts for comparison
     float fXShift1 = bx2.x - (bx1.x + bx1.w),
@@ -306,7 +316,10 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
         applyBuoyantForce(tpmBox, tpmHmap, bx1, y, bx2.y);
     } else if(!bHmapIsLiquid) {
         tpmBox->setSurface(tpmHmap);
-        objBox->setFlag(TPE_FALLING, false);
+        objBox->setFlag(TPE_FALLING, true);
+
+        //Apply normal force
+        tpmBox->applyForce(Point(0,GRAV_ACCEL * tpmBox->getMass(),0));
     }
 
     extractCollisionDirections(tpmHmap->getPosition() - tpmBox->getPosition(),

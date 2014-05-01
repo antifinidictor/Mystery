@@ -496,7 +496,7 @@ FluidOctreeNode::removeNow(uint uiObjId) {
         //TODO: Is there a better way to do this?
         if(itFoundObj->second->getFlag(PWE_INFORM_OBJ_REMOVE)) {
             itFoundObj->second->setFlag(PWE_INFORM_OBJ_REMOVE, false);
-            itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_REMOVED_FROM_AREA);
+            //itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_REMOVED_FROM_AREA);
             D3RE::get()->remove(itFoundObj->second);
         }
 
