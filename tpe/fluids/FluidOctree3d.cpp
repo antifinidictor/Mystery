@@ -89,6 +89,30 @@ FluidOctreeNode::remove(uint uiObjId) {
         return true;
     }
 
+    //TODO: THIS MAY CAUSE SERIOUS FAILURES!
+    // Need to define behavior in the middle of an update.
+    //Mid-update: Object might be in one of my transitional lists
+    //If the object is in dynamic or static, then it hasn't left the quadrant
+    // and should be in contents.
+    for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
+        if((*it)->getId() == uiObjId) {
+            //No point in waiting to remove it
+            m_lsObjsLeftQuadrant.erase(it);
+            return true;
+        }
+    }
+
+    //If the object is in remove or erase, it hasn't been removed yet and
+    // should be in contents. If it is in add, it may still be in another list,
+    // but it may not be, so this list must be searched as well.
+    for(list<GameObject*>::iterator it = m_lsObjsToAdd.begin(); it != m_lsObjsToAdd.end(); ++it) {
+        if((*it)->getId() == uiObjId) {
+            //No point in waiting to erase it
+            m_lsObjsToAdd.erase(it);
+            return true;
+        }
+    }
+
     //Otherwise, search children
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         if(m_apChildren[q] != NULL && !m_apChildren[q]->empty()) {
@@ -112,6 +136,32 @@ FluidOctreeNode::erase(uint uiObjId) {
         //updateEmptiness();
         m_lsObjsToErase.push_back(uiObjId);
         return true;
+    }
+
+    //TODO: THIS MAY CAUSE SERIOUS FAILURES!
+    // Need to define behavior in the middle of an update.
+    //Mid-update: Object might be in one of my transitional lists
+    //If the object is in dynamic or static, then it hasn't left the quadrant
+    // and should be in contents.
+    for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
+        if((*it)->getId() == uiObjId) {
+            //Already removed, no point in waiting to erase it
+            delete *it;
+            m_lsObjsLeftQuadrant.erase(it);
+            return true;
+        }
+    }
+
+    //If the object is in remove or erase, it hasn't been removed yet and
+    // should be in contents. If it is in add, it may still be in another list,
+    // but it may not be, so this list must be searched as well.
+    for(list<GameObject*>::iterator it = m_lsObjsToAdd.begin(); it != m_lsObjsToAdd.end(); ++it) {
+        if((*it)->getId() == uiObjId) {
+            //Not yet added, no point in removing it
+            delete *it;
+            m_lsObjsToAdd.erase(it);
+            return true;
+        }
     }
 
     //Otherwise, search children
