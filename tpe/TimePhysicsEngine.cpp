@@ -11,6 +11,8 @@ using namespace std;
 TimePhysicsEngine *TimePhysicsEngine::tpe;
 
 TimePhysicsEngine::TimePhysicsEngine() {
+    assert(TPE_NUM_FLAGS <= PHYSICS_FLAGS_END);
+
     printf("Physics engine initialized\n");
     //ctor
 }

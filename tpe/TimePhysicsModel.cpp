@@ -19,6 +19,7 @@ TimePhysicsModel::TimePhysicsModel(Point ptPos, float fDensity) {
     m_fDensity = fDensity;
     m_fMass = 0.f;
     m_bWasPushed = false;
+    m_bPhysicsChanged = false;
     m_pObjImOn = NULL;
     m_bIsCleaning = false;
 }
@@ -46,12 +47,12 @@ TimePhysicsModel::~TimePhysicsModel() {
 void TimePhysicsModel::moveBy(const Point &ptShift) {
     m_ptPos += ptShift;
     m_ptLastMotion += ptShift;
-/*
+
+    //TODO: Adjust how objects can get in this list.
     list<AbstractTimePhysicsModel*>::iterator iter;
     for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
         (*iter)->moveBy(ptShift);    //TODO: Why doesn't this work?
     }
-*/
 }
 
 //F = ma
@@ -60,11 +61,13 @@ void TimePhysicsModel::applyForce(const Point &ptForce) {
     Point ptAccel = ptForce / m_fMass;
     m_ptAcceleration += ptAccel;
 
+/*
     //Try accelerating objects on me as much
     list<AbstractTimePhysicsModel*>::iterator iter;
     for(iter = m_lsObjsOnMe.begin(); iter != m_lsObjsOnMe.end(); ++iter) {
         (*iter)->applyForce(ptAccel * (*iter)->getMass());
     }
+*/
 }
 
 
@@ -73,7 +76,7 @@ void TimePhysicsModel::update(float fDeltaTime) {
     float dt = fDeltaTime / m_fTimeDivisor;
 
     //Move the physics model
-    m_ptLastMotion = Point();
+    m_ptLastMotion = Point();   //Updated by moveBy()
     float fx = 0.5 * m_ptAcceleration.x * dt * dt + m_ptVelocity.x * dt;
     float fy = 0.5 * m_ptAcceleration.y * dt * dt + m_ptVelocity.y * dt;
     float fz = 0.5 * m_ptAcceleration.z * dt * dt + m_ptVelocity.z * dt;

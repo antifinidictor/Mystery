@@ -114,9 +114,18 @@
 					<Add directory="/usr/include/SDL" />
 					<Add directory="/usr/include/GL" />
 					<Add directory="K:/projects/games/mge/Mystery/linux" />
+					<Add directory="/home/naheisey/Documents/projects/games/Mystery/" />
+					<Add directory="linux" />
 				</Compiler>
 				<Linker>
-					<Add directory="/media/DATA/projects/games/mge/Mystery/lib" />
+					<Add library="SDL2" />
+					<Add library="SDL2main" />
+					<Add library="SDL2_image" />
+					<Add library="SDL2_mixer" />
+					<Add library="GL" />
+					<Add library="GLU" />
+					<Add directory="/home/naheisey/Documents/projects/games/Mystery/" />
+					<Add directory="/usr/lib" />
 				</Linker>
 			</Target>
 		</Build>

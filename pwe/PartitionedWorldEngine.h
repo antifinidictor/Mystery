@@ -33,6 +33,7 @@ enum WorldEvents {
 
 enum WorldFlags {
     PWE_INFORM_OBJ = WORLD_FLAGS_BEGIN,
+    PWE_NUM_FLAGS
 };
 
 class PartitionedWorldEngine : public WorldEngine, public Listener, public EventHandler {

@@ -32,7 +32,7 @@ public:
 	virtual int callBack(uint uiEventHandlerId, void *data, uint uiEventId);
 private:
     uint m_uiId;
-    uint m_uiFlags;
+    flag_t m_uiFlags;
     PixelMap *m_pxMap;
 
     std::string m_sMapFile;

@@ -45,7 +45,8 @@ private:
 
     void handleCollision(HandleCollisionData *data);
 
-    uint m_uiId, m_uiFlags;
+    uint m_uiId;
+    flag_t m_uiFlags;
     uint m_uiNextField;
     std::map<uint,ForceField*> m_mForceFields;
 };

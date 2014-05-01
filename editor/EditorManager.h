@@ -80,7 +80,8 @@ private:
 */
     static EditorManager *m_pInstance;
 
-    uint m_uiId, m_uiFlags;
+    uint m_uiId;
+    flag_t m_uiFlags;
     EditorCursor *m_pEditorCursor;
     //EditorState m_eState, m_eNewState;
     std::stack<EditorState> m_skState;

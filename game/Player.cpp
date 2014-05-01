@@ -72,6 +72,19 @@ Player::Player(uint uiId, const Point &ptPos)
     GameManager::get()->registerPlayer(this);
     m_pHud = new DraggableHud(PWE::get()->genId()); //The DraggableHud manages its own memory
     m_pHud->registerPlayer(this);
+
+    //Flag printing
+    /*
+    WORLD_FLAGS_BEGIN =   0x00,
+    PHYSICS_FLAGS_BEGIN = 0x08,
+    RENDER_FLAGS_BEGIN =  0x10,
+    GAME_FLAGS_BEGIN =    0x80
+    */
+    printf("World flags:   %x-%x (Expected end %x)\n", WORLD_FLAGS_BEGIN,   PWE_NUM_FLAGS, PHYSICS_FLAGS_BEGIN);
+    printf("Physics flags: %x-%x (Expected end %x)\n", PHYSICS_FLAGS_BEGIN, TPE_NUM_FLAGS, RENDER_FLAGS_BEGIN);
+    printf("Render flags:  %x-%x (Expected end %x)\n", RENDER_FLAGS_BEGIN,  D3RE_NUM_FLAGS, GAME_FLAGS_BEGIN);
+    printf("Game flags:    %x-%x (Expected end %x)\n", GAME_FLAGS_BEGIN,    NUM_GAME_FLAGS, 32);
+    printf("Can-link flag = %x (bit is %x)\n", GAM_CAN_LINK, BIT(GAM_CAN_LINK));
 }
 
 Player::~Player() {

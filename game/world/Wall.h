@@ -49,7 +49,8 @@ public:
     virtual int callBack(uint uiID, void *data, uint id) { return EVENT_DROPPED; }
 
 private:
-    uint m_uiId, m_uiFlags;
+    uint m_uiId;
+    flag_t m_uiFlags;
 
     D3PrismRenderModel *m_pRenderModel;
     TimePhysicsModel   *m_pPhysicsModel;

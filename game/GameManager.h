@@ -67,7 +67,8 @@ private:
 
     static GameManager *m_pInstance;
 
-    uint m_uiId, m_uiFlags;
+    uint m_uiId;
+    flag_t m_uiFlags;
     float m_fFadeTimer;
     uint m_uiNextArea;
     Color m_crWorld;

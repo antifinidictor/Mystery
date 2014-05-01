@@ -71,7 +71,8 @@ private:
     void startClimbing();
     void startCasting();
 
-    uint m_uiId, m_uiFlags;
+    uint m_uiId;
+    flag_t m_uiFlags;
     D3SpriteRenderModel *m_pRenderModel;
     TimePhysicsModel   *m_pPhysicsModel;
 

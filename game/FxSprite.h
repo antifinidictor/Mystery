@@ -37,7 +37,8 @@ public:
     const Color &getColor() const { return m_pRenderModel->getColor(); }
 protected:
 private:
-    uint m_uiId, m_uiFlags;
+    uint m_uiId;
+    flag_t m_uiFlags;
     uint m_uiMaxFramesH;
     int m_iTimeToLive, m_iMaxTimeToLive;
     int m_iAnimTimer;

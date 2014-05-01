@@ -49,7 +49,8 @@ private:
     void shareVorticities(float fDeltaTime);
     void updateVortons(float fDeltaTime);
 
-    uint m_uiId, m_uiFlags;
+    uint m_uiId;
+    flag_t m_uiFlags;
     ContainerRenderModel *m_pRenderModel;
     NullTimePhysicsModel *m_pPhysicsModel;
 

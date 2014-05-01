@@ -37,7 +37,8 @@ public:
     virtual void onItemDrop();
 
 private:
-    uint m_uiId, m_uiFlags;
+    uint m_uiId;
+    flag_t m_uiFlags;
 
     int m_iAnimTimer;
 

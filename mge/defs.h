@@ -10,8 +10,10 @@
 #include <stdarg.h>
 #include <vector>
 #include <ostream>
+#include <boost/cstdint.hpp>
 
 typedef unsigned int uint;
+typedef uint_least64_t flag_t;
 
 const int SCREEN_HEIGHT = 480;
 const int SCREEN_WIDTH = 640;
@@ -139,10 +141,13 @@ enum EventID {      //EventIDs: Add to the World object to listen to them.  Feel
  * Each engine is allocated 4 flags.  The actual game may use the rest.
  */
 enum ObjFlags {
-    WORLD_FLAGS_BEGIN =   0x00,
-    PHYSICS_FLAGS_BEGIN = 0x08,
-    RENDER_FLAGS_BEGIN =  0x10,
-    GAME_FLAGS_BEGIN =    0x80
+    WORLD_FLAGS_BEGIN =     0x00,
+    WORLD_FLAGS_END =       0x08,
+    PHYSICS_FLAGS_BEGIN =   WORLD_FLAGS_END,
+    PHYSICS_FLAGS_END =     0x10,
+    RENDER_FLAGS_BEGIN =    PHYSICS_FLAGS_END,
+    RENDER_FLAGS_END =      0x18,
+    GAME_FLAGS_BEGIN =      RENDER_FLAGS_END,
 };
 
 /*

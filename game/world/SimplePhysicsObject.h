@@ -42,7 +42,8 @@ public:
     virtual int callBack(uint uiID, void *data, uint id);
 
 private:
-    uint m_uiID, m_uiFlags;
+    uint m_uiID;
+    flag_t m_uiFlags;
 
     D3PrismRenderModel *m_pRenderModel;
     TimePhysicsModel  *m_pPhysicsModel;

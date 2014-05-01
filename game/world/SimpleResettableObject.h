@@ -44,7 +44,8 @@ public:
 private:
     void reset();
 
-    uint m_uiID, m_uiFlags;
+    uint m_uiID;
+    flag_t m_uiFlags;
     uint m_uiArea;
     Point m_ptOriginalPosition;
 

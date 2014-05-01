@@ -84,6 +84,9 @@ int getSDLVideoFlags() {
 }
 
 void initWorld() {
+    assert(NUM_GAME_FLAGS <= (sizeof(flag_t) * 8));
+
+
     srand(time(NULL));
 
     //Perform last-minute setup of the world engine

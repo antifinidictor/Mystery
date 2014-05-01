@@ -55,7 +55,7 @@ public:
     void standStill();
 private:
     uint m_uiId;
-    uint m_uiFlags;
+    flag_t m_uiFlags;
 
     D3SpriteRenderModel *m_pRenderModel;
     TimePhysicsModel   *m_pPhysicsModel;

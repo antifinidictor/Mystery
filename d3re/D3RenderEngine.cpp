@@ -21,6 +21,8 @@ using namespace std;
 D3RenderEngine *D3RenderEngine::re;
 
 D3RenderEngine::D3RenderEngine() {
+    assert(D3RE_NUM_FLAGS <= RENDER_FLAGS_END);
+
     printf("Render engine has ID %d\n", getId());
     m_sdlWindow = SDL_CreateWindow("The Child and the Alchemist",
                           SDL_WINDOWPOS_UNDEFINED,

@@ -59,7 +59,8 @@ private:
     void handleCollision(HandleCollisionData *data);
     void expand();
 
-    uint m_uiID, m_uiFlags;
+    uint m_uiID;
+    flag_t m_uiFlags;
 
     D3HeightmapRenderModel *m_pRenderModel;
     TimePhysicsModel  *m_pPhysicsModel;

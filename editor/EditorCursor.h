@@ -72,7 +72,8 @@ private:
     Point toTile(const Point &pt);
     Point getTileShift();
 
-    uint m_uiId, m_uiFlags;
+    uint m_uiId;
+    flag_t m_uiFlags;
     uint m_uiAreaId;
     SelectionRenderModel *m_pRenderModel;
     AbstractTimePhysicsModel *m_pPhysicsModel;

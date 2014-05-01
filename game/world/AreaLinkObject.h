@@ -38,7 +38,8 @@ public:
     virtual PhysicsModel *getPhysicsModel() { return m_pPhysicsModel; }
 
 private:
-    uint m_uiID, m_uiFlags;
+    uint m_uiID;
+    flag_t m_uiFlags;
     uint m_uiDestAreaId;
     uint m_uiDirections;
     Point m_ptDestPos;
