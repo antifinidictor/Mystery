@@ -370,6 +370,9 @@ Player::updateClimbingTrans(float fDeltaTime) {
         m_ptIntermediateClimbPos.x = m_ptStartClimbPos.x;
         m_ptIntermediateClimbPos.y = m_ptEndClimbPos.y;
         m_ptIntermediateClimbPos.z = m_ptStartClimbPos.z;
+        printf("Start: (%2.2f,%2.2f,%2.2f)\n", m_ptStartClimbPos.x, m_ptStartClimbPos.y, m_ptStartClimbPos.z);
+        printf("Inter: (%2.2f,%2.2f,%2.2f)\n", m_ptIntermediateClimbPos.x, m_ptIntermediateClimbPos.y, m_ptIntermediateClimbPos.z);
+        printf("End:   (%2.2f,%2.2f,%2.2f)\n\n", m_ptEndClimbPos.x, m_ptEndClimbPos.y, m_ptEndClimbPos.z);
     }
 
     //Calculate new position information
