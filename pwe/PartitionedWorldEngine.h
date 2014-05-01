@@ -32,7 +32,8 @@ enum WorldEvents {
 };
 
 enum WorldFlags {
-    PWE_INFORM_OBJ = WORLD_FLAGS_BEGIN,
+    PWE_INFORM_OBJ_ADD = WORLD_FLAGS_BEGIN,
+    PWE_INFORM_OBJ_REMOVE,
     PWE_NUM_FLAGS
 };
 

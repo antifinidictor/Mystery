@@ -144,9 +144,9 @@ PartitionedWorldEngine::addTo(GameObject *obj, uint uiAreaId) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea != m_mWorld.end()) {
         //itArea->second.m_mCurArea[obj->getId()] = obj;
-        //obj->callBack(getId(), &uiAreaId, PWE_ON_ADDED_TO_AREA);
-        obj->setFlag(PWE_INFORM_OBJ, true); //So the object is informed of its new place
+        //obj->setFlag(PWE_INFORM_OBJ_ADD, true); //So the object is informed of its new place
         itArea->second.m_pOctree->add(obj);
+        obj->callBack(getId(), &uiAreaId, PWE_ON_ADDED_TO_AREA);
     } else {
         printf("ERROR %s %d: Tried to add object to nonexistent area %d\n", __FILE__, __LINE__, uiAreaId);
         return;
@@ -164,8 +164,9 @@ PartitionedWorldEngine::removeFrom(uint uiObjId, uint uiAreaId) {
     //TODO: Make less hacky
     GameObject *obj = itArea->second.m_pOctree->find(uiObjId);
     if(obj != NULL) {
-        obj->setFlag(PWE_INFORM_OBJ, true);
+        //obj->setFlag(PWE_INFORM_OBJ_REMOVE, true);
         itArea->second.m_pOctree->remove(uiObjId);
+        obj->callBack(getId(), &uiAreaId, PWE_ON_REMOVED_FROM_AREA);
     } else {
         printf("ERROR %s %d: Tried to remove nonexistent object %d\n", __FILE__, __LINE__, uiObjId);
         return;
@@ -361,8 +362,9 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
         //addTo(*it, uiAreaId);
 
         //New add code
-        (*it)->setFlag(PWE_INFORM_OBJ, true); //So the object is informed of its new place
+        // (*it)->setFlag(PWE_INFORM_OBJ, true); //So the object is informed of its new place
         itArea->second.m_pOctree->add(*it);
+        (*it)->callBack(getId(), &uiAreaId, PWE_ON_ADDED_TO_AREA);
     }
 
 }

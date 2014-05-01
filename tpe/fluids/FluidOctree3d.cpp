@@ -130,9 +130,27 @@ FluidOctreeNode::erase(uint uiObjId) {
 //Returns a reference to the appropriate object
 GameObject *
 FluidOctreeNode::find(uint uiObjId) {
-    iter_t obj = m_mContents.find(uiObjId);
-    if(obj != m_mContents.end()) {
-        return obj->second;
+    iter_t itContentObj = m_mContents.find(uiObjId);
+    if(itContentObj != m_mContents.end()) {
+        return itContentObj->second;
+    }
+
+    //Mid-update: Object might be in one of my transitional lists
+    //If the object is in dynamic or static, then it hasn't left the quadrant
+    // and should be in contents.
+    for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
+        if((*it)->getId() == uiObjId) {
+            return *it;
+        }
+    }
+
+    //If the object is in remove or erase, it hasn't been removed yet and
+    // should be in contents. If it is in add, it may still be in another list,
+    // but it may not be, so this list must be searched as well.
+    for(list<GameObject*>::iterator it = m_lsObjsToAdd.begin(); it != m_lsObjsToAdd.end(); ++it) {
+        if((*it)->getId() == uiObjId) {
+            return *it;
+        }
     }
 
     //Otherwise, search children
@@ -415,8 +433,8 @@ FluidOctreeNode::addNow(GameObject *obj) {
     m_mContents[obj->getId()] = obj;
 
     //TODO: Is there a better way to do this?
-    if(obj->getFlag(PWE_INFORM_OBJ)) {
-        obj->setFlag(PWE_INFORM_OBJ, false);
+    if(obj->getFlag(PWE_INFORM_OBJ_ADD)) {
+        obj->setFlag(PWE_INFORM_OBJ_ADD, false);
         obj->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ADDED_TO_AREA);
     }
 }
@@ -426,8 +444,8 @@ FluidOctreeNode::removeNow(uint uiObjId) {
     iter_t itFoundObj = m_mContents.find(uiObjId);
     if(itFoundObj != m_mContents.end()) {
         //TODO: Is there a better way to do this?
-        if(itFoundObj->second->getFlag(PWE_INFORM_OBJ)) {
-            itFoundObj->second->setFlag(PWE_INFORM_OBJ, false);
+        if(itFoundObj->second->getFlag(PWE_INFORM_OBJ_REMOVE)) {
+            itFoundObj->second->setFlag(PWE_INFORM_OBJ_REMOVE, false);
             itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_REMOVED_FROM_AREA);
             D3RE::get()->remove(itFoundObj->second);
         }
@@ -524,7 +542,9 @@ FluidOctreeNode::childIsLeafNode(const Box &bxChildBounds) {
 void
 FluidOctreeNode::updateEmptiness() {
     //Emptiness has to do with both actual empty status and potential empty status
-    m_bEmpty = m_mContents.size() == 0 && m_lsObjsToAdd.size() == 0;
+    m_bEmpty = m_mContents.size() == 0 &&
+               m_lsObjsToAdd.size() == 0 &&
+               m_lsObjsLeftQuadrant.size() == 0;
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         if(m_apChildren[q] != NULL) {
             //Only empty if we have nothing and children are empty too
