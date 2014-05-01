@@ -351,6 +351,7 @@ Player::updateClimbingTrans(float fDeltaTime) {
         //Position/movement information about the object I'm climbing
         TimePhysicsModel *tpmObj = (TimePhysicsModel*)obj->getPhysicsModel();
         Box bxObjBounds = tpmObj->getCollisionModel(m_uiClimbObjCmdlId)->getBounds();
+        bxObjBounds += tpmObj->getPosition();
         float fObjHeight = getObjHeight(tpmObj, m_uiClimbObjCmdlId);
 
         //Update start climb position: Changes due to object movement
@@ -671,6 +672,7 @@ Player::handleCollision(HandleCollisionData *data) {
                 //Position/velocity information needed from the other object
                 Point ptMyPos = m_pPhysicsModel->getPosition();
                 Box bxObjBounds = pmdl->getCollisionModel(data->uiCollisionModel)->getBounds();
+                bxObjBounds += pmdl->getPosition();
 
                 //Start climb position = my current position
                 m_ptStartClimbPos = ptMyPos;
