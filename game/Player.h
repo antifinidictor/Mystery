@@ -89,11 +89,14 @@ private:
     //You can only cast one spell at a time
     Spell *m_pCurSpell;
 
-    float m_fEndClimbHeight;
-    float m_fStartClimbHeight;
-    Point m_ptClimbShift;
-    uint m_uiClimbObjCmdlId;
-    uint m_uiClimbObjId;    //ID of the object player is climbing up
+    Point m_ptStartClimbPos;        //Where you were when you start climbing
+    Point m_ptIntermediateClimbPos; //An intermediate point for making climbing a curve
+    Point m_ptEndClimbPos;          //Where you'll be when you finish climbing
+
+    Point m_ptClimbShift;           //The direction in which you are climbing
+
+    uint m_uiClimbObjCmdlId;    //ID of the collision model the player is climbing up
+    uint m_uiClimbObjId;        //ID of the object player is climbing up
     bool m_bCanClimb;
 
     bool m_bSprinting;

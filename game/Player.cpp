@@ -55,10 +55,10 @@ Player::Player(uint uiId, const Point &ptPos)
 
     m_pCurSpell = NULL;
 
-
-    m_fEndClimbHeight = 0.f;
-    m_fStartClimbHeight = 0.f;
     m_ptClimbShift = Point();
+    m_ptEndClimbPos = Point();
+    m_ptIntermediateClimbPos = Point();
+    m_ptStartClimbPos = Point();
     m_uiClimbObjCmdlId = 0;
     m_uiClimbObjId = 0;
     m_bCanClimb = false;
@@ -341,15 +341,63 @@ Player::updateCasting(float fDeltaTime) {
 
 void
 Player::updateClimbingTrans(float fDeltaTime) {
-    Point ptObjShift = Point();
+    //My current position: Used in the position update calculations below
+    Point ptMyPos = m_pPhysicsModel->getPosition();
+    setFlag(TPE_PASSABLE, true);
+
+    //Update climbing information
     GameObject *obj = PWE::get()->find(m_uiClimbObjId);
     if(obj != NULL) {
-        ptObjShift = obj->getPhysicsModel()->getLastVelocity();
+        //Position/movement information about the object I'm climbing
+        TimePhysicsModel *tpmObj = (TimePhysicsModel*)obj->getPhysicsModel();
+        Box bxObjBounds = tpmObj->getCollisionModel(m_uiClimbObjCmdlId)->getBounds();
+        float fObjHeight = getObjHeight(tpmObj, m_uiClimbObjCmdlId);
 
-        //Update the end climb height
-        m_fEndClimbHeight = getObjHeight((TimePhysicsModel*)obj->getPhysicsModel(), m_uiClimbObjCmdlId);
+        //Update start climb position: Changes due to object movement
+        m_ptStartClimbPos += tpmObj->getLastVelocity();
+
+        //Update destination climb position: Changes if object height is changing and/or object is moving
+        float tx, tz, t;
+        tx = (m_ptClimbShift.x < 0) ? ((bxObjBounds.x + bxObjBounds.w) - ptMyPos.x) / m_ptClimbShift.x: //west
+                                       (bxObjBounds.x - ptMyPos.x) / m_ptClimbShift.x;                  //east
+        tz = (m_ptClimbShift.z < 0) ? ((bxObjBounds.z + bxObjBounds.l) - ptMyPos.z) / m_ptClimbShift.z: //south
+                                       (bxObjBounds.z - ptMyPos.z) / m_ptClimbShift.z;                  //north
+        t = (fabs(tx) < fabs(tz)) ? tx : tz;
+        m_ptEndClimbPos = m_ptStartClimbPos + m_ptClimbShift * t;
+        m_ptEndClimbPos.y = fObjHeight;
+
+        //Update intermediate position: Relative to start and end climb positions
+        m_ptIntermediateClimbPos.x = m_ptStartClimbPos.x;
+        m_ptIntermediateClimbPos.y = m_ptEndClimbPos.y;
+        m_ptIntermediateClimbPos.z = m_ptStartClimbPos.z;
     }
-    if(m_iAnimTimer < 0) {
+
+    //Calculate new position information
+    //Interpolation biases for each of the three points
+    float fCurTime = (m_iAnimState * ANIM_TIMER_MAX + ANIM_TIMER_MAX - m_iAnimTimer) / (ANIM_TIMER_MAX * 8.f);
+    float fIntermediateBias = 0.5f - fabs(0.5f - fCurTime);
+    float fEndBias          = fCurTime         - fIntermediateBias / 2.f;
+    float fStartBias        = (1.f - fCurTime) - fIntermediateBias / 2.f;
+
+    //Calculate the new position
+    //It's more efficient to calculate each dimension separately
+    Point ptNewPos;
+    ptNewPos.x = m_ptStartClimbPos.x        * fStartBias +
+                 m_ptIntermediateClimbPos.x * fIntermediateBias +
+                 m_ptEndClimbPos.x          * fEndBias;
+    ptNewPos.y = m_ptStartClimbPos.y        * fStartBias +
+                 m_ptIntermediateClimbPos.y * fIntermediateBias +
+                 m_ptEndClimbPos.y          * fEndBias;
+    ptNewPos.z = m_ptStartClimbPos.z        * fStartBias +
+                 m_ptIntermediateClimbPos.z * fIntermediateBias +
+                 m_ptEndClimbPos.z          * fEndBias;
+
+    //Move myself and the screen to the new position
+    moveBy(ptNewPos - ptMyPos);
+    D3RE::get()->moveScreenTo(ptNewPos);
+
+    //Finish climbing?
+    if(m_iAnimTimer < 0 || obj == NULL) {
         m_iAnimTimer = ANIM_TIMER_MAX;
         m_iAnimState = m_iAnimState + 1;
         m_pRenderModel->setFrameH(m_iAnimState + m_uiAnimFrameStart);
@@ -366,31 +414,13 @@ Player::updateClimbingTrans(float fDeltaTime) {
             m_uiAnimFrameStart = PANIM_STANDING;
             setFlag(TPE_FLOATING, false);
             setFlag(TPE_STATIC, false);
-            #define CLIMB_SHIFT 0.1F
-            moveBy(m_ptClimbShift);
-            handleButtonNormal(MGE::get()->getInputState());
+            setFlag(TPE_PASSABLE, false);
 
-            //Move the screen to the player position
-            Point ptPos = m_pPhysicsModel->getPosition();
-            D3RE::get()->moveScreenTo(ptPos);
-            return;
+            handleButtonNormal(MGE::get()->getInputState());
         }
     } else {
         --m_iAnimTimer;
     }
-
-    //Determine the current climb height via interpolation
-    float fCurTime = (m_iAnimState * ANIM_TIMER_MAX + ANIM_TIMER_MAX - m_iAnimTimer) / (ANIM_TIMER_MAX * 8.f);
-    float fClimbShift = fCurTime         * m_fEndClimbHeight +
-                        (1.f - fCurTime) * m_fStartClimbHeight -
-                        m_pPhysicsModel->getPosition().y;   //This is moveBy, not moveTo
-
-    m_pPhysicsModel->setPhysicsChanged(true);
-    moveBy(Point(ptObjShift.x, fClimbShift + ptObjShift.y, ptObjShift.z));
-
-    //Move the screen to the player position
-    Point ptPos = m_pPhysicsModel->getPosition();
-    D3RE::get()->moveScreenTo(ptPos);
 }
 
 void
@@ -612,7 +642,7 @@ Player::handleCollision(HandleCollisionData *data) {
         }
 
         //Get the height according to the collision model type
-        float fHeightOfObj = getObjHeight(pmdl, data->uiCollisionModel);
+        float fObjHeight = getObjHeight(pmdl, data->uiCollisionModel);
 
         Box mbx = m_pPhysicsModel->getCollisionVolume();
 
@@ -620,22 +650,43 @@ Player::handleCollision(HandleCollisionData *data) {
         //float moveMag = m_pPhysicsModel->getLastVelocity().magnitude();
 
         //Object is low enough to step onto
-        if((fHeightOfObj) - (mbx.y) < 0.25) {   //Too low to climb over, so step over
+        if((fObjHeight) - (mbx.y) < 0.25) {   //Too low to climb over, so step over
             //Step up
-            moveBy(Point(-data->ptShift.x, (fHeightOfObj) - (mbx.y), -data->ptShift.z));
+            moveBy(Point(-data->ptShift.x, (fObjHeight) - (mbx.y), -data->ptShift.z));
             Point ptPos = m_pPhysicsModel->getPosition();
             D3RE::get()->moveScreenTo(ptPos);
             m_pPhysicsModel->setSurface(pmdl);
         } else {
             //We might be able to climb, if we didn't step up.
-            if(fHeightOfObj < mbx.y + mbx.h) {
+            if(fObjHeight < mbx.y + mbx.h) {
                 //Prep for climbing
-                m_fEndClimbHeight = fHeightOfObj;
-                m_fStartClimbHeight = mbx.y;
+                m_ptClimbShift = Point(-data->ptShift.x, 0.f, -data->ptShift.z);
                 m_uiClimbObjCmdlId = data->uiCollisionModel;
                 m_uiClimbObjId = data->obj->getId();
-                m_ptClimbShift = Point(-data->ptShift.x, 0.f, -data->ptShift.z);
                 m_bCanClimb = true;
+
+                //Position/velocity information needed from the other object
+                Point ptMyPos = m_pPhysicsModel->getPosition();
+                Box bxObjBounds = pmdl->getCollisionModel(data->uiCollisionModel)->getBounds();
+
+                //Start climb position = my current position
+                m_ptStartClimbPos = ptMyPos;
+
+                //Initialize the destination climb position
+                float tx, tz, t;
+                tx = (m_ptClimbShift.x < 0) ? ((bxObjBounds.x + bxObjBounds.w) - ptMyPos.x) / m_ptClimbShift.x: //west
+                                               (bxObjBounds.x - ptMyPos.x) / m_ptClimbShift.x;                  //east
+                tz = (m_ptClimbShift.z < 0) ? ((bxObjBounds.z + bxObjBounds.l) - ptMyPos.z) / m_ptClimbShift.z: //south
+                                               (bxObjBounds.z - ptMyPos.z) / m_ptClimbShift.z;                  //north
+                t = (fabs(tx) < fabs(tz)) ? tx : tz;
+                m_ptEndClimbPos = m_ptStartClimbPos + m_ptClimbShift * t;
+                m_ptEndClimbPos.y = fObjHeight;
+
+                //Initialize intermediate position: Relative to start and end climb positions
+                m_ptIntermediateClimbPos.x = m_ptStartClimbPos.x;
+                m_ptIntermediateClimbPos.y = m_ptEndClimbPos.y;
+                m_ptIntermediateClimbPos.z = m_ptStartClimbPos.z;
+
             }
 
             m_uiAnimFrameStart = PANIM_PUSHING;
@@ -658,6 +709,7 @@ Player::startClimbing() {
 
     //Physics bludgeoning
     setFlag(TPE_FLOATING, true);
+    //setFlag(TPE_PASSABLE, true);
     //setFlag(TPE_STATIC, true);
     m_bSprinting = false;
 }
