@@ -536,7 +536,7 @@ Player::handleButtonNormal(InputData* data) {
         } else if(m_iStrafeSpeed != 0.f || m_iForwardSpeed != 0.f || m_bMouseDown) {
             m_bSprinting = true;
         } else {
-            startCasting(); //Tries to start casting, cancels existing spell if any
+            startCasting();
         }
     } else if(!data->getInputState(IN_CAST) && data->hasChanged(IN_CAST)) {
         m_bSprinting = false;
