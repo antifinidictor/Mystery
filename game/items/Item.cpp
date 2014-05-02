@@ -74,7 +74,7 @@ Item::update(float fDeltaTime) {
     //Survived one round without touching the player
     if(!m_bCollidingWithPlayer && !getFlag(GAM_CAN_PICK_UP)) {
         setFlag(GAM_CAN_PICK_UP, true);
-        setFlag(TPE_PASSABLE, false);
+        //setFlag(TPE_PASSABLE, false);
     }
 
     m_bCollidingWithPlayer = false; //This object is not yet colliding with the player
@@ -110,7 +110,7 @@ Item::onItemPickup() {
 void
 Item::onItemDrop() {
     setFlag(GAM_CAN_PICK_UP, false);
-    setFlag(TPE_PASSABLE, true);
+    //setFlag(TPE_PASSABLE, true);
 }
 
 

@@ -5,6 +5,8 @@
 #include "pwe/PartitionedWorldEngine.h"
 #include "game/gui/DraggableHud.h"
 
+using namespace std;
+
 SpellItem::SpellItem(uint id, uint itemId, const Point &pos)
     : Item(id, itemId, pos)
 {
@@ -22,7 +24,12 @@ SpellItem::read(const boost::property_tree::ptree &pt, const std::string &keyBas
     ptPos.x = pt.get(keyBase + ".pos.x", 0.f);
     ptPos.y = pt.get(keyBase + ".pos.y", 0.f);
     ptPos.z = pt.get(keyBase + ".pos.z", 0.f);
-    return new SpellItem(id, itemId, ptPos);
+    string sInfo = pt.get(keyBase + ".info", "no information available");
+    printf("Info = '%s'/", sInfo.c_str());
+    SpellItem *item = new SpellItem(id, itemId, ptPos);
+    item->setItemInfo(sInfo);
+    printf("'%s'\n", item->getItemInfo().c_str());
+    return item;
 }
 
 void

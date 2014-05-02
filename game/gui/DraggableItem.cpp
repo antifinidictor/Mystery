@@ -92,7 +92,6 @@ DraggableItem::onFollow(const Point &diff) {
 
 void
 DraggableItem::onMouseIn() {
-    printf("Hello\n");
     ContainerRenderModel *panel =
         D3RE::get()->getHudContainer()->
         get<ContainerRenderModel*>(HUD_TOPBAR)->
@@ -103,7 +102,6 @@ DraggableItem::onMouseIn() {
 
 void
 DraggableItem::onMouseOut() {
-    printf("Goodbye\n");
     ContainerRenderModel *panel =
         D3RE::get()->getHudContainer()->
         get<ContainerRenderModel*>(HUD_TOPBAR)->

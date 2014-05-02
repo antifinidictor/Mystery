@@ -473,10 +473,10 @@ EditorManager::initMainHud() {
     ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
 
     int i = 0;
-    GuiButton *loadWorld = new GuiButton(rpanel, ED_HUD_OP_LOAD_WORLD, "Load World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
-        *saveWorld  = new GuiButton(rpanel, ED_HUD_OP_SAVE_WORLD, "Save World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
-        *newObj     = new GuiButton(rpanel, ED_HUD_OP_NEW_OBJ, "New Object", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
-        *newTex     = new GuiButton(rpanel, ED_HUD_OP_NEW_TEXTURE, "New Texture", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *loadWorld = new GuiButton(rpanel, this, ED_HUD_OP_LOAD_WORLD, "Load World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *saveWorld  = new GuiButton(rpanel, this, ED_HUD_OP_SAVE_WORLD, "Save World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *newObj     = new GuiButton(rpanel, this, ED_HUD_OP_NEW_OBJ, "New Object", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *newTex     = new GuiButton(rpanel, this, ED_HUD_OP_NEW_TEXTURE, "New Texture", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
 
     rpanel->add(ED_HUD_MAIN_LOAD_WORLD, loadWorld);
     rpanel->add(ED_HUD_MAIN_SAVE_WORLD, saveWorld);
@@ -494,8 +494,8 @@ EditorManager::initEnterTextHud(const std::string &slabel, const std::string &fi
     ContainerRenderModel *mpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE);
 
     int i = 0;
-    GuiButton *cancel = new GuiButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
-        *finalize  = new GuiButton(rpanel, ED_HUD_OP_FINALIZE, finalizeLabel, Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *cancel = new GuiButton(rpanel, this, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
+        *finalize  = new GuiButton(rpanel, this, ED_HUD_OP_FINALIZE, finalizeLabel, Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
     D3HudRenderModel *label = new D3HudRenderModel(UNUSED_TEXTURE_ID, Rect(0,0,SCREEN_WIDTH - BUTTON_WIDTH*2,BUTTON_HEIGHT), slabel, Point());
     D3HudRenderModel *text = new D3HudRenderModel(UNUSED_TEXTURE_ID, Rect(0,BUTTON_HEIGHT,SCREEN_WIDTH - BUTTON_WIDTH*2,SCREEN_HEIGHT), "", Point());
 
@@ -517,10 +517,10 @@ EditorManager::initAreaPanel() {
     ContainerRenderModel *lpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_LEFT_PANE);
 
     int i = 0;
-    GuiButton *newArea    = new GuiButton(lpanel, ED_HUD_OP_NEW_AREA, "New area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *renameArea = new GuiButton(lpanel, ED_HUD_OP_RENAME_AREA, "Rename area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *upArea     = new GuiButton(lpanel, ED_HUD_OP_UP_AREA, "UP", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *downArea   = new GuiButton(lpanel, ED_HUD_OP_DOWN_AREA, "DOWN", Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT * 2, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *newArea    = new GuiButton(lpanel, this, ED_HUD_OP_NEW_AREA, "New area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *renameArea = new GuiButton(lpanel, this, ED_HUD_OP_RENAME_AREA, "Rename area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *upArea     = new GuiButton(lpanel, this, ED_HUD_OP_UP_AREA, "UP", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *downArea   = new GuiButton(lpanel, this, ED_HUD_OP_DOWN_AREA, "DOWN", Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT * 2, 0.f), BUTTON_TEXT_SIZE);
     ContainerRenderModel *lspanel = new ContainerRenderModel(Rect(0.f, BUTTON_HEIGHT * i, BUTTON_WIDTH, SCREEN_HEIGHT - BUTTON_HEIGHT * (i + 1)), Point(0.f, BUTTON_HEIGHT, 0.f));
 
     lpanel->add(ED_HUD_AREA_NEW, newArea);
@@ -548,7 +548,7 @@ EditorManager::initAreaListPanel(uint uiAreaFirst) {
         } else {
             name << *iter << " " << PWE::get()->getAreaName(*iter);
         }
-        GuiButton *area = new GuiButton(lspanel, ED_HUD_OP_GO_TO_AREA, name.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+        GuiButton *area = new GuiButton(lspanel, this, ED_HUD_OP_GO_TO_AREA, name.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
         lspanel->add(i, area);
         if(i == 0) {
             m_uiHudAreaButtonIdStart = area->getHudID();
@@ -563,9 +563,9 @@ EditorManager::initNewObjHud() {
     m_uiObjFirst = 0;
 
     int i = 0;
-    GuiButton *cancel = new GuiButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *upArea     = new GuiButton(rpanel, ED_HUD_OP_UP, "UP", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *downArea   = new GuiButton(rpanel, ED_HUD_OP_DOWN, "DOWN", Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *cancel = new GuiButton(rpanel, this, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *upArea     = new GuiButton(rpanel, this, ED_HUD_OP_UP, "UP", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *downArea   = new GuiButton(rpanel, this, ED_HUD_OP_DOWN, "DOWN", Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT, 0.f), BUTTON_TEXT_SIZE);
     ContainerRenderModel *lspanel = new ContainerRenderModel(Rect(0.f, BUTTON_HEIGHT * i, BUTTON_WIDTH, SCREEN_HEIGHT - BUTTON_HEIGHT * (i + 1)), Point(SCREEN_WIDTH - BUTTON_WIDTH, 0.f, 0.f));
 
     rpanel->add(ED_HUD_NEW_OBJ_CANCEL, cancel);
@@ -591,7 +591,7 @@ EditorManager::initClassListPanel(uint uiStart) {
     //Display available classes
     uint i = 0;
     for(iter = m_vClasses.begin() + uiStart; iter != m_vClasses.end() && i < MAX_LIST_SIZE + 1; ++iter) {
-        GuiButton *classButton = new GuiButton(lspanel, ED_HUD_OP_CHOOSE_OBJ, **iter, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+        GuiButton *classButton = new GuiButton(lspanel, this, ED_HUD_OP_CHOOSE_OBJ, **iter, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
         lspanel->add(i, classButton);
         if(i == 0) {
             m_uiHudObjButtonIdStart = classButton->getHudID();
@@ -606,10 +606,10 @@ EditorManager::initCreateObjHud() {
     m_uiObjFirst = 0;
 
     int i = 0;
-    GuiButton *cancel   = new GuiButton(rpanel, ED_HUD_OP_CANCEL,   "Cancel",        Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *finalize = new GuiButton(rpanel, ED_HUD_OP_FINALIZE, "Create it!",    Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *upArea   = new GuiButton(rpanel, ED_HUD_OP_UP,       "UP",            Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *downArea = new GuiButton(rpanel, ED_HUD_OP_DOWN,     "DOWN",          Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *cancel   = new GuiButton(rpanel, this, ED_HUD_OP_CANCEL,   "Cancel",        Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *finalize = new GuiButton(rpanel, this, ED_HUD_OP_FINALIZE, "Create it!",    Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *upArea   = new GuiButton(rpanel, this, ED_HUD_OP_UP,       "UP",            Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *downArea = new GuiButton(rpanel, this, ED_HUD_OP_DOWN,     "DOWN",          Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT, 0.f), BUTTON_TEXT_SIZE);
     ContainerRenderModel *lspanel = new ContainerRenderModel(Rect(0.f, BUTTON_HEIGHT * i, BUTTON_WIDTH, SCREEN_HEIGHT - BUTTON_HEIGHT * (i + 1)), Point(SCREEN_WIDTH - BUTTON_WIDTH, 0.f, 0.f));
 
     rpanel->add(ED_HUD_NEW_OBJ_CANCEL, cancel);
@@ -645,51 +645,51 @@ EditorManager::initAttributeListPanel(uint uiStart) {
         ostringstream attrName;
         switch(iter->m_eType) {
         case ATYPE_INT:
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             break;
         case ATYPE_UINT:
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             break;
         case ATYPE_FLOAT:
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             break;
         case ATYPE_POINT: {
             attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, Point());
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             break;
           }
         case ATYPE_RECT: {
             attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, Rect());
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             break;
           }
         case ATYPE_BOX: {
             attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, Box());
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             break;
           }
         case ATYPE_COLOR: {
             Color cr = m_pCurData->getAttribute(iter->m_sAttributeKey, Color(0xFF,0xFF,0xFF));
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             D3HudRenderModel *tex = new D3HudRenderModel(1, Rect(BUTTON_WIDTH - TEXTURE_TILE_SIZE, BUTTON_HEIGHT * i, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE));
             tex->setImageColor(cr);
             lspanel->add(i * 2 + 1, tex);
             break;
           }
         case ATYPE_STRING:
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, iter->m_sAttributeName, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             break;
         case ATYPE_RESOURCE_ID: {
             uint texId = m_pCurData->getAttribute(iter->m_sAttributeKey, (uint)0);
             attrName << iter->m_sAttributeName << " = " << texId;
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             D3HudRenderModel *tex = new D3HudRenderModel(texId, Rect(BUTTON_WIDTH - TEXTURE_TILE_SIZE, BUTTON_HEIGHT * i, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE));
             lspanel->add(i * 2 + 1, tex);
             break;
           }
         case ATYPE_OBJECT_ID: {
             attrName << iter->m_sAttributeName << " = " << m_pCurData->getAttribute(iter->m_sAttributeKey, 0);
-            attrButton = new GuiButton(lspanel, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+            attrButton = new GuiButton(lspanel, this, ED_HUD_OP_ATTR, attrName.str(), Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
             break;
           }
         default:
@@ -711,9 +711,9 @@ EditorManager::initTextureHud() {
     m_uiObjFirst = 0;
 
     int i = 0;
-    GuiButton *cancel = new GuiButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *up     = new GuiButton(rpanel, ED_HUD_OP_UP, "UP", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *down   = new GuiButton(rpanel, ED_HUD_OP_DOWN, "DOWN", Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *cancel = new GuiButton(rpanel, this, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *up     = new GuiButton(rpanel, this, ED_HUD_OP_UP, "UP", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *down   = new GuiButton(rpanel, this, ED_HUD_OP_DOWN, "DOWN", Point(0.f ,SCREEN_HEIGHT - BUTTON_HEIGHT, 0.f), BUTTON_TEXT_SIZE);
     ContainerRenderModel *lspanel = new ContainerRenderModel(Rect(0.f, BUTTON_HEIGHT * i, BUTTON_WIDTH, SCREEN_HEIGHT - BUTTON_HEIGHT * (i + 1)), Point(SCREEN_WIDTH - BUTTON_WIDTH, 0.f, 0.f));
 
     rpanel->add(ED_HUD_NEW_OBJ_CANCEL, cancel);
@@ -736,7 +736,7 @@ EditorManager::initTextureListPanel(uint uiStart) {
     //Display available classes
     uint i = 0;
     for(uint img = uiStart; img <= m_uiObjMax && i < MAX_LIST_SIZE; ++img) {
-        GuiButton *texButton = new GuiButton(lspanel, ED_HUD_OP_CHOOSE_TEXTURE, "", Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
+        GuiButton *texButton = new GuiButton(lspanel, this, ED_HUD_OP_CHOOSE_TEXTURE, "", Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
         D3HudRenderModel *tex = new D3HudRenderModel(img, Rect(BUTTON_WIDTH / 2 - TEXTURE_TILE_SIZE / 2, BUTTON_HEIGHT * i, TEXTURE_TILE_SIZE, TEXTURE_TILE_SIZE));
         lspanel->add(i * 2, texButton);
         lspanel->add(i * 2 + 1, tex);
@@ -751,11 +751,11 @@ void
 EditorManager::initSelectionHud(EditorCursorState eState) {
     ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
     int i = 0;
-    GuiButton *cancel = new GuiButton(rpanel, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *finalize = new GuiButton(rpanel, ED_HUD_OP_FINALIZE, "Select", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *snapX = new GuiButton(rpanel, ED_HUD_OP_SNAP_X, "Snap X", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *snapY = new GuiButton(rpanel, ED_HUD_OP_SNAP_Y, "Snap Y", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
-    GuiButton *snapZ = new GuiButton(rpanel, ED_HUD_OP_SNAP_Z, "Snap Z", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *cancel = new GuiButton(rpanel, this, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *finalize = new GuiButton(rpanel, this, ED_HUD_OP_FINALIZE, "Select", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *snapX = new GuiButton(rpanel, this, ED_HUD_OP_SNAP_X, "Snap X", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *snapY = new GuiButton(rpanel, this, ED_HUD_OP_SNAP_Y, "Snap Y", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
+    GuiButton *snapZ = new GuiButton(rpanel, this, ED_HUD_OP_SNAP_Z, "Snap Z", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
     rpanel->add(ED_HUD_SEL_CANCEL, cancel);
     rpanel->add(ED_HUD_SEL_FINALIZE, finalize);
     rpanel->add(ED_HUD_SEL_SNAP_X, snapX);

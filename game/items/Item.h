@@ -58,7 +58,7 @@ public:
     uint getItemId();
     std::string getItemName();
     std::string getItemInfo() { return m_sItemInfo; }
-    void setItemInfo(std::string sItemInfo) { m_sItemInfo = m_sItemInfo; }
+    void setItemInfo(std::string sItemInfo) { m_sItemInfo = sItemInfo; }
     virtual void onItemPickup();
     virtual void onItemDrop();
 

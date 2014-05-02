@@ -16191,7 +16191,7 @@
 	"game/game_defs.h"
 	<limits>
 
-1399053201 /home/naheisey/Documents/projects/games/Mystery/game/game_defs.h
+1399058692 /home/naheisey/Documents/projects/games/Mystery/game/game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -16326,7 +16326,7 @@
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery/game/spells/Spell.h
 
-1399057424 /home/naheisey/Documents/projects/games/Mystery/game/items/Item.h
+1399061406 /home/naheisey/Documents/projects/games/Mystery/game/items/Item.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
@@ -16444,7 +16444,7 @@
 	"game/items/Item.h"
 	<vector>
 
-1399054869 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableHud.cpp
+1399060382 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableHud.cpp
 	"DraggableHud.h"
 	"DraggableItem.h"
 	"DraggableElementalSpellItem.h"
@@ -16455,12 +16455,13 @@
 	"game/items/Item.h"
 	"game/items/SpellItem.h"
 	"mge/Event.h"
+	"GuiButton.h"
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery/game/items/SpellItem.h
 	"game/items/Item.h"
 	"game/spells/Spell.h"
 
-1399056830 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableItem.cpp
+1399061140 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableItem.cpp
 	"DraggableItem.h"
 	"d3re/d3re.h"
 	"mge/ModularEngine.h"
@@ -16472,11 +16473,11 @@
 	"d3re/d3re.h"
 	<stdlib.h>
 
-1399057522 source:/home/naheisey/Documents/projects/games/Mystery/game/items/Item.cpp
+1399061034 source:/home/naheisey/Documents/projects/games/Mystery/game/items/Item.cpp
 	"Item.h"
 	"pwe/PartitionedWorldEngine.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/items/SpellItem.cpp
+1399061378 source:/home/naheisey/Documents/projects/games/Mystery/game/items/SpellItem.cpp
 	"SpellItem.h"
 	"game/spells/SourceSinkSpell.h"
 	"game/spells/FlowSpell.h"
@@ -16505,7 +16506,7 @@
 	<boost/property_tree/xml_parser.hpp>
 	<boost/property_tree/info_parser.hpp>
 
-1399049613 source:/home/naheisey/Documents/projects/games/Mystery/game/Player.cpp
+1399060731 source:/home/naheisey/Documents/projects/games/Mystery/game/Player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/tpe.h"
@@ -16777,7 +16778,7 @@
 	"SDL.h"
 	"mge/defs.h"
 
-1399053201 /home/naheisey/Documents/projects/games/Mystery//game/game_defs.h
+1399058692 /home/naheisey/Documents/projects/games/Mystery//game/game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -16890,7 +16891,7 @@
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery//game/spells/Spell.h
 
-1399057424 /home/naheisey/Documents/projects/games/Mystery//game/items/Item.h
+1399061406 /home/naheisey/Documents/projects/games/Mystery//game/items/Item.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
@@ -17158,7 +17159,13 @@
 	<list>
 	<boost/property_tree/ptree.hpp>
 
-1399050523 /home/naheisey/Documents/projects/games/Mystery//game/gui/GuiButton.h
+1399060289 /home/naheisey/Documents/projects/games/Mystery//game/gui/GuiButton.h
+	"d3re/d3re.h"
+	"editor/editor_defs.h"
+	"editor/EditorManager.h"
+	"mge/ModularEngine.h"
+
+1399060289 /home/naheisey/Documents/projects/games/Mystery/game/gui/GuiButton.h
 	"d3re/d3re.h"
 	"editor/editor_defs.h"
 	"editor/EditorManager.h"

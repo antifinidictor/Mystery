@@ -9,6 +9,7 @@
 #include "game/items/Item.h"
 #include "game/items/SpellItem.h"
 #include "mge/Event.h"
+#include "GuiButton.h"
 
 #define Y_HIDDEN (TEXTURE_TILE_SIZE - SCREEN_HEIGHT)
 #define Y_SHOWN (0.F)
@@ -18,6 +19,8 @@
 #define ANIM_TIMER_MAX 1
 
 using namespace std;
+
+#define BUTTON_SPACING 64
 
 DraggableHud::DraggableHud(uint uiId)
     : ContainerRenderModel(Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT)),
@@ -617,7 +620,7 @@ DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
 #define SIDEBAR_MARGIN 5
     Rect rcItemNameLabel = Rect(
         SIDEBAR_MARGIN,
-        SIDEBAR_MARGIN,
+        TEXTURE_TILE_SIZE,
         TEXTURE_TILE_SIZE * 6 - SIDEBAR_MARGIN,
         TEXTURE_TILE_SIZE
     );
@@ -625,7 +628,22 @@ DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
         rcItemNameLabel.x,
         rcItemNameLabel.y + rcItemNameLabel.h,
         rcItemNameLabel.w,
-        TEXTURE_TILE_SIZE * 5
+        TEXTURE_TILE_SIZE * 3
+    );
+    Point ptLoadButtonPos(
+        rcItemDescLabel.x + rcItemDescLabel.w / 2 - BUTTON_WIDTH / 2,
+        rcItemDescLabel.y + rcItemDescLabel.h,
+        0
+    );
+    Point ptSaveButtonPos(
+        ptLoadButtonPos.x,
+        ptLoadButtonPos.y + BUTTON_SPACING,
+        0
+    );
+    Point ptQuitButtonPos(
+        ptSaveButtonPos.x,
+        ptSaveButtonPos.y + BUTTON_SPACING,
+        0
     );
     D3HudRenderModel *label = new D3HudRenderModel("", rcItemNameLabel,1.0f);
     label->centerHorizontally(true);
@@ -633,6 +651,16 @@ DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
 
     label = new D3HudRenderModel("", rcItemDescLabel,0.8f);
     panel->add(MGHUD_SIDEBUTTON_ITEMDESC, label);
+
+    GuiButton *btn;
+    btn = new GuiButton(panel, this, ON_LOAD_GAME, "Load", ptLoadButtonPos, 0.8f);
+    panel->add(MGHUD_SIDEBUTTON_LOADBUTTON, btn);
+
+    btn = new GuiButton(panel, this, ON_SAVE_GAME, "Save", ptSaveButtonPos, 0.8f);
+    panel->add(MGHUD_SIDEBUTTON_SAVEBUTTON, btn);
+
+    btn = new GuiButton(panel, this, ON_QUIT_GAME, "Quit", ptQuitButtonPos, 0.8f);
+    panel->add(MGHUD_SIDEBUTTON_QUITBUTTON, btn);
 }
 
 bool
