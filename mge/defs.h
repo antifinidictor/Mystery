@@ -24,6 +24,7 @@ const int SCREEN_WIDTH = 640;
 #define SET_BIT(val, bit)   (val |  BIT(bit))
 #define UNSET_BIT(val, bit) (val & ~BIT(bit))
 #define FLIP_BIT(val, bit)  (val ^  BIT(bit))
+#define BOUND(min, val, max) ((val < min) ? min : ((val < max) ? val : max))
 
 //Constants
 /*
@@ -358,6 +359,7 @@ float dot(PT &pt1, PT &pt2);
 PT cross(const PT &pt1, const PT &pt2);
 int order(const PT &pt1, const PT &pt2);    //FIXME: Obsolete
 int angle2dir(float angle);
+float dir2angle(int dir);
 double dist(const PT &ptHere, const PT &ptThere);
 double distSq(const PT &ptHere, const PT &ptThere);
 std::string bin2str(uint bin);

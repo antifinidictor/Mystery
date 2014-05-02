@@ -13,6 +13,7 @@ using namespace std;
 #define SPELL_DURATION 300
 #define ANIM_TIMER_MAX 3
 #define SPRINT_ANIM_TIMER_MAX 1
+#define WALK_ANIM_TIMER_MAX 9
 
 enum PlayerAnims {
     PANIM_STANDING = 0,     //1 frame
@@ -212,6 +213,8 @@ Player::callBack(uint cID, void *data, uint uiEventId) {
 void
 Player::updateNormal(float fDeltaTime) {
     Point mov;
+    float fSpeed = m_bSprinting ? SPRINT_FORCE : WALK_FORCE;
+    float fLookAngle = D3RE::get()->getLookAngle();
     if(m_bMouseDown) {
         Point ptMouseVec = D3RE::get()->getMouseRay();
         Point ptCamPos = D3RE::get()->getCameraPosition();
@@ -229,36 +232,41 @@ Player::updateNormal(float fDeltaTime) {
         float scale = mov.magnitude() / 1.f;
         if(scale > 1.f) scale = 1.f;
         mov.normalize();
-        mov *= scale;
+        mov *= scale * fSpeed;
 
         //Player faces mouse
-        float fLookAngle = D3RE::get()->getLookAngle();
         float myAngle = atan2(mov.z, mov.x);
-        float myRelativeAngle = myAngle - fLookAngle;
 
         //Player direction separate from screen-relative direction
         m_iDirection = angle2dir(myAngle - M_PI / 2);
-        m_pRenderModel->setFrameW(angle2dir(myRelativeAngle));
     } else if(m_iStrafeSpeed != 0 || m_iForwardSpeed != 0) {
         //Move according to the movement keys
-        float fLookAngle = D3RE::get()->getLookAngle();
         mov = Point(
             m_iForwardSpeed * cos(fLookAngle) - m_iStrafeSpeed * sin(-fLookAngle),
             0,
             m_iForwardSpeed * sin(fLookAngle) - m_iStrafeSpeed * cos(-fLookAngle)
         );
         mov.normalize();
+        mov *= fSpeed;
 
         //Player faces direction of arrow keys
         float myAngle = atan2(mov.z, mov.x);
-        float myRelativeAngle = myAngle - fLookAngle;
 
         //Player direction separate from screen-relative direction
         m_iDirection = angle2dir(myAngle - M_PI / 2);
-        m_pRenderModel->setFrameW(angle2dir(myRelativeAngle));
     }
-    float fSpeed = m_bSprinting ? SPRINT_FORCE : WALK_FORCE;
-    m_pPhysicsModel->applyForce(mov * fSpeed);
+
+    //Face the appropriate direction in case the camera turns
+    //Less efficient when the player is moving, but it does keep them facing
+    // the same direction when the camera turns
+    int relativeDir = m_iDirection - angle2dir(fLookAngle + M_PI / 2);
+    if(relativeDir < 0) {
+        relativeDir += NUM_CARDINAL_DIRECTIONS;
+    }
+    m_pRenderModel->setFrameW(relativeDir);
+
+    //Move the player
+    m_pPhysicsModel->applyForce(mov);
 
     //Camera adjustment
     D3RE::get()->adjustCamAngle(m_fDeltaPitch);
@@ -269,7 +277,7 @@ Player::updateNormal(float fDeltaTime) {
         m_iAnimTimer = -1;
     } else {
         if(m_iAnimTimer < 0) {
-            m_iAnimTimer = m_bSprinting ? SPRINT_ANIM_TIMER_MAX : ANIM_TIMER_MAX;
+            m_iAnimTimer = BOUND(1, ANIM_TIMER_MAX / mov.magnitude(), WALK_ANIM_TIMER_MAX);
             m_iAnimState = ((m_iAnimState + 1) % 4);
             m_pRenderModel->setFrameH(m_iAnimState + m_uiAnimFrameStart);
 #if 1
@@ -528,7 +536,7 @@ Player::handleButtonNormal(InputData* data) {
         } else if(m_iStrafeSpeed != 0.f || m_iForwardSpeed != 0.f || m_bMouseDown) {
             m_bSprinting = true;
         } else {
-            startCasting(); //Tries to start casting, cancels existing spell if any
+            startCasting();
         }
     } else if(!data->getInputState(IN_CAST) && data->hasChanged(IN_CAST)) {
         m_bSprinting = false;

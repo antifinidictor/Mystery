@@ -60,6 +60,7 @@ int InputData::getInputState(int flag) {
 }
 
 void InputData::setInputState(int flag, int val) {
+    bool bValueHasChanged = true;
     switch(flag) {
 	case MIN_MOUSE_X:
         m_bMouseHasMoved = true;
@@ -78,11 +79,12 @@ void InputData::setInputState(int flag, int val) {
         m_iMouseRelY = val;
         break;
     default:
-        m_bInputHasChanged = true;
+        bValueHasChanged = (m_vBoolInputs[flag] != (bool)val);
+        m_bInputHasChanged = m_bInputHasChanged || bValueHasChanged;
         m_vBoolInputs[flag] = (bool)val;
         break;
     }
-    m_vChangedInputs[flag] = true;
+    m_vChangedInputs[flag] = bValueHasChanged;
 }
 
 void InputData::setLetter(uint letter, bool bDown) {
@@ -340,6 +342,11 @@ int angle2dir(float angle) {
     }
     return dir;
 }
+
+float dir2angle(int dir) {
+    return (dir - 4) * SECTION - SECTION / 2.f;
+}
+
 
 double distSq(const PT &ptHere, const PT &ptThere) {
 	return (ptThere.x - ptHere.x) * (ptThere.x - ptHere.x) +

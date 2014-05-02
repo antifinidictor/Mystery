@@ -36,16 +36,15 @@ public:
     }
 
 #define TO_INDEX(x, y, z) (x * m_iNumY * m_iNumZ + y * m_iNumZ + z)
-#define BOUND(min, val, max) ((val < min) ? min : ((val < max) ? val : max-1))
     ItemType getAt(const Point &pos) {
         //Get integer x/y/z indices
         Point ipos = pointToIndexFloats(pos);
-        int minX = BOUND(0, (int)floor(ipos.x), m_iNumX);
-        int minY = BOUND(0, (int)floor(ipos.y), m_iNumY);
-        int minZ = BOUND(0, (int)floor(ipos.z), m_iNumZ);
-        int maxX = BOUND(0, (int)ceil(ipos.x), m_iNumX);
-        int maxY = BOUND(0, (int)ceil(ipos.y), m_iNumY);
-        int maxZ = BOUND(0, (int)ceil(ipos.z), m_iNumZ);
+        int minX = BOUND(0, (int)floor(ipos.x), m_iNumX-1);
+        int minY = BOUND(0, (int)floor(ipos.y), m_iNumY-1);
+        int minZ = BOUND(0, (int)floor(ipos.z), m_iNumZ-1);
+        int maxX = BOUND(0, (int)ceil(ipos.x), m_iNumX-1);
+        int maxY = BOUND(0, (int)ceil(ipos.y), m_iNumY-1);
+        int maxZ = BOUND(0, (int)ceil(ipos.z), m_iNumZ-1);
         float weightX = ipos.x - minX;
         float weightY = ipos.y - minY;
         float weightZ = ipos.z - minZ;
@@ -64,16 +63,16 @@ public:
     }
 
     const ItemType &at(int x, int y, int z) const {
-        int bx = BOUND(0, x, m_iNumX);
-        int by = BOUND(0, y, m_iNumY);
-        int bz = BOUND(0, z, m_iNumZ);
+        int bx = BOUND(0, x, m_iNumX-1);
+        int by = BOUND(0, y, m_iNumY-1);
+        int bz = BOUND(0, z, m_iNumZ-1);
         return m_vItems[TO_INDEX(bx,by,bz)];
     }
 
     ItemType &at(int x, int y, int z) {
-        int bx = BOUND(0, x, m_iNumX);
-        int by = BOUND(0, y, m_iNumY);
-        int bz = BOUND(0, z, m_iNumZ);
+        int bx = BOUND(0, x, m_iNumX-1);
+        int by = BOUND(0, y, m_iNumY-1);
+        int bz = BOUND(0, z, m_iNumZ-1);
         return m_vItems[TO_INDEX(bx,by,bz)];
     }
 

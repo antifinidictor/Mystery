@@ -74,6 +74,14 @@ Character::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 bool
 Character::update(float fDeltaTime) {
     m_pCurAction->update(fDeltaTime);
+
+    //Update direction frame
+    int relativeDir = m_iDirection - angle2dir(D3RE::get()->getLookAngle() + M_PI / 2);
+    if(relativeDir < 0) {
+        relativeDir += NUM_CARDINAL_DIRECTIONS;
+    }
+    m_pRenderModel->setFrameW(relativeDir);
+
     return false;
 }
 
