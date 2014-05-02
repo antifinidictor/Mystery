@@ -71,40 +71,43 @@ private:
     void startClimbing();
     void startCasting();
 
+
+    //Models and similar
+    D3SpriteRenderModel *m_pRenderModel;
+    TimePhysicsModel    *m_pPhysicsModel;
+    DraggableHud        *m_pHud;
+
+    //Identification
     uint m_uiId;
     flag_t m_uiFlags;
-    D3SpriteRenderModel *m_pRenderModel;
-    TimePhysicsModel   *m_pPhysicsModel;
 
+    //Direction and movement information
     float m_iStrafeSpeed, m_iForwardSpeed;
-    int m_iDirection;
-    int m_iAnimTimer, m_iAnimState;
     float m_fDeltaZoom, m_fDeltaPitch;  //Camera deltas
+    int m_iDirection;
+
+    //Animation
+    int m_iAnimTimer, m_iAnimState;
     uint m_uiAnimFrameStart;
+
+    //State & action information
     bool m_bFirst;
     bool m_bMouseDown;
-    PlayerState m_eState;
-    PlayerAction m_eAction;
-
-    //You can only cast one spell at a time
-    Spell *m_pCurSpell;
-
-    Point m_ptStartClimbPos;        //Where you were when you start climbing
-    Point m_ptIntermediateClimbPos; //An intermediate point for making climbing a curve
-    Point m_ptEndClimbPos;          //Where you'll be when you finish climbing
-
-    Point m_ptClimbShift;           //The direction in which you are climbing
-
-    uint m_uiClimbObjCmdlId;    //ID of the collision model the player is climbing up
-    uint m_uiClimbObjId;        //ID of the object player is climbing up
     bool m_bCanClimb;
-
     bool m_bSprinting;
-
+    PlayerState m_eState;
+//    PlayerAction m_eAction;
     uint m_uiHealth;
     uint m_uiMaxHealth;
 
-    DraggableHud *m_pHud;
+    //Spell info
+    Spell *m_pCurSpell;
+
+    //Climbing info
+    uint m_uiClimbObjId;        //ID of the object player is climbing up
+    uint m_uiClimbObjCmdlId;    //ID of the collision model the player is climbing up
+    Point m_ptClimbShift;           //The direction in which you are climbing
+    Point m_ptStartClimbPos;        //Where you were when you start climbing
 };
 
 #endif // PLAYER_H

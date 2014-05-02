@@ -41,7 +41,7 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     */
 
     //Apply gravity
-    if(obj->getFlag(TPE_FALLING) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC)) {
+    if(/*obj->getFlag(TPE_FALLING) && */!obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC)) {
         tmdl->applyForce(Point(0,-GRAV_ACCEL * tmdl->getMass(),0));
     }
 
@@ -56,7 +56,8 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     if(bIsOnSurface && bHasLeftSurface) {
         tmdl->setSurface(NULL);
     }
-    if(bCanFall && bHasLeftSurface) {
+    if(bCanFall) {
+        //Ensures normal force is applied
         obj->setFlag(TPE_FALLING, true);
     }
     return (hasChanged);
@@ -190,19 +191,29 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
 
         if(!bNoCollide) {
             if(bx2.y < bx1.y) {
-                //obj1->setFlag(TPE_FALLING, false);
                 tpm1->clearVerticalVelocity();
-                tpm1->setSurface(tpm2);
+                bool bApplyNormalForce = !obj1->getFlag(TPE_STATIC) &&
+                    !obj1->getFlag(TPE_FLOATING) &&
+                    obj1->getFlag(TPE_FALLING);
+                if(bApplyNormalForce) {
+                    tpm1->setSurface(tpm2);
 
-                //Apply normal force
-                tpm1->applyForce(Point(0,GRAV_ACCEL * tpm1->getMass(),0));
+                    //Apply normal force
+                    tpm1->applyForce(Point(0,GRAV_ACCEL * tpm1->getMass(),0));
+                    obj1->setFlag(TPE_FALLING, false);  //Apply normal force only once
+                }
             } else {
-                //obj2->setFlag(TPE_FALLING, false);
                 tpm2->clearVerticalVelocity();
-                tpm2->setSurface(tpm1);
+                bool bApplyNormalForce = !obj2->getFlag(TPE_STATIC) &&
+                    !obj2->getFlag(TPE_FLOATING) &&
+                    obj2->getFlag(TPE_FALLING);
+                if(bApplyNormalForce) {
+                    tpm2->setSurface(tpm1);
 
-                //Apply normal force
-                tpm2->applyForce(Point(0,GRAV_ACCEL * tpm2->getMass(),0));
+                    //Apply normal force
+                    tpm2->applyForce(Point(0,GRAV_ACCEL * tpm2->getMass(),0));
+                    obj2->setFlag(TPE_FALLING, false);  //Apply normal force only once
+                }
             }
         }
         bApplyForce = false;
@@ -290,7 +301,7 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
         if(!bBoxInHmap) {
             if(tpmBox->getSurface() == tpmHmap) {
                 tpmBox->setSurface(NULL);
-                objBox->setFlag(TPE_FALLING, true);
+                //objBox->setFlag(TPE_FALLING, true);
             }
             return;
         }
@@ -312,14 +323,22 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
     bool bBoxHasNotSunk = objBox->getFlag(TPE_FALLING) || ptBoxShift.y > 0.f;
     if(bHmapIsLiquid && bBoxIsFloatable && bBoxHasNotSunk) {
         tpmBox->setSurface(NULL);
-        objBox->setFlag(TPE_FALLING, true);
+        //objBox->setFlag(TPE_FALLING, true);
         applyBuoyantForce(tpmBox, tpmHmap, bx1, y, bx2.y);
     } else if(!bHmapIsLiquid) {
-        tpmBox->setSurface(tpmHmap);
-        objBox->setFlag(TPE_FALLING, true);
+        tpmBox->clearVerticalVelocity();
 
-        //Apply normal force
-        tpmBox->applyForce(Point(0,GRAV_ACCEL * tpmBox->getMass(),0));
+        bool bApplyNormalForce = !objBox->getFlag(TPE_STATIC) &&
+            !objBox->getFlag(TPE_FLOATING) &&
+            objBox->getFlag(TPE_FALLING);
+
+        if(bApplyNormalForce) {
+            tpmBox->setSurface(tpmHmap);
+
+            //Apply normal force
+            tpmBox->applyForce(Point(0,GRAV_ACCEL * tpmBox->getMass(),0));
+            objBox->setFlag(TPE_FALLING, false);    //Apply normal force only once
+        }
     }
 
     extractCollisionDirections(tpmHmap->getPosition() - tpmBox->getPosition(),
