@@ -93,7 +93,6 @@ void
 EarthElementalVolume::setVolume(float fVolume) {
 }
 
-#define BOUND(min, val, max) ((val < min) ? min : ((val > max) ? max : val))
 void
 EarthElementalVolume::addVolumeAt(float fVolume, const Point &ptPos) {
     //Find the four nearest points and split the volume by interpolation

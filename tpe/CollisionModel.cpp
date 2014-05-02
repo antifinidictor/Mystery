@@ -1,7 +1,5 @@
 #include "CollisionModel.h"
 
-#define BOUND(min, val, max) ((val < min) ? min : ((val > max) ? max : val))
-
 float
 PixelMapCollisionModel::getHeightAtPoint(const Point &ptPos) {
     //Scale ptPos to a set of four indices

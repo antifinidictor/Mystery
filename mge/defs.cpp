@@ -341,6 +341,11 @@ int angle2dir(float angle) {
     return dir;
 }
 
+float dir2angle(int dir) {
+    return (dir - 4) * SECTION - SECTION / 2.f;
+}
+
+
 double distSq(const PT &ptHere, const PT &ptThere) {
 	return (ptThere.x - ptHere.x) * (ptThere.x - ptHere.x) +
            (ptThere.y - ptHere.y) * (ptThere.y - ptHere.y) +
