@@ -621,6 +621,8 @@ Player::handleCollision(HandleCollisionData *data) {
     uint uiMyCollisionDirs = BIT(m_iDirection) | BIT(uiMyLeft) | BIT(uiMyRight);
     uint uiEquivCollisionDirs = data->iDirection & uiMyCollisionDirs;
 */
+    GameObject *me = PWE::get()->find(getId());
+    printf("Did it find me? %s (Is it me? %s)\n", me == NULL ? "no" : "yes", me == this ? "yes" : "no");
 
     if(data->obj->getType() == TYPE_ITEM && data->obj->getFlag(GAM_CAN_PICK_UP)) {
         //Pick up the item
