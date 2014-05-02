@@ -26,6 +26,7 @@
 #include "game/world/Wall.h"
 #include "game/ObjectFactory.h"
 #include "game/GameManager.h"
+#include "game/gui/GuiButton.h"
 
 //Test includes
 #include "mge/PixelMap.h"
@@ -35,6 +36,9 @@
 #include "tpe/fluids/BruteForceFluidTest.h"
 
 using namespace std;
+
+//Static variables
+uint GuiButton::s_uiHudId = 0;
 
 void testTextCb(uint id);
 void testTextCb2(uint id);

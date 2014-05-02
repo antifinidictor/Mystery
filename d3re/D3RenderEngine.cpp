@@ -290,7 +290,7 @@ D3RenderEngine::moveScreenBy(Point pt) {
 }
 
 Image *
-D3RenderEngine::createImage(uint id, const std::string &fileName, int numFramesH, int numFramesW) {
+D3RenderEngine::createImage(uint id, const std::string &fileName, int numFramesH, int numFramesW, bool bLinearInterp) {
     if(id < m_vImages.size() && m_vImages[id] != NULL) {
         //TODO: Find out why this doesn't work!
         //delete m_vImages[id];
@@ -299,15 +299,15 @@ D3RenderEngine::createImage(uint id, const std::string &fileName, int numFramesH
     while(id >= m_vImages.size()) {
         m_vImages.push_back(NULL);
     }
-    m_vImages[id] = new Image(fileName, id, numFramesH, numFramesW);
+    m_vImages[id] = new Image(fileName, id, numFramesH, numFramesW, bLinearInterp);
     return m_vImages[id];
 }
 
 
 Image *
-D3RenderEngine::createImage(uint id, const std::string &imageName, const std::string &fileName, int numFramesH, int numFramesW) {
+D3RenderEngine::createImage(uint id, const std::string &imageName, const std::string &fileName, int numFramesH, int numFramesW, bool bLinearInterp) {
     m_mImageNameToId[imageName] = id;
-    return createImage(id, fileName, numFramesH, numFramesW);
+    return createImage(id, fileName, numFramesH, numFramesW, bLinearInterp);
 }
 
 Image *
@@ -503,6 +503,8 @@ D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase
 
         if(name.compare("?") == 0) {
             createImage(uiId, filename, framesH, framesW);
+        } else if(name.compare("font") == 0) {
+            createImage(uiId, name, filename, framesH, framesW, true);
         } else {
             createImage(uiId, name, filename, framesH, framesW);
         }

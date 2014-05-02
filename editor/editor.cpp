@@ -24,8 +24,13 @@
 #include "editor/EditorManager.h"
 #include "game/ObjectFactory.h"
 #include "game/GameManager.h"
+#include "game/gui/GuiButton.h"
 
 using namespace std;
+
+//Static variables
+uint GuiButton::s_uiHudId = 0;
+
 
 //Engine initialization, cleanup
 WorldEngine   *createWorldEngine() {
@@ -117,7 +122,7 @@ void initWorld() {
 
     //Load image resources (required by editor)
     D3RE::get()->createImage(IMG_NONE,     "res/gui/noImage.png");
-    D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3);
+    D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3, true);
     D3RE::get()->createImage(IMG_BUTTON,   "res/gui/button.png", 3, 1);
 
     //These could be loaded from a file

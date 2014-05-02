@@ -8,7 +8,7 @@
  * Code thanks to http://gpwiki.org/index.php/SDL:Tutorials:Using_SDL_with_OpenGL
  * (variable names differ)
  */
-Image::Image(const std::string &sFileName, uint uiID, int iNumFramesH, int iNumFramesW) {
+Image::Image(const std::string &sFileName, uint uiID, int iNumFramesH, int iNumFramesW, bool bLinearInterp) {
     //Load image onto a surface
 	SDL_Surface *pSurface = /*SDL_LoadBMP*/IMG_Load(sFileName.c_str()/*sFileName.c_str()*/);
 
@@ -53,10 +53,13 @@ Image::Image(const std::string &sFileName, uint uiID, int iNumFramesH, int iNumF
 		glBindTexture( GL_TEXTURE_2D, m_uiTexture );
 
 		// Set the texture's stretching properties
-        //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        //glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		if(bLinearInterp) {
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        } else {
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+        }
 
 		// Edit the texture object's image data using the information SDL_pSurface gives us
 		glTexImage2D( GL_TEXTURE_2D, 0, m_iNumColors, pSurface->w, pSurface->h, 0,

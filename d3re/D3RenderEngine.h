@@ -42,8 +42,8 @@ public:
     virtual void  moveScreenTo(Point pt);
     void moveScreenBy(Point pt);
 
-    Image *createImage(uint id, const std::string &imageName, const std::string &fileName, int numFramesH = 1, int numFramesW = 1);
-    Image *createImage(uint id, const std::string &fileName, int numFramesH = 1, int numFramesW = 1);
+    Image *createImage(uint id, const std::string &imageName, const std::string &fileName, int numFramesH = 1, int numFramesW = 1, bool bLinearInterp = false);
+    Image *createImage(uint id, const std::string &fileName, int numFramesH = 1, int numFramesW = 1, bool bLinearInterp = false);
     Image *getImage(uint id);
     Image *getImage(const std::string &imageName);
     uint getImageId(const std::string &imageName);

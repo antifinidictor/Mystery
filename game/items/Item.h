@@ -6,6 +6,29 @@
 #include "tpe/tpe.h"
 #include "d3re/d3re.h"
 
+
+#define ITEM_NONE 0
+enum ElementItemIds {
+    ITEM_ELEMENT_FIRE = 1,
+    ITEM_ELEMENT_AIR,
+    ITEM_ELEMENT_EARTH,
+    ITEM_ELEMENT_WATER,
+    ITEM_ELEMENT_TIME,
+    ITEM_NUM_ELEMENTS
+};
+
+enum SpellItemIds {
+    ITEM_SPELL_CYCLIC = ITEM_NUM_ELEMENTS,
+    ITEM_SPELL_FLOW,
+    ITEM_SPELL_VORTEX,
+    ITEM_NUM_SPELLS
+};
+
+enum GeneralItemIds {
+    ITEM_TEST = ITEM_NUM_SPELLS,
+    ITEM_NUM_ITEMS
+};
+
 class Item : public GameObject
 {
 public:
@@ -33,6 +56,9 @@ public:
     virtual int callBack(uint uiID, void *data, uint id);
 
     uint getItemId();
+    std::string getItemName();
+    std::string getItemInfo() { return m_sItemInfo; }
+    void setItemInfo(std::string sItemInfo) { m_sItemInfo = m_sItemInfo; }
     virtual void onItemPickup();
     virtual void onItemDrop();
 
@@ -46,6 +72,7 @@ private:
 
     D3SpriteRenderModel *m_pRenderModel;
     TimePhysicsModel  *m_pPhysicsModel;
+    std::string m_sItemInfo;
 };
 
 #endif // ITEM_H

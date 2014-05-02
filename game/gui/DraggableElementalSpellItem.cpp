@@ -77,3 +77,23 @@ DraggableElementalSpellItem::sendItemDropEvent(int newIndex) {
         //Tell the listener about the event.  Its reply does not matter
         m_pDropListener->callBack(getId(), &event, ON_ITEM_DROPPED);
 }
+
+void
+DraggableElementalSpellItem::onMouseIn() {
+    ContainerRenderModel *panel =
+        D3RE::get()->getHudContainer()->
+        get<ContainerRenderModel*>(HUD_TOPBAR)->
+        get<ContainerRenderModel*>(MGHUD_SIDEBUTTON_CONTAINER);
+    panel->get<D3HudRenderModel*>(MGHUD_SIDEBUTTON_ITEMNAME)->updateText(m_pItem->getItemName());
+    panel->get<D3HudRenderModel*>(MGHUD_SIDEBUTTON_ITEMDESC)->updateText(m_pItem->getItemInfo());
+}
+
+void
+DraggableElementalSpellItem::onMouseOut() {
+    ContainerRenderModel *panel =
+        D3RE::get()->getHudContainer()->
+        get<ContainerRenderModel*>(HUD_TOPBAR)->
+        get<ContainerRenderModel*>(MGHUD_SIDEBUTTON_CONTAINER);
+    panel->get<D3HudRenderModel*>(MGHUD_SIDEBUTTON_ITEMNAME)->updateText("");
+    panel->get<D3HudRenderModel*>(MGHUD_SIDEBUTTON_ITEMDESC)->updateText("");
+}

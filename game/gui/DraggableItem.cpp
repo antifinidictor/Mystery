@@ -92,12 +92,24 @@ DraggableItem::onFollow(const Point &diff) {
 
 void
 DraggableItem::onMouseIn() {
-    setImageColor(Color(200, 255, 200));
+    printf("Hello\n");
+    ContainerRenderModel *panel =
+        D3RE::get()->getHudContainer()->
+        get<ContainerRenderModel*>(HUD_TOPBAR)->
+        get<ContainerRenderModel*>(MGHUD_SIDEBUTTON_CONTAINER);
+    panel->get<D3HudRenderModel*>(MGHUD_SIDEBUTTON_ITEMNAME)->updateText(m_pItem->getItemName());
+    panel->get<D3HudRenderModel*>(MGHUD_SIDEBUTTON_ITEMDESC)->updateText(m_pItem->getItemInfo());
 }
 
 void
 DraggableItem::onMouseOut() {
-    setImageColor(Color(255, 255, 255));
+    printf("Goodbye\n");
+    ContainerRenderModel *panel =
+        D3RE::get()->getHudContainer()->
+        get<ContainerRenderModel*>(HUD_TOPBAR)->
+        get<ContainerRenderModel*>(MGHUD_SIDEBUTTON_CONTAINER);
+    panel->get<D3HudRenderModel*>(MGHUD_SIDEBUTTON_ITEMNAME)->updateText("");
+    panel->get<D3HudRenderModel*>(MGHUD_SIDEBUTTON_ITEMDESC)->updateText("");
 }
 
 void

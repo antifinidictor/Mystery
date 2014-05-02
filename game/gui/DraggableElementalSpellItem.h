@@ -22,8 +22,8 @@ public:
     virtual void onFollow(const Point &diff);
     virtual void onStartDragging();
     virtual void onEndDragging();
-    //virtual void onMouseIn();
-    //virtual void onMouseOut();
+    virtual void onMouseIn();
+    virtual void onMouseOut();
 
 private:
     static Point s_ptDropPoint;         //Point where the element or spell can be put down
