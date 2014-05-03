@@ -101,6 +101,7 @@ enum GameEvent {
     ON_SAVE_GAME,
     ON_LOAD_GAME,
     ON_QUIT_GAME,
+    ON_NEW_GAME,
     NUM_GAME_EVENTS
 };
 
@@ -158,14 +159,16 @@ enum InventoryContainer {
 enum SidebuttonElements {
     MGHUD_SIDEBUTTON_ITEMNAME,
     MGHUD_SIDEBUTTON_ITEMDESC,
+    MGHUD_SIDEBUTTON_NEWBUTTON,
     MGHUD_SIDEBUTTON_LOADBUTTON,
     MGHUD_SIDEBUTTON_SAVEBUTTON,
     MGHUD_SIDEBUTTON_QUITBUTTON
 };
 
 enum GameFlags {
-    GAM_CAN_LINK = GAME_FLAGS_BEGIN,
-    GAM_CAN_PICK_UP,
+    GAM_CAN_LINK = GAME_FLAGS_BEGIN,    //Can be transferred to new areas
+    GAM_CAN_PICK_UP,                    //Item can be picked up by the player
+    GAM_WRITE_TO_SAVE_FILE,             //Item should be written to a save file instead of the world file
     NUM_GAME_FLAGS
 };
 

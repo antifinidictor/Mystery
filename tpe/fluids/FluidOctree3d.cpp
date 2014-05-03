@@ -9,7 +9,7 @@ using namespace std;
 
 #define DEFAULT_VORTON_RADIUS 0.1
 
-BasicScheduler *BasicScheduler::m_pInstance = new BasicScheduler();
+BasicScheduler *BasicScheduler::m_sInstance = new BasicScheduler();
 
 FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution)
     : m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Point())
@@ -203,6 +203,32 @@ FluidOctreeNode::find(uint uiObjId) {
         }
     }
 
+#if 0
+    //Search other lists
+    {
+        for(objlist_iter_t it = m_lsStaticObjs.begin(); it != m_lsStaticObjs.end(); ++it) {
+            if((*it)->getId() == uiObjId) {
+                printf("Obj is static in this list\n");
+            }
+        }
+        for(objlist_iter_t it = m_lsDynamicObjs.begin(); it != m_lsDynamicObjs.end(); ++it) {
+            if((*it)->getId() == uiObjId) {
+                printf("Obj is dynamic in this list\n");
+            }
+        }
+        for(list<uint>::iterator it = m_lsObjsToRemove.begin(); it != m_lsObjsToRemove.end(); ++it) {
+            if((*it) == uiObjId) {
+                printf("Obj scheduled for remove\n");
+            }
+        }
+        for(list<uint>::iterator it = m_lsObjsToErase.begin(); it != m_lsObjsToErase.end(); ++it) {
+            if((*it) == uiObjId) {
+                printf("Obj scheduled for erase\n");
+            }
+        }
+    }
+#endif
+
     //Otherwise, search children
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         if(m_apChildren[q] != NULL && !m_apChildren[q]->empty()) {
@@ -237,12 +263,22 @@ void
 FluidOctreeNode::update(float fTime) {
     SDL_LockMutex(m_mutex);
 
+    //Update objects that should be added to/removed from/erased from this node
+    updateAddRemoveErase();
+
     //Update internal container elements
     updateContents(fTime);
 
     //Deal with childrens' update-results
     handleChildrenUpdateResults();  //Children mutex's acquired in here
 
+    updateEmptiness();
+    SDL_UnlockMutex(m_mutex);
+}
+
+
+void
+FluidOctreeNode::updateAddRemoveErase() {
     //Erase queued objects from the container
     for(list<uint>::iterator itObjId = m_lsObjsToErase.begin(); itObjId != m_lsObjsToErase.end(); ++itObjId) {
         eraseNow(*itObjId);
@@ -260,9 +296,6 @@ FluidOctreeNode::update(float fTime) {
         addNow(*itObj);
     }
     m_lsObjsToAdd.clear();
-    updateEmptiness();
-
-    SDL_UnlockMutex(m_mutex);
 }
 
 void
@@ -487,6 +520,7 @@ FluidOctreeNode::addNow(GameObject *obj) {
         obj->setFlag(PWE_INFORM_OBJ_ADD, false);
         obj->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ADDED_TO_AREA);
     }
+    D3RE::get()->manageObjOnScreen(obj);
 }
 
 void
@@ -614,6 +648,16 @@ FluidOctreeRoot::FluidOctreeRoot(uint uiEngineId, uint uiAreaId, const Box &bxBo
 }
 
 FluidOctreeRoot::~FluidOctreeRoot() {
+}
+
+void
+FluidOctreeRoot::update(float fTime) {
+    FluidOctreeNode::update(fTime);
+    for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
+        //For now, just add them to me
+        m_mContents[(*it)->getId()] = *it;
+    }
+    cleanResults();
 }
 
 struct TempDebugInfo {

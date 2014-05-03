@@ -25,10 +25,8 @@ SpellItem::read(const boost::property_tree::ptree &pt, const std::string &keyBas
     ptPos.y = pt.get(keyBase + ".pos.y", 0.f);
     ptPos.z = pt.get(keyBase + ".pos.z", 0.f);
     string sInfo = pt.get(keyBase + ".info", "no information available");
-    printf("Info = '%s'/", sInfo.c_str());
     SpellItem *item = new SpellItem(id, itemId, ptPos);
     item->setItemInfo(sInfo);
-    printf("'%s'\n", item->getItemInfo().c_str());
     return item;
 }
 

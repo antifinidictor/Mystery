@@ -35,6 +35,8 @@ public:
     //WARNING: ONLY SCHEDULER SHOULD CALL
     virtual void update(float fTime);
 
+    void updateAddRemoveErase();
+
     virtual int tempGetClassId() { return 0; }
 protected:
     enum QuadrantNames {
@@ -112,10 +114,7 @@ public:
         //printf("%d updates scheduled\n", updates);
     }
 
-    virtual void update(float fTime) {
-        FluidOctreeNode::update(fTime);
-        cleanResults();
-    }
+    virtual void update(float fTime);
 
     virtual int tempGetClassId() { return -1; }
 
@@ -146,18 +145,24 @@ public:
 };
 
 class BasicScheduler : public Scheduler {
-    static BasicScheduler *m_pInstance;
+    static BasicScheduler *m_sInstance;
     float m_fTime;
+    bool m_bPaused;
 
 public:
-    static BasicScheduler *get(float fTime = -1.f) {
+    static BasicScheduler *get(float fTime = -1.f, bool bPaused = false) {
         if(fTime >= 0.f) {
-            m_pInstance->m_fTime = fTime;
+            m_sInstance->m_fTime = fTime;
+            m_sInstance->m_bPaused = bPaused;
         }
-        return m_pInstance;
+        return m_sInstance;
     }
     virtual void scheduleUpdate(FluidOctreeNode *node) {
-        node->update(m_fTime);
+        if(m_bPaused) {
+            node->updateAddRemoveErase();
+        } else {
+            node->update(m_fTime);
+        }
     }
 };
 

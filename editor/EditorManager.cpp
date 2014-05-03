@@ -5,6 +5,7 @@
 #include "EditorCursor.h"
 #include "game/gui/GuiButton.h"
 #include "game/world/Wall.h"
+#include "game/GameManager.h"
 #include "pwe/PartitionedWorldEngine.h"
 #include "game/ObjectFactory.h"
 #include <boost/property_tree/xml_parser.hpp>
@@ -35,9 +36,16 @@ EditorManager::EditorManager(uint uiId) {
     initListPanelFunc = NULL;
     m_sFile = "res/game.info";
     m_uiCurImageId = 3;
+
+    MGE::get()->addListener(this, ON_BUTTON_INPUT);
+
+    m_pBasePanel = new ContainerRenderModel(Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
+    D3RE::get()->getHudContainer()->add(ED_HUD_BASE_PANE, m_pBasePanel);
+
 }
 
 EditorManager::~EditorManager() {
+    MGE::get()->removeListener(this->getId(), ON_BUTTON_INPUT);
 }
 
 void
@@ -46,6 +54,7 @@ EditorManager::write(boost::property_tree::ptree &pt, const std::string &keyBase
 
 bool
 EditorManager::update(float fDeltaTime) {
+
     //Handle events
     while(!m_qEvents.empty()) {
         uint eventId = m_qEvents.front();
@@ -274,6 +283,9 @@ EditorManager::update(float fDeltaTime) {
         //Continue into the main state
     case ED_STATE_MAIN:
         break;
+    case ED_STATE_TEST_GAME:
+        GameManager::get()->update(fDeltaTime);
+        break;
     default:
         break;
     }
@@ -290,6 +302,19 @@ EditorManager::callBack(uint cID, void *data, uint eventId) {
     //If the data needs to be handled, handle it here.  Otherwise push an event.
     int status = EVENT_CAUGHT;
     switch(eventId) {
+    case ON_BUTTON_INPUT: {
+        InputData *input = (InputData*)data;
+        if(input->getInputState(IN_TOGGLE_DEBUG_MODE) && input->hasChanged(IN_TOGGLE_DEBUG_MODE)) {
+            if(m_skState.top() == ED_STATE_TEST_GAME) {
+                popState();
+            } else {
+                pushState(ED_STATE_TEST_GAME);
+            }
+        } else {
+            status = EVENT_DROPPED;
+        }
+        break;
+      }
     case ED_HUD_OP_FINALIZE:
         //Do some additional stuff here before popping the state
         break;
@@ -377,7 +402,7 @@ EditorManager::cleanState(EditorState eState) {
     case ED_STATE_NAME_AREA:
     case ED_STATE_SAVE_FILE:
     case ED_STATE_LOAD_FILE:
-        D3RE::get()->getHudContainer()
+        m_pBasePanel
             ->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE)
             ->clear();
         //Also clear the right pane
@@ -387,9 +412,14 @@ EditorManager::cleanState(EditorState eState) {
     case ED_STATE_CREATE_OBJECT:
     case ED_STATE_LIST_OBJECTS:
     case ED_STATE_MAIN:
-        D3RE::get()->getHudContainer()
+        m_pBasePanel
             ->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)
             ->clear();
+        break;
+    case ED_STATE_TEST_GAME:
+        PWE::get()->add(m_pEditorCursor);
+        PWE::get()->setState(PWE_PAUSED);
+        D3RE::get()->getHudContainer()->add(ED_HUD_BASE_PANE, m_pBasePanel);
         break;
     default:
         break;
@@ -399,6 +429,11 @@ EditorManager::cleanState(EditorState eState) {
 void
 EditorManager::initState(EditorState eState) {
     switch(eState) {
+    case ED_STATE_TEST_GAME:
+        PWE::get()->remove(m_pEditorCursor->getId());
+        D3RE::get()->getHudContainer()->remove(ED_HUD_BASE_PANE);
+        PWE::get()->setState(PWE_RUNNING);
+        break;
     case ED_STATE_MAIN:
         //Restore main hud
         initMainHud();
@@ -459,7 +494,7 @@ EditorManager::initHud() {
                        *middlePane = new ContainerRenderModel(Rect(BUTTON_WIDTH, 0, SCREEN_WIDTH - BUTTON_WIDTH * 2, SCREEN_HEIGHT)),
                         *rightPane = new ContainerRenderModel(Rect(SCREEN_WIDTH - BUTTON_WIDTH, 0, BUTTON_WIDTH, SCREEN_HEIGHT))
     ;
-    ContainerRenderModel *hud = D3RE::get()->getHudContainer();
+    ContainerRenderModel *hud = m_pBasePanel;
     hud->add(ED_HUD_LEFT_PANE,   leftPane);
     hud->add(ED_HUD_MIDDLE_PANE, middlePane);
     hud->add(ED_HUD_RIGHT_PANE,  rightPane);
@@ -470,7 +505,7 @@ EditorManager::initHud() {
 
 void
 EditorManager::initMainHud() {
-    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    ContainerRenderModel *rpanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
 
     int i = 0;
     GuiButton *loadWorld = new GuiButton(rpanel, this, ED_HUD_OP_LOAD_WORLD, "Load World", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
@@ -490,8 +525,8 @@ EditorManager::initMainHud() {
 
 void
 EditorManager::initEnterTextHud(const std::string &slabel, const std::string &finalizeLabel, bool isField) {
-    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
-    ContainerRenderModel *mpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE);
+    ContainerRenderModel *rpanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    ContainerRenderModel *mpanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE);
 
     int i = 0;
     GuiButton *cancel = new GuiButton(rpanel, this, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE),
@@ -514,7 +549,7 @@ EditorManager::initEnterTextHud(const std::string &slabel, const std::string &fi
 #define MAX_LIST_SIZE 12
 void
 EditorManager::initAreaPanel() {
-    ContainerRenderModel *lpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_LEFT_PANE);
+    ContainerRenderModel *lpanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_LEFT_PANE);
 
     int i = 0;
     GuiButton *newArea    = new GuiButton(lpanel, this, ED_HUD_OP_NEW_AREA, "New area", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
@@ -534,7 +569,7 @@ EditorManager::initAreaPanel() {
 
 void
 EditorManager::initAreaListPanel(uint uiAreaFirst) {
-    ContainerRenderModel *lspanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_LEFT_PANE)->get<ContainerRenderModel*>(ED_HUD_AREA_LIST_PANE);
+    ContainerRenderModel *lspanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_LEFT_PANE)->get<ContainerRenderModel*>(ED_HUD_AREA_LIST_PANE);
     lspanel->clear();
 
     m_vAreas.clear();
@@ -559,7 +594,7 @@ EditorManager::initAreaListPanel(uint uiAreaFirst) {
 
 void
 EditorManager::initNewObjHud() {
-    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    ContainerRenderModel *rpanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
     m_uiObjFirst = 0;
 
     int i = 0;
@@ -578,7 +613,7 @@ EditorManager::initNewObjHud() {
 
 void
 EditorManager::initClassListPanel(uint uiStart) {
-    ContainerRenderModel *lspanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)->get<ContainerRenderModel*>(ED_HUD_NEW_OBJ_LIST_PANE);
+    ContainerRenderModel *lspanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)->get<ContainerRenderModel*>(ED_HUD_NEW_OBJ_LIST_PANE);
     lspanel->clear();
 
     //Get available classes
@@ -602,7 +637,7 @@ EditorManager::initClassListPanel(uint uiStart) {
 
 void
 EditorManager::initCreateObjHud() {
-    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    ContainerRenderModel *rpanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
     m_uiObjFirst = 0;
 
     int i = 0;
@@ -627,7 +662,7 @@ EditorManager::initCreateObjHud() {
 
 void
 EditorManager::initAttributeListPanel(uint uiStart) {
-    ContainerRenderModel *lspanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)->get<ContainerRenderModel*>(ED_HUD_NEW_OBJ_LIST_PANE);
+    ContainerRenderModel *lspanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)->get<ContainerRenderModel*>(ED_HUD_NEW_OBJ_LIST_PANE);
     lspanel->clear();
 
     //Get available attributes
@@ -707,7 +742,7 @@ EditorManager::initAttributeListPanel(uint uiStart) {
 
 void
 EditorManager::initTextureHud() {
-    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    ContainerRenderModel *rpanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
     m_uiObjFirst = 0;
 
     int i = 0;
@@ -726,7 +761,7 @@ EditorManager::initTextureHud() {
 
 void
 EditorManager::initTextureListPanel(uint uiStart) {
-    ContainerRenderModel *lspanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)->get<ContainerRenderModel*>(ED_HUD_NEW_OBJ_LIST_PANE);
+    ContainerRenderModel *lspanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE)->get<ContainerRenderModel*>(ED_HUD_NEW_OBJ_LIST_PANE);
     lspanel->clear();
 
     //Get available classes
@@ -749,7 +784,7 @@ EditorManager::initTextureListPanel(uint uiStart) {
 
 void
 EditorManager::initSelectionHud(EditorCursorState eState) {
-    ContainerRenderModel *rpanel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
+    ContainerRenderModel *rpanel = m_pBasePanel->get<ContainerRenderModel*>(ED_HUD_RIGHT_PANE);
     int i = 0;
     GuiButton *cancel = new GuiButton(rpanel, this, ED_HUD_OP_CANCEL, "Cancel", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);
     GuiButton *finalize = new GuiButton(rpanel, this, ED_HUD_OP_FINALIZE, "Select", Point(0.f ,BUTTON_HEIGHT * i++, 0.f), BUTTON_TEXT_SIZE);

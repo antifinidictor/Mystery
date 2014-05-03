@@ -48,10 +48,12 @@ public:
     //From listener
     virtual uint getId() { return m_uiId; }
     virtual int callBack(uint cID, void *data, uint eventId) {
+        bool bAlwaysDrop = false;
         switch(eventId) {
-        case ON_BUTTON_INPUT:
         case ON_MOUSE_MOVE:
-            return handleMouseEvent((InputData*)data);
+            bAlwaysDrop = true;
+        case ON_BUTTON_INPUT:
+            return handleMouseEvent((InputData*)data, bAlwaysDrop);
         default:
             return EVENT_DROPPED;
         }
@@ -64,19 +66,24 @@ private:
         HUD_BUTTON_DOWN
     };
 
-    int handleMouseEvent(InputData *data) {
+    int handleMouseEvent(InputData *data, bool bAlwaysDrop) {
         Point ptMouse = Point(data->getInputState(MIN_MOUSE_X), data->getInputState(MIN_MOUSE_Y), 0)
             - m_pParent->getPosition();
         int status = EVENT_DROPPED;
         if(ptInRect(ptMouse, getDrawArea())) {
-            status = EVENT_CAUGHT;
             if(data->getInputState(IN_SELECT)) {
                 setFrameH(HUD_BUTTON_DOWN);
+                if(!bAlwaysDrop) {
+                    status = EVENT_CAUGHT;
+                }
             } else {
                 setFrameH(HUD_BUTTON_SELECT);
                 if(data->hasChanged(IN_SELECT)) {
                     m_sText = getText();
                     m_pListener->callBack(m_uiHudId, &m_sText, m_uiEventId);
+                    if(!bAlwaysDrop) {
+                        status = EVENT_CAUGHT;
+                    }
                 }
             }
         } else {

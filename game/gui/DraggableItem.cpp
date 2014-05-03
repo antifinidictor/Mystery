@@ -17,8 +17,6 @@ DraggableItem::DraggableItem(Item *item, uint uiIndex, const Rect &rcArea, Liste
     : D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea),
       Draggable(this, Rect(-rcArea.w / 2.f, -rcArea.h / 2.f, rcArea.w, rcArea.h))
 {
-printf(__FILE__" %d\n",__LINE__);
-
     setPriority(1); //Higher priority than the draggable HUD
 
     m_pItem = item;

@@ -190,7 +190,7 @@ public:
     }
 
     bool operator()(uint itemIndex, RenderModel *rmdl) {
-        printf("My index vs their index: %d/%d\n", m_uiIndex, itemIndex);
+        //printf("My index vs their index: %d/%d\n", m_uiIndex, itemIndex);
         //Assuming we iterate in order
         if(itemIndex > m_uiIndex) {
             return true;    //Found an empty index
@@ -229,7 +229,7 @@ DraggableHud::addItem(Item *pItem, bool bMakeCurrent) {
     } else {
         //Find an empty item slot
         ItemFindEmptySlotFunctor ftor;
-        get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->forEachModel(ftor);
+        panel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->forEachModel(ftor);
         if(ftor.m_uiIndex >= NUM_GENERAL_ITEMS) {
             return false;   //Failed to add
         }
@@ -290,6 +290,15 @@ DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
         }
         break;
     }
+    case ON_SAVE_GAME:
+        break;
+    case ON_LOAD_GAME:
+        break;
+    case ON_NEW_GAME:
+        break;
+    case ON_QUIT_GAME:
+        MGE::get()->stop();
+        break;
     default:
         status = Draggable::callBack(uiEventHandlerId, data, uiEventId);
     }
@@ -630,9 +639,14 @@ DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
         rcItemNameLabel.w,
         TEXTURE_TILE_SIZE * 3
     );
-    Point ptLoadButtonPos(
+    Point ptNewGameButtonPos(
         rcItemDescLabel.x + rcItemDescLabel.w / 2 - BUTTON_WIDTH / 2,
         rcItemDescLabel.y + rcItemDescLabel.h,
+        0
+    );
+    Point ptLoadButtonPos(
+        ptNewGameButtonPos.x,
+        ptNewGameButtonPos.y + BUTTON_SPACING,
         0
     );
     Point ptSaveButtonPos(
@@ -653,13 +667,16 @@ DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
     panel->add(MGHUD_SIDEBUTTON_ITEMDESC, label);
 
     GuiButton *btn;
-    btn = new GuiButton(panel, this, ON_LOAD_GAME, "Load", ptLoadButtonPos, 0.8f);
+    btn = new GuiButton(panel, this, ON_NEW_GAME, "New Game", ptNewGameButtonPos, 1.f);
+    panel->add(MGHUD_SIDEBUTTON_NEWBUTTON, btn);
+
+    btn = new GuiButton(panel, this, ON_LOAD_GAME, "Load", ptLoadButtonPos, 1.f);
     panel->add(MGHUD_SIDEBUTTON_LOADBUTTON, btn);
 
-    btn = new GuiButton(panel, this, ON_SAVE_GAME, "Save", ptSaveButtonPos, 0.8f);
+    btn = new GuiButton(panel, this, ON_SAVE_GAME, "Save", ptSaveButtonPos, 1.f);
     panel->add(MGHUD_SIDEBUTTON_SAVEBUTTON, btn);
 
-    btn = new GuiButton(panel, this, ON_QUIT_GAME, "Quit", ptQuitButtonPos, 0.8f);
+    btn = new GuiButton(panel, this, ON_QUIT_GAME, "Quit", ptQuitButtonPos, 1.f);
     panel->add(MGHUD_SIDEBUTTON_QUITBUTTON, btn);
 }
 

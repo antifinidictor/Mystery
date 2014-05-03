@@ -97,13 +97,9 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         m_pManagerObject->update(fDeltaTime);
     }
 
+    pe->update(fDeltaTime);
 
-    if(m_eState == PWE_RUNNING) {   //State can be disabled
-        //Update the physics engine clock
-        pe->update(fDeltaTime);
-
-        m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime));
-    }
+    m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime, m_eState == PWE_PAUSED));
 
     list<uint>::iterator itAreaId;
     for(itAreaId = m_lsAreasToClean.begin(); itAreaId != m_lsAreasToClean.end(); ++itAreaId) {
@@ -140,6 +136,10 @@ PartitionedWorldEngine::find(uint uiObjId) {
 
 void
 PartitionedWorldEngine::addTo(GameObject *obj, uint uiAreaId) {
+    if(obj == NULL) {
+        printf("ERROR %s %d: Tried to add NULL object to area %d!\n", __FILE__, __LINE__, uiAreaId);
+        return;
+    }
     //m_lsObjsToAdd.push_back(pair<GameObject*,uint>(obj, uiAreaId));
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     if(itArea != m_mWorld.end()) {
@@ -261,6 +261,20 @@ PartitionedWorldEngine::moveObjectToArea(uint uiObjId, uint uiStartAreaId, uint 
     GameObject *obj = findIn(uiObjId, uiStartAreaId);
     removeFrom(uiObjId, uiStartAreaId);
     addTo(obj, uiEndAreaId);
+
+#if 0
+    if(obj == NULL) {
+        map<uint, M_Area>::iterator itArea;
+        for(itArea = m_mWorld.begin(); itArea != m_mWorld.end(); ++itArea) {
+            obj = itArea->second.m_pOctree->find(uiObjId);
+            if(obj != NULL) {
+                printf("Found object in area %d instead of area %d\n", itArea->first, uiStartAreaId);
+            }
+        }
+    } else {
+        printf("Obj moved successfully\n");
+    }
+#endif
 }
 
 void
