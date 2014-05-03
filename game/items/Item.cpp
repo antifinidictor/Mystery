@@ -88,7 +88,7 @@ Item::callBack(uint uiID, void *data, uint id) {
         HandleCollisionData *hd = (HandleCollisionData*)data;
         if(hd->obj->getType() == TYPE_PLAYER) {
             m_bCollidingWithPlayer = true;
-            printf("I hit the player @ time %d\n", Clock::get()->getTime());
+            //printf("I hit the player @ time %d\n", Clock::get()->getTime());
         }
         break;
     }

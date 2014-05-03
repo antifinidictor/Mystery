@@ -95,7 +95,7 @@ private:
     uint m_uiId, m_uiEventId, m_uiHudId;
     Positionable *m_pParent;
     Listener *m_pListener;
-    static uint s_uiHudId;
+    static uint s_uiHudId;  //Defined in GameManager
     std::string m_sText;
 };
 

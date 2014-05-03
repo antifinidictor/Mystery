@@ -175,10 +175,6 @@
 			<Option target="Editor" />
 			<Option target="LinuxEditor" />
 		</Unit>
-		<Unit filename="editor/EditorHudButton.h">
-			<Option target="Editor" />
-			<Option target="LinuxEditor" />
-		</Unit>
 		<Unit filename="editor/EditorManager.cpp">
 			<Option target="Editor" />
 			<Option target="LinuxEditor" />
@@ -229,6 +225,7 @@
 		<Unit filename="game/gui/DraggableHud.h" />
 		<Unit filename="game/gui/DraggableItem.cpp" />
 		<Unit filename="game/gui/DraggableItem.h" />
+		<Unit filename="game/gui/GuiButton.h" />
 		<Unit filename="game/gui/TextDisplay.cpp" />
 		<Unit filename="game/gui/TextDisplay.h" />
 		<Unit filename="game/items/Item.cpp" />

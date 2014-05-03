@@ -6,11 +6,15 @@
 #include "game/gui/TextDisplay.h"
 #include "game/gui/DraggableHud.h"
 #include "game/gui/DraggableItem.h"
+#include "game/gui/GuiButton.h"
 #include "game/items/Item.h"
 
 #define FADE_TIME_STEP 0.1f
 #define DEFAULT_WEIGHT 0.0f //Used to be 0.5f.  Now let's only change it if the world color changes
 #define FADE_WEIGHT 1.f
+
+//Static variables
+uint GuiButton::s_uiHudId = 0;
 
 using namespace std;
 

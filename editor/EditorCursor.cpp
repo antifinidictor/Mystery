@@ -55,6 +55,8 @@ EditorCursor::write(boost::property_tree::ptree &pt, const std::string &keyBase)
 
 bool
 EditorCursor::update(float fDeltaTime) {
+GameObject *me = PWE::get()->find(getId());
+printf("Found me? %s (%d)\n", me == NULL ? "no" : "yes", getId());
     switch(m_eState) {
     case EDC_STATE_STATIC:
         staticUpdate();

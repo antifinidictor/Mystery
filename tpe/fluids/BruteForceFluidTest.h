@@ -7,6 +7,7 @@
 #include "InterpGrid.h"
 #include "game/game_defs.h"
 #include "d3re/ContainerRenderModel.h"
+#include "mge/RenderModel.h"
 #include "tpe/TimePhysicsModel.h"
 #include <vector>
 

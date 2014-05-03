@@ -37,9 +37,6 @@
 
 using namespace std;
 
-//Static variables
-uint GuiButton::s_uiHudId = 0;
-
 void testTextCb(uint id);
 void testTextCb2(uint id);
 
