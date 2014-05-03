@@ -107,6 +107,7 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
     case PWE_ON_ADDED_TO_AREA: {
         m_uiSrcAreaId = *(uint*)data;
         PWE::get()->addListener(this, PWE_ON_AREA_SWITCH_FROM, m_uiSrcAreaId);
+        break;
       }
     case PWE_ON_AREA_SWITCH_FROM: {
         //TODO: Could cause mem bugs, should be using find

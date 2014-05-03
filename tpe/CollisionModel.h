@@ -50,6 +50,7 @@ public:
     virtual float getVolume();
 
     float getHeightAtPoint(const Point &ptPos);
+    Vec3f getNormalAtPoint(const Point &ptPos);
 
     const PixelMap *m_pxMap;
     Box m_bxBounds;

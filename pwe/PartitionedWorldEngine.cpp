@@ -381,7 +381,7 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
 
     //Now we create the octree
     if(itArea->second.m_pOctree == NULL) {
-        itArea->second.m_pOctree = new FluidOctreeRoot(getId(), itArea->first, bxBounds, 2.f);
+        itArea->second.m_pOctree = new FluidOctreeRoot(getId(), uiAreaId, bxBounds, 2.f);
     }
     //itArea->second.m_pOctree->debugPrintBounds();
 
@@ -568,7 +568,7 @@ PartitionedWorldEngine::toPowerOfTwo(Box &bx) {
     int w = (int)ceil(bx.w);
     int h = (int)ceil(bx.h);
     int l = (int)ceil(bx.l);
-printf("Before: %d,%d,%d\n",w,h,l);
+
     //Convert each to a power of two
     int logw = 0, logh = 0, logl = 0;
     while(w >>= 1) { logw++; }
@@ -577,7 +577,6 @@ printf("Before: %d,%d,%d\n",w,h,l);
     w = 1 << (logw + 1);
     h = 1 << (logh + 1);
     l = 1 << (logl + 1);
-printf("After: %d,%d,%d\n",w,h,l);
 
     Point ptCenter = bxCenter(bx);
     bx.x = floor(ptCenter.x) - w / 2;
