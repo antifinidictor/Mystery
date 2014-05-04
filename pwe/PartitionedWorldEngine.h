@@ -29,6 +29,7 @@ enum WorldEvents {
     PWE_ON_ADDED_TO_AREA,
     PWE_ON_REMOVED_FROM_AREA,
     PWE_ON_ERASED_FROM_AREA,
+    PWE_ON_WORLD_CLEANED,
     PWE_NUM_EVENT_IDS
 };
 
@@ -93,6 +94,8 @@ public:
     void setState(WorldState eState) { m_eNextState = eState; }
     void setManager(GameObject *obj) { m_pManagerObject = obj; }
 
+    void cleanWorld(Listener *pCleanListener) { m_pCleanListener = pCleanListener; }
+
 private:
     //Helper structures
     struct M_Area {
@@ -129,6 +132,7 @@ private:
     std::map<uint, M_Area> m_mWorld;
     uint m_uiCurArea, m_uiNextArea, m_uiEffectiveArea;
     bool m_bFirstRun;
+    Listener *m_pCleanListener;
 
     //Scheduled events
     std::list<uint> m_lsAreasToClean;

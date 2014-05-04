@@ -54,6 +54,10 @@ public:
 
     void registerPlayer(Listener *pPlayer);
 
+    void setDefaultInputMapping();
+    void newGame();     //Creates new save file & loads it
+    void loadGame();    //Loads save file (world file should already be loaded)
+
 private:
     GameManager(uint uiId);
     virtual ~GameManager();
@@ -62,6 +66,8 @@ private:
     void cleanBasicHud();
     void initPlayerHud();
     void cleanPlayerHud();
+
+    void cleanGame();   //Cleans old information in preparation for a new/loaded game
 
     void fadeArea();
 
@@ -73,6 +79,9 @@ private:
     uint m_uiNextArea;
     Color m_crWorld;
     Color m_crBackground;
+    bool m_bWorldIsClean;   //True if world is definitely clean
+
+    std::string m_sGameFileName;
 
     Listener *m_pPlayerListener; //The player, as a listener
 

@@ -10,6 +10,7 @@
 #include "game/items/SpellItem.h"
 #include "mge/Event.h"
 #include "GuiButton.h"
+#include "game/GameManager.h"
 
 #define Y_HIDDEN (TEXTURE_TILE_SIZE - SCREEN_HEIGHT)
 #define Y_SHOWN (0.F)
@@ -63,6 +64,12 @@ DraggableHud::DraggableHud(uint uiId)
     m_pCurItem = NULL;
     m_pCurElement = NULL;
     m_pCurSpell = NULL;
+
+    //Start out as being down
+    Point ptShift = Point(0.f, Y_SHOWN - getDrawArea().y, 0.f);
+    moveBy(ptShift);
+    m_bHidden = false;
+    PWE::get()->setState(PWE_PAUSED);
 }
 
 DraggableHud::~DraggableHud() {
@@ -293,8 +300,10 @@ DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
     case ON_SAVE_GAME:
         break;
     case ON_LOAD_GAME:
+        GameManager::get()->loadGame();
         break;
     case ON_NEW_GAME:
+        GameManager::get()->newGame();
         break;
     case ON_QUIT_GAME:
         MGE::get()->stop();

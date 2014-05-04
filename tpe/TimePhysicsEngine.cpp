@@ -268,6 +268,7 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
     Point ptQueryPos = tpmBox->getPosition() - tpmHmap->getPosition();
     float y = hmdl->getHeightAtPoint(ptQueryPos) + tpmHmap->getPosition().y;
     float fYShift = (bxBox.y + bxBox.h > bxHmap.y) ? y - bxBox.y : 0.f;
+
     //Get the surface normal
     Vec3f v3Norm = hmdl->getNormalAtPoint(ptQueryPos);
 
@@ -298,9 +299,16 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
         ptHmapShift = Point(0,0,-1);
         splitShift(objBox, objHmap, fZShift, &ptBoxShift, &ptHmapShift);
     } else {
-        //Shift in the Y direction
+        //Shift in the Y direction: Calculate the actual shift to move the box
+        // out along the normal
+        //float delta = fYShift / (2 * v3Norm.y);
+
+        //Set up the shifts
+        //ptBoxShift = Point(v3Norm.x * delta, v3Norm.y * delta, v3Norm.z * delta);
         ptBoxShift = Point(0.f, fYShift, 0.f);
         ptHmapShift = Point();
+
+        //Somehow this prevents objects from falling through the heightmap
         bool bBoxInHmap = ptBoxShift.y > 0.f;
         if(!bBoxInHmap) {
             if(tpmBox->getSurface() == tpmHmap) {
@@ -339,25 +347,33 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
         if(bApplyNormalForce) {
             tpmBox->setSurface(tpmHmap);
 
-
+#if 1
             //Do you slide down the slope?
             Vec3f v3VertNorm = Vec3f(0.f, 1.f, 0.f);
             float fCosAngle = dot(v3Norm, v3VertNorm);
+            Vec3f v3NormForce;
             #define MIN_ANGLE 0.9
             //When off by pi/2, value is 0
             //When pointing in the same direction, value is 1
             //So, smaller cos means more slip
-
             if(fCosAngle > MIN_ANGLE) {
-                v3Norm = v3VertNorm;
+                v3NormForce = v3VertNorm * GRAV_ACCEL * tpmBox->getMass();
+            } else {
+                float fBias = fCosAngle / MIN_ANGLE;
+                v3NormForce = (v3VertNorm * fBias + v3Norm * (1.f - fBias)) * GRAV_ACCEL * tpmBox->getMass();
             }
 
             //We want to keep gravity vertical accel so the object gets pushed into the hmap
-            v3Norm.y = 0.f;
+            //but only if we aren't near the edge of the hmap.  This allows us to walk over edges just outside the hmap
+            if(fabs(fXShift) > bxBox.w + 0.1 && fabs(fZShift) > bxBox.l + 0.1) {
+                v3NormForce.y = 0.f;
+            }
 
-            //Apply normal force
-            tpmBox->applyForce(v3Norm * GRAV_ACCEL * tpmBox->getMass());
+            //Apply normal force.  This makes stepping over objects easier,
+            // but since it at least partially cancels gravity it makes moving downhill jerky
+            tpmBox->applyForce(v3NormForce);
             objBox->setFlag(TPE_FALLING, false);    //Apply normal force only once
+#endif
         }
     }
 

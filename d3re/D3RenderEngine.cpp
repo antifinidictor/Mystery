@@ -9,6 +9,7 @@
 
 #include "mge/GameObject.h"
 #include "game/game_defs.h"
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -491,22 +492,29 @@ D3RenderEngine::write(boost::property_tree::ptree &pt, const std::string &keyBas
 void
 D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase) {
     using boost::property_tree::ptree;
+    using boost::lexical_cast;
+    using boost::bad_lexical_cast;
     try {
     BOOST_FOREACH(ptree::value_type &v, pt.get_child(keyBase.c_str())) {
         //Each element should be stored by id
         string key = keyBase + "." + v.first.data();
         string filename = v.second.data();
-        uint uiId = atoi(v.first.data());
-        uint framesW = pt.get(key + ".framesW", 1);
-        uint framesH = pt.get(key + ".framesH", 1);
-        string name = pt.get(key + ".name", "?");
 
-        if(name.compare("?") == 0) {
-            createImage(uiId, filename, framesH, framesW);
-        } else if(name.compare("font") == 0) {
-            createImage(uiId, name, filename, framesH, framesW, true);
-        } else {
-            createImage(uiId, name, filename, framesH, framesW);
+        try{
+            uint uiId = lexical_cast<uint>(v.first.data());
+            uint framesW = pt.get(key + ".framesW", 1);
+            uint framesH = pt.get(key + ".framesH", 1);
+            string name = pt.get(key + ".name", "?");
+
+            if(name.compare("?") == 0) {
+                createImage(uiId, filename, framesH, framesW);
+            } else if(name.compare("font") == 0) {
+                createImage(uiId, name, filename, framesH, framesW, true);
+            } else {
+                createImage(uiId, name, filename, framesH, framesW);
+            }
+        } catch(const bad_lexical_cast &) {
+            printf("Could not read resource: bad id\n");
         }
     }
     } catch(exception e) {

@@ -28,6 +28,7 @@ PartitionedWorldEngine::PartitionedWorldEngine() {
     mge->addListener(this, ON_BUTTON_INPUT);
     m_eNextState = m_eState = PWE_RUNNING;
     m_pManagerObject = NULL;
+    m_pCleanListener = NULL;
 }
 
 PartitionedWorldEngine::~PartitionedWorldEngine() {
@@ -100,9 +101,20 @@ PartitionedWorldEngine::update(float fDeltaTime) {
     pe->update(fDeltaTime);
 
     m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime, m_eState == PWE_PAUSED));
-    list<uint>::iterator itAreaId;
-    for(itAreaId = m_lsAreasToClean.begin(); itAreaId != m_lsAreasToClean.end(); ++itAreaId) {
-        cleanAreaNow(*itAreaId);
+
+    if(m_pCleanListener) {
+        re->clearScreen();
+        cleanAllAreas();
+        m_uiNextArea = 0;
+
+        //Inform the clean listener that the world has been reset
+        m_pCleanListener->callBack(getId(), NULL, PWE_ON_WORLD_CLEANED);
+        m_pCleanListener = NULL;
+    } else {
+        list<uint>::iterator itAreaId;
+        for(itAreaId = m_lsAreasToClean.begin(); itAreaId != m_lsAreasToClean.end(); ++itAreaId) {
+            cleanAreaNow(*itAreaId);
+        }
     }
 
     //If necessary, set the current area (we wanted to finish this update first)
@@ -553,6 +565,7 @@ PartitionedWorldEngine::cleanAreaNow(uint uiAreaId) {
     //Delete the objects from the area
     //TODO: This may be the cause of a segfault.  Do we want to just erase the objects, or erase the octree?
     delete itArea->second.m_pOctree;
+    itArea->second.m_pOctree = NULL;
 
     //Clear the lists of the bad pointers
     itArea->second.m_mMouseMoveListeners.clear();
