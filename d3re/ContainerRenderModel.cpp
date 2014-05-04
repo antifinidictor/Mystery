@@ -54,6 +54,15 @@ ContainerRenderModel::remove(uint id) {
 }
 
 void
+ContainerRenderModel::erase(uint id) {
+    std::map<uint,RenderModel*>::iterator it = m_mModels.find(id);
+    if(it != m_mModels.end()) {
+        delete it->second;
+        m_mModels.erase(it);
+    }
+}
+
+void
 ContainerRenderModel::clear() {
     for(std::map<uint, RenderModel*>::iterator iter = m_mModels.begin();
             iter != m_mModels.end(); ++iter) {

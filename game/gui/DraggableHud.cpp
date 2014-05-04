@@ -9,6 +9,8 @@
 #include "game/items/Item.h"
 #include "game/items/SpellItem.h"
 #include "mge/Event.h"
+#include "GuiButton.h"
+#include "game/GameManager.h"
 
 #define Y_HIDDEN (TEXTURE_TILE_SIZE - SCREEN_HEIGHT)
 #define Y_SHOWN (0.F)
@@ -18,6 +20,8 @@
 #define ANIM_TIMER_MAX 1
 
 using namespace std;
+
+#define BUTTON_SPACING 64
 
 DraggableHud::DraggableHud(uint uiId)
     : ContainerRenderModel(Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT)),
@@ -60,6 +64,12 @@ DraggableHud::DraggableHud(uint uiId)
     m_pCurItem = NULL;
     m_pCurElement = NULL;
     m_pCurSpell = NULL;
+
+    //Start out as being down
+    Point ptShift = Point(0.f, Y_SHOWN - getDrawArea().y, 0.f);
+    moveBy(ptShift);
+    m_bHidden = false;
+    PWE::get()->setState(PWE_PAUSED);
 }
 
 DraggableHud::~DraggableHud() {
@@ -156,24 +166,20 @@ DraggableHud::updateItemAnimations() {
         m_iFrame = (m_iFrame + 1) % 8;
         m_iAnimTimer = 0;
 
-        ContainerRenderModel *panel;
+        ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER);
         ItemAnimUpdateFunctor curFrameFunctor(m_iFrame);
 
         //Update general item animations
-        panel = get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
-        panel->forEachModel(curFrameFunctor);
+        panel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->forEachModel(curFrameFunctor);
 
         //Update element animations
-        panel = get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
-        panel->forEachModel(curFrameFunctor);
+        panel->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER)->forEachModel(curFrameFunctor);
 
         //Update spell animations
-        panel = get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
-        panel->forEachModel(curFrameFunctor);
+        panel->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER)->forEachModel(curFrameFunctor);
 
         //Update itembar images (which are set to itemid 0 if no item set)
-        panel = get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER);
-        panel->forEachModel(curFrameFunctor);
+        get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)->forEachModel(curFrameFunctor);
     } else {
         ++m_iAnimTimer;
     }
@@ -191,7 +197,7 @@ public:
     }
 
     bool operator()(uint itemIndex, RenderModel *rmdl) {
-        printf("My index vs their index: %d/%d\n", m_uiIndex, itemIndex);
+        //printf("My index vs their index: %d/%d\n", m_uiIndex, itemIndex);
         //Assuming we iterate in order
         if(itemIndex > m_uiIndex) {
             return true;    //Found an empty index
@@ -209,6 +215,8 @@ DraggableHud::addItem(Item *pItem, bool bMakeCurrent) {
     //The item ID will tell us where to put it in the inventory
     uint uiItemId = pItem->getItemId();
 
+    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER);
+
     //Wrap the item in the appropriate draggable render model and stash on the
     // appropriate inventory gui panel
     if(uiItemId < ITEM_NUM_ELEMENTS) {
@@ -216,19 +224,19 @@ DraggableHud::addItem(Item *pItem, bool bMakeCurrent) {
         Rect rcArea = indexToElementRect(uiItemId);
         DraggableElementalSpellItem *pDraggableItem =
             new DraggableElementalSpellItem(pItem, rcArea, this);
-        get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER)->add(uiItemId, pDraggableItem);
+        panel->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER)->add(uiItemId, pDraggableItem);
 
     } else if(uiItemId < ITEM_NUM_SPELLS) {
         //Wrap the spell and store it
         Rect rcArea = indexToSpellRect(uiItemId);
         DraggableElementalSpellItem *pDraggableItem =
             new DraggableElementalSpellItem(pItem, rcArea, this);
-        get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER)->add(uiItemId, pDraggableItem);
+        panel->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER)->add(uiItemId, pDraggableItem);
 
     } else {
         //Find an empty item slot
         ItemFindEmptySlotFunctor ftor;
-        get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->forEachModel(ftor);
+        panel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->forEachModel(ftor);
         if(ftor.m_uiIndex >= NUM_GENERAL_ITEMS) {
             return false;   //Failed to add
         }
@@ -236,7 +244,7 @@ DraggableHud::addItem(Item *pItem, bool bMakeCurrent) {
         //Wrap the item and store it
         Rect rcArea = indexToItemRect(ftor.m_uiIndex);
         DraggableItem *pDraggableItem = new DraggableItem(pItem, ftor.m_uiIndex, rcArea, this);
-        get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->add(ftor.m_uiIndex, pDraggableItem);
+        panel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->add(ftor.m_uiIndex, pDraggableItem);
     }
 
 
@@ -246,7 +254,6 @@ DraggableHud::addItem(Item *pItem, bool bMakeCurrent) {
 
     return true;
 }
-
 
 int
 DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
@@ -290,6 +297,17 @@ DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
         }
         break;
     }
+    case ON_SAVE_GAME:
+        break;
+    case ON_LOAD_GAME:
+        GameManager::get()->loadGame();
+        break;
+    case ON_NEW_GAME:
+        GameManager::get()->newGame();
+        break;
+    case ON_QUIT_GAME:
+        MGE::get()->stop();
+        break;
     default:
         status = Draggable::callBack(uiEventHandlerId, data, uiEventId);
     }
@@ -298,7 +316,8 @@ DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
 
 void
 DraggableHud::removeItem(uint invIndex) {
-    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+                                    ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
     RenderModel *item = panel->get<RenderModel*>(invIndex);
     if(item != NULL) {
         m_lsItemsToRemove.push_back(invIndex);  //Schedule for later when it's safer
@@ -307,7 +326,8 @@ DraggableHud::removeItem(uint invIndex) {
 
 void
 DraggableHud::removeSpell(uint invIndex) {
-    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
+    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+                                    ->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
     RenderModel *item = panel->get<RenderModel*>(invIndex);
     if(item != NULL) {
         m_lsSpellsToRemove.push_back(invIndex);  //Schedule for later when it's safer
@@ -316,7 +336,8 @@ DraggableHud::removeSpell(uint invIndex) {
 
 void
 DraggableHud::removeElement(uint invIndex) {
-    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
+    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+                                    ->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
     RenderModel *item = panel->get<RenderModel*>(invIndex);
     if(item != NULL) {
         m_lsElementsToRemove.push_back(invIndex);  //Schedule for later when it's safer
@@ -329,7 +350,8 @@ DraggableHud::removeScheduledItems() {
     list<uint>::iterator it;
 
     //Remove generic items
-    panel = get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+    panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+            ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
     for(it = m_lsItemsToRemove.begin(); it != m_lsItemsToRemove.end(); ++it) {
         DraggableItem *item = panel->get<DraggableItem*>(*it);
         if(item != NULL) {
@@ -348,7 +370,8 @@ DraggableHud::removeScheduledItems() {
     m_lsItemsToRemove.clear();
 
     //Remove spells
-    panel = get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
+    panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+            ->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
     for(it = m_lsSpellsToRemove.begin(); it != m_lsSpellsToRemove.end(); ++it) {
         DraggableElementalSpellItem *item = panel->get<DraggableElementalSpellItem*>(*it);
         if(item != NULL) {
@@ -367,7 +390,8 @@ DraggableHud::removeScheduledItems() {
     m_lsSpellsToRemove.clear();
 
     //Remove elements
-    panel = get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
+    panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+            ->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
     for(it = m_lsElementsToRemove.begin(); it != m_lsElementsToRemove.end(); ++it) {
         DraggableElementalSpellItem *item = panel->get<DraggableElementalSpellItem*>(*it);
         if(item != NULL) {
@@ -451,7 +475,8 @@ DraggableHud::makeCurrent(Item *pItem) {
 
 void
 DraggableHud::moveItem(uint startIndex, uint endIndex) {
-    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+                                ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
     DraggableItem *item1 = panel->get<DraggableItem*>(startIndex);
     DraggableItem *item2 = panel->get<DraggableItem*>(endIndex);
 
@@ -491,7 +516,13 @@ DraggableHud::initPlayerHud() {
     Rect rcInventoryPanel = Rect(
         0,  //TEXTURE_TILE_SIZE * 8,
         0,  //SCREEN_HEIGHT,
-        TEXTURE_TILE_SIZE * 10,
+        TEXTURE_TILE_SIZE * 14,
+        TEXTURE_TILE_SIZE
+    );
+    Rect rcSidePanel = Rect(
+        rcInventoryPanel.x + rcInventoryPanel.w,
+        0,  //SCREEN_HEIGHT,
+        TEXTURE_TILE_SIZE * 4,
         TEXTURE_TILE_SIZE
     );
     Rect rcItembarPanel = Rect(
@@ -501,22 +532,21 @@ DraggableHud::initPlayerHud() {
         TEXTURE_TILE_SIZE
     );
     ContainerRenderModel *healthPanel = new ContainerRenderModel(rcHealthPanel);
+    ContainerRenderModel *itembarPanel = new ContainerRenderModel(rcItembarPanel);
+    ContainerRenderModel *inventoryPanel = new ContainerRenderModel(rcInventoryPanel);
     ContainerRenderModel *spellPanel = new ContainerRenderModel(rcInventoryPanel);
     ContainerRenderModel *itemPanel = new ContainerRenderModel(rcInventoryPanel);
-    ContainerRenderModel *elementPanel = new ContainerRenderModel(rcInventoryPanel);
-    ContainerRenderModel *itembarPanel = new ContainerRenderModel(rcItembarPanel);
-    //rightEdge->setFrameH(2);
-    //middle->setFrameH(1);
-    //middle->setRepsW((SCREEN_WIDTH) / TEXTURE_TILE_SIZE - 2);
+    ContainerRenderModel *sidePanel = new ContainerRenderModel(rcSidePanel);
 
-    //panel->add(MGHUD_LEFT_EDGE, leftEdge);
-    //panel->add(MGHUD_MIDDLE, middle);
-    //panel->add(MGHUD_RIGHT_EDGE, rightEdge);
+    ContainerRenderModel *elementPanel = new ContainerRenderModel(rcInventoryPanel);
     panel->add(MGHUD_HEALTH_CONTAINER, healthPanel);
-    panel->add(MGHUD_SPELL_CONTAINER, spellPanel);
-    panel->add(MGHUD_ITEM_CONTAINER, itemPanel);
-    panel->add(MGHUD_ELEMENT_CONTAINER, elementPanel);
     panel->add(MGHUD_ITEMBAR_CONTAINER, itembarPanel);
+    panel->add(MGHUD_MAIN_CONTAINER, inventoryPanel);
+    panel->add(MGHUD_SIDEBUTTON_CONTAINER, sidePanel);
+
+    inventoryPanel->add(MGHUD_SPELL_CONTAINER, spellPanel);
+    inventoryPanel->add(MGHUD_ITEM_CONTAINER, itemPanel);
+    inventoryPanel->add(MGHUD_ELEMENT_CONTAINER, elementPanel);
 
     /*
      * Area name and current-action label
@@ -552,6 +582,11 @@ DraggableHud::initPlayerHud() {
      * Itembar panel
      */
     initItemBarHud(itembarPanel);
+
+    /*
+     * Sidebutton panel
+     */
+    initSideButtonHud(sidePanel);
 }
 
 void
@@ -595,6 +630,63 @@ DraggableHud::initItemBarHud(ContainerRenderModel *panel) {
     panel->add(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT, curElementThumbnail);
     panel->add(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL, curSpellThumbnail);
     panel->add(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM, curItemThumbnail);
+}
+
+
+void
+DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
+#define SIDEBAR_MARGIN 5
+    Rect rcItemNameLabel = Rect(
+        SIDEBAR_MARGIN,
+        TEXTURE_TILE_SIZE,
+        TEXTURE_TILE_SIZE * 6 - SIDEBAR_MARGIN,
+        TEXTURE_TILE_SIZE
+    );
+    Rect rcItemDescLabel = Rect(
+        rcItemNameLabel.x,
+        rcItemNameLabel.y + rcItemNameLabel.h,
+        rcItemNameLabel.w,
+        TEXTURE_TILE_SIZE * 3
+    );
+    Point ptNewGameButtonPos(
+        rcItemDescLabel.x + rcItemDescLabel.w / 2 - BUTTON_WIDTH / 2,
+        rcItemDescLabel.y + rcItemDescLabel.h,
+        0
+    );
+    Point ptLoadButtonPos(
+        ptNewGameButtonPos.x,
+        ptNewGameButtonPos.y + BUTTON_SPACING,
+        0
+    );
+    Point ptSaveButtonPos(
+        ptLoadButtonPos.x,
+        ptLoadButtonPos.y + BUTTON_SPACING,
+        0
+    );
+    Point ptQuitButtonPos(
+        ptSaveButtonPos.x,
+        ptSaveButtonPos.y + BUTTON_SPACING,
+        0
+    );
+    D3HudRenderModel *label = new D3HudRenderModel("", rcItemNameLabel,1.0f);
+    label->centerHorizontally(true);
+    panel->add(MGHUD_SIDEBUTTON_ITEMNAME, label);
+
+    label = new D3HudRenderModel("", rcItemDescLabel,0.8f);
+    panel->add(MGHUD_SIDEBUTTON_ITEMDESC, label);
+
+    GuiButton *btn;
+    btn = new GuiButton(panel, this, ON_NEW_GAME, "New Game", ptNewGameButtonPos, 1.f);
+    panel->add(MGHUD_SIDEBUTTON_NEWBUTTON, btn);
+
+    btn = new GuiButton(panel, this, ON_LOAD_GAME, "Load", ptLoadButtonPos, 1.f);
+    panel->add(MGHUD_SIDEBUTTON_LOADBUTTON, btn);
+
+    btn = new GuiButton(panel, this, ON_SAVE_GAME, "Save", ptSaveButtonPos, 1.f);
+    panel->add(MGHUD_SIDEBUTTON_SAVEBUTTON, btn);
+
+    btn = new GuiButton(panel, this, ON_QUIT_GAME, "Quit", ptQuitButtonPos, 1.f);
+    panel->add(MGHUD_SIDEBUTTON_QUITBUTTON, btn);
 }
 
 bool

@@ -19,7 +19,7 @@ struct Image {
 public:
 	//Constructor/Destructor
 //	Image(std::string &sFileName, char cID, int iNumFramesH = 1, int iNumFramesW = 1);
-	Image(const std::string &sFileName, uint uiID, int iNumFramesH = 1, int iNumFramesW = 1);
+	Image(const std::string &sFileName, uint uiID, int iNumFramesH = 1, int iNumFramesW = 1, bool bLinearInterp = false);
 	virtual ~Image()  {
         glDeleteTextures( 1, &m_uiTexture );
     }

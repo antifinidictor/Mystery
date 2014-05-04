@@ -14,6 +14,7 @@
 #include <queue>
 
 class EditorCursor;
+class ContainerRenderModel;
 
 class EditorManager : public GameObject {
 public:
@@ -39,6 +40,8 @@ public:
 
     void setEditorCursor(EditorCursor *obj) { m_pEditorCursor = obj; }
     //EditorState getState() { return m_eState; }
+
+    ContainerRenderModel* getBasePanel() { return m_pBasePanel; }
 
 private:
     EditorManager(uint uiId);
@@ -80,6 +83,7 @@ private:
 */
     static EditorManager *m_pInstance;
 
+
     uint m_uiId;
     flag_t m_uiFlags;
     EditorCursor *m_pEditorCursor;
@@ -87,6 +91,9 @@ private:
     std::stack<EditorState> m_skState;
     std::queue<uint> m_qEvents;
     std::vector<uint> m_vAreas;
+
+    //Base panel
+    ContainerRenderModel *m_pBasePanel;
 
     //Area list
     uint m_uiHudAreaButtonIdStart;

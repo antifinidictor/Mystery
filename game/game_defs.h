@@ -98,6 +98,10 @@ enum GameEvent {
     ON_UPDATE_HUD,          //HUD animations should be updated
     ON_ITEM_CLICK_USE,      //Current item receives a mouse click (button up/down, mouse location)
     ON_ITEM_DRAG_USE,       //Current item receives a mouse-drag event (mouse location)
+    ON_SAVE_GAME,
+    ON_LOAD_GAME,
+    ON_QUIT_GAME,
+    ON_NEW_GAME,
     NUM_GAME_EVENTS
 };
 
@@ -125,11 +129,9 @@ enum TopBarHudElements {
     MGHUD_BACKDROP,
     MGHUD_HEALTH_CONTAINER,
     MGHUD_ITEMBAR_CONTAINER,
+    MGHUD_MAIN_CONTAINER,
     MGHUD_CUR_AREA,
     MGHUD_CUR_ACTION,
-    MGHUD_SPELL_CONTAINER,
-    MGHUD_ITEM_CONTAINER,
-    MGHUD_ELEMENT_CONTAINER,
     MGHUD_SIDEBUTTON_CONTAINER,
     NUM_MGHUD_TOP_BAR_ELEMENTS
 };
@@ -142,16 +144,31 @@ enum HealthContainerElements {
     MGHUD_HEALTH_VALUE
 };
 
-enum InventoryElements {
+enum ItembarElements {
     MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT,
     MGHUD_ELEMENT_ITEMBAR_CUR_SPELL,
-    MGHUD_ELEMENT_ITEMBAR_CUR_ITEM,
-    MGHUD_ELEMENT_THUMBNAIL_START= 10   //Max 10 items in item bar
+    MGHUD_ELEMENT_ITEMBAR_CUR_ITEM
+};
+
+enum InventoryContainer {
+    MGHUD_SPELL_CONTAINER,
+    MGHUD_ITEM_CONTAINER,
+    MGHUD_ELEMENT_CONTAINER,
+};
+
+enum SidebuttonElements {
+    MGHUD_SIDEBUTTON_ITEMNAME,
+    MGHUD_SIDEBUTTON_ITEMDESC,
+    MGHUD_SIDEBUTTON_NEWBUTTON,
+    MGHUD_SIDEBUTTON_LOADBUTTON,
+    MGHUD_SIDEBUTTON_SAVEBUTTON,
+    MGHUD_SIDEBUTTON_QUITBUTTON
 };
 
 enum GameFlags {
-    GAM_CAN_LINK = GAME_FLAGS_BEGIN,
-    GAM_CAN_PICK_UP,
+    GAM_CAN_LINK = GAME_FLAGS_BEGIN,    //Can be transferred to new areas
+    GAM_CAN_PICK_UP,                    //Item can be picked up by the player
+    GAM_WRITE_TO_SAVE_FILE,             //Item should be written to a save file instead of the world file
     NUM_GAME_FLAGS
 };
 

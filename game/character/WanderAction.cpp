@@ -1,6 +1,6 @@
 #include "WanderAction.h"
 #include "Character.h"
-#define WAIT_LENGTH 300
+#define WAIT_LENGTH 100
 WanderAction::WanderAction(Character *pActor)
   : Action(pActor)
 {

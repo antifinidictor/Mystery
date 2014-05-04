@@ -27,6 +27,7 @@ public:
 
     void add(uint id, RenderModel *mdl);
     void remove(uint id);
+    void erase(uint id);
     void clear();
 
     template <class RenderModelType>

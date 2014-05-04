@@ -15665,7 +15665,7 @@
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery//mge/AudioEngine.h
 
-1398891714 /home/naheisey/Documents/projects/games/Mystery//mge/defs.h
+1399049613 /home/naheisey/Documents/projects/games/Mystery//mge/defs.h
 	<math.h>
 	<stdio.h>
 	<stdarg.h>
@@ -15992,7 +15992,7 @@
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery/mge/AudioEngine.h
 
-1398891714 /home/naheisey/Documents/projects/games/Mystery/mge/defs.h
+1399049613 /home/naheisey/Documents/projects/games/Mystery/mge/defs.h
 	<math.h>
 	<stdio.h>
 	<stdarg.h>
@@ -16018,11 +16018,11 @@
 	<bits/pthreadtypes.h>
 	<bits/sigthread.h>
 
-1397671671 source:/home/naheisey/Documents/projects/games/Mystery/d3re/ContainerRenderModel.cpp
+1399076235 source:/home/naheisey/Documents/projects/games/Mystery/d3re/ContainerRenderModel.cpp
 	"ContainerRenderModel.h"
 	"pgl.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery/d3re/ContainerRenderModel.h
+1399076159 /home/naheisey/Documents/projects/games/Mystery/d3re/ContainerRenderModel.h
 	<map>
 	"mge/RenderModel.h"
 	"mge/Positionable.h"
@@ -16049,7 +16049,7 @@
 	"D3HeightmapRenderModel.h"
 	"TextRenderer.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery/d3re/D3RenderEngine.h
+1399055545 /home/naheisey/Documents/projects/games/Mystery/d3re/D3RenderEngine.h
 	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
@@ -16063,7 +16063,7 @@
 1397616328 /home/naheisey/Documents/projects/games/Mystery/mge/RenderEngine.h
 	"mge/defs.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery/mge/Image.h
+1399055007 /home/naheisey/Documents/projects/games/Mystery/mge/Image.h
 	"SDL.h"
 	"SDL_image.h"
 	"SDL_opengl.h"
@@ -16183,15 +16183,16 @@
 	"d3re.h"
 	"mge/Positionable.h"
 
-1398889409 source:/home/naheisey/Documents/projects/games/Mystery/d3re/D3RenderEngine.cpp
+1399172051 source:/home/naheisey/Documents/projects/games/Mystery/d3re/D3RenderEngine.cpp
 	"d3re.h"
 	"SDL.h"
 	"pgl.h"
 	"mge/GameObject.h"
 	"game/game_defs.h"
+	<boost/lexical_cast.hpp>
 	<limits>
 
-1398933130 /home/naheisey/Documents/projects/games/Mystery/game/game_defs.h
+1399071869 /home/naheisey/Documents/projects/games/Mystery/game/game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -16226,7 +16227,7 @@
 	"mge/defs.h"
 	<map>
 
-1398835906 source:/home/naheisey/Documents/projects/games/Mystery/game/character/Character.cpp
+1399049613 source:/home/naheisey/Documents/projects/games/Mystery/game/character/Character.cpp
 	"Character.h"
 	"Action.h"
 	"WanderAction.h"
@@ -16253,7 +16254,7 @@
 	"mge/Event.h"
 	<list>
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery/tpe/CollisionModel.h
+1399140430 /home/naheisey/Documents/projects/games/Mystery/tpe/CollisionModel.h
 	"mge/PixelMap.h"
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery/game/character/Action.h
@@ -16263,7 +16264,7 @@
 	"Action.h"
 	"game/game_defs.h"
 
-1398932983 /home/naheisey/Documents/projects/games/Mystery/pwe/PartitionedWorldEngine.h
+1399173787 /home/naheisey/Documents/projects/games/Mystery/pwe/PartitionedWorldEngine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -16273,7 +16274,7 @@
 	"mge/GameObject.h"
 	"mge/Event.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/character/WanderAction.cpp
+1399145648 source:/home/naheisey/Documents/projects/games/Mystery/game/character/WanderAction.cpp
 	"WanderAction.h"
 	"Character.h"
 
@@ -16286,7 +16287,7 @@
 	"d3re/d3re.h"
 	"game/game_defs.h"
 
-1398927292 source:/home/naheisey/Documents/projects/games/Mystery/game/game.cpp
+1399171671 source:/home/naheisey/Documents/projects/games/Mystery/game/game.cpp
 	"game.h"
 	<SDL.h>
 	"pgl.h"
@@ -16303,6 +16304,7 @@
 	"game/world/Wall.h"
 	"game/ObjectFactory.h"
 	"game/GameManager.h"
+	"game/gui/GuiButton.h"
 	"mge/PixelMap.h"
 	"game/gui/TextDisplay.h"
 	"game/gui/DraggableHud.h"
@@ -16311,7 +16313,7 @@
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery/game/game.h
 
-1398890324 /home/naheisey/Documents/projects/games/Mystery/game/Player.h
+1398992373 /home/naheisey/Documents/projects/games/Mystery/game/Player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -16325,13 +16327,13 @@
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery/game/spells/Spell.h
 
-1398890336 /home/naheisey/Documents/projects/games/Mystery/game/items/Item.h
+1399061406 /home/naheisey/Documents/projects/games/Mystery/game/items/Item.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableHud.h
+1399051514 /home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableHud.h
 	"Draggable.h"
 	"game/items/Item.h"
 	"d3re/ContainerRenderModel.h"
@@ -16361,7 +16363,7 @@
 	<vector>
 	<boost/property_tree/ptree.hpp>
 
-1398890254 /home/naheisey/Documents/projects/games/Mystery/game/GameManager.h
+1399173881 /home/naheisey/Documents/projects/games/Mystery/game/GameManager.h
 	<stack>
 	<map>
 	"mge/GameObject.h"
@@ -16379,13 +16381,14 @@
 1398103233 /home/naheisey/Documents/projects/games/Mystery/tpe/fluids/mgeMath.h
 	"mge/defs.h"
 
-1398890408 /home/naheisey/Documents/projects/games/Mystery/tpe/fluids/BruteForceFluidTest.h
+1399079143 /home/naheisey/Documents/projects/games/Mystery/tpe/fluids/BruteForceFluidTest.h
 	"mge/PixelMap.h"
 	"mge/GameObject.h"
 	"Vorton.h"
 	"InterpGrid.h"
 	"game/game_defs.h"
 	"d3re/ContainerRenderModel.h"
+	"mge/RenderModel.h"
 	"tpe/TimePhysicsModel.h"
 	<vector>
 
@@ -16403,7 +16406,7 @@
 	"mge/Positionable.h"
 	<vector>
 
-1398929172 source:/home/naheisey/Documents/projects/games/Mystery/game/GameManager.cpp
+1399174080 source:/home/naheisey/Documents/projects/games/Mystery/game/GameManager.cpp
 	"GameManager.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/TimePhysicsEngine.h"
@@ -16412,13 +16415,14 @@
 	"game/gui/TextDisplay.h"
 	"game/gui/DraggableHud.h"
 	"game/gui/DraggableItem.h"
+	"game/gui/GuiButton.h"
 	"game/items/Item.h"
 
 1398890346 /home/naheisey/Documents/projects/games/Mystery/game/spells/ElementalVolume.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableItem.h
+1399056235 /home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableItem.h
 	"game/gui/Draggable.h"
 	"d3re/D3HudRenderModel.h"
 	"game/items/Item.h"
@@ -16429,7 +16433,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"game/game_defs.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableElementalSpellItem.cpp
+1399056906 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableElementalSpellItem.cpp
 	"DraggableElementalSpellItem.h"
 	"d3re/d3re.h"
 	"mge/ModularEngine.h"
@@ -16437,13 +16441,13 @@
 	"game/game_defs.h"
 	"game/gui/DraggableHud.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableElementalSpellItem.h
+1399056700 /home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableElementalSpellItem.h
 	"game/gui/Draggable.h"
 	"d3re/D3HudRenderModel.h"
 	"game/items/Item.h"
 	<vector>
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableHud.cpp
+1399174684 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableHud.cpp
 	"DraggableHud.h"
 	"DraggableItem.h"
 	"DraggableElementalSpellItem.h"
@@ -16454,12 +16458,14 @@
 	"game/items/Item.h"
 	"game/items/SpellItem.h"
 	"mge/Event.h"
+	"GuiButton.h"
+	"game/GameManager.h"
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery/game/items/SpellItem.h
 	"game/items/Item.h"
 	"game/spells/Spell.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableItem.cpp
+1399062981 source:/home/naheisey/Documents/projects/games/Mystery/game/gui/DraggableItem.cpp
 	"DraggableItem.h"
 	"d3re/d3re.h"
 	"mge/ModularEngine.h"
@@ -16471,11 +16477,11 @@
 	"d3re/d3re.h"
 	<stdlib.h>
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/items/Item.cpp
+1399097284 source:/home/naheisey/Documents/projects/games/Mystery/game/items/Item.cpp
 	"Item.h"
 	"pwe/PartitionedWorldEngine.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/items/SpellItem.cpp
+1399062920 source:/home/naheisey/Documents/projects/games/Mystery/game/items/SpellItem.cpp
 	"SpellItem.h"
 	"game/spells/SourceSinkSpell.h"
 	"game/spells/FlowSpell.h"
@@ -16504,7 +16510,7 @@
 	<boost/property_tree/xml_parser.hpp>
 	<boost/property_tree/info_parser.hpp>
 
-1398931675 source:/home/naheisey/Documents/projects/games/Mystery/game/Player.cpp
+1399060731 source:/home/naheisey/Documents/projects/games/Mystery/game/Player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/tpe.h"
@@ -16513,7 +16519,7 @@
 	"game/spells/FlowSpell.h"
 	"game/items/SpellItem.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/registration.cpp
+1399052186 source:/home/naheisey/Documents/projects/games/Mystery/game/registration.cpp
 	"game/ObjectFactory.h"
 	"game/Player.h"
 	"game/world/SimplePhysicsObject.h"
@@ -16572,7 +16578,7 @@
 	"mge/PixelMap.h"
 	"tpe/CollisionModel.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/spells/EarthElementalVolume.cpp
+1399049613 source:/home/naheisey/Documents/projects/games/Mystery/game/spells/EarthElementalVolume.cpp
 	"EarthElementalVolume.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
@@ -16620,21 +16626,22 @@
 	"ForceField.h"
 	"game/GameManager.h"
 
-1398934555 source:/home/naheisey/Documents/projects/games/Mystery/game/world/AreaLinkObject.cpp
+1399135365 source:/home/naheisey/Documents/projects/games/Mystery/game/world/AreaLinkObject.cpp
 	"AreaLinkObject.h"
 	"tpe/tpe.h"
 	"pwe/PartitionedWorldEngine.h"
+	"mge/Clock.h"
 
 1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/world/HmapSurface.cpp
 	"HmapSurface.h"
 	"pwe/PartitionedWorldEngine.h"
 
-1398840388 source:/home/naheisey/Documents/projects/games/Mystery/game/world/SimplePhysicsObject.cpp
+1398992711 source:/home/naheisey/Documents/projects/games/Mystery/game/world/SimplePhysicsObject.cpp
 	"SimplePhysicsObject.h"
 	"pwe/PartitionedWorldEngine.h"
 	"bae/BasicAudioEngine.h"
 
-1398932987 source:/home/naheisey/Documents/projects/games/Mystery/game/world/SimpleResettableObject.cpp
+1398991016 source:/home/naheisey/Documents/projects/games/Mystery/game/world/SimpleResettableObject.cpp
 	"SimpleResettableObject.h"
 	"pwe/PartitionedWorldEngine.h"
 	"bae/BasicAudioEngine.h"
@@ -16643,7 +16650,7 @@
 	"Wall.h"
 	"pwe/PartitionedWorldEngine.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/world/Water.cpp
+1399139257 source:/home/naheisey/Documents/projects/games/Mystery/game/world/Water.cpp
 	"Water.h"
 	"pwe/PartitionedWorldEngine.h"
 
@@ -16651,22 +16658,23 @@
 	"game/game.h"
 	"mge/ModularEngine.h"
 
-1398837180 source:/home/naheisey/Documents/projects/games/Mystery/mge/defs.cpp
+1399049613 source:/home/naheisey/Documents/projects/games/Mystery/mge/defs.cpp
 	"defs.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/mge/Image.cpp
+1399055044 source:/home/naheisey/Documents/projects/games/Mystery/mge/Image.cpp
 	<stdlib.h>
 	"Image.h"
 
-1398040794 source:/home/naheisey/Documents/projects/games/Mystery/mge/ModularEngine.cpp
+1399169564 source:/home/naheisey/Documents/projects/games/Mystery/mge/ModularEngine.cpp
 	"ModularEngine.h"
 	"defs.h"
+	"ConfigManager.h"
 
 1397616328 source:/home/naheisey/Documents/projects/games/Mystery/mge/PixelMap.cpp
 	"PixelMap.h"
 	<stdlib.h>
 
-1398934844 source:/home/naheisey/Documents/projects/games/Mystery/pwe/PartitionedWorldEngine.cpp
+1399174332 source:/home/naheisey/Documents/projects/games/Mystery/pwe/PartitionedWorldEngine.cpp
 	"PartitionedWorldEngine.h"
 	"mge/ModularEngine.h"
 	"game/ObjectFactory.h"
@@ -16674,10 +16682,10 @@
 	<boost/foreach.hpp>
 	"tpe/fluids/FluidOctree3d.h"
 
-1397616328 source:/home/naheisey/Documents/projects/games/Mystery/tpe/CollisionModel.cpp
+1399140980 source:/home/naheisey/Documents/projects/games/Mystery/tpe/CollisionModel.cpp
 	"CollisionModel.h"
 
-1398934879 source:/home/naheisey/Documents/projects/games/Mystery/tpe/fluids/FluidOctree3d.cpp
+1399079650 source:/home/naheisey/Documents/projects/games/Mystery/tpe/fluids/FluidOctree3d.cpp
 	"FluidOctree3d.h"
 	"mge/GameObject.h"
 	"tpe/tpe.h"
@@ -16685,7 +16693,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"SDL.h"
 
-1398763697 /home/naheisey/Documents/projects/games/Mystery/tpe/fluids/FluidOctree3d.h
+1399077308 /home/naheisey/Documents/projects/games/Mystery/tpe/fluids/FluidOctree3d.h
 	"Vorton.h"
 	"mge/defs.h"
 	<map>
@@ -16695,7 +16703,7 @@
 1398103233 source:/home/naheisey/Documents/projects/games/Mystery/tpe/fluids/Vorton.cpp
 	"Vorton.h"
 
-1398935543 source:/home/naheisey/Documents/projects/games/Mystery/tpe/TimePhysicsEngine.cpp
+1399148624 source:/home/naheisey/Documents/projects/games/Mystery/tpe/TimePhysicsEngine.cpp
 	"mge/GameObject.h"
 	"mge/RenderModel.h"
 	"tpe/tpe.h"
@@ -16720,7 +16728,7 @@
 1397616328 /home/naheisey/Documents/projects/games/Mystery//mge/RenderEngine.h
 	"mge/defs.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery//mge/Image.h
+1399055007 /home/naheisey/Documents/projects/games/Mystery//mge/Image.h
 	"SDL.h"
 	"SDL_image.h"
 	"SDL_opengl.h"
@@ -16776,7 +16784,7 @@
 	"SDL.h"
 	"mge/defs.h"
 
-1398933130 /home/naheisey/Documents/projects/games/Mystery//game/game_defs.h
+1399071869 /home/naheisey/Documents/projects/games/Mystery//game/game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -16789,7 +16797,7 @@
 	"D3HeightmapRenderModel.h"
 	"TextRenderer.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery//d3re/D3RenderEngine.h
+1399055545 /home/naheisey/Documents/projects/games/Mystery//d3re/D3RenderEngine.h
 	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
@@ -16800,7 +16808,7 @@
 	"mge/Event.h"
 	"ContainerRenderModel.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery//d3re/ContainerRenderModel.h
+1399076159 /home/naheisey/Documents/projects/games/Mystery//d3re/ContainerRenderModel.h
 	<map>
 	"mge/RenderModel.h"
 	"mge/Positionable.h"
@@ -16855,10 +16863,10 @@
 	"mge/Event.h"
 	<list>
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery//tpe/CollisionModel.h
+1399140430 /home/naheisey/Documents/projects/games/Mystery//tpe/CollisionModel.h
 	"mge/PixelMap.h"
 
-1398932983 /home/naheisey/Documents/projects/games/Mystery//pwe/PartitionedWorldEngine.h
+1399173787 /home/naheisey/Documents/projects/games/Mystery//pwe/PartitionedWorldEngine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -16875,7 +16883,7 @@
 	<map>
 	"SDL_mixer.h"
 
-1398975767 /home/naheisey/Documents/projects/games/Mystery//game/Player.h
+1398992373 /home/naheisey/Documents/projects/games/Mystery//game/Player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -16889,13 +16897,13 @@
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery//game/spells/Spell.h
 
-1398890336 /home/naheisey/Documents/projects/games/Mystery//game/items/Item.h
+1399061406 /home/naheisey/Documents/projects/games/Mystery//game/items/Item.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery//game/gui/DraggableHud.h
+1399051514 /home/naheisey/Documents/projects/games/Mystery//game/gui/DraggableHud.h
 	"Draggable.h"
 	"game/items/Item.h"
 	"d3re/ContainerRenderModel.h"
@@ -16925,7 +16933,7 @@
 	<vector>
 	<boost/property_tree/ptree.hpp>
 
-1398890254 /home/naheisey/Documents/projects/games/Mystery//game/GameManager.h
+1399173881 /home/naheisey/Documents/projects/games/Mystery//game/GameManager.h
 	<stack>
 	<map>
 	"mge/GameObject.h"
@@ -16943,13 +16951,14 @@
 1398103233 /home/naheisey/Documents/projects/games/Mystery//tpe/fluids/mgeMath.h
 	"mge/defs.h"
 
-1398890408 /home/naheisey/Documents/projects/games/Mystery//tpe/fluids/BruteForceFluidTest.h
+1399079143 /home/naheisey/Documents/projects/games/Mystery//tpe/fluids/BruteForceFluidTest.h
 	"mge/PixelMap.h"
 	"mge/GameObject.h"
 	"Vorton.h"
 	"InterpGrid.h"
 	"game/game_defs.h"
 	"d3re/ContainerRenderModel.h"
+	"mge/RenderModel.h"
 	"tpe/TimePhysicsModel.h"
 	<vector>
 
@@ -16971,7 +16980,7 @@
 	"mge/GameObject.h"
 	"game/game_defs.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery//game/gui/DraggableItem.h
+1399056235 /home/naheisey/Documents/projects/games/Mystery//game/gui/DraggableItem.h
 	"game/gui/Draggable.h"
 	"d3re/D3HudRenderModel.h"
 	"game/items/Item.h"
@@ -17054,24 +17063,24 @@
 1397616328 /home/naheisey/Documents/projects/games/Mystery//game/spells/ForceField.h
 	"mge/defs.h"
 
-1398103233 /home/naheisey/Documents/projects/games/Mystery//tpe/fluids/InterpGrid.h
+1399049613 /home/naheisey/Documents/projects/games/Mystery//tpe/fluids/InterpGrid.h
 	"mge/defs.h"
 	"mge/Positionable.h"
 	<vector>
 
-1398103233 /home/naheisey/Documents/projects/games/Mystery/tpe/fluids/InterpGrid.h
+1399049613 /home/naheisey/Documents/projects/games/Mystery/tpe/fluids/InterpGrid.h
 	"mge/defs.h"
 	"mge/Positionable.h"
 	<vector>
 
-1398763697 /home/naheisey/Documents/projects/games/Mystery//tpe/fluids/FluidOctree3d.h
+1399077308 /home/naheisey/Documents/projects/games/Mystery//tpe/fluids/FluidOctree3d.h
 	"Vorton.h"
 	"mge/defs.h"
 	<map>
 	<list>
 	<boost/property_tree/ptree.hpp>
 
-1398103233 source:/home/naheisey/Documents/projects/games/Mystery/editor/editor.cpp
+1399079222 source:/home/naheisey/Documents/projects/games/Mystery/editor/editor.cpp
 	"game/game.h"
 	<SDL.h>
 	"pgl.h"
@@ -17086,13 +17095,15 @@
 	"editor/EditorManager.h"
 	"game/ObjectFactory.h"
 	"game/GameManager.h"
+	"game/gui/GuiButton.h"
+	"game/game.cpp"
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery//game/game.h
 
-1398103233 /home/naheisey/Documents/projects/games/Mystery//editor/editor_defs.h
+1399077455 /home/naheisey/Documents/projects/games/Mystery//editor/editor_defs.h
 	"game/game_defs.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery//editor/EditorCursor.h
+1398890224 /home/naheisey/Documents/projects/games/Mystery//editor/EditorCursor.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -17104,19 +17115,19 @@
 1397616328 /home/naheisey/Documents/projects/games/Mystery//editor/SelectionRenderModel.h
 	"d3re/d3re.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery//editor/EditorManager.h
+1399077966 /home/naheisey/Documents/projects/games/Mystery//editor/EditorManager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
 	"game/ObjectFactory.h"
 	<stack>
 	<queue>
 
-1398103233 source:/home/naheisey/Documents/projects/games/Mystery/editor/EditorCursor.cpp
+1399079596 source:/home/naheisey/Documents/projects/games/Mystery/editor/EditorCursor.cpp
 	"EditorCursor.h"
 	"EditorManager.h"
 	<string>
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery/editor/EditorCursor.h
+1398890224 /home/naheisey/Documents/projects/games/Mystery/editor/EditorCursor.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"editor/SelectionRenderModel.h"
@@ -17125,18 +17136,19 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1397616328 /home/naheisey/Documents/projects/games/Mystery/editor/EditorManager.h
+1399077966 /home/naheisey/Documents/projects/games/Mystery/editor/EditorManager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
 	"game/ObjectFactory.h"
 	<stack>
 	<queue>
 
-1398103233 source:/home/naheisey/Documents/projects/games/Mystery/editor/EditorManager.cpp
+1399077776 source:/home/naheisey/Documents/projects/games/Mystery/editor/EditorManager.cpp
 	"EditorManager.h"
 	"EditorCursor.h"
-	"EditorHudButton.h"
+	"game/gui/GuiButton.h"
 	"game/world/Wall.h"
+	"game/GameManager.h"
 	"pwe/PartitionedWorldEngine.h"
 	"game/ObjectFactory.h"
 	<boost/property_tree/xml_parser.hpp>
@@ -17156,4 +17168,53 @@
 	<map>
 	<list>
 	<boost/property_tree/ptree.hpp>
+
+1399079114 /home/naheisey/Documents/projects/games/Mystery//game/gui/GuiButton.h
+	"d3re/d3re.h"
+	"editor/editor_defs.h"
+	"editor/EditorManager.h"
+	"mge/ModularEngine.h"
+
+1399079114 /home/naheisey/Documents/projects/games/Mystery/game/gui/GuiButton.h
+	"d3re/d3re.h"
+	"editor/editor_defs.h"
+	"editor/EditorManager.h"
+	"mge/ModularEngine.h"
+
+1399079075 /home/naheisey/Documents/projects/games/Mystery//game/game.cpp
+	"game.h"
+	<SDL.h>
+	"pgl.h"
+	<fstream>
+	<stdlib.h>
+	"mge/ModularEngine.h"
+	"pwe/PartitionedWorldEngine.h"
+	"d3re/d3re.h"
+	"bae/BasicAudioEngine.h"
+	"tpe/TimePhysicsEngine.h"
+	"game/game_defs.h"
+	"game/Player.h"
+	"game/world/SimplePhysicsObject.h"
+	"game/world/Wall.h"
+	"game/ObjectFactory.h"
+	"game/GameManager.h"
+	"game/gui/GuiButton.h"
+	"mge/PixelMap.h"
+	"game/gui/TextDisplay.h"
+	"game/gui/DraggableHud.h"
+	"tpe/fluids/mgeMath.h"
+	"tpe/fluids/BruteForceFluidTest.h"
+
+1399170661 /home/naheisey/Documents/projects/games/Mystery/mge/ConfigManager.h
+	<string>
+	<boost/property_tree/ptree.hpp>
+	"defs.h"
+
+1399172190 source:/home/naheisey/Documents/projects/games/Mystery/mge/ConfigManager.cpp
+	"ConfigManager.h"
+	"ModularEngine.h"
+	<boost/property_tree/xml_parser.hpp>
+	<boost/property_tree/info_parser.hpp>
+	<boost/foreach.hpp>
+	<boost/lexical_cast.hpp>
 

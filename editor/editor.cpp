@@ -24,8 +24,16 @@
 #include "editor/EditorManager.h"
 #include "game/ObjectFactory.h"
 #include "game/GameManager.h"
+#include "game/gui/GuiButton.h"
 
 using namespace std;
+
+/*
+namespace game {
+//TODO: Horrendous hack
+#include "game/game.cpp"
+}
+*/
 
 //Engine initialization, cleanup
 WorldEngine   *createWorldEngine() {
@@ -99,25 +107,37 @@ void initWorld() {
     mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
     mge->mapInput(SDLK_LCTRL, IN_CTRL);
 
+    // Selection
+    mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
+    mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
+
     // Navigation
     mge->mapInput(SDLK_w,     IN_NORTH);
     mge->mapInput(SDLK_d,     IN_EAST);
     mge->mapInput(SDLK_s,     IN_SOUTH);
     mge->mapInput(SDLK_a,     IN_WEST);
-    /*
+    mge->mapInput(SDLK_q,     IN_ROTATE_LEFT);
+    mge->mapInput(SDLK_e,     IN_ROTATE_RIGHT);
+
     mge->mapInput(SDLK_UP,    IN_NORTH);
     mge->mapInput(SDLK_RIGHT, IN_EAST);
     mge->mapInput(SDLK_DOWN,  IN_SOUTH);
     mge->mapInput(SDLK_LEFT,  IN_WEST);
-    */
-
-    // Selection
+    mge->mapInput(SDLK_RSHIFT,IN_ROTATE_LEFT);
+    mge->mapInput(SDLK_END,   IN_ROTATE_RIGHT);
+/*
+    mge->mapInput(SDLK_SPACE, IN_CAST);
+    mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
+    mge->mapInput(SDLK_LCTRL, IN_CTRL);
     mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
+    mge->mapInput(SDL_BUTTON_RIGHT, IN_RCLICK);
+    mge->mapInput(SDLK_h,     IN_BREAK);
     mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
+*/
 
     //Load image resources (required by editor)
     D3RE::get()->createImage(IMG_NONE,     "res/gui/noImage.png");
-    D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3);
+    D3RE::get()->createImage(IMG_FONT,     "res/gui/font.png", 26, 3, true);
     D3RE::get()->createImage(IMG_BUTTON,   "res/gui/button.png", 3, 1);
 
     //These could be loaded from a file

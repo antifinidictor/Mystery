@@ -8,8 +8,8 @@
 using namespace std;
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
-#define WALK_FORCE 1.0f
-#define SPRINT_FORCE (2 * WALK_FORCE)
+#define WALK_FORCE 1.1f
+#define SPRINT_FORCE (1.6 * WALK_FORCE)
 #define SPELL_DURATION 300
 #define ANIM_TIMER_MAX 3
 #define SPRINT_ANIM_TIMER_MAX 1
@@ -25,13 +25,46 @@ enum PlayerAnims {
 };
 
 Player::Player(uint uiId, const Point &ptPos)
+    :   m_uiId(uiId),
+        m_uiFlags(0),
+
+        //Movement & direction information
+        m_iStrafeSpeed(0),
+        m_iForwardSpeed(0),
+        m_fDeltaZoom(0.f),
+        m_fDeltaPitch(0.f),
+        m_iDirection(SOUTH),
+
+        //Animation information
+        m_iAnimTimer(0),
+        m_iAnimState(0),
+        m_uiAnimFrameStart(1),
+
+        //State & action information
+        m_bFirst(true),
+        m_bMouseDown(false),
+        m_bCanClimb(false),
+        m_bSprinting(false),
+        m_eState(PLAYER_NORMAL),
+        //m_eAction(PLAYER_LOOK),
+        m_uiHealth(10),
+        m_uiMaxHealth(20),
+
+        //Spell info
+        m_pCurSpell(NULL),
+
+        //Climbing info
+        m_uiClimbObjId(0),
+        m_uiClimbObjCmdlId(0),
+        m_ptClimbShift(),
+        m_ptStartClimbPos()
+
 {
+
     Image *img = D3RE::get()->getImage("player");
     int iw = img->h / img->m_iNumFramesH;
     float w = WORLD_TILE_SIZE / 2;    //img->w / img->m_iNumFramesW,
     float h = iw / (float)TEXTURE_TILE_SIZE;    //img->h / img->m_iNumFramesH;
-    m_uiId = uiId;
-    m_uiFlags = 0;
 
     float fBxWidth = 2 * w / 3;
     float fBxHeight = 3 * h / 4;
@@ -40,52 +73,18 @@ Player::Player(uint uiId, const Point &ptPos)
     Box bxVolume = Box(-fBxWidth / 2, 0, -fBxWidth / 2, fBxWidth, fBxHeight, fBxWidth);
     m_pPhysicsModel = new TimePhysicsModel(ptPos, DENSITY);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
+    m_pPhysicsModel->setListener(this);
+
     m_pRenderModel  = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
 
-    m_iStrafeSpeed = m_iForwardSpeed = 0;
-    m_fDeltaPitch = m_fDeltaZoom = 0.f;
-    m_iAnimState = m_iAnimTimer = 0;
-    m_iDirection = SOUTH;
-    m_bFirst = true;
-    m_uiAnimFrameStart = 1;
-    m_pPhysicsModel->setListener(this);
-    m_bMouseDown = false;
-
-    m_eState = PLAYER_NORMAL;
-    //PWE::get()->addListener(this, ON_BUTTON_INPUT);
-
-    m_pCurSpell = NULL;
-
-    m_ptClimbShift = Point();
-    m_ptEndClimbPos = Point();
-    m_ptIntermediateClimbPos = Point();
-    m_ptStartClimbPos = Point();
-    m_uiClimbObjCmdlId = 0;
-    m_uiClimbObjId = 0;
-    m_bCanClimb = false;
-    m_bSprinting = false;
-
-    m_uiHealth = 10;
-    m_uiMaxHealth = 20;
-    setFlag(GAM_CAN_LINK, true);
 
     //TODO: How can we design this better?
     GameManager::get()->registerPlayer(this);
     m_pHud = new DraggableHud(PWE::get()->genId()); //The DraggableHud manages its own memory
     m_pHud->registerPlayer(this);
 
-    //Flag printing
-    /*
-    WORLD_FLAGS_BEGIN =   0x00,
-    PHYSICS_FLAGS_BEGIN = 0x08,
-    RENDER_FLAGS_BEGIN =  0x10,
-    GAME_FLAGS_BEGIN =    0x80
-    */
-    printf("World flags:   %x-%x (Expected end %x)\n", WORLD_FLAGS_BEGIN,   PWE_NUM_FLAGS, PHYSICS_FLAGS_BEGIN);
-    printf("Physics flags: %x-%x (Expected end %x)\n", PHYSICS_FLAGS_BEGIN, TPE_NUM_FLAGS, RENDER_FLAGS_BEGIN);
-    printf("Render flags:  %x-%x (Expected end %x)\n", RENDER_FLAGS_BEGIN,  D3RE_NUM_FLAGS, GAME_FLAGS_BEGIN);
-    printf("Game flags:    %x-%x (Expected end %x)\n", GAME_FLAGS_BEGIN,    NUM_GAME_FLAGS, 32);
-    printf("Can-link flag = %x (bit is %x)\n", GAM_CAN_LINK, BIT(GAM_CAN_LINK));
+    //Flags
+    setFlag(GAM_CAN_LINK, true);
 }
 
 Player::~Player() {
@@ -352,6 +351,8 @@ Player::updateClimbingTrans(float fDeltaTime) {
     //My current position: Used in the position update calculations below
     Point ptMyPos = m_pPhysicsModel->getPosition();
     setFlag(TPE_PASSABLE, true);
+    //setFlag(TPE_STATIC, true);
+
 
     //Update climbing information
     GameObject *obj = PWE::get()->find(m_uiClimbObjId);
@@ -372,41 +373,40 @@ Player::updateClimbingTrans(float fDeltaTime) {
         tz = (m_ptClimbShift.z < 0) ? ((bxObjBounds.z + bxObjBounds.l) - ptMyPos.z) / m_ptClimbShift.z: //south
                                        (bxObjBounds.z - ptMyPos.z) / m_ptClimbShift.z;                  //north
         t = (fabs(tx) < fabs(tz)) ? tx : tz;
-        m_ptEndClimbPos = m_ptStartClimbPos + m_ptClimbShift * t;
-        m_ptEndClimbPos.y = fObjHeight;
+        Point ptEndClimbPos = m_ptStartClimbPos + m_ptClimbShift * t;
+        ptEndClimbPos.y = fObjHeight;
 
         //Update intermediate position: Relative to start and end climb positions
-        m_ptIntermediateClimbPos.x = m_ptStartClimbPos.x;
-        m_ptIntermediateClimbPos.y = m_ptEndClimbPos.y;
-        m_ptIntermediateClimbPos.z = m_ptStartClimbPos.z;
-        printf("Start: (%2.2f,%2.2f,%2.2f)\n", m_ptStartClimbPos.x, m_ptStartClimbPos.y, m_ptStartClimbPos.z);
-        printf("Inter: (%2.2f,%2.2f,%2.2f)\n", m_ptIntermediateClimbPos.x, m_ptIntermediateClimbPos.y, m_ptIntermediateClimbPos.z);
-        printf("End:   (%2.2f,%2.2f,%2.2f)\n\n", m_ptEndClimbPos.x, m_ptEndClimbPos.y, m_ptEndClimbPos.z);
+        Point ptIntermediateClimbPos;
+        ptIntermediateClimbPos.x = m_ptStartClimbPos.x;
+        ptIntermediateClimbPos.y = ptEndClimbPos.y;
+        ptIntermediateClimbPos.z = m_ptStartClimbPos.z;
+
+
+        //Calculate new position information
+        //Interpolation biases for each of the three points
+        float fCurTime = (m_iAnimState * ANIM_TIMER_MAX + ANIM_TIMER_MAX - m_iAnimTimer) / (ANIM_TIMER_MAX * 8.f);
+        float fIntermediateBias = 0.5f - fabs(0.5f - fCurTime);
+        float fEndBias          = fCurTime         - fIntermediateBias / 2.f;
+        float fStartBias        = (1.f - fCurTime) - fIntermediateBias / 2.f;
+
+        //Calculate the new position
+        //It's more efficient to calculate each dimension separately
+        Point ptNewPos;
+        ptNewPos.x = m_ptStartClimbPos.x      * fStartBias +
+                     ptIntermediateClimbPos.x * fIntermediateBias +
+                     ptEndClimbPos.x          * fEndBias;
+        ptNewPos.y = m_ptStartClimbPos.y      * fStartBias +
+                     ptIntermediateClimbPos.y * fIntermediateBias +
+                     ptEndClimbPos.y          * fEndBias;
+        ptNewPos.z = m_ptStartClimbPos.z      * fStartBias +
+                     ptIntermediateClimbPos.z * fIntermediateBias +
+                     ptEndClimbPos.z          * fEndBias;
+
+        //Move myself and the screen to the new position
+        moveBy(ptNewPos - ptMyPos);
+        D3RE::get()->moveScreenTo(ptNewPos);
     }
-
-    //Calculate new position information
-    //Interpolation biases for each of the three points
-    float fCurTime = (m_iAnimState * ANIM_TIMER_MAX + ANIM_TIMER_MAX - m_iAnimTimer) / (ANIM_TIMER_MAX * 8.f);
-    float fIntermediateBias = 0.5f - fabs(0.5f - fCurTime);
-    float fEndBias          = fCurTime         - fIntermediateBias / 2.f;
-    float fStartBias        = (1.f - fCurTime) - fIntermediateBias / 2.f;
-
-    //Calculate the new position
-    //It's more efficient to calculate each dimension separately
-    Point ptNewPos;
-    ptNewPos.x = m_ptStartClimbPos.x        * fStartBias +
-                 m_ptIntermediateClimbPos.x * fIntermediateBias +
-                 m_ptEndClimbPos.x          * fEndBias;
-    ptNewPos.y = m_ptStartClimbPos.y        * fStartBias +
-                 m_ptIntermediateClimbPos.y * fIntermediateBias +
-                 m_ptEndClimbPos.y          * fEndBias;
-    ptNewPos.z = m_ptStartClimbPos.z        * fStartBias +
-                 m_ptIntermediateClimbPos.z * fIntermediateBias +
-                 m_ptEndClimbPos.z          * fEndBias;
-
-    //Move myself and the screen to the new position
-    moveBy(ptNewPos - ptMyPos);
-    D3RE::get()->moveScreenTo(ptNewPos);
 
     //Finish climbing?
     if(m_iAnimTimer < 0 || obj == NULL) {
@@ -629,6 +629,8 @@ Player::handleCollision(HandleCollisionData *data) {
     uint uiMyCollisionDirs = BIT(m_iDirection) | BIT(uiMyLeft) | BIT(uiMyRight);
     uint uiEquivCollisionDirs = data->iDirection & uiMyCollisionDirs;
 */
+    //GameObject *me = PWE::get()->find(getId());
+    //printf("Did it find me? %s (Is it me? %s)\n", me == NULL ? "no" : "yes", me == this ? "yes" : "no");
 
     if(data->obj->getType() == TYPE_ITEM && data->obj->getFlag(GAM_CAN_PICK_UP)) {
         //Pick up the item
@@ -684,22 +686,6 @@ Player::handleCollision(HandleCollisionData *data) {
 
                 //Start climb position = my current position
                 m_ptStartClimbPos = ptMyPos;
-
-                //Initialize the destination climb position
-                float tx, tz, t;
-                tx = (m_ptClimbShift.x < 0) ? ((bxObjBounds.x + bxObjBounds.w) - ptMyPos.x) / m_ptClimbShift.x: //west
-                                               (bxObjBounds.x - ptMyPos.x) / m_ptClimbShift.x;                  //east
-                tz = (m_ptClimbShift.z < 0) ? ((bxObjBounds.z + bxObjBounds.l) - ptMyPos.z) / m_ptClimbShift.z: //south
-                                               (bxObjBounds.z - ptMyPos.z) / m_ptClimbShift.z;                  //north
-                t = (fabs(tx) < fabs(tz)) ? tx : tz;
-                m_ptEndClimbPos = m_ptStartClimbPos + m_ptClimbShift * t;
-                m_ptEndClimbPos.y = fObjHeight;
-
-                //Initialize intermediate position: Relative to start and end climb positions
-                m_ptIntermediateClimbPos.x = m_ptStartClimbPos.x;
-                m_ptIntermediateClimbPos.y = m_ptEndClimbPos.y;
-                m_ptIntermediateClimbPos.z = m_ptStartClimbPos.z;
-
             }
 
             m_uiAnimFrameStart = PANIM_PUSHING;

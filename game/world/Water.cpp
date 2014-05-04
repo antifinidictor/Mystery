@@ -4,7 +4,7 @@
 
 #include "Water.h"
 #include "pwe/PartitionedWorldEngine.h"
-#define MAX_EXPANSION_TIME 500
+#define MAX_EXPANSION_TIME 100
 
 Water::Water(uint id, uint texId, Box bxVolume, float fDensity) {
     m_uiID = id;
@@ -154,20 +154,20 @@ Water::expand() {
         if(!GET_BIT(m_uiExpansionFlags, dir)) {
             switch(dir) {
             case NORTH:
-                bxMe.z -= 1.0f;
                 bxMe.l += 1.0f;
                 printf("Expand %d (NORTH)\n", NORTH);
                 break;
             case EAST:
+                bxMe.x -= 1.0f;
                 bxMe.w += 1.0f;
                 printf("Expand %d (EAST)\n", EAST);
                 break;
             case SOUTH:
+                bxMe.z -= 1.0f;
                 bxMe.l += 1.0f;
                 printf("Expand %d (SOUTH)\n", SOUTH);
                 break;
             case WEST:
-                bxMe.x -= 1.0f;
                 bxMe.w += 1.0f;
                 printf("Expand %d (WEST)\n", WEST);
                 break;

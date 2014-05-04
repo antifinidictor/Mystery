@@ -41,7 +41,7 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     */
 
     //Apply gravity
-    if(obj->getFlag(TPE_FALLING) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC)) {
+    if(/*obj->getFlag(TPE_FALLING) && */!obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC)) {
         tmdl->applyForce(Point(0,-GRAV_ACCEL * tmdl->getMass(),0));
     }
 
@@ -56,7 +56,8 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     if(bIsOnSurface && bHasLeftSurface) {
         tmdl->setSurface(NULL);
     }
-    if(bCanFall && bHasLeftSurface) {
+    if(bCanFall) {
+        //Ensures normal force is applied
         obj->setFlag(TPE_FALLING, true);
     }
     return (hasChanged);
@@ -190,19 +191,29 @@ TimePhysicsEngine::boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint ui
 
         if(!bNoCollide) {
             if(bx2.y < bx1.y) {
-                //obj1->setFlag(TPE_FALLING, false);
                 tpm1->clearVerticalVelocity();
-                tpm1->setSurface(tpm2);
+                bool bApplyNormalForce = !obj1->getFlag(TPE_STATIC) &&
+                    !obj1->getFlag(TPE_FLOATING) &&
+                    obj1->getFlag(TPE_FALLING);
+                if(bApplyNormalForce) {
+                    tpm1->setSurface(tpm2);
 
-                //Apply normal force
-                tpm1->applyForce(Point(0,GRAV_ACCEL * tpm1->getMass(),0));
+                    //Apply normal force
+                    tpm1->applyForce(Point(0,GRAV_ACCEL * tpm1->getMass(),0));
+                    obj1->setFlag(TPE_FALLING, false);  //Apply normal force only once
+                }
             } else {
-                //obj2->setFlag(TPE_FALLING, false);
                 tpm2->clearVerticalVelocity();
-                tpm2->setSurface(tpm1);
+                bool bApplyNormalForce = !obj2->getFlag(TPE_STATIC) &&
+                    !obj2->getFlag(TPE_FLOATING) &&
+                    obj2->getFlag(TPE_FALLING);
+                if(bApplyNormalForce) {
+                    tpm2->setSurface(tpm1);
 
-                //Apply normal force
-                tpm2->applyForce(Point(0,GRAV_ACCEL * tpm2->getMass(),0));
+                    //Apply normal force
+                    tpm2->applyForce(Point(0,GRAV_ACCEL * tpm2->getMass(),0));
+                    obj2->setFlag(TPE_FALLING, false);  //Apply normal force only once
+                }
             }
         }
         bApplyForce = false;
@@ -247,26 +258,31 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
     AbstractTimePhysicsModel *tpmHmap = (AbstractTimePhysicsModel*)(objHmap->getPhysicsModel());
     BoxCollisionModel *bmdl = (BoxCollisionModel*)tpmBox->getCollisionModel(uiMdlBox);
     PixelMapCollisionModel *hmdl = (PixelMapCollisionModel*)tpmHmap->getCollisionModel(uiMdlHmap);
-    Box bx1 = bmdl->getBounds() + tpmBox->getPosition(),
-        bx2 = hmdl->getBounds() + tpmHmap->getPosition();
-    if(!bxIntersectsEq(bx1, bx2)) {
+    Box bxBox = bmdl->getBounds() + tpmBox->getPosition(),
+        bxHmap = hmdl->getBounds() + tpmHmap->getPosition();
+    if(!bxIntersectsEq(bxBox, bxHmap)) {
         return;    //no physics model or no collision
     }
 
     //Now, get the position and the y-shift
-    float y = hmdl->getHeightAtPoint(tpmBox->getPosition() - tpmHmap->getPosition()) + tpmHmap->getPosition().y;
-    float fYShift = (bx1.y + bx1.h > bx2.y) ? y - bx1.y : 0.f;
+    Point ptQueryPos = tpmBox->getPosition() - tpmHmap->getPosition();
+    float y = hmdl->getHeightAtPoint(ptQueryPos) + tpmHmap->getPosition().y;
+    float fYShift = (bxBox.y + bxBox.h > bxHmap.y) ? y - bxBox.y : 0.f;
 
-    if(y < bx1.y) {
+    //Get the surface normal
+    Vec3f v3Norm = hmdl->getNormalAtPoint(ptQueryPos);
+
+    //If the box is above the height of the hmap at this point
+    if(y < bxBox.y) {
         return;
     }
 
     //Get the box shifts for comparison
-    float fXShift1 = bx2.x - (bx1.x + bx1.w),
-          fXShift2 = (bx2.x + bx2.w) - bx1.x,
+    float fXShift1 = bxHmap.x - (bxBox.x + bxBox.w),
+          fXShift2 = (bxHmap.x + bxHmap.w) - bxBox.x,
           fXShift  = fabs(fXShift1) < fabs(fXShift2) ? fXShift1 : fXShift2;
-    float fZShift1 = bx2.z - (bx1.z + bx1.l),
-          fZShift2 = (bx2.z + bx2.l) - bx1.z,
+    float fZShift1 = bxHmap.z - (bxBox.z + bxBox.l),
+          fZShift2 = (bxHmap.z + bxHmap.l) - bxBox.z,
           fZShift  = fabs(fZShift1) < fabs(fZShift2) ? fZShift1 : fZShift2;
 
     Point ptBoxShift, ptHmapShift;
@@ -283,14 +299,21 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
         ptHmapShift = Point(0,0,-1);
         splitShift(objBox, objHmap, fZShift, &ptBoxShift, &ptHmapShift);
     } else {
-        //Shift in the Y direction
+        //Shift in the Y direction: Calculate the actual shift to move the box
+        // out along the normal
+        //float delta = fYShift / (2 * v3Norm.y);
+
+        //Set up the shifts
+        //ptBoxShift = Point(v3Norm.x * delta, v3Norm.y * delta, v3Norm.z * delta);
         ptBoxShift = Point(0.f, fYShift, 0.f);
         ptHmapShift = Point();
+
+        //Somehow this prevents objects from falling through the heightmap
         bool bBoxInHmap = ptBoxShift.y > 0.f;
         if(!bBoxInHmap) {
             if(tpmBox->getSurface() == tpmHmap) {
                 tpmBox->setSurface(NULL);
-                objBox->setFlag(TPE_FALLING, true);
+                //objBox->setFlag(TPE_FALLING, true);
             }
             return;
         }
@@ -312,14 +335,46 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
     bool bBoxHasNotSunk = objBox->getFlag(TPE_FALLING) || ptBoxShift.y > 0.f;
     if(bHmapIsLiquid && bBoxIsFloatable && bBoxHasNotSunk) {
         tpmBox->setSurface(NULL);
-        objBox->setFlag(TPE_FALLING, true);
-        applyBuoyantForce(tpmBox, tpmHmap, bx1, y, bx2.y);
+        //objBox->setFlag(TPE_FALLING, true);
+        applyBuoyantForce(tpmBox, tpmHmap, bxBox, y, bxHmap.y);
     } else if(!bHmapIsLiquid) {
-        tpmBox->setSurface(tpmHmap);
-        objBox->setFlag(TPE_FALLING, true);
+        tpmBox->clearVerticalVelocity();
 
-        //Apply normal force
-        tpmBox->applyForce(Point(0,GRAV_ACCEL * tpmBox->getMass(),0));
+        bool bApplyNormalForce = !objBox->getFlag(TPE_STATIC) &&
+            !objBox->getFlag(TPE_FLOATING) &&
+            objBox->getFlag(TPE_FALLING);
+
+        if(bApplyNormalForce) {
+            tpmBox->setSurface(tpmHmap);
+
+#if 1
+            //Do you slide down the slope?
+            Vec3f v3VertNorm = Vec3f(0.f, 1.f, 0.f);
+            float fCosAngle = dot(v3Norm, v3VertNorm);
+            Vec3f v3NormForce;
+            #define MIN_ANGLE 0.9
+            //When off by pi/2, value is 0
+            //When pointing in the same direction, value is 1
+            //So, smaller cos means more slip
+            if(fCosAngle > MIN_ANGLE) {
+                v3NormForce = v3VertNorm * GRAV_ACCEL * tpmBox->getMass();
+            } else {
+                float fBias = fCosAngle / MIN_ANGLE;
+                v3NormForce = (v3VertNorm * fBias + v3Norm * (1.f - fBias)) * GRAV_ACCEL * tpmBox->getMass();
+            }
+
+            //We want to keep gravity vertical accel so the object gets pushed into the hmap
+            //but only if we aren't near the edge of the hmap.  This allows us to walk over edges just outside the hmap
+            if(fabs(fXShift) > bxBox.w + 0.1 && fabs(fZShift) > bxBox.l + 0.1) {
+                v3NormForce.y = 0.f;
+            }
+
+            //Apply normal force.  This makes stepping over objects easier,
+            // but since it at least partially cancels gravity it makes moving downhill jerky
+            tpmBox->applyForce(v3NormForce);
+            objBox->setFlag(TPE_FALLING, false);    //Apply normal force only once
+#endif
+        }
     }
 
     extractCollisionDirections(tpmHmap->getPosition() - tpmBox->getPosition(),

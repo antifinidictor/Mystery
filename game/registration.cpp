@@ -102,6 +102,7 @@ void registerClasses() {
         .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
         .registerAttribute("Item ID", "itemId", ATYPE_UINT)
         .registerAttribute("Position", "pos", ATYPE_POINT)
+        .registerAttribute("Information", "info", ATYPE_STRING)
     ;
 
     fac->registerClass(SpellItem::getClassName(), SpellItem::read)

@@ -9,6 +9,7 @@
 
 #include "mge/GameObject.h"
 #include "game/game_defs.h"
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -290,7 +291,7 @@ D3RenderEngine::moveScreenBy(Point pt) {
 }
 
 Image *
-D3RenderEngine::createImage(uint id, const std::string &fileName, int numFramesH, int numFramesW) {
+D3RenderEngine::createImage(uint id, const std::string &fileName, int numFramesH, int numFramesW, bool bLinearInterp) {
     if(id < m_vImages.size() && m_vImages[id] != NULL) {
         //TODO: Find out why this doesn't work!
         //delete m_vImages[id];
@@ -299,15 +300,15 @@ D3RenderEngine::createImage(uint id, const std::string &fileName, int numFramesH
     while(id >= m_vImages.size()) {
         m_vImages.push_back(NULL);
     }
-    m_vImages[id] = new Image(fileName, id, numFramesH, numFramesW);
+    m_vImages[id] = new Image(fileName, id, numFramesH, numFramesW, bLinearInterp);
     return m_vImages[id];
 }
 
 
 Image *
-D3RenderEngine::createImage(uint id, const std::string &imageName, const std::string &fileName, int numFramesH, int numFramesW) {
+D3RenderEngine::createImage(uint id, const std::string &imageName, const std::string &fileName, int numFramesH, int numFramesW, bool bLinearInterp) {
     m_mImageNameToId[imageName] = id;
-    return createImage(id, fileName, numFramesH, numFramesW);
+    return createImage(id, fileName, numFramesH, numFramesW, bLinearInterp);
 }
 
 Image *
@@ -491,20 +492,29 @@ D3RenderEngine::write(boost::property_tree::ptree &pt, const std::string &keyBas
 void
 D3RenderEngine::read(boost::property_tree::ptree &pt, const std::string &keyBase) {
     using boost::property_tree::ptree;
+    using boost::lexical_cast;
+    using boost::bad_lexical_cast;
     try {
     BOOST_FOREACH(ptree::value_type &v, pt.get_child(keyBase.c_str())) {
         //Each element should be stored by id
         string key = keyBase + "." + v.first.data();
         string filename = v.second.data();
-        uint uiId = atoi(v.first.data());
-        uint framesW = pt.get(key + ".framesW", 1);
-        uint framesH = pt.get(key + ".framesH", 1);
-        string name = pt.get(key + ".name", "?");
 
-        if(name.compare("?") == 0) {
-            createImage(uiId, filename, framesH, framesW);
-        } else {
-            createImage(uiId, name, filename, framesH, framesW);
+        try{
+            uint uiId = lexical_cast<uint>(v.first.data());
+            uint framesW = pt.get(key + ".framesW", 1);
+            uint framesH = pt.get(key + ".framesH", 1);
+            string name = pt.get(key + ".name", "?");
+
+            if(name.compare("?") == 0) {
+                createImage(uiId, filename, framesH, framesW);
+            } else if(name.compare("font") == 0) {
+                createImage(uiId, name, filename, framesH, framesW, true);
+            } else {
+                createImage(uiId, name, filename, framesH, framesW);
+            }
+        } catch(const bad_lexical_cast &) {
+            printf("Could not read resource: bad id\n");
         }
     }
     } catch(exception e) {

@@ -56,6 +56,7 @@ enum EditorState {
     ED_STATE_SELECT_VOLUME,
     ED_STATE_SELECT_POINT,
     ED_STATE_NEW_TEXTURE,
+    ED_STATE_TEST_GAME,
     ED_NUM_STATES
 };
 
@@ -68,6 +69,8 @@ enum EditorCursorState {
     EDC_STATE_TYPE_FIELD,
     EDC_NUM_STATES
 };
+
+#define ED_HUD_BASE_PANE 0x7FFFFFFF //Essentially guaranteed to be free
 
 //First container layer huds
 enum EditorHudBaseIds {
@@ -143,7 +146,7 @@ enum EditorHudFieldIds {
 
 //Operations of buttons on the hud
 enum EditorHudOps {
-    ED_HUD_OP_CANCEL,       //Undo current input/back up a state
+    ED_HUD_OP_CANCEL = NUM_EVENT_IDS, //Undo current input/back up a state
     ED_HUD_OP_FINALIZE,     //Opposite of cancel: accept current input
     ED_HUD_OP_LOAD_WORLD,   //Loads world from file
     ED_HUD_OP_SAVE_WORLD,   //Saves world to file

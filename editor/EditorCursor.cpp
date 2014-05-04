@@ -30,7 +30,7 @@ EditorCursor::EditorCursor(uint uiId, uint uiAreaId, const Point &ptPos) {
     //we->addListener(this, PWE_ON_AREA_SWITCH_TO, m_uiAreaId);
 
     D3HudRenderModel *posText = new D3HudRenderModel(UNUSED_TEXTURE_ID, Rect(0,0,BUTTON_WIDTH,BUTTON_HEIGHT), "(?,?,?)", Point());
-    D3RE::get()->getHudContainer()->add(ED_HUD_CURSOR_POS, posText);
+    EditorManager::get()->getBasePanel()->add(ED_HUD_CURSOR_POS, posText);
     m_eState = EDC_STATE_MOVE;
 }
 
@@ -55,6 +55,8 @@ EditorCursor::write(boost::property_tree::ptree &pt, const std::string &keyBase)
 
 bool
 EditorCursor::update(float fDeltaTime) {
+GameObject *me = PWE::get()->find(getId());
+printf("Found me? %s (%d)\n", me == NULL ? "no" : "yes", getId());
     switch(m_eState) {
     case EDC_STATE_STATIC:
         staticUpdate();
@@ -248,7 +250,7 @@ EditorCursor::moveUpdate() {
     Point pt = m_pPhysicsModel->getPosition();
     posText << "#0000FF#(" << m_ptTilePos.x << "," << m_ptTilePos.y << ","
             << m_ptTilePos.z << ")\n(" << pt.x << "," << pt.y << "," << pt.z << ")";
-    D3RE::get()->getHudContainer()->get<D3HudRenderModel*>(ED_HUD_CURSOR_POS)->updateText(posText.str());
+    EditorManager::get()->getBasePanel()->get<D3HudRenderModel*>(ED_HUD_CURSOR_POS)->updateText(posText.str());
 }
 
 void
@@ -274,7 +276,7 @@ EditorCursor::selectVolumeUpdate() {
     posText << "#FF0000#(" << m_ptTilePos.x << "," << m_ptTilePos.y << ","
             << m_ptTilePos.z << " : " << bxVolume.w << "," << bxVolume.h
             << "," << bxVolume.l << ")";
-    D3HudRenderModel *cpos = D3RE::get()->getHudContainer()->get<D3HudRenderModel*>(ED_HUD_CURSOR_POS);
+    D3HudRenderModel *cpos = EditorManager::get()->getBasePanel()->get<D3HudRenderModel*>(ED_HUD_CURSOR_POS);
     cpos->updateText(posText.str());
 
     D3RE::get()->moveScreenTo(m_pPhysicsModel->getPosition());
@@ -289,12 +291,12 @@ void
 EditorCursor::typeUpdate() {
     m_uiBlinkTimer++;
     if(m_uiBlinkTimer == 10) {
-        D3RE::get()->getHudContainer()
+        EditorManager::get()->getBasePanel()
             ->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE)
             ->get<D3HudRenderModel*>(ED_HUD_FIELD_TEXT)
             ->updateText(m_sInput + "_");
     } else if(m_uiBlinkTimer >= 20) {
-        D3RE::get()->getHudContainer()
+        EditorManager::get()->getBasePanel()
             ->get<ContainerRenderModel*>(ED_HUD_MIDDLE_PANE)
             ->get<D3HudRenderModel*>(ED_HUD_FIELD_TEXT)
             ->updateText(m_sInput);

@@ -26,6 +26,7 @@
 #include "game/world/Wall.h"
 #include "game/ObjectFactory.h"
 #include "game/GameManager.h"
+#include "game/gui/GuiButton.h"
 
 //Test includes
 #include "mge/PixelMap.h"
@@ -99,28 +100,6 @@ void initWorld() {
 
     ModularEngine *mge = ModularEngine::get();
 
-    //Map inputs
-    mge->mapInput(SDLK_w,     IN_NORTH);
-    mge->mapInput(SDLK_d,     IN_EAST);
-    mge->mapInput(SDLK_s,     IN_SOUTH);
-    mge->mapInput(SDLK_a,     IN_WEST);
-    mge->mapInput(SDLK_q,     IN_ROTATE_LEFT);
-    mge->mapInput(SDLK_e,     IN_ROTATE_RIGHT);
-
-    mge->mapInput(SDLK_UP,    IN_NORTH);
-    mge->mapInput(SDLK_RIGHT, IN_EAST);
-    mge->mapInput(SDLK_DOWN,  IN_SOUTH);
-    mge->mapInput(SDLK_LEFT,  IN_WEST);
-    mge->mapInput(SDLK_RSHIFT,IN_ROTATE_LEFT);
-    mge->mapInput(SDLK_END,   IN_ROTATE_RIGHT);
-
-    mge->mapInput(SDLK_SPACE, IN_CAST);
-    mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
-    mge->mapInput(SDLK_LCTRL, IN_CTRL);
-    mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
-    mge->mapInput(SDL_BUTTON_RIGHT, IN_RCLICK);
-    mge->mapInput(SDLK_h,     IN_BREAK);
-    mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
 
     //Initialize the text renderer
     TextRenderer::init();
@@ -128,6 +107,9 @@ void initWorld() {
     //Initialize the game manager
     GameManager::init();
     we->setManager(GameManager::get());
+
+    //Map inputs
+    GameManager::get()->setDefaultInputMapping();
 
     //Read in the world from the file
     ObjectFactory::get()->read("res/game.info");

@@ -6,11 +6,15 @@
 #include "game/gui/TextDisplay.h"
 #include "game/gui/DraggableHud.h"
 #include "game/gui/DraggableItem.h"
+#include "game/gui/GuiButton.h"
 #include "game/items/Item.h"
 
 #define FADE_TIME_STEP 0.1f
 #define DEFAULT_WEIGHT 0.0f //Used to be 0.5f.  Now let's only change it if the world color changes
 #define FADE_WEIGHT 1.f
+
+//Static variables
+uint GuiButton::s_uiHudId = 0;
 
 using namespace std;
 
@@ -137,6 +141,13 @@ GameManager::callBack(uint uiId, void *data, uint eventId) {
         //PWE::get()->setState(PWE_PAUSED);
         break;
       }
+    case PWE_ON_WORLD_CLEANED:
+        //Read in info
+        ObjectFactory::get()->read(m_sGameFileName);
+
+        //Make the world dirty
+        m_bWorldIsClean = false;
+        break;
     default:
         status = EVENT_DROPPED;
         break;
@@ -172,6 +183,52 @@ GameManager::getTopVolume() {
         }
     }
     return ev;
+}
+
+void
+GameManager::setDefaultInputMapping() {
+    MGE *mge = MGE::get();
+    mge->mapInput(SDLK_w,     IN_NORTH);
+    mge->mapInput(SDLK_d,     IN_EAST);
+    mge->mapInput(SDLK_s,     IN_SOUTH);
+    mge->mapInput(SDLK_a,     IN_WEST);
+    mge->mapInput(SDLK_q,     IN_ROTATE_LEFT);
+    mge->mapInput(SDLK_e,     IN_ROTATE_RIGHT);
+
+    mge->mapInput(SDLK_UP,    IN_NORTH);
+    mge->mapInput(SDLK_RIGHT, IN_EAST);
+    mge->mapInput(SDLK_DOWN,  IN_SOUTH);
+    mge->mapInput(SDLK_LEFT,  IN_WEST);
+    mge->mapInput(SDLK_RSHIFT,IN_ROTATE_LEFT);
+    mge->mapInput(SDLK_END,   IN_ROTATE_RIGHT);
+
+    mge->mapInput(SDLK_SPACE, IN_CAST);
+    mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
+    mge->mapInput(SDLK_LCTRL, IN_CTRL);
+    mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
+    mge->mapInput(SDL_BUTTON_RIGHT, IN_RCLICK);
+    mge->mapInput(SDLK_h,     IN_BREAK);
+    mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
+}
+
+
+void
+GameManager::newGame() {
+    m_sGameFileName = "res/game.info";
+    cleanGame();
+
+}
+
+void
+GameManager::loadGame() {
+    m_sGameFileName = "res/game.info";
+    cleanGame();
+}
+
+void
+GameManager::cleanGame() {
+    PWE::get()->cleanWorld(this);
+    m_bWorldIsClean = true;
 }
 
 void

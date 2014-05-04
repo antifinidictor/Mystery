@@ -2,19 +2,24 @@
 #include "pwe/PartitionedWorldEngine.h"
 #define ANIM_TIMER_MAX 1
 
-Item::Item(uint id, uint itemId, const Point &pos) {
-    m_uiId = id;
-    m_uiFlags = 0;
+using namespace std;
+
+Item::Item(uint id, uint itemId, const Point &pos)
+    :   m_uiId(id),
+        m_uiFlags(0),
+        m_iAnimTimer(ANIM_TIMER_MAX),
+        m_bCollidingWithPlayer(true),
+        m_sItemInfo("no information available")
+{
     m_pPhysicsModel = new TimePhysicsModel(pos);
     Box bxVol = Box(-0.125f,0.f,-0.125f,0.25f,0.25f,0.25f);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVol));
     m_pPhysicsModel->setListener(this);
     m_pRenderModel = new D3SpriteRenderModel(m_pPhysicsModel, D3RE::get()->getImageId("items"), Rect(-0.125f,0.f,0.25f,0.25f));
     m_pRenderModel->setFrameH(itemId);
-    m_iAnimTimer = ANIM_TIMER_MAX;
     //setFlag(TPE_PASSABLE, true);
     //setFlag(TPE_FALLING, true);
-    m_bCollidingWithPlayer = true;  //Just in case we start inside a player
+
 }
 
 Item::~Item() {
@@ -30,7 +35,10 @@ Item::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
     ptPos.x = pt.get(keyBase + ".pos.x", 0.f);
     ptPos.y = pt.get(keyBase + ".pos.y", 0.f);
     ptPos.z = pt.get(keyBase + ".pos.z", 0.f);
-    return new Item(id, itemId, ptPos);
+    string sInfo = pt.get(keyBase + ".info", "no information available");
+    Item *item = new Item(id, itemId, ptPos);
+    item->setItemInfo(sInfo);
+    return item;
 }
 
 void
@@ -41,6 +49,7 @@ Item::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
     pt.put(keyBase + ".pos.x", ptPos.x);
     pt.put(keyBase + ".pos.y", ptPos.y);
     pt.put(keyBase + ".pos.z", ptPos.z);
+    pt.put(keyBase + ".info", m_sItemInfo);
 }
 
 bool
@@ -65,7 +74,7 @@ Item::update(float fDeltaTime) {
     //Survived one round without touching the player
     if(!m_bCollidingWithPlayer && !getFlag(GAM_CAN_PICK_UP)) {
         setFlag(GAM_CAN_PICK_UP, true);
-        setFlag(TPE_PASSABLE, false);
+        //setFlag(TPE_PASSABLE, false);
     }
 
     m_bCollidingWithPlayer = false; //This object is not yet colliding with the player
@@ -79,6 +88,7 @@ Item::callBack(uint uiID, void *data, uint id) {
         HandleCollisionData *hd = (HandleCollisionData*)data;
         if(hd->obj->getType() == TYPE_PLAYER) {
             m_bCollidingWithPlayer = true;
+            //printf("I hit the player @ time %d\n", Clock::get()->getTime());
         }
         break;
     }
@@ -101,5 +111,61 @@ Item::onItemPickup() {
 void
 Item::onItemDrop() {
     setFlag(GAM_CAN_PICK_UP, false);
-    setFlag(TPE_PASSABLE, true);
+    //setFlag(TPE_PASSABLE, true);
+}
+
+
+/*
+#define ITEM_NONE 0
+enum ElementItemIds {
+    ITEM_ELEMENT_EARTH = 1,
+    ITEM_ELEMENT_AIR,
+    ITEM_ELEMENT_FIRE,
+    ITEM_ELEMENT_WATER,
+    ITEM_ELEMENT_TIME,
+    ITEM_NUM_ELEMENTS
+};
+
+enum SpellItemIds {
+    ITEM_SPELL_CYCLIC = ITEM_NUM_ELEMENTS,
+    ITEM_SPELL_FLOW,
+    ITEM_SPELL_VORTEX,
+    ITEM_NUM_SPELLS
+};
+
+enum GeneralItemIds {
+    ITEM_TEST = ITEM_NUM_SPELLS,
+    ITEM_NUM_ITEMS
+};
+*/
+
+string
+Item::getItemName() {
+    switch(m_pRenderModel->getFrameH()) {
+    case ITEM_NONE:
+        return "(none)";
+    //Elements
+    case ITEM_ELEMENT_EARTH:
+        return "Earth (element)";
+    case ITEM_ELEMENT_AIR:
+        return "Air (element)";
+    case ITEM_ELEMENT_FIRE:
+        return "Fire (element)";
+    case ITEM_ELEMENT_WATER:
+        return "Water (element)";
+    case ITEM_ELEMENT_TIME:
+        return "Time (element)";
+    //Spells
+    case ITEM_SPELL_CYCLIC:
+        return "Cycle (spell)";
+    case ITEM_SPELL_FLOW:
+        return "Flow (spell)";
+    case ITEM_SPELL_VORTEX:
+        return "Vortex (spell)";
+    //General items
+    case ITEM_TEST:
+        return "Test";
+    default:
+        return "unknown";
+    }
 }

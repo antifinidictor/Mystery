@@ -19,7 +19,7 @@ SimpleResettableObject::SimpleResettableObject(uint id, uint texId, Box bxVolume
     Image *img = D3RE::get()->getImage(texId);
     m_pRenderModel = new D3PrismRenderModel(m_pPhysicsModel, bxRelativeVol);
     //Hidden faces not rendered
-    m_pRenderModel->setTexture(NORTH, IMG_NONE);//img->m_uiID);
+    m_pRenderModel->setTexture(NORTH, img->m_uiID);
     m_pRenderModel->setTexture(SOUTH, img->m_uiID);
     m_pRenderModel->setTexture(EAST,  img->m_uiID);
     m_pRenderModel->setTexture(WEST,  img->m_uiID);

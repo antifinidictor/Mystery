@@ -5,6 +5,7 @@
 #include "AreaLinkObject.h"
 #include "tpe/tpe.h"
 #include "pwe/PartitionedWorldEngine.h"
+#include "mge/Clock.h"
 using namespace std;
 
 AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPos, const Box &bxTriggerVolume) {
@@ -90,6 +91,7 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
     case TPE_ON_COLLISION: {
         HandleCollisionData *hcd = (HandleCollisionData*)data;
         PWE *we = PWE::get();
+        //printf("Colliding with obj %d (I am %d) @ time %d\n", hcd->obj->getId(), getId(), Clock::get()->getTime());
 
         if(hcd->obj->getFlag(GAM_CAN_LINK)/*&& (hcd->iDirection & m_uiDirections)*/) {
             we->moveObjectToArea(hcd->obj->getId(), m_uiSrcAreaId, m_uiDestAreaId);
@@ -105,6 +107,7 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
     case PWE_ON_ADDED_TO_AREA: {
         m_uiSrcAreaId = *(uint*)data;
         PWE::get()->addListener(this, PWE_ON_AREA_SWITCH_FROM, m_uiSrcAreaId);
+        break;
       }
     case PWE_ON_AREA_SWITCH_FROM: {
         //TODO: Could cause mem bugs, should be using find

@@ -1,5 +1,6 @@
 #include "ModularEngine.h"
 #include "defs.h"
+#include "ConfigManager.h"
 
 using namespace std;
 
@@ -9,11 +10,15 @@ Clock *Clock::m_pInstance;
 //Static methods
 void ModularEngine::init(int iSDLVideoFlags) {
     mge = new ModularEngine(iSDLVideoFlags);
+
+    ConfigManager::init();
 }
 
 void ModularEngine::clean() {
     delete mge;
     mge = NULL;
+
+    ConfigManager::clean();
 }
 
 //Constructor/Destructor
