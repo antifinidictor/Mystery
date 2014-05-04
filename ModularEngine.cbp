@@ -266,6 +266,8 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="mge/AudioEngine.h" />
 		<Unit filename="mge/Clock.h" />
+		<Unit filename="mge/ConfigManager.cpp" />
+		<Unit filename="mge/ConfigManager.h" />
 		<Unit filename="mge/Event.h" />
 		<Unit filename="mge/GameObject.h" />
 		<Unit filename="mge/Image.cpp" />
