@@ -13,7 +13,7 @@ SimpleResettableObject::SimpleResettableObject(uint id, uint texId, Box bxVolume
     Box bxRelativeVol =Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                             bxVolume.w,      bxVolume.h,      bxVolume.l);
 
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
+    m_pPhysicsModel = new TimePhysicsModel(this, bxCenter(bxVolume), fDensity);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
 
     Image *img = D3RE::get()->getImage(texId);

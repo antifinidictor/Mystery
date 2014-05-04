@@ -14,7 +14,7 @@ AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPo
     Box bxRelativeVol =Box(-bxTriggerVolume.w / 2, -bxTriggerVolume.h / 2, -bxTriggerVolume.l / 2,
                             bxTriggerVolume.w,      bxTriggerVolume.h,      bxTriggerVolume.l);
 
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxTriggerVolume));
+    m_pPhysicsModel = new TimePhysicsModel(this, bxCenter(bxTriggerVolume));
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
     m_pPhysicsModel->setListener(this);
 

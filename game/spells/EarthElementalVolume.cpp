@@ -14,7 +14,7 @@ EarthElementalVolume::EarthElementalVolume(uint id, uint texId, const Box &bxVol
     Box bxRelativeVol =Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                             bxVolume.w,      bxVolume.h,      bxVolume.l);
 
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
+    m_pPhysicsModel = new TimePhysicsModel(this, bxCenter(bxVolume), fDensity);
     m_pPhysicsModel->setListener(this);
 
     m_pxMap = new PixelMap(bxVolume.w * HMAP_RES + 1, bxVolume.l * HMAP_RES + 1, 0);

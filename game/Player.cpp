@@ -71,7 +71,7 @@ Player::Player(uint uiId, const Point &ptPos)
 
     Rect rcDrawArea = Rect(-w / 2, 0, w, h);
     Box bxVolume = Box(-fBxWidth / 2, 0, -fBxWidth / 2, fBxWidth, fBxHeight, fBxWidth);
-    m_pPhysicsModel = new TimePhysicsModel(ptPos, DENSITY);
+    m_pPhysicsModel = new TimePhysicsModel(this, ptPos, DENSITY);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pPhysicsModel->setListener(this);
 
@@ -420,7 +420,7 @@ Player::updateClimbingTrans(float fDeltaTime) {
             if(obj == NULL) {
                 m_pPhysicsModel->setSurface(NULL);
             } else {
-                m_pPhysicsModel->setSurface(obj->getPhysicsModel());
+                m_pPhysicsModel->setSurface((AbstractTimePhysicsModel*)obj->getPhysicsModel());
             }
             m_iAnimState = 0;
             m_uiAnimFrameStart = PANIM_STANDING;

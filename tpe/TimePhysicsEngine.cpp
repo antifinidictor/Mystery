@@ -53,12 +53,15 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     bool bCanFall = !obj->getFlag(TPE_PASSABLE) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC);
     bool bIsOnSurface = tmdl->getSurface() != NULL;
     bool bHasLeftSurface = hasChanged && (!bIsOnSurface || isNotInArea(tmdl->getCollisionVolume(), tmdl->getSurface()->getCollisionVolume()));
-    if(bIsOnSurface && bHasLeftSurface) {
-        tmdl->setSurface(NULL);
-    }
     if(bCanFall) {
         //Ensures normal force is applied
         obj->setFlag(TPE_FALLING, true);
+    }
+    if(bIsOnSurface) {
+        applyPhysics(tmdl->getParent(), tmdl->getSurface()->getParent());
+        if(bHasLeftSurface) {
+            tmdl->setSurface(NULL);
+        }
     }
     return (hasChanged);
 }
@@ -365,9 +368,9 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
 
             //We want to keep gravity vertical accel so the object gets pushed into the hmap
             //but only if we aren't near the edge of the hmap.  This allows us to walk over edges just outside the hmap
-            if(fabs(fXShift) > bxBox.w + 0.1 && fabs(fZShift) > bxBox.l + 0.1) {
+            //if(fabs(fXShift) > bxBox.w + 0.1 && fabs(fZShift) > bxBox.l + 0.1) {
                 v3NormForce.y = 0.f;
-            }
+            //}
 
             //Apply normal force.  This makes stepping over objects easier,
             // but since it at least partially cancels gravity it makes moving downhill jerky

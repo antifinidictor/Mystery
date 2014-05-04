@@ -28,7 +28,7 @@ Character::Character(uint uiId, uint uiImageId, Point ptPos) {
 
     Rect rcDrawArea = Rect(-w / 2, 0, w, h);
     Box bxVolume = Box(-fBxWidth / 2, 0, -fBxWidth / 2, fBxWidth, fBxHeight, fBxWidth);
-    m_pPhysicsModel = new TimePhysicsModel(ptPos, DENSITY);
+    m_pPhysicsModel = new TimePhysicsModel(this, ptPos, DENSITY);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pRenderModel = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
     m_pRenderModel->setFrameW(SOUTH);

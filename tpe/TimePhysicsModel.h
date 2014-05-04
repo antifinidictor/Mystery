@@ -34,7 +34,7 @@ public:
 
     virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl) = 0;
     virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl) = 0;
-    virtual void setSurface(PhysicsModel *mdl) = 0;
+    virtual void setSurface(AbstractTimePhysicsModel *mdl) = 0;
     virtual AbstractTimePhysicsModel* getSurface() = 0;
     virtual uint addCollisionModel(CollisionModel* mdl) = 0;
     virtual void removeCollisionModel(uint id) = 0;
@@ -42,6 +42,7 @@ public:
     virtual uint getNumModels() = 0;
     virtual bool getPhysicsChanged() = 0;
     virtual void setPhysicsChanged(bool val) = 0;
+    virtual GameObject *getParent() = 0;
 };
 
 /*
@@ -50,7 +51,7 @@ public:
  */
 class TimePhysicsModel : public AbstractTimePhysicsModel {
 public:
-    TimePhysicsModel(Point ptPos, float fDensity = 1000.f);   //Density in kg/m^3
+    TimePhysicsModel(GameObject *pParent, Point ptPos, float fDensity = 1000.f);   //Density in kg/m^3
     virtual ~TimePhysicsModel();
 
     virtual Point getPosition() { return m_ptPos; }//Point(m_bxVolume); }
@@ -76,7 +77,7 @@ public:
 
     virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl);
     virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl);
-    virtual void setSurface(PhysicsModel *mdl);
+    virtual void setSurface(AbstractTimePhysicsModel *mdl);
     virtual AbstractTimePhysicsModel* getSurface() { return m_pObjImOn; }
 
     virtual uint addCollisionModel(CollisionModel* mdl);
@@ -88,8 +89,12 @@ public:
     virtual bool getPhysicsChanged() { return m_bPhysicsChanged; }
     virtual void setPhysicsChanged(bool hasChanged) { m_bPhysicsChanged = hasChanged; }
 
+    virtual GameObject *getParent() { return m_pParent; }
+
 private:
     //Time physics model
+    GameObject *m_pParent;
+
     Point m_ptAcceleration,
           m_ptVelocity;
     Point m_ptLastMotion;
@@ -141,7 +146,7 @@ public:
 
     virtual void addSurfaceObj(AbstractTimePhysicsModel *mdl) {}
     virtual void removeSurfaceObj(AbstractTimePhysicsModel *mdl) {}
-    virtual void setSurface(PhysicsModel *mdl) {}
+    virtual void setSurface(AbstractTimePhysicsModel *mdl) {}
     virtual AbstractTimePhysicsModel* getSurface() { return NULL; }
 
     virtual uint addCollisionModel(CollisionModel* mdl) { return 0; }
@@ -150,6 +155,9 @@ public:
     virtual uint getNumModels() { return 0; }
     virtual bool getPhysicsChanged() { return false; }
     virtual void setPhysicsChanged(bool hasChanged) { }
+
+
+    virtual GameObject *getParent() { return NULL; }
 
 private:
     Point m_ptPosition;
