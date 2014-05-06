@@ -25,6 +25,9 @@ public:
     virtual void onMouseIn();
     virtual void onMouseOut();
 
+    //General
+    void removeItem() { m_pItem = NULL; }
+
 private:
     static Point s_ptDropPoint;         //Point where the element or spell can be put down
     static Point s_ptMakeCurrentPoint;  //Point where the element or spell can be made current

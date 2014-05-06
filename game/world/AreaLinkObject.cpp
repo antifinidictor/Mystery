@@ -109,6 +109,12 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
         PWE::get()->addListener(this, PWE_ON_AREA_SWITCH_FROM, m_uiSrcAreaId);
         break;
       }
+    case PWE_ON_ERASED_FROM_AREA:
+    case PWE_ON_REMOVED_FROM_AREA: {
+        uint uiAreaId = *(uint*)data;
+        PWE::get()->removeListener(getId(), PWE_ON_AREA_SWITCH_FROM, uiAreaId);
+        break;
+      }
     case PWE_ON_AREA_SWITCH_FROM: {
         //TODO: Could cause mem bugs, should be using find
         for(list<GameObject*>::iterator it = m_lsDelayedObjs.begin(); it != m_lsDelayedObjs.end(); ++it) {

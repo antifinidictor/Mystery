@@ -17,6 +17,7 @@ HmapSurface::HmapSurface(uint id, uint texId, const std::string &sMapFile, const
 
 HmapSurface::~HmapSurface()
 {
+    PWE::get()->freeId(getId());
     delete m_pxMap;
 }
 

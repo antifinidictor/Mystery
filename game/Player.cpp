@@ -181,6 +181,7 @@ Player::callBack(uint cID, void *data, uint uiEventId) {
         //handleButtonNormal(MGE::get()->getInputState());
         break;
     }
+    case PWE_ON_ERASED_FROM_AREA:
     case PWE_ON_REMOVED_FROM_AREA:
         PWE::get()->removeListener(getId(), ON_BUTTON_INPUT, *((uint*)data));
         m_pPhysicsModel->setSurface(NULL);

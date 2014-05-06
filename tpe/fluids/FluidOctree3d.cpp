@@ -40,6 +40,7 @@ FluidOctreeNode::~FluidOctreeNode() {
     }
     iter_t it;
     for(it = m_mContents.begin(); it != m_mContents.end(); ++it) {
+        it->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ERASED_FROM_AREA);
         delete it->second;
     }
     m_mContents.clear();

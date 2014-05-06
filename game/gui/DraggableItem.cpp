@@ -13,6 +13,12 @@ DraggableItem::addValidDropLocation(const Point &pt) {
     s_vDropPoints.push_back(pt);
 }
 
+
+void
+DraggableItem::clearValidDropLocations() {
+    s_vDropPoints.clear();
+}
+
 DraggableItem::DraggableItem(Item *item, uint uiIndex, const Rect &rcArea, Listener *pDropListener)
     : D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea),
       Draggable(this, Rect(-rcArea.w / 2.f, -rcArea.h / 2.f, rcArea.w, rcArea.h))
@@ -34,6 +40,10 @@ DraggableItem::~DraggableItem()
 {
     MGE::get()->removeListener(this->getId(), ON_MOUSE_MOVE);
     MGE::get()->removeListener(this->getId(), ON_BUTTON_INPUT);
+
+    if(m_pItem) {
+        delete m_pItem;
+    }
     //The render model should be deleted by its container
     //delete m_pRenderModel;
 }

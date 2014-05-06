@@ -49,6 +49,7 @@ PartitionedWorldEngine::genId() {
     } else {
         id = m_uiNextId++;
     }
+    printf("NOTE %s %d: Generated id %d\n", __FILE__, __LINE__, id);
     return id;
 }
 
@@ -66,6 +67,7 @@ PartitionedWorldEngine::peekId() {
 void
 PartitionedWorldEngine::freeId(uint id) {
     m_lsFreeIds.push_front(id);
+    printf("NOTE %s %d: Freed id %d\n", __FILE__, __LINE__, id);
 }
 
 uint
@@ -80,6 +82,7 @@ PartitionedWorldEngine::reserveId(uint id) {
         for(list<uint>::iterator iter = m_lsFreeIds.begin(); iter != m_lsFreeIds.end(); ++iter) {
             if(*iter == id) {
                 m_lsFreeIds.erase(iter);
+                printf("NOTE %s %d: Reserved id %d\n", __FILE__, __LINE__, id);
                 return id;
             }
         }
@@ -88,6 +91,7 @@ PartitionedWorldEngine::reserveId(uint id) {
                __FILE__, __LINE__, id, id2);
        id = id2;
     }
+    printf("NOTE %s %d: Reserved id %d\n", __FILE__, __LINE__, id);
     return id;
 }
 

@@ -45,7 +45,6 @@ DraggableHud::DraggableHud(uint uiId)
     for(ptValid.y = 240; ptValid.y <= 368; ptValid.y += 64) {
         for(ptValid.x = 80; ptValid.x <= 400; ptValid.x += 64) {
                 DraggableItem::addValidDropLocation(ptValid);
-                printf("Valid location (%f,%f)\n", ptValid.x, ptValid.y);
         }
     }
 
@@ -75,6 +74,10 @@ DraggableHud::DraggableHud(uint uiId)
 DraggableHud::~DraggableHud() {
     MGE::get()->removeListener(this->getId(), ON_MOUSE_MOVE);
     MGE::get()->removeListener(this->getId(), ON_BUTTON_INPUT);
+    PWE::get()->freeId(getId());
+
+    //If this is a new-game or load-game reset, we want to be sure these get cleared
+    DraggableItem::clearValidDropLocations();
 
     //Render model should be deleted by the render engine
     //delete m_pRenderModel;
@@ -363,6 +366,7 @@ DraggableHud::removeScheduledItems() {
                     ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM)
                     ->setFrameH(ITEM_NONE);
             }
+            item->removeItem();    //Makes sure the item thumbnail does not try to delete the actual item
             panel->remove(*it);
             delete item;
         }
@@ -383,6 +387,7 @@ DraggableHud::removeScheduledItems() {
                     ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL)
                     ->setFrameH(ITEM_NONE);
             }
+            item->removeItem();    //Makes sure the item thumbnail does not try to delete the actual item
             panel->remove(*it);
             delete item;
         }
@@ -403,6 +408,7 @@ DraggableHud::removeScheduledItems() {
                     ->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT)
                     ->setFrameH(ITEM_NONE);
             }
+            item->removeItem();    //Makes sure the item thumbnail does not try to delete the actual item
             panel->remove(*it);
             delete item;
         }

@@ -41,6 +41,7 @@ Character::Character(uint uiId, uint uiImageId, Point ptPos) {
 }
 
 Character::~Character() {
+    PWE::get()->freeId(getId());
     delete m_pPhysicsModel;
     delete m_pRenderModel;
     delete m_pCurAction;

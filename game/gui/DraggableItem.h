@@ -10,6 +10,7 @@ class DraggableItem : public D3HudRenderModel, public Draggable
 {
 public:
     static void addValidDropLocation(const Point &pt);
+    static void clearValidDropLocations();
 
     DraggableItem(Item *item, uint uiIndex, const Rect &rcArea, Listener *pDropListener);
     virtual ~DraggableItem();
@@ -26,6 +27,7 @@ public:
 
     //General
     Item *getItem() { return m_pItem; }
+    void removeItem() { m_pItem = NULL; }
 
     void snapToIndex(uint index);
 

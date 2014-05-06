@@ -89,6 +89,7 @@ EditorCursor::callBack(uint cID, void *data, uint eventId) {
         EditorManager::get()->setEditorCursor(this);
         break;
       }
+    case PWE_ON_ERASED_FROM_AREA:
     case PWE_ON_REMOVED_FROM_AREA:
         PWE::get()->removeListener(getId(), ON_BUTTON_INPUT, *((uint*)data));
         status = EVENT_DROPPED; //Handled, but should not be the only one to handle it
