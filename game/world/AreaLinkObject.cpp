@@ -14,7 +14,7 @@ AreaLinkObject::AreaLinkObject(uint id, uint uiDestAreaId, const Point &ptDestPo
     Box bxRelativeVol =Box(-bxTriggerVolume.w / 2, -bxTriggerVolume.h / 2, -bxTriggerVolume.l / 2,
                             bxTriggerVolume.w,      bxTriggerVolume.h,      bxTriggerVolume.l);
 
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxTriggerVolume));
+    m_pPhysicsModel = new TimePhysicsModel(this, bxCenter(bxTriggerVolume));
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
     m_pPhysicsModel->setListener(this);
 
@@ -113,6 +113,10 @@ AreaLinkObject::callBack(uint uiID, void *data, uint eventId) {
         //TODO: Could cause mem bugs, should be using find
         for(list<GameObject*>::iterator it = m_lsDelayedObjs.begin(); it != m_lsDelayedObjs.end(); ++it) {
             Point ptPosDelta = m_ptDestPos - (*it)->getPhysicsModel()->getPosition();
+            printf("Dest pos vs delta pos: (%f,%f,%f) / (%f,%f,%f)\n",
+                   m_ptDestPos.x, m_ptDestPos.y, m_ptDestPos.z,
+                   ptPosDelta.x, ptPosDelta.y, ptPosDelta.z
+                   );
             (*it)->moveBy(ptPosDelta);
         }
         m_lsDelayedObjs.clear();

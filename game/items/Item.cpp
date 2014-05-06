@@ -11,7 +11,7 @@ Item::Item(uint id, uint itemId, const Point &pos)
         m_bCollidingWithPlayer(true),
         m_sItemInfo("no information available")
 {
-    m_pPhysicsModel = new TimePhysicsModel(pos);
+    m_pPhysicsModel = new TimePhysicsModel(this, pos);
     Box bxVol = Box(-0.125f,0.f,-0.125f,0.25f,0.25f,0.25f);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVol));
     m_pPhysicsModel->setListener(this);

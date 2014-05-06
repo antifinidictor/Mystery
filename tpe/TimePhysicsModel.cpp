@@ -6,22 +6,24 @@
 
 using namespace std;
 
-TimePhysicsModel::TimePhysicsModel(Point ptPos, float fDensity) {
-    m_bxVolume = Box();
-    m_ptPos = ptPos;
-    m_pListener = NULL;
-    m_ptAcceleration = Point();
-    m_ptVelocity = Point();
-    m_ptLastMotion = Point();
-    m_fFrictionEffect = DEFAULT_FRICTION_COEFFICIENT;
-    m_fFrictionAffect = DEFAULT_FRICTION_COEFFICIENT;
-    m_fTimeDivisor = DEFAULT_TIME_DIVISOR;
-    m_fDensity = fDensity;
-    m_fMass = 0.f;
-    m_bWasPushed = false;
-    m_bPhysicsChanged = false;
-    m_pObjImOn = NULL;
-    m_bIsCleaning = false;
+TimePhysicsModel::TimePhysicsModel(GameObject *pParent, Point ptPos, float fDensity)
+    :   m_pParent(pParent),
+        m_ptAcceleration(),
+        m_ptVelocity(),
+        m_ptLastMotion(),
+        m_bxVolume(),
+        m_ptPos(ptPos),
+        m_fFrictionEffect(DEFAULT_FRICTION_COEFFICIENT),
+        m_fFrictionAffect(DEFAULT_FRICTION_COEFFICIENT),
+        m_fTimeDivisor(DEFAULT_TIME_DIVISOR),
+        m_fMass(0.f),
+        m_fDensity(fDensity),
+        m_pListener(NULL),
+        m_bWasPushed(false),
+        m_bIsCleaning(false),
+        m_bPhysicsChanged(false),
+        m_pObjImOn(NULL)
+{
 }
 
 TimePhysicsModel::~TimePhysicsModel() {
@@ -118,8 +120,7 @@ TimePhysicsModel::removeSurfaceObj(AbstractTimePhysicsModel *mdl) {
 }
 
 void
-TimePhysicsModel::setSurface(PhysicsModel *mdl) {
-    AbstractTimePhysicsModel *amdl = (AbstractTimePhysicsModel*)mdl;
+TimePhysicsModel::setSurface(AbstractTimePhysicsModel *amdl) {
     if(m_pObjImOn != amdl) {
         if(m_pObjImOn != NULL) {
             m_pObjImOn->removeSurfaceObj(this);

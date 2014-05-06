@@ -1521,7 +1521,7 @@
 	<map>
 	"mge/defs.h"
 
-1397550227 source:k:\projects\games\mge\mystery\game\gamemanager.cpp
+1399355529 source:k:\projects\games\mge\mystery\game\gamemanager.cpp
 	"GameManager.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/TimePhysicsEngine.h"
@@ -1530,9 +1530,10 @@
 	"game/gui/TextDisplay.h"
 	"game/gui/DraggableHud.h"
 	"game/gui/DraggableItem.h"
+	"game/gui/GuiButton.h"
 	"game/items/Item.h"
 
-1399001116 k:\projects\games\mge\mystery\game\gamemanager.h
+1399223539 k:\projects\games\mge\mystery\game\gamemanager.h
 	<stack>
 	<map>
 	"mge/GameObject.h"
@@ -1597,7 +1598,7 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1399013251 source:k:\projects\games\mge\mystery\game\player.cpp
+1399226156 source:k:\projects\games\mge\mystery\game\player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/tpe.h"
@@ -1608,7 +1609,7 @@
 
 1379968751 AudioEngine.h"
 
-1399001116 k:\projects\games\mge\mystery\game\player.h
+1399223539 k:\projects\games\mge\mystery\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -1671,7 +1672,7 @@
 	"mge/RenderEngine.h"
 	"mge/Image.h"
 
-1399001116 source:k:\projects\games\mge\mystery\game\game.cpp
+1399223539 source:k:\projects\games\mge\mystery\game\game.cpp
 	"game.h"
 	<SDL.h>
 	"pgl.h"
@@ -1688,6 +1689,7 @@
 	"game/world/Wall.h"
 	"game/ObjectFactory.h"
 	"game/GameManager.h"
+	"game/gui/GuiButton.h"
 	"mge/PixelMap.h"
 	"game/gui/TextDisplay.h"
 	"game/gui/DraggableHud.h"
@@ -1739,9 +1741,10 @@
 	"mge/Clock.h"
 	"mge/Event.h"
 
-1396729915 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
+1399223540 source:k:\projects\games\mge\mystery\mge\modularengine.cpp
 	"ModularEngine.h"
 	"defs.h"
+	"ConfigManager.h"
 
 1399013824 k:\projects\games\mge\mystery\mge\defs.h
 	<math.h>
@@ -1791,7 +1794,7 @@
 	"mge/GameObject.h"
 	"mge/PhysicsModel.h"
 
-1399001117 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
+1399223540 source:k:\projects\games\mge\mystery\pwe\partitionedworldengine.cpp
 	"PartitionedWorldEngine.h"
 	"mge/ModularEngine.h"
 	"game/ObjectFactory.h"
@@ -1801,7 +1804,7 @@
 
 1380873195 each.hpp>
 
-1399001117 k:\projects\games\mge\mystery\pwe\partitionedworldengine.h
+1399223540 k:\projects\games\mge\mystery\pwe\partitionedworldengine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -1811,15 +1814,15 @@
 	"mge/GameObject.h"
 	"mge/Event.h"
 
-1399001117 source:k:\projects\games\mge\mystery\tpe\timephysicsengine.cpp
+1399227369 source:k:\projects\games\mge\mystery\tpe\timephysicsengine.cpp
 	"mge/GameObject.h"
 	"mge/RenderModel.h"
 	"tpe/tpe.h"
 
-1399001117 source:k:\projects\games\mge\mystery\tpe\timephysicsmodel.cpp
+1399226297 source:k:\projects\games\mge\mystery\tpe\timephysicsmodel.cpp
 	"tpe.h"
 
-1397550100 k:\projects\games\mge\mystery\tpe\timephysicsmodel.h
+1399227192 k:\projects\games\mge\mystery\tpe\timephysicsmodel.h
 	"mge/PhysicsModel.h"
 	"mge/Event.h"
 	<list>
@@ -1877,7 +1880,7 @@
 1380093079 k:\projects\games\mge\mystery\\mge\renderengine.h
 	"mge/defs.h"
 
-1393319259 k:\projects\games\mge\mystery\\mge\image.h
+1399223540 k:\projects\games\mge\mystery\\mge\image.h
 	"SDL.h"
 	"SDL_image.h"
 	"SDL_opengl.h"
@@ -1885,7 +1888,7 @@
 	<string>
 	<iostream>
 
-1397550100 k:\projects\games\mge\mystery\\tpe\timephysicsmodel.h
+1399227192 k:\projects\games\mge\mystery\\tpe\timephysicsmodel.h
 	"mge/PhysicsModel.h"
 	"mge/Event.h"
 	<list>
@@ -1905,7 +1908,7 @@
 	"OrderedRenderModel.h"
 	"StripRenderModel.h"
 
-1399001117 k:\projects\games\mge\mystery\\pwe\partitionedworldengine.h
+1399223540 k:\projects\games\mge\mystery\\pwe\partitionedworldengine.h
 	<map>
 	<list>
 	"mge/defs.h"
@@ -1970,7 +1973,7 @@
 	<map>
 	"mge/defs.h"
 
-1399001116 k:\projects\games\mge\mystery\\game\player.h
+1399223539 k:\projects\games\mge\mystery\\game\player.h
 	"mge/GameObject.h"
 	"mge/Event.h"
 	"game/game_defs.h"
@@ -2038,7 +2041,7 @@
 	"tpe/TimePhysicsEngine.h"
 	"game/GameDefs.h"
 
-1399001116 k:\projects\games\mge\mystery\\game\gamemanager.h
+1399223539 k:\projects\games\mge\mystery\\game\gamemanager.h
 	<stack>
 	<map>
 	"mge/GameObject.h"
@@ -2137,7 +2140,7 @@
 	"mge/RenderModel.h"
 	"mge/Image.h"
 
-1397368014 k:\projects\games\mge\mystery\\game\game_defs.h
+1399223539 k:\projects\games\mge\mystery\\game\game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -2160,12 +2163,13 @@
 	"mge/defs.h"
 	<string>
 
-1399001116 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
+1399355884 source:k:\projects\games\mge\mystery\d3re\d3renderengine.cpp
 	"d3re.h"
 	"SDL.h"
 	"pgl.h"
 	"mge/GameObject.h"
 	"game/game_defs.h"
+	<boost/lexical_cast.hpp>
 	<limits>
 
 1382820284 k:\projects\games\mge\mystery\d3re\d3re.h
@@ -2181,7 +2185,7 @@
 
 1379928505 nderModel.h"
 
-1397370075 k:\projects\games\mge\mystery\d3re\d3renderengine.h
+1399223538 k:\projects\games\mge\mystery\d3re\d3renderengine.h
 	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
@@ -2219,7 +2223,7 @@
 	"D3HeightmapRenderModel.h"
 	"TextRenderer.h"
 
-1397370075 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
+1399223538 k:\projects\games\mge\mystery\\d3re\d3renderengine.h
 	<list>
 	<vector>
 	<boost/property_tree/ptree.hpp>
@@ -2269,7 +2273,7 @@
 	"TimePhysicsModel.h"
 	"CollisionModel.h"
 
-1396683495 source:k:\projects\games\mge\mystery\game\world\wall.cpp
+1399225518 source:k:\projects\games\mge\mystery\game\world\wall.cpp
 	"Wall.h"
 	"pwe/PartitionedWorldEngine.h"
 
@@ -8096,7 +8100,7 @@
 	"boost/property_tree/detail/info_parser_utils.hpp"
 	<string>
 
-1399001116 source:k:\projects\games\mge\mystery\game\world\simplephysicsobject.cpp
+1399225518 source:k:\projects\games\mge\mystery\game\world\simplephysicsobject.cpp
 	"SimplePhysicsObject.h"
 	"pwe/PartitionedWorldEngine.h"
 	"bae/BasicAudioEngine.h"
@@ -8127,7 +8131,7 @@
 1396658366 k:\projects\games\mge\mystery\\editor\selectionrendermodel.h
 	"d3re/d3re.h"
 
-1397714003 k:\projects\games\mge\mystery\\editor\editor_defs.h
+1399223538 k:\projects\games\mge\mystery\\editor\editor_defs.h
 	"game/game_defs.h"
 
 1397711029 source:k:\projects\games\mge\mystery\editor\editor.cpp
@@ -8180,7 +8184,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
 
-1397550100 k:\projects\games\mge\mystery\\editor\editormanager.h
+1399223538 k:\projects\games\mge\mystery\\editor\editormanager.h
 	"pwe/PartitionedWorldEngine.h"
 	"editor/editor_defs.h"
 	"game/ObjectFactory.h"
@@ -8223,7 +8227,7 @@
 	<vector>
 	<boost/property_tree/ptree.hpp>
 
-1397368014 k:\projects\games\mge\mystery\game\game_defs.h
+1399223539 k:\projects\games\mge\mystery\game\game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -8234,7 +8238,7 @@
 	<vector>
 	<boost/property_tree/ptree.hpp>
 
-1396466195 source:k:\projects\games\mge\mystery\game\registration.cpp
+1399223540 source:k:\projects\games\mge\mystery\game\registration.cpp
 	"game/ObjectFactory.h"
 	"game/Player.h"
 	"game/world/SimplePhysicsObject.h"
@@ -8424,12 +8428,12 @@
 	<boost/range/end.hpp>
 	<boost/range/reverse_iterator.hpp>
 
-1396687727 k:\projects\games\mge\mystery\d3re\containerrendermodel.h
+1399223538 k:\projects\games\mge\mystery\d3re\containerrendermodel.h
 	<map>
 	"mge/RenderModel.h"
 	"mge/Positionable.h"
 
-1396687727 k:\projects\games\mge\mystery\\d3re\containerrendermodel.h
+1399223538 k:\projects\games\mge\mystery\\d3re\containerrendermodel.h
 	<map>
 	"mge/RenderModel.h"
 	"mge/Positionable.h"
@@ -9076,10 +9080,11 @@
 	"game/game_defs.h"
 	<list>
 
-1399001116 source:k:\projects\games\mge\mystery\game\world\arealinkobject.cpp
+1399225518 source:k:\projects\games\mge\mystery\game\world\arealinkobject.cpp
 	"AreaLinkObject.h"
 	"tpe/tpe.h"
 	"pwe/PartitionedWorldEngine.h"
+	"mge/Clock.h"
 
 1399001116 k:\projects\games\mge\mystery\game\world\arealinkobject.h
 	"mge/GameObject.h"
@@ -14414,7 +14419,7 @@
 	"game/game_defs.h"
 	<list>
 
-1397550100 source:k:\projects\games\mge\mystery\game\world\water.cpp
+1399225518 source:k:\projects\games\mge\mystery\game\world\water.cpp
 	"Water.h"
 	"pwe/PartitionedWorldEngine.h"
 
@@ -14438,10 +14443,10 @@
 1396458423 k:\projects\games\mge\mystery\game\spells\forcefield.h
 	"mge/defs.h"
 
-1396294682 k:\projects\games\mge\mystery\\tpe\collisionmodel.h
+1399223540 k:\projects\games\mge\mystery\\tpe\collisionmodel.h
 	"mge/PixelMap.h"
 
-1396294682 k:\projects\games\mge\mystery\tpe\collisionmodel.h
+1399223540 k:\projects\games\mge\mystery\tpe\collisionmodel.h
 	"mge/PixelMap.h"
 
 1397934313 k:\projects\games\mge\mystery\\game\spells\waterelementalvolume.h
@@ -14456,7 +14461,7 @@
 	"mge/GameObject.h"
 	"game/game_defs.h"
 
-1397934382 source:k:\projects\games\mge\mystery\game\spells\waterelementalvolume.cpp
+1399225480 source:k:\projects\games\mge\mystery\game\spells\waterelementalvolume.cpp
 	"WaterElementalVolume.h"
 	"pwe/PartitionedWorldEngine.h"
 	"tpe/tpe.h"
@@ -14567,17 +14572,17 @@
 	"d3re.h"
 	"mge/GameObject.h"
 
-1397550100 source:k:\projects\games\mge\mystery\game\items\item.cpp
+1399225424 source:k:\projects\games\mge\mystery\game\items\item.cpp
 	"Item.h"
 	"pwe/PartitionedWorldEngine.h"
 
-1399001116 k:\projects\games\mge\mystery\game\items\item.h
+1399223540 k:\projects\games\mge\mystery\game\items\item.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
 
-1399001116 k:\projects\games\mge\mystery\\game\items\item.h
+1399223540 k:\projects\games\mge\mystery\\game\items\item.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
@@ -14589,7 +14594,7 @@
 	"d3re/d3re.h"
 	"game/game_defs.h"
 
-1399001116 source:k:\projects\games\mge\mystery\game\world\simpleresettableobject.cpp
+1399225518 source:k:\projects\games\mge\mystery\game\world\simpleresettableobject.cpp
 	"SimpleResettableObject.h"
 	"pwe/PartitionedWorldEngine.h"
 	"bae/BasicAudioEngine.h"
@@ -14633,7 +14638,7 @@
 	<list>
 	"game/game_defs.h"
 
-1399009416 source:k:\projects\games\mge\mystery\game\character\character.cpp
+1399225414 source:k:\projects\games\mge\mystery\game\character\character.cpp
 	"Character.h"
 	"Action.h"
 	"WanderAction.h"
@@ -15349,7 +15354,7 @@
 	"d3re/d3re.h"
 	"tpe/tpe.h"
 
-1397550100 source:k:\projects\games\mge\mystery\game\world\hmapsurface.cpp
+1399225518 source:k:\projects\games\mge\mystery\game\world\hmapsurface.cpp
 	"HmapSurface.h"
 	"pwe/PartitionedWorldEngine.h"
 
@@ -15365,7 +15370,7 @@
 1388800002 k:\projects\games\mge\mystery\game\character\action.h
 	"Character.h"
 
-1397423064 source:k:\projects\games\mge\mystery\game\character\wanderaction.cpp
+1399223539 source:k:\projects\games\mge\mystery\game\character\wanderaction.cpp
 	"WanderAction.h"
 	"Character.h"
 
@@ -15373,7 +15378,7 @@
 	"Action.h"
 	"game/game_defs.h"
 
-1399011098 source:k:\projects\games\mge\mystery\tpe\collisionmodel.cpp
+1399223540 source:k:\projects\games\mge\mystery\tpe\collisionmodel.cpp
 	"CollisionModel.h"
 
 1388736263 source:k:\projects\games\mge\mystery\d3re\textfx.cpp
@@ -15395,7 +15400,7 @@
 	"mge/Event.h"
 	"mge/Positionable.h"
 
-1397079885 k:\projects\games\mge\mystery\\game\gui\draggablehud.h
+1399223540 k:\projects\games\mge\mystery\\game\gui\draggablehud.h
 	"Draggable.h"
 	"game/items/Item.h"
 	"d3re/ContainerRenderModel.h"
@@ -15406,7 +15411,7 @@
 	"mge/Event.h"
 	"mge/Positionable.h"
 
-1397079800 source:k:\projects\games\mge\mystery\game\gui\draggablehud.cpp
+1399223540 source:k:\projects\games\mge\mystery\game\gui\draggablehud.cpp
 	"DraggableHud.h"
 	"DraggableItem.h"
 	"DraggableElementalSpellItem.h"
@@ -15417,15 +15422,17 @@
 	"game/items/Item.h"
 	"game/items/SpellItem.h"
 	"mge/Event.h"
+	"GuiButton.h"
+	"game/GameManager.h"
 
-1397079885 k:\projects\games\mge\mystery\game\gui\draggablehud.h
+1399223540 k:\projects\games\mge\mystery\game\gui\draggablehud.h
 	"Draggable.h"
 	"game/items/Item.h"
 	"d3re/ContainerRenderModel.h"
 	<map>
 	<list>
 
-1396658309 source:k:\projects\games\mge\mystery\d3re\containerrendermodel.cpp
+1399223537 source:k:\projects\games\mge\mystery\d3re\containerrendermodel.cpp
 	"ContainerRenderModel.h"
 	"pgl.h"
 
@@ -15448,7 +15455,7 @@
 	"game/spells/ElementalVolume.h"
 	"game/game_defs.h"
 
-1399011069 source:k:\projects\games\mge\mystery\game\spells\earthelementalvolume.cpp
+1399225465 source:k:\projects\games\mge\mystery\game\spells\earthelementalvolume.cpp
 	"EarthElementalVolume.h"
 	"tpe/tpe.h"
 	"d3re/d3re.h"
@@ -15472,11 +15479,11 @@
 	"mge/PixelMap.h"
 	"tpe/CollisionModel.h"
 
-1393318862 source:k:\projects\games\mge\mystery\mge\image.cpp
+1399223540 source:k:\projects\games\mge\mystery\mge\image.cpp
 	<stdlib.h>
 	"Image.h"
 
-1393319259 k:\projects\games\mge\mystery\mge\image.h
+1399223540 k:\projects\games\mge\mystery\mge\image.h
 	"SDL.h"
 	"SDL_image.h"
 	"SDL_opengl.h"
@@ -15484,7 +15491,7 @@
 	<string>
 	<iostream>
 
-1397077813 source:k:\projects\games\mge\mystery\game\items\spellitem.cpp
+1399223540 source:k:\projects\games\mge\mystery\game\items\spellitem.cpp
 	"SpellItem.h"
 	"game/spells/SourceSinkSpell.h"
 	"game/spells/FlowSpell.h"
@@ -15506,7 +15513,7 @@
 	"game/items/Item.h"
 	<vector>
 
-1397065257 source:k:\projects\games\mge\mystery\game\gui\draggableitem.cpp
+1399223540 source:k:\projects\games\mge\mystery\game\gui\draggableitem.cpp
 	"DraggableItem.h"
 	"d3re/d3re.h"
 	"mge/ModularEngine.h"
@@ -15523,7 +15530,7 @@
 
 1396686273 k:\projects\games\mge\mystery\game\items\inventorydisplay.h
 
-1397065845 source:k:\projects\games\mge\mystery\game\gui\draggableelementalspellitem.cpp
+1399223539 source:k:\projects\games\mge\mystery\game\gui\draggableelementalspellitem.cpp
 	"DraggableElementalSpellItem.h"
 	"d3re/d3re.h"
 	"mge/ModularEngine.h"
@@ -15531,7 +15538,7 @@
 	"game/game_defs.h"
 	"game/gui/DraggableHud.h"
 
-1397065394 k:\projects\games\mge\mystery\game\gui\draggableelementalspellitem.h
+1399223539 k:\projects\games\mge\mystery\game\gui\draggableelementalspellitem.h
 	"game/gui/Draggable.h"
 	"d3re/D3HudRenderModel.h"
 	"game/items/Item.h"
@@ -15557,7 +15564,7 @@
 	"Spell.h"
 	<vector>
 
-1399001117 source:k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.cpp
+1399223540 source:k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.cpp
 	"FluidOctree3d.h"
 	"mge/GameObject.h"
 	"tpe/tpe.h"
@@ -15565,7 +15572,7 @@
 	"pwe/PartitionedWorldEngine.h"
 	"SDL.h"
 
-1399001117 k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.h
+1399223540 k:\projects\games\mge\mystery\tpe\fluids\fluidoctree3d.h
 	"Vorton.h"
 	"mge/defs.h"
 	<map>
@@ -15597,13 +15604,14 @@
 	"d3re/d3re.h"
 	"tpe/tpe.h"
 
-1399001117 k:\projects\games\mge\mystery\tpe\fluids\bruteforcefluidtest.h
+1399223540 k:\projects\games\mge\mystery\tpe\fluids\bruteforcefluidtest.h
 	"mge/PixelMap.h"
 	"mge/GameObject.h"
 	"Vorton.h"
 	"InterpGrid.h"
 	"game/game_defs.h"
 	"d3re/ContainerRenderModel.h"
+	"mge/RenderModel.h"
 	"tpe/TimePhysicsModel.h"
 	<vector>
 
@@ -15618,13 +15626,14 @@
 	"mge/Positionable.h"
 	<vector>
 
-1399001117 k:\projects\games\mge\mystery\\tpe\fluids\bruteforcefluidtest.h
+1399223540 k:\projects\games\mge\mystery\\tpe\fluids\bruteforcefluidtest.h
 	"mge/PixelMap.h"
 	"mge/GameObject.h"
 	"Vorton.h"
 	"InterpGrid.h"
 	"game/game_defs.h"
 	"d3re/ContainerRenderModel.h"
+	"mge/RenderModel.h"
 	"tpe/TimePhysicsModel.h"
 	<vector>
 
@@ -17162,7 +17171,7 @@
 	"editor/EditorManager.h"
 	"mge/ModularEngine.h"
 
-1399001117 k:\projects\games\mge\mystery\\tpe\fluids\fluidoctree3d.h
+1399223540 k:\projects\games\mge\mystery\\tpe\fluids\fluidoctree3d.h
 	"Vorton.h"
 	"mge/defs.h"
 	<map>
@@ -17211,6 +17220,31 @@
 	"defs.h"
 
 1399172190 source:/home/naheisey/Documents/projects/games/Mystery/mge/ConfigManager.cpp
+	"ConfigManager.h"
+	"ModularEngine.h"
+	<boost/property_tree/xml_parser.hpp>
+	<boost/property_tree/info_parser.hpp>
+	<boost/foreach.hpp>
+	<boost/lexical_cast.hpp>
+
+1399223541 k:\projects\games\mge\mystery\\game\gui\guibutton.h
+	"d3re/d3re.h"
+	"editor/editor_defs.h"
+	"editor/EditorManager.h"
+	"mge/ModularEngine.h"
+
+1399223541 k:\projects\games\mge\mystery\game\gui\guibutton.h
+	"d3re/d3re.h"
+	"editor/editor_defs.h"
+	"editor/EditorManager.h"
+	"mge/ModularEngine.h"
+
+1399223540 k:\projects\games\mge\mystery\mge\configmanager.h
+	<string>
+	<boost/property_tree/ptree.hpp>
+	"defs.h"
+
+1399223540 source:k:\projects\games\mge\mystery\mge\configmanager.cpp
 	"ConfigManager.h"
 	"ModularEngine.h"
 	<boost/property_tree/xml_parser.hpp>

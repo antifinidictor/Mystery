@@ -20,7 +20,7 @@ Water::Water(uint id, uint texId, Box bxVolume, float fDensity) {
         }
     }
 
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
+    m_pPhysicsModel = new TimePhysicsModel(this, bxCenter(bxVolume), fDensity);
     m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
     m_pPhysicsModel->setListener(this);
 

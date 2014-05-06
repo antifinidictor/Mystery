@@ -10,7 +10,7 @@
 
 WaterElementalVolume::WaterElementalVolume(uint id, uint texId, Box bxVolume, float fSwellRes, float fDensity)
     :   ElementalVolume(id)
-        //m_pPhysicsModel(new TimePhysicsModel(bxCenter(bxVolume), fDensity)),
+        //m_pPhysicsModel(new TimePhysicsModel(this, bxCenter(bxVolume), fDensity)),
         //m_cgVelocities(NULL, bxVolume, m_fSwellRes)
 {
 printf(__FILE__" %d\n",__LINE__);
@@ -21,7 +21,7 @@ printf(__FILE__" %d\n",__LINE__);
     m_fSwellRes = fSwellRes;
     m_pxMap = new PixelMap(bxVolume.w / m_fSwellRes, bxVolume.l / m_fSwellRes,0);
 
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), fDensity);
+    m_pPhysicsModel = new TimePhysicsModel(this, bxCenter(bxVolume), fDensity);
     m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
     m_pPhysicsModel->setListener(this);
 

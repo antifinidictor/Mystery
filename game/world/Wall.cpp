@@ -8,7 +8,7 @@ Wall::Wall(uint uiId, uint texTopId, uint texBottomId, uint texSideId, Box bxVol
     Box bxRelativeVol =Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                             bxVolume.w,      bxVolume.h,      bxVolume.l);
 
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), DENSITY_STONE);
+    m_pPhysicsModel = new TimePhysicsModel(this, bxCenter(bxVolume), DENSITY_STONE);
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxRelativeVol));
 
     m_pRenderModel = new D3PrismRenderModel(m_pPhysicsModel, bxRelativeVol);

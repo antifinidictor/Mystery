@@ -7,7 +7,7 @@ HmapSurface::HmapSurface(uint id, uint texId, const std::string &sMapFile, const
     m_pxMap = new PixelMap(sMapFile, 0);    //not going to worry about id for now
     Box bxRelativeVol = Box(-bxVolume.w / 2, -bxVolume.h / 2, -bxVolume.l / 2,
                             bxVolume.w, bxVolume.h, bxVolume.l);
-    m_pPhysicsModel = new TimePhysicsModel(bxCenter(bxVolume), 10000.f);
+    m_pPhysicsModel = new TimePhysicsModel(this, bxCenter(bxVolume), 10000.f);
     m_pPhysicsModel->addCollisionModel(new PixelMapCollisionModel(bxRelativeVol, m_pxMap));
     m_pPhysicsModel->setListener(this);
     m_pRenderModel = new D3HeightmapRenderModel(m_pPhysicsModel, texId, m_pxMap, bxRelativeVol);
