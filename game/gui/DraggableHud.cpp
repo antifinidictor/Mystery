@@ -166,7 +166,7 @@ DraggableHud::updateItemAnimations() {
         m_iFrame = (m_iFrame + 1) % 8;
         m_iAnimTimer = 0;
 
-        ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER);
+        ContainerRenderModel *panel = m_pInventoryPanel;
         ItemAnimUpdateFunctor curFrameFunctor(m_iFrame);
 
         //Update general item animations
@@ -215,7 +215,7 @@ DraggableHud::addItem(Item *pItem, bool bMakeCurrent) {
     //The item ID will tell us where to put it in the inventory
     uint uiItemId = pItem->getItemId();
 
-    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER);
+    ContainerRenderModel *panel = m_pInventoryPanel;
 
     //Wrap the item in the appropriate draggable render model and stash on the
     // appropriate inventory gui panel
@@ -316,7 +316,7 @@ DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
 
 void
 DraggableHud::removeItem(uint invIndex) {
-    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+    ContainerRenderModel *panel = m_pInventoryPanel
                                     ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
     RenderModel *item = panel->get<RenderModel*>(invIndex);
     if(item != NULL) {
@@ -326,7 +326,7 @@ DraggableHud::removeItem(uint invIndex) {
 
 void
 DraggableHud::removeSpell(uint invIndex) {
-    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+    ContainerRenderModel *panel = m_pInventoryPanel
                                     ->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
     RenderModel *item = panel->get<RenderModel*>(invIndex);
     if(item != NULL) {
@@ -336,7 +336,7 @@ DraggableHud::removeSpell(uint invIndex) {
 
 void
 DraggableHud::removeElement(uint invIndex) {
-    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+    ContainerRenderModel *panel = m_pInventoryPanel
                                     ->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
     RenderModel *item = panel->get<RenderModel*>(invIndex);
     if(item != NULL) {
@@ -350,7 +350,7 @@ DraggableHud::removeScheduledItems() {
     list<uint>::iterator it;
 
     //Remove generic items
-    panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+    panel = m_pInventoryPanel
             ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
     for(it = m_lsItemsToRemove.begin(); it != m_lsItemsToRemove.end(); ++it) {
         DraggableItem *item = panel->get<DraggableItem*>(*it);
@@ -370,7 +370,7 @@ DraggableHud::removeScheduledItems() {
     m_lsItemsToRemove.clear();
 
     //Remove spells
-    panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+    panel = m_pInventoryPanel
             ->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
     for(it = m_lsSpellsToRemove.begin(); it != m_lsSpellsToRemove.end(); ++it) {
         DraggableElementalSpellItem *item = panel->get<DraggableElementalSpellItem*>(*it);
@@ -390,7 +390,7 @@ DraggableHud::removeScheduledItems() {
     m_lsSpellsToRemove.clear();
 
     //Remove elements
-    panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+    panel = m_pInventoryPanel
             ->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
     for(it = m_lsElementsToRemove.begin(); it != m_lsElementsToRemove.end(); ++it) {
         DraggableElementalSpellItem *item = panel->get<DraggableElementalSpellItem*>(*it);
@@ -475,7 +475,7 @@ DraggableHud::makeCurrent(Item *pItem) {
 
 void
 DraggableHud::moveItem(uint startIndex, uint endIndex) {
-    ContainerRenderModel *panel = get<ContainerRenderModel*>(MGHUD_MAIN_CONTAINER)
+    ContainerRenderModel *panel = m_pInventoryPanel
                                 ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
     DraggableItem *item1 = panel->get<DraggableItem*>(startIndex);
     DraggableItem *item2 = panel->get<DraggableItem*>(endIndex);
@@ -533,20 +533,22 @@ DraggableHud::initPlayerHud() {
     );
     ContainerRenderModel *healthPanel = new ContainerRenderModel(rcHealthPanel);
     ContainerRenderModel *itembarPanel = new ContainerRenderModel(rcItembarPanel);
-    ContainerRenderModel *inventoryPanel = new ContainerRenderModel(rcInventoryPanel);
     ContainerRenderModel *spellPanel = new ContainerRenderModel(rcInventoryPanel);
     ContainerRenderModel *itemPanel = new ContainerRenderModel(rcInventoryPanel);
-    ContainerRenderModel *sidePanel = new ContainerRenderModel(rcSidePanel);
+
+    //We keep these two specially so that they can be restored instantly
+    m_pInventoryPanel = new ContainerRenderModel(rcInventoryPanel);
+    m_pMainSidePanel = new ContainerRenderModel(rcSidePanel);
 
     ContainerRenderModel *elementPanel = new ContainerRenderModel(rcInventoryPanel);
     panel->add(MGHUD_HEALTH_CONTAINER, healthPanel);
     panel->add(MGHUD_ITEMBAR_CONTAINER, itembarPanel);
-    panel->add(MGHUD_MAIN_CONTAINER, inventoryPanel);
-    panel->add(MGHUD_SIDEBUTTON_CONTAINER, sidePanel);
+    panel->add(MGHUD_MAIN_CONTAINER, m_pInventoryPanel);
+    panel->add(MGHUD_SIDEBUTTON_CONTAINER, m_pMainSidePanel);
 
-    inventoryPanel->add(MGHUD_SPELL_CONTAINER, spellPanel);
-    inventoryPanel->add(MGHUD_ITEM_CONTAINER, itemPanel);
-    inventoryPanel->add(MGHUD_ELEMENT_CONTAINER, elementPanel);
+    m_pInventoryPanel->add(MGHUD_SPELL_CONTAINER, spellPanel);
+    m_pInventoryPanel->add(MGHUD_ITEM_CONTAINER, itemPanel);
+    m_pInventoryPanel->add(MGHUD_ELEMENT_CONTAINER, elementPanel);
 
     /*
      * Area name and current-action label
@@ -586,7 +588,7 @@ DraggableHud::initPlayerHud() {
     /*
      * Sidebutton panel
      */
-    initSideButtonHud(sidePanel);
+    initSideButtonHud(m_pMainSidePanel);
 }
 
 void

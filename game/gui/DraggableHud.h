@@ -85,6 +85,10 @@ private:
     std::list<uint> m_lsSpellsToRemove;
     std::list<uint> m_lsElementsToRemove;
 
+    //Some panels that may need to get swapped in or out
+    ContainerRenderModel *m_pMainSidePanel;
+    ContainerRenderModel *m_pInventoryPanel;
+
 
     class ItemDebugFunctor {
     public:
