@@ -228,6 +228,8 @@ GameManager::loadGame() {
 void
 GameManager::cleanGame() {
     PWE::get()->cleanWorld(this);
+    D3RE::get()->setLookAngle(M_PI / 2.f);
+    D3RE::get()->moveScreenTo(Point());
     m_bWorldIsClean = true;
 }
 

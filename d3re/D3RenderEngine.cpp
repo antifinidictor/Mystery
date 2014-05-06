@@ -207,7 +207,9 @@ D3RenderEngine::render() {
     }
 
     prepHud();
+    glDisable(GL_DEPTH_TEST);   //Disable depth test
     m_pHudContainer->render(this);
+    glEnable(GL_DEPTH_TEST);    // Re-enable depth testing for z-culling
 
     //glBindTexture(GL_TEXTURE_2D, 0);
     SDL_GL_SwapWindow(m_sdlWindow);
