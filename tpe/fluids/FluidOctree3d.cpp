@@ -9,7 +9,9 @@ using namespace std;
 
 #define DEFAULT_VORTON_RADIUS 0.1
 
+//Static vars
 BasicScheduler *BasicScheduler::m_sInstance = new BasicScheduler();
+static SDL_mutex *s_mxRenderEngine = SDL_CreateMutex();
 
 FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution)
     : m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Point())
@@ -345,11 +347,6 @@ FluidOctreeNode::updateContents(float fTime) {
                 pe->applyPhysics(it->second, (*mv));
             }
         }
-/*
-        if(bHasMoved || D3RE::get()->screenHasMoved()) {
-            D3RE::get()->manageObjOnScreen(it->second);
-        }
-*/
     }
 
     //Collision check the dynamic objects against contents they had not yet been checked against
@@ -522,7 +519,9 @@ FluidOctreeNode::addNow(GameObject *obj) {
         obj->setFlag(PWE_INFORM_OBJ_ADD, false);
         obj->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ADDED_TO_AREA);
     }
+    SDL_LockMutex(s_mxRenderEngine);
     D3RE::get()->manageObjOnScreen(obj);
+    SDL_UnlockMutex(s_mxRenderEngine);
 }
 
 void
@@ -533,7 +532,9 @@ FluidOctreeNode::removeNow(uint uiObjId) {
         if(itFoundObj->second->getFlag(PWE_INFORM_OBJ_REMOVE)) {
             itFoundObj->second->setFlag(PWE_INFORM_OBJ_REMOVE, false);
             //itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_REMOVED_FROM_AREA);
+            SDL_LockMutex(s_mxRenderEngine);
             D3RE::get()->remove(itFoundObj->second);
+            SDL_UnlockMutex(s_mxRenderEngine);
         }
 
         //Object exists, remove it
@@ -548,7 +549,9 @@ FluidOctreeNode::eraseNow(uint uiObjId) {
     //Does the object even exist in this node?
     iter_t itFoundObj = m_mContents.find(uiObjId);
     if(itFoundObj != m_mContents.end()) {
+        SDL_LockMutex(s_mxRenderEngine);
         D3RE::get()->remove(itFoundObj->second);
+        SDL_UnlockMutex(s_mxRenderEngine);
 
         //TODO: Always inform objects of imminent erasure
         itFoundObj->second->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ERASED_FROM_AREA);
@@ -658,6 +661,7 @@ FluidOctreeRoot::update(float fTime) {
     FluidOctreeNode::update(fTime);
 
     //Let the screen know about objects that moved
+    SDL_LockMutex(s_mxRenderEngine);
     D3RE *re = D3RE::get();
     for(objlist_iter_t it = m_lsDynamicObjs.begin(); it != m_lsDynamicObjs.end(); ++it) {
         re->manageObjOnScreen(*it);
@@ -669,6 +673,7 @@ FluidOctreeRoot::update(float fTime) {
             re->manageObjOnScreen(*it);
         }
     }
+    SDL_UnlockMutex(s_mxRenderEngine);
 
     //If any objects left the root, they should be returned to the root
     for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {

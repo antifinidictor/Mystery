@@ -184,6 +184,7 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         //Get the queue lock.  Notice we keep the lock if the queue is empty
         SDL_LockMutex(pwe->m_mxUpdateNodeQueue);
     }
+    printf("Main thread finished updating the list (%d items)\n", m_lsUpdateNodeQueue.size());
 
     if(m_pCleanListener) {
         re->clearScreen();
