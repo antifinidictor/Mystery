@@ -7,12 +7,51 @@
 #include "game/ObjectFactory.h"
 #include <list>
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 #include "tpe/fluids/FluidOctree3d.h"
+#include "mge/ConfigManager.h"
+
 using namespace std;
+
+int
+PartitionedWorldEngine::nodeUpdateThread(void *data) {
+    SDL_threadID threadID = SDL_ThreadID();    //For debugging
+    printf("Thread %d executing\n", threadID);
+
+    bool *bStop = (bool*)data;
+    while(!*bStop) {
+        //Get the queue lock
+        SDL_LockMutex(pwe->m_mxUpdateNodeQueue);
+        if(pwe->m_lsUpdateNodeQueue.size() == 0) {
+            printf("Thread %d did not find any nodes to update\n", threadID);
+
+            //If the list is empty, unlock and wait a bit before trying again
+            SDL_UnlockMutex(pwe->m_mxUpdateNodeQueue);
+            SDL_Delay(1);
+        } else {
+            printf("Thread %d found %d nodes awaiting update\n", threadID, pwe->m_lsUpdateNodeQueue.size());
+
+            //Otherwise, get the next node waiting for processing
+            FluidOctreeNode *node = pwe->m_lsUpdateNodeQueue.front();
+            pwe->m_lsUpdateNodeQueue.pop_front();
+
+            //Unlock the list so other nodes can be updated
+            SDL_UnlockMutex(pwe->m_mxUpdateNodeQueue);
+
+            //Update the node
+            node->update(pwe->m_fCurDeltaTime);
+        }
+    }
+
+    printf("Thread %d exiting\n");
+    return 0;
+}
 
 PartitionedWorldEngine *PartitionedWorldEngine::pwe;
 
-PartitionedWorldEngine::PartitionedWorldEngine() {
+PartitionedWorldEngine::PartitionedWorldEngine()
+    :   m_bCleaning(false)
+{
     assert(PWE_NUM_FLAGS <= WORLD_FLAGS_END);
 
     printf("World engine has id %d\n", getId());
@@ -29,14 +68,33 @@ PartitionedWorldEngine::PartitionedWorldEngine() {
     m_eNextState = m_eState = PWE_RUNNING;
     m_pManagerObject = NULL;
     m_pCleanListener = NULL;
+
+    //Create the mutex and initially lock it
+    m_mxUpdateNodeQueue = SDL_CreateMutex();
+    SDL_LockMutex(m_mxUpdateNodeQueue);
+
+    //Create the threads
+    using boost::lexical_cast;
+    int numThreads = ConfigManager::get()->get("pwe.threads", 4);
+    string threadNameBase = "PWE_UpdateNode";
+    for(int curThread = 0; curThread < numThreads; ++curThread) {
+        string threadName = threadNameBase + lexical_cast<string>(curThread);
+        printf("Created thread %s\n", threadName.c_str());
+        SDL_CreateThread(nodeUpdateThread, threadName.c_str(), &m_bCleaning);
+    }
 }
 
 PartitionedWorldEngine::~PartitionedWorldEngine() {
+    m_bCleaning = true;
+    SDL_UnlockMutex(m_mxUpdateNodeQueue);
+
     printf("World engine cleaning\n");
     MGE::get()->removeListener(this->getId(), ON_MOUSE_MOVE);
     MGE::get()->removeListener(this->getId(), ON_BUTTON_INPUT);
     //Need to free everything
     cleanAllAreas();
+
+    SDL_DestroyMutex(m_mxUpdateNodeQueue);
 }
 
 
@@ -97,6 +155,8 @@ PartitionedWorldEngine::reserveId(uint id) {
 
 void
 PartitionedWorldEngine::update(float fDeltaTime) {
+    m_fCurDeltaTime = fDeltaTime;
+
     //Manager is always updated
     if(m_pManagerObject != NULL) {
         m_pManagerObject->update(fDeltaTime);
@@ -104,7 +164,26 @@ PartitionedWorldEngine::update(float fDeltaTime) {
 
     pe->update(fDeltaTime);
 
-    m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime, m_eState == PWE_PAUSED));
+    //m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime, m_eState == PWE_PAUSED));
+    m_pCurArea->m_pOctree->scheduleUpdates(this);
+
+    //Perform updates using this thread. The queue is locked by this thread between updates;
+    // other threads
+    while(m_lsUpdateNodeQueue.size() > 0) {
+        printf("Main thread updates list, num items = %d\n", m_lsUpdateNodeQueue.size());
+        //Get the first item from the queue
+        FluidOctreeNode *node = pwe->m_lsUpdateNodeQueue.front();
+        m_lsUpdateNodeQueue.pop_front();
+
+        //Unlock the list so other nodes can be updated by other threads
+        SDL_UnlockMutex(pwe->m_mxUpdateNodeQueue);
+
+        //Update the node
+        node->update(pwe->m_fCurDeltaTime);
+
+        //Get the queue lock.  Notice we keep the lock if the queue is empty
+        SDL_LockMutex(pwe->m_mxUpdateNodeQueue);
+    }
 
     if(m_pCleanListener) {
         re->clearScreen();
@@ -509,6 +588,13 @@ PartitionedWorldEngine::removeListener(uint uiListenerId, uint eventId, uint uiA
 		return false;
 	}
 	return false;
+}
+
+
+void
+PartitionedWorldEngine::scheduleUpdate(FluidOctreeNode *node) {
+    //Assumes list is already locked
+    m_lsUpdateNodeQueue.push_back(node);
 }
 
 int

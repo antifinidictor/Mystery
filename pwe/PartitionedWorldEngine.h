@@ -14,8 +14,7 @@
 #include "mge/RenderEngine.h"
 #include "mge/GameObject.h"
 #include "mge/Event.h"
-
-class FluidOctreeRoot;
+#include "tpe/fluids/FluidOctree3d.h"
 
 enum WorldState {
     PWE_PAUSED,
@@ -39,7 +38,7 @@ enum WorldFlags {
     PWE_NUM_FLAGS
 };
 
-class PartitionedWorldEngine : public WorldEngine, public Listener, public EventHandler {
+class PartitionedWorldEngine : public WorldEngine, public Listener, public EventHandler, public Scheduler {
 public:
     static void init()  { pwe = new PartitionedWorldEngine(); }
     static void clean() { delete pwe; }
@@ -91,6 +90,10 @@ public:
     void addListener(Listener *pListener, uint eventId, uint uiAreaId, char* triggerData = 0);
     bool removeListener(uint uiListenerId, uint eventId, uint uiAreaId);
 
+    //Scheduler
+    virtual void scheduleUpdate(FluidOctreeNode *node);
+
+    //General
     void setState(WorldState eState) { m_eNextState = eState; }
     void setManager(GameObject *obj) { m_pManagerObject = obj; }
 
@@ -124,6 +127,7 @@ private:
 
     void toPowerOfTwo(Box &in);
 
+    static int nodeUpdateThread(void *data);
     static PartitionedWorldEngine *pwe;
 
     PhysicsEngine *pe;
@@ -136,6 +140,10 @@ private:
 
     //Scheduled events
     std::list<uint> m_lsAreasToClean;
+    std::list<FluidOctreeNode*> m_lsUpdateNodeQueue;
+    SDL_mutex *m_mxUpdateNodeQueue;
+    bool m_bCleaning;
+    float m_fCurDeltaTime;
 
     std::list<uint> m_lsFreeIds;
 
