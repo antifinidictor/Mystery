@@ -345,10 +345,11 @@ FluidOctreeNode::updateContents(float fTime) {
                 pe->applyPhysics(it->second, (*mv));
             }
         }
-
+/*
         if(bHasMoved || D3RE::get()->screenHasMoved()) {
             D3RE::get()->manageObjOnScreen(it->second);
         }
+*/
     }
 
     //Collision check the dynamic objects against contents they had not yet been checked against
@@ -653,11 +654,29 @@ FluidOctreeRoot::~FluidOctreeRoot() {
 
 void
 FluidOctreeRoot::update(float fTime) {
+    //Perform a standard update
     FluidOctreeNode::update(fTime);
+
+    //Let the screen know about objects that moved
+    D3RE *re = D3RE::get();
+    for(objlist_iter_t it = m_lsDynamicObjs.begin(); it != m_lsDynamicObjs.end(); ++it) {
+        re->manageObjOnScreen(*it);
+    }
+
+    //If the screen moved, let it know about objects that didn't move
+    if(re->screenHasMoved()) {
+        for(objlist_iter_t it = m_lsStaticObjs.begin(); it != m_lsStaticObjs.end(); ++it) {
+            re->manageObjOnScreen(*it);
+        }
+    }
+
+    //If any objects left the root, they should be returned to the root
     for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
         //For now, just add them to me
         m_mContents[(*it)->getId()] = *it;
     }
+
+    //Clean the lists in preparation for the next update
     cleanResults();
 }
 

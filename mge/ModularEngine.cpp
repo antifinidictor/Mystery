@@ -12,6 +12,7 @@ void ModularEngine::init(int iSDLVideoFlags) {
     mge = new ModularEngine(iSDLVideoFlags);
 
     ConfigManager::init();
+    ConfigManager::get()->load("res/config.info");
 }
 
 void ModularEngine::clean() {
