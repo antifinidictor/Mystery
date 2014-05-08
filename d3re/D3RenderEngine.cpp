@@ -21,7 +21,27 @@ using namespace std;
 //static members
 D3RenderEngine *D3RenderEngine::re;
 
-D3RenderEngine::D3RenderEngine() {
+D3RenderEngine::D3RenderEngine()
+    :   m_ptPos(),
+        m_ptCamPos(),
+        m_fCamDist(CAM_DIST),
+        m_fCamAngle(CAM_ANGLE),
+        m_fLookAngle(LOOK_ANGLE),
+        m_fDesiredLookAngle(LOOK_ANGLE),
+        m_crWorld(0xFF, 0xFF, 0xFF),
+        m_fColorWeight(0.5f),
+        m_pHudContainer(new ContainerRenderModel(Rect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT))),
+        m_bGuiMode(false),
+        m_bDrawCollisions(false),
+        m_bDrawRealMouse(true),
+        m_pMouseOverObject(NULL),
+        m_iMouseX(0),
+        m_iMouseY(0),
+//        m_uiMouseFrame(0),
+//        m_uiMouseTimer(0),
+        m_ptMouseInWorld(-SCREEN_WIDTH / 2, 0.f, -SCREEN_HEIGHT / 2),
+        m_v3MouseRay()
+{
     assert(D3RE_NUM_FLAGS <= RENDER_FLAGS_END);
 
     printf("Render engine has ID %d\n", getId());
@@ -73,35 +93,27 @@ D3RenderEngine::D3RenderEngine() {
     prepCamera();
 
     //Other values
-
-    m_fCamDist = CAM_DIST;
-    m_fCamAngle = CAM_ANGLE;
-    m_fLookAngle = LOOK_ANGLE;
-    m_fDesiredLookAngle = LOOK_ANGLE;
-    m_ptPos = Point();
     updateCamPos();
-    m_crWorld = Color(0xFF, 0xFF, 0xFF);
-    m_fColorWeight = 0.5f;
-    m_bGuiMode = false;
-    m_bDrawCollisions = false;
 
-    m_ptMouseInWorld = Point(-SCREEN_WIDTH / 2, 0.f, -SCREEN_HEIGHT / 2);
-    m_v3MouseRay = Vec3f();
-
-    m_pHudContainer = new ContainerRenderModel(Rect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT));
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
-    m_iMouseX = m_iMouseY = 0;
-
-    m_uiMouseFrame = 0;
-    m_uiMouseTimer = 0;
-    m_pMouseOverObject = NULL;
-
-    m_bDrawRealMouse = true;
 }
 
 D3RenderEngine::~D3RenderEngine() {
     printf("Render engine cleaning\n");
     MGE::get()->removeListener(getId(), ON_MOUSE_MOVE);
+
+    //Clean images
+    for(vector<Image*>::iterator it = m_vImages.begin(); it != m_vImages.end(); ++it) {
+        delete *it;
+    }
+    m_vImages.clear();
+    m_mImageNameToId.clear();
+    m_lsTransparentObjs.clear();
+    m_lsObjsOnScreen.clear();
+
+    SDL_DestroyWindow(m_sdlWindow);
+    SDL_GL_DeleteContext(m_glContext);
+
     delete m_pHudContainer;
 }
 
@@ -169,10 +181,11 @@ D3RenderEngine::render() {
     m_pMouseOverObject = NULL;
     for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
             it != m_lsObjsOnScreen.end(); ++it) {
-        if(!(*it)->getFlag(D3RE_INVISIBLE)) {
-            (*it)->getRenderModel()->render(this);
+        GameObject *obj = *it;
+        if(!obj->getFlag(D3RE_INVISIBLE)) {
+            obj->getRenderModel()->render(this);
             //if(ptOutOfBounds(m_ptMouseInWorld, (*it)->getPhysicsModel()->getCollisionVolume()) == 0) {
-            float t = rayIntersects(m_v3MouseRay, m_ptCamPos, (*it)->getPhysicsModel()->getCollisionVolume());
+            float t = rayIntersects(m_v3MouseRay, m_ptCamPos, obj->getPhysicsModel()->getCollisionVolume());
             if(fabs(t) < fabs(mouseOverT)) {
                 mouseInObject = true;
                 mouseOverT = t;
@@ -411,7 +424,7 @@ void
 D3RenderEngine::drawBox(const Box &bx, const Color &cr) {
     //D3RE::get()->prepCamera();
 
-    glBindTexture( GL_TEXTURE_2D, NULL);
+    glBindTexture( GL_TEXTURE_2D, 0);
     glBegin(GL_LINES);
         //Bottom edges
         glColor3f(cr.r / 255.f, cr.g / 255.f, cr.b / 255.f);
@@ -458,7 +471,7 @@ D3RenderEngine::drawBox(const Box &bx, const Color &cr) {
 void
 D3RenderEngine::drawCircle(const Point &ptCenter, float radius, const Color &cr) {
     const float STEP = M_PI / 10;
-    glBindTexture( GL_TEXTURE_2D, NULL);
+    glBindTexture( GL_TEXTURE_2D, 0);
     glBegin(GL_LINE_LOOP);
         glColor3f(cr.r / 255.f, cr.g / 255.f, cr.b / 255.f);
         for(float theta = 0.f; theta < M_PI * 2.f; theta += STEP) {

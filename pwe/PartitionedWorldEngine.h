@@ -40,7 +40,7 @@ enum WorldFlags {
 
 class PartitionedWorldEngine : public WorldEngine, public Listener, public EventHandler, public Scheduler {
 public:
-    static void init()  { pwe = new PartitionedWorldEngine(); }
+    static void init();
     static void clean() { delete pwe; }
     static PartitionedWorldEngine *get() { return pwe; }
 
@@ -110,6 +110,11 @@ private:
             m_sName = sName;
             m_pOctree = NULL;
         }
+        ~M_Area() {
+            if(m_pOctree != NULL) {
+                delete m_pOctree;
+            }
+        }
         std::string m_sName;
         FluidOctreeRoot *m_pOctree;
         std::map<uint, Listener*> m_mMouseMoveListeners;
@@ -135,24 +140,26 @@ private:
 
     std::map<uint, M_Area> m_mWorld;
     uint m_uiCurArea, m_uiNextArea, m_uiEffectiveArea;
+    M_Area *m_pCurArea;
+
     bool m_bFirstRun;
-    Listener *m_pCleanListener;
+    bool m_bFinalCleaning;
+    float m_fCurDeltaTime;  //used by the threads
 
     //Scheduled events
     std::list<uint> m_lsAreasToClean;
     std::list<FluidOctreeNode*> m_lsUpdateNodeQueue;
+    std::list<SDL_Thread*> m_lsUpdateThreads;
     SDL_mutex *m_mxUpdateNodeQueue;
-    bool m_bCleaning;
-    float m_fCurDeltaTime;
 
-    std::list<uint> m_lsFreeIds;
 
     GameObject *m_pManagerObject;   //This object performs management functions
+    Listener *m_pCleanListener;     //This object listens for mid-game world-clean events
 
     uint m_uiNextId;
     uint m_uiNextAreaId;
+    std::list<uint> m_lsFreeIds;
 
-    M_Area *m_pCurArea;
     WorldState m_eState, m_eNextState;
 };
 

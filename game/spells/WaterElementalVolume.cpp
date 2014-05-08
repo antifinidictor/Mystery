@@ -70,6 +70,9 @@ printf(__FILE__" %d\n",__LINE__);
 WaterElementalVolume::~WaterElementalVolume() {
     delete m_pPhysicsModel;
     delete m_pRenderModel;
+    delete m_pVelocityGrids[0];
+    delete m_pVelocityGrids[1];
+    delete m_pxMap;
 }
 
 GameObject*

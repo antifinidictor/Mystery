@@ -46,6 +46,14 @@ FluidOctreeNode::~FluidOctreeNode() {
         delete it->second;
     }
     m_mContents.clear();
+
+    //Objects that got added
+    for(list<GameObject *>::iterator it = m_lsObjsToAdd.begin(); it != m_lsObjsToAdd.end(); ++it) {
+        (*it)->callBack(m_uiEngineId, &m_uiAreaId, PWE_ON_ERASED_FROM_AREA);
+        delete (*it);
+    }
+    m_lsObjsToAdd.clear();
+
     SDL_UnlockMutex(m_mutex);
     SDL_DestroyMutex(m_mutex);
 }

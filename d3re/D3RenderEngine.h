@@ -111,11 +111,11 @@ private:
 
     static D3RenderEngine *re;
     Point m_ptPos, m_ptCamPos;
-    Color m_crWorld;
-    float m_fColorWeight;
     float m_fCamDist, m_fCamAngle;
     float m_fLookAngle, m_fDesiredLookAngle;    //Angle at which the camera looks
-    int m_iMouseX, m_iMouseY;
+    Color m_crWorld;
+    float m_fColorWeight;
+//    uint m_uiMouseFrame, m_uiMouseTimer;
     uint m_uiWidth, m_uiHeight;
 
     std::list<GameObject *> m_lsObjsOnScreen;
@@ -129,8 +129,8 @@ private:
 
     //Mouse animations
     GameObject *m_pMouseOverObject;
-    uint m_uiMouseFrame, m_uiMouseTimer;
 
+    int m_iMouseX, m_iMouseY;
     Point m_ptMouseInWorld;
     Vec3f m_v3MouseRay;
     SDL_Window *m_sdlWindow;

@@ -19,6 +19,8 @@ HmapSurface::~HmapSurface()
 {
     PWE::get()->freeId(getId());
     delete m_pxMap;
+    delete m_pRenderModel;
+    delete m_pPhysicsModel;
 }
 
 bool

@@ -24,6 +24,8 @@ Item::Item(uint id, uint itemId, const Point &pos)
 
 Item::~Item() {
     PWE::get()->freeId(getId());
+    delete m_pPhysicsModel;
+    delete m_pRenderModel;
     //dtor
 }
 

@@ -29,6 +29,9 @@ public:
     //Returns a reference to the appropriate object
     GameObject *find(uint uiObjId);
 
+    //Returns true if the object is empty
+    bool empty() { return m_bEmpty; }
+
 
     void write(boost::property_tree::ptree &pt, const std::string &keyBase);
 
@@ -70,7 +73,6 @@ protected:
     bool getChildBounds(int iQuadName, const Box &bxMyBounds, Box &bxChildBounds);
     bool childIsLeafNode(const Box &bxChildBounds);
     void updateEmptiness();
-    bool empty() { return m_bEmpty; }
 
     void cleanResults() {
         m_lsDynamicObjs.clear();
@@ -110,7 +112,8 @@ public:
     virtual ~FluidOctreeRoot();
 
     void scheduleUpdates(Scheduler *s) {
-        int updates = FluidOctreeNode::recursiveScheduleUpdates(s);
+        FluidOctreeNode::recursiveScheduleUpdates(s);
+        //int updates = FluidOctreeNode::recursiveScheduleUpdates(s);
         //printf("%d updates scheduled\n", updates);
     }
 

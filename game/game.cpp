@@ -98,7 +98,7 @@ void initWorld() {
 
     registerClasses();
 
-    ModularEngine *mge = ModularEngine::get();
+//    ModularEngine *mge = ModularEngine::get();
 
 
     //Initialize the text renderer

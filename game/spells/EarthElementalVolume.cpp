@@ -41,6 +41,7 @@ EarthElementalVolume::EarthElementalVolume(uint id, uint texId, const Box &bxVol
 EarthElementalVolume::~EarthElementalVolume() {
     delete m_pPhysicsModel;
     delete m_pRenderModel;
+    delete m_pxMap;
 }
 
 
@@ -72,6 +73,9 @@ EarthElementalVolume::write(boost::property_tree::ptree &pt, const std::string &
     pt.put(keyBase + ".vol.h", bxVolume.h);
     pt.put(keyBase + ".vol.l", bxVolume.l);
     Color cr = m_pRenderModel->getColor();
+    pt.put(keyBase + ".cr.r", cr.r);
+    pt.put(keyBase + ".cr.g", cr.g);
+    pt.put(keyBase + ".cr.b", cr.b);
     pt.put(keyBase + ".density", m_pPhysicsModel->getDensity());
 }
 bool

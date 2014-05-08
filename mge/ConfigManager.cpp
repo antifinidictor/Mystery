@@ -22,6 +22,7 @@ ConfigManager::~ConfigManager()
 
 void
 ConfigManager::load(const std::string &sConfigFile) {
+    try {
     //Read either a .info or .xml file
     uint fileExtIndex = sConfigFile.find_last_of(".");
     if(sConfigFile.substr(fileExtIndex) == ".info") {
@@ -35,7 +36,6 @@ ConfigManager::load(const std::string &sConfigFile) {
     using boost::bad_lexical_cast;
 
     //Special configuration options should be dealt with: In this case, user-specified keys
-    try {
     BOOST_FOREACH(ptree::value_type &a, m_configInfo.get_child(USER_KEY_BASE)) {
         //Extract the numerical key mappings (probably isn't human readable)
         string key = USER_KEY_BASE + "." + a.first.data();
