@@ -14,6 +14,7 @@
 #include "d3re/d3re.h"
 #include "pwe/PartitionedWorldEngine.h"
 #include "tpe/TimePhysicsEngine.h"
+#include <boost/filesystem.hpp>
 
 class ElementalVolume;
 class Player;
@@ -59,8 +60,7 @@ public:
     void newGame(const std::string &filename);     //Creates new save file & loads it
     void loadGame(const std::string &filename);    //Loads save file (world file should already be loaded)
     void saveGame(const std::string &filename);
-    const std::string &getCurGameFile() { return m_sGameFileName; }
-    const std::string &getCurGameFileRoot();
+    void getCurGameFileRoot(std::string &result);
 
     void readWorldFile();
     void readSaveFile();
@@ -85,7 +85,7 @@ private:
     void initCurState();
     void cleanCurState();
 
-    void validateSaveFileName(std::string &filename);
+    bool validateSaveFileName(const std::string &filename, bool bMustExist);
 
     static GameManager *m_pInstance;
 
@@ -97,7 +97,7 @@ private:
     Color m_crBackground;
     bool m_bWorldIsClean;   //True if world is definitely clean
 
-    std::string m_sGameFileName;
+    boost::filesystem::path m_fsGameFile;
 
     Listener *m_pPlayerListener; //The player, as a listener
 

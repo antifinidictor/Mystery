@@ -328,18 +328,18 @@ DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
     }
     case ON_SAVE_GAME: {
         //Present the player with game-save options
-        m_sInput = GameManager::get()->getCurGameFileRoot();
+        GameManager::get()->getCurGameFileRoot(m_sInput);
         m_eState = HUD_STATE_TYPE_SAVE_FILE;
         prepSideTypeHud("Enter a save name:", "Save Game", "Cancel");
         break;
     }
     case ON_LOAD_GAME:
-        m_sInput = GameManager::get()->getCurGameFileRoot();
+        GameManager::get()->getCurGameFileRoot(m_sInput);
         m_eState = HUD_STATE_TYPE_LOAD_FILE;
         prepSideTypeHud("Enter a save name:", "Load Game", "Cancel");
         break;
     case ON_NEW_GAME:
-        m_sInput = GameManager::get()->getCurGameFileRoot();
+        GameManager::get()->getCurGameFileRoot(m_sInput);
         m_eState = HUD_STATE_TYPE_NEW_FILE;
         prepSideTypeHud("Choose a save name:", "New Game", "Cancel");
         break;

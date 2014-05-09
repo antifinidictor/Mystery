@@ -10,7 +10,6 @@
 
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/info_parser.hpp>
-//#include <boost/filesystem.hpp>
 
 #define FADE_TIME_STEP 0.1f
 #define DEFAULT_WEIGHT 0.0f //Used to be 0.5f.  Now let's only change it if the world color changes
@@ -218,12 +217,14 @@ GameManager::readSaveFile() {
     using boost::property_tree::ptree;
     ptree pt;
 
+    string file = m_fsGameFile.string();
+
     //Read appropriate file format
-    uint fileExtIndex = m_sGameFileName.find_last_of(".");
-    if(m_sGameFileName.substr(fileExtIndex) == ".info") {
-        read_info(m_sGameFileName, pt);
+    uint fileExtIndex = file.find_last_of(".");
+    if(file.substr(fileExtIndex) == ".info") {
+        read_info(file, pt);
     } else {
-        read_xml(m_sGameFileName, pt);
+        read_xml(file, pt);
     }
 
     //Read areas
@@ -312,11 +313,9 @@ GameManager::resetInputMapping() {
 
 void
 GameManager::newGame(const std::string &filename) {
-    uint fileExtIndex = filename.find_last_of(".");
-    if(fileExtIndex == string::npos) {
-        m_sGameFileName = filename + ".info";  //default
-    } else {
-        m_sGameFileName = filename;
+    if(!validateSaveFileName(filename, false)) {
+        printf("ERROR: Bad save file %s\n", filename.c_str());
+        return;
     }
 
     pushState(GM_NEW_GAME);
@@ -328,11 +327,9 @@ GameManager::newGame(const std::string &filename) {
 
 void
 GameManager::loadGame(const std::string &filename) {
-    uint fileExtIndex = filename.find_last_of(".");
-    if(fileExtIndex == string::npos) {
-        m_sGameFileName = filename + ".info";  //default
-    } else {
-        m_sGameFileName = filename;
+    if(!validateSaveFileName(filename, true)) {
+        printf("ERROR: Bad save file %s\n", filename.c_str());
+        return;
     }
 
     pushState(GM_LOAD_GAME);
@@ -344,12 +341,9 @@ GameManager::loadGame(const std::string &filename) {
 
 void
 GameManager::saveGame(const std::string &filename) {
-    uint fileExtIndex = filename.find_last_of(".");
-    if(fileExtIndex == string::npos) {
-        m_sGameFileName = filename + ".info";  //default
-        fileExtIndex = filename.find_last_of(".");
-    } else {
-        m_sGameFileName = filename;
+    if(!validateSaveFileName(filename, false)) {
+        printf("ERROR: Bad save file %s\n", filename.c_str());
+        return;
     }
 
     //Write to a property tree
@@ -359,10 +353,11 @@ GameManager::saveGame(const std::string &filename) {
     PWE::get()->write(pt, "areas", true);   //'true' indicates this is a save file
 
     //Write the prop tree to the specified file
-    if(filename.substr(fileExtIndex) == ".info") {
-        write_info(filename, pt);
-    } else {
-        write_xml(filename, pt);
+    string ext = m_fsGameFile.extension().string();
+    if(ext.compare(".info") == 0) {
+        write_info(m_fsGameFile.string(), pt);
+    } else if(ext.compare(".xml") == 0) {
+        write_xml(m_fsGameFile.string(), pt);
     }
 }
 
@@ -571,12 +566,67 @@ GameManager::cleanCurState() {
 }
 
 
-void
-GameManager::validateSaveFileName(std::string &filename) {
+bool
+GameManager::validateSaveFileName(const std::string &filename, bool bMustExist) {
+    namespace fs = boost::filesystem;
+    fs::path path0(filename);
+    fs::path path1(filename);
+
+    if(path0.empty()) {
+        return false;
+    }
+
+    //Attach appropriate path front/back
+    if(!path0.has_parent_path()) {
+        path0 = fs::path("res/saves") / path0;
+        path1 = fs::path("res/saves") / path1;
+    }
+    if(!path0.has_extension()) {
+        path0 += ".info";
+        path1 += ".xml";
+    }
+
+    //Verify that the save files do not override important game files
+    bool bBad = (path0.compare("res/world.info") == 0) ||
+        (path1.compare("res/world.xml") == 0) ||
+        (path0.compare("res/save-template.info") == 0) ||
+        (path1.compare("res/save-template.xml") == 0);
+    if(bBad) {
+        return false;
+    }
+
+    //Always use the file that already exists.
+    // This code is a little redundant; if path1 and path0 are both valid,
+    // path1 will get selected first but then will be overridden by path0
+    bool bCouldUse = false;
+    if(exists(path1)) {
+        if(!is_directory(path1)) {
+            m_fsGameFile = path1;
+            bCouldUse = true;
+        }
+    } else if(!bMustExist) {
+        m_fsGameFile = path0;
+        bCouldUse = true;
+    }
+
+    if(exists(path0)) {
+        if(!is_directory(path0)) {
+            m_fsGameFile = path0;
+            bCouldUse = true;
+        }
+    } else if(!bMustExist) {
+        m_fsGameFile = path0;
+        bCouldUse = true;
+    }
+
+    return bCouldUse;
 }
 
-const std::string &
-GameManager::getCurGameFileRoot() {
-    //TODO: Install boost filesystem & finish implementing!
-    return m_sGameFileName;
+void
+GameManager::getCurGameFileRoot(std::string &result) {
+    namespace fs = boost::filesystem;
+    fs::path stem = m_fsGameFile.stem();
+    if(!stem.empty()) {
+        result = stem.string();
+    }
 }
