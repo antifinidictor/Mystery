@@ -112,7 +112,7 @@ void initWorld() {
     GameManager::get()->setDefaultInputMapping();
 
     //Read in the world from the file
-    ObjectFactory::get()->read("res/game.info");
+    GameManager::get()->readWorldFile();
 
     PWE::get()->setCurrentArea(0);
 

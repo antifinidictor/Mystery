@@ -60,11 +60,28 @@ public:
     void clearInventory();
 
 private:
+    enum HudState {
+        HUD_STATE_NORMAL,
+        HUD_STATE_TYPE_SAVE_FILE,
+        HUD_STATE_TYPE_LOAD_FILE,
+        HUD_STATE_TYPE_NEW_FILE,
+        HUD_STATE_QUIT,
+        HUD_STATE_NUM_STATES
+    };
 
     void initPlayerHud();
     void initHealthBarHud(ContainerRenderModel *panel);
     void initItemBarHud(ContainerRenderModel *panel);
     void initSideButtonHud(ContainerRenderModel *panel);
+    void initSideTypeHud(ContainerRenderModel *panel);
+    void initSideConfirmHud(ContainerRenderModel *panel);
+
+    void prepSideTypeHud(const std::string &sMessageLabel, const std::string &sActionLabel, const std::string &sInactionLabel);
+    void prepSideConfirmHud(const std::string &sMessageLabel, const std::string &sActionLabel, const std::string &sInactionLabel);
+    void prepSideButtonHud();
+    void unprepSideTypeHud();
+    void unprepSideConfirmHud();
+    void unprepSideButtonHud();
 
     void removeScheduledItems();
 
@@ -72,7 +89,10 @@ private:
     Rect indexToSpellRect(uint index);
     Rect indexToElementRect(uint index);
 
+    int typeOnKeyPress(InputData *data);
+
     uint m_uiId;
+    HudState m_eState;
 
     bool m_bHidden;
     int m_iAnimTimer;
@@ -89,7 +109,11 @@ private:
 
     //Some panels that may need to get swapped in or out
     ContainerRenderModel *m_pMainSidePanel;
+    ContainerRenderModel *m_pTypeSidePanel;
+    ContainerRenderModel *m_pConfirmSidePanel;
     ContainerRenderModel *m_pInventoryPanel;
+
+    std::string m_sInput;
 
 
     class ItemDebugFunctor {

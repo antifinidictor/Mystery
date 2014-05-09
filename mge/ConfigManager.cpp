@@ -31,10 +31,33 @@ ConfigManager::load(const std::string &sConfigFile) {
         read_xml(sConfigFile, m_configInfo);
     }
 
+    } catch(exception &e) {
+        printf("Could not read config options: %s\n", e.what());
+    }
+
+    //Apply user-specified key configurations
+    setKeyMapping();
+}
+
+void
+ConfigManager::save(const std::string &sConfigFile) {
+    //Write either a .info or .xml file
+    uint fileExtIndex = sConfigFile.find_last_of(".");
+    if(sConfigFile.substr(fileExtIndex) == ".info") {
+        write_info(sConfigFile, m_configInfo);
+    } else {
+        write_xml(sConfigFile, m_configInfo);
+    }
+}
+
+
+void
+ConfigManager::setKeyMapping() {
     using boost::property_tree::ptree;
     using boost::lexical_cast;
     using boost::bad_lexical_cast;
 
+    try {
     //Special configuration options should be dealt with: In this case, user-specified keys
     BOOST_FOREACH(ptree::value_type &a, m_configInfo.get_child(USER_KEY_BASE)) {
         //Extract the numerical key mappings (probably isn't human readable)
@@ -52,8 +75,15 @@ ConfigManager::load(const std::string &sConfigFile) {
         }
     }
     } catch(exception &e) {
-        printf("Could not read config options: %s\n", e.what());
+        printf("Could not apply keys: %s\n", e.what());
     }
+}
+
+void
+ConfigManager::configKey(int iSdlKeyIn, int iGameKeyOut) {
+    using boost::lexical_cast;
+    string propTreeKey = USER_KEY_BASE + "." + lexical_cast<string>(iSdlKeyIn);
+    m_configInfo.put(propTreeKey, iGameKeyOut);
 }
 
 std::string
@@ -62,7 +92,7 @@ ConfigManager::get(const std::string &key, const std::string &defaultValue) {
 }
 
 bool
-ConfigManager::get(const std::string &key, const bool &defaultValue) {
+ConfigManager::get(const std::string &key, bool defaultValue) {
     return m_configInfo.get(CONFIG_OPT_BASE + key, defaultValue);
 }
 
@@ -85,6 +115,16 @@ ConfigManager::get(const std::string &key, const Point &defaultValue) {
     return pt;
 }
 
+Rect
+ConfigManager::get(const std::string &key, const Rect &defaultValue) {
+    Rect rc;
+    rc.x = m_configInfo.get(CONFIG_OPT_BASE + key + ".x", defaultValue.x);
+    rc.y = m_configInfo.get(CONFIG_OPT_BASE + key + ".y", defaultValue.y);
+    rc.w = m_configInfo.get(CONFIG_OPT_BASE + key + ".w", defaultValue.w);
+    rc.h = m_configInfo.get(CONFIG_OPT_BASE + key + ".h", defaultValue.h);
+    return rc;
+}
+
 Box
 ConfigManager::get(const std::string &key, const Box &defaultValue) {
     Box bx;
@@ -97,3 +137,48 @@ ConfigManager::get(const std::string &key, const Box &defaultValue) {
     return bx;
 }
 
+
+void
+ConfigManager::set(const std::string &key, const std::string &value) {
+    m_configInfo.put(CONFIG_OPT_BASE + key, value);
+}
+
+void
+ConfigManager::set(const std::string &key, bool value) {
+    m_configInfo.put(CONFIG_OPT_BASE + key, value);
+}
+
+void
+ConfigManager::set(const std::string &key, int value) {
+    m_configInfo.put(CONFIG_OPT_BASE + key, value);
+}
+
+void
+ConfigManager::set(const std::string &key, float value) {
+    m_configInfo.put(CONFIG_OPT_BASE + key, value);
+}
+
+void
+ConfigManager::set(const std::string &key, const Point &value) {
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".x", value.x);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".y", value.y);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".z", value.z);
+}
+
+void
+ConfigManager::set(const std::string &key, const Rect &value) {
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".x", value.x);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".y", value.y);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".w", value.w);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".h", value.h);
+}
+
+void
+ConfigManager::set(const std::string &key, const Box &value) {
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".x", value.x);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".y", value.y);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".z", value.z);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".w", value.w);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".h", value.h);
+    m_configInfo.put(CONFIG_OPT_BASE + key + ".l", value.l);
+}

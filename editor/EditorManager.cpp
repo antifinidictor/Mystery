@@ -34,7 +34,7 @@ EditorManager::EditorManager(uint uiId) {
     m_uiHudAreaButtonIdStart = 0;
     m_uiObjMax = 0;
     initListPanelFunc = NULL;
-    m_sFile = "res/game.info";
+    m_sFile = "res/world.info";
     m_uiCurImageId = 3;
 
     MGE::get()->addListener(this, ON_BUTTON_INPUT);

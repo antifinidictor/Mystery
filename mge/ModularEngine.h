@@ -81,6 +81,7 @@ private:
 	//std::map<uint, Listener*> m_mMouseMoveListeners;
 	std::list<Listener*>m_lsButtonInputListeners;
 	std::list<Listener*>m_lsMouseMoveListeners;
+	std::list<Listener*>m_lsAnyKeyListeners;
 
     //General
 	bool m_bIsRunning;

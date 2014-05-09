@@ -430,7 +430,7 @@ PartitionedWorldEngine::setAreaName(uint uiAreaId, const std::string &name) {
 }
 
 void
-PartitionedWorldEngine::writeArea(uint uiAreaId, boost::property_tree::ptree &pt, const std::string &keyBase) {
+PartitionedWorldEngine::writeArea(uint uiAreaId, boost::property_tree::ptree &pt, const std::string &keyBase, bool bIsSaveFile) {
     map<uint, M_Area>::iterator itArea = m_mWorld.find(uiAreaId);
     map<uint, GameObject*>::iterator itObj;
     if(itArea == m_mWorld.end()) {
@@ -441,7 +441,7 @@ PartitionedWorldEngine::writeArea(uint uiAreaId, boost::property_tree::ptree &pt
     //Key-base should already be the area name
     pt.put(keyBase, uiAreaId);
 
-    itArea->second.m_pOctree->write(pt, keyBase);
+    itArea->second.m_pOctree->write(pt, keyBase, bIsSaveFile);
 }
 
 
@@ -451,6 +451,10 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
     if(itArea == m_mWorld.end()) {
         generateArea(uiAreaId);
         itArea = m_mWorld.find(uiAreaId);   //Used for setting up octree
+
+        //Set the area name
+        int iStartAreaNameIndex = keyBase.find_last_of('.') + 1;
+        setAreaName(uiAreaId, keyBase.substr(iStartAreaNameIndex));
     }
 
     Point ptObjMin;
@@ -527,10 +531,10 @@ PartitionedWorldEngine::readArea(uint uiAreaId, boost::property_tree::ptree &pt,
 }
 
 void
-PartitionedWorldEngine::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
+PartitionedWorldEngine::write(boost::property_tree::ptree &pt, const std::string &keyBase, bool bIsSaveFile) {
     map<uint, M_Area>::iterator itArea;
     for(itArea = m_mWorld.begin(); itArea != m_mWorld.end(); ++itArea) {
-        writeArea(itArea->first, pt, keyBase + "." + itArea->second.m_sName);
+        writeArea(itArea->first, pt, keyBase + "." + itArea->second.m_sName, bIsSaveFile);
     }
 }
 
@@ -544,7 +548,7 @@ PartitionedWorldEngine::read(boost::property_tree::ptree &pt, const std::string 
         key = keyBase + "." + a.first.data();
         uint id = pt.get(key, 0);
         readArea(id, pt, key);
-        setAreaName(id, a.first.data());
+        //setAreaName(id, a.first.data());
     }
     } catch(exception &e) {
         printf("Could not read objects: %s\n", e.what());

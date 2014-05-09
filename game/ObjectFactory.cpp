@@ -104,7 +104,7 @@ ObjectFactory::write(const std::string &fileName) {
 
     D3RE::get()->write(pt, "resources");
 
-    //Read areas
+    //Write areas
     PWE::get()->write(pt, "areas");
 
     uint fileExtIndex = fileName.find_last_of(".");

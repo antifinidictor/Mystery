@@ -48,6 +48,11 @@ public:
     //From listener
     virtual uint getId() { return m_uiId; }
     virtual int callBack(uint cID, void *data, uint eventId) {
+        //Disable inactive buttons
+        if(m_bDisabled) {
+            return EVENT_DROPPED;
+        }
+
         bool bAlwaysDrop = false;
         switch(eventId) {
         case ON_MOUSE_MOVE:
@@ -58,6 +63,9 @@ public:
             return EVENT_DROPPED;
         }
     }
+
+    void enable() { m_bDisabled = false; }
+    void disable() { m_bDisabled = true; }
 
 private:
     enum ButtonFrames {
@@ -93,6 +101,7 @@ private:
     }
 
     uint m_uiId, m_uiEventId, m_uiHudId;
+    bool m_bDisabled;
     Positionable *m_pParent;
     Listener *m_pListener;
     static uint s_uiHudId;  //Defined in GameManager

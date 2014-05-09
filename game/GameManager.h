@@ -54,8 +54,16 @@ public:
     void registerPlayer(Listener *pPlayer);
 
     void setDefaultInputMapping();
-    void newGame();     //Creates new save file & loads it
-    void loadGame();    //Loads save file (world file should already be loaded)
+    void setTypingInputMapping();
+    void resetInputMapping();
+    void newGame(const std::string &filename);     //Creates new save file & loads it
+    void loadGame(const std::string &filename);    //Loads save file (world file should already be loaded)
+    void saveGame(const std::string &filename);
+    const std::string &getCurGameFile() { return m_sGameFileName; }
+    const std::string &getCurGameFileRoot();
+
+    void readWorldFile();
+    void readSaveFile();
 
 private:
     GameManager(uint uiId);
@@ -76,6 +84,8 @@ private:
 
     void initCurState();
     void cleanCurState();
+
+    void validateSaveFileName(std::string &filename);
 
     static GameManager *m_pInstance;
 

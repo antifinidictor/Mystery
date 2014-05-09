@@ -97,13 +97,13 @@ void initWorld() {
 
     //Map inputs
     // Typing
-    mge->mapInput(SDLK_PERIOD, ED_IN_PERIOD);
-    mge->mapInput(SDLK_MINUS, ED_IN_UNDERSCORE);
-    mge->mapInput(SDLK_SPACE, ED_IN_SPACE);
+    mge->mapInput(SDLK_PERIOD, TP_IN_PERIOD);
+    mge->mapInput(SDLK_MINUS, TP_IN_UNDERSCORE);
+    mge->mapInput(SDLK_SPACE, TP_IN_SPACE);
     mge->mapInput(SDLK_BACKSPACE, ED_IN_BACKSPACE);
-    mge->mapInput(SDLK_RETURN, ED_IN_ENTER);
-    mge->mapInput(SDLK_SLASH, ED_IN_SLASH);
-    mge->mapInput(SDLK_COLON, ED_IN_COLON);
+    mge->mapInput(SDLK_RETURN, TP_IN_ENTER);
+    mge->mapInput(SDLK_SLASH, TP_IN_SLASH);
+    mge->mapInput(SDLK_COLON, TP_IN_COLON);
     mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
     mge->mapInput(SDLK_LCTRL, IN_CTRL);
 

@@ -16,17 +16,6 @@ enum EditorTypes {
     ED_NUM_TYPES
 };
 
-enum EditorKeys {
-    ED_IN_SPACE = NUM_GAME_EVENTS,
-    ED_IN_PERIOD,
-    ED_IN_UNDERSCORE,
-    ED_IN_BACKSPACE,
-    ED_IN_ENTER,
-    ED_IN_SLASH,
-    ED_IN_COLON,
-    ED_NUM_INPUTS
-};
-
 //Events caused by interacting with the editor gui
 enum EditorEvents {
     ED_ON_SET_AREA,

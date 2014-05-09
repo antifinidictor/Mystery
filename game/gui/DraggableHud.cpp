@@ -21,21 +21,24 @@
 
 using namespace std;
 
-#define BUTTON_SPACING 64
+#define BUTTON_SPACING 48
 
 DraggableHud::DraggableHud(uint uiId)
-    : ContainerRenderModel(Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT)),
-      Draggable(this, Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
+    :   ContainerRenderModel(Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT)),
+        Draggable(this, Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)),
+        m_uiId(uiId),
+        m_eState(HUD_STATE_NORMAL),
+        m_bHidden(true),
+        m_iAnimTimer(0),
+        m_iFrame(0),
+        m_pCurItem(NULL),
+        m_pCurSpell(NULL),
+        m_pCurElement(NULL),
+        m_pMyPlayer(NULL),
+        m_sInput("")
 {
-    m_uiId = uiId;
-
-    m_bHidden = true;
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
     MGE::get()->addListener(this, ON_BUTTON_INPUT);
-    m_iAnimTimer = 0;
-    m_iFrame = 0;
-
-    m_pMyPlayer = NULL;
 
     //Fill the actual hud
     initPlayerHud();
@@ -59,10 +62,6 @@ DraggableHud::DraggableHud(uint uiId)
     //The current spell/element location
     ptValid = Point(528, 464, 0);
     DraggableElementalSpellItem::setMakeCurrentPoint(ptValid);
-
-    m_pCurItem = NULL;
-    m_pCurElement = NULL;
-    m_pCurSpell = NULL;
 
     //Start out as being down
     Point ptShift = Point(0.f, Y_SHOWN - getDrawArea().y, 0.f);
@@ -164,10 +163,23 @@ void
 DraggableHud::updateItemAnimations() {
     //Remove any items scheduled for removal
     removeScheduledItems();
+static bool typeCursorOn = false;
+    switch(m_eState) {
+    case HUD_STATE_TYPE_SAVE_FILE:
+    case HUD_STATE_TYPE_LOAD_FILE:
+    case HUD_STATE_TYPE_NEW_FILE: {
+        //Update typing text
+        m_pTypeSidePanel->get<D3HudRenderModel*>(MGHUD_SIDETYPE_TEXT)->updateText(m_sInput + (typeCursorOn ? "_" : ""));
+        break;
+    }
+    default:
+        break;
+    }
 
     if(m_iAnimTimer > ANIM_TIMER_MAX) {
         m_iFrame = (m_iFrame + 1) % 8;
         m_iAnimTimer = 0;
+        typeCursorOn = !typeCursorOn;
 
         ContainerRenderModel *panel = m_pInventoryPanel;
         ItemAnimUpdateFunctor curFrameFunctor(m_iFrame);
@@ -314,17 +326,71 @@ DraggableHud::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
         }
         break;
     }
-    case ON_SAVE_GAME:
+    case ON_SAVE_GAME: {
+        //Present the player with game-save options
+        m_sInput = GameManager::get()->getCurGameFileRoot();
+        m_eState = HUD_STATE_TYPE_SAVE_FILE;
+        prepSideTypeHud("Enter a save name:", "Save Game", "Cancel");
         break;
+    }
     case ON_LOAD_GAME:
-        GameManager::get()->loadGame();
+        m_sInput = GameManager::get()->getCurGameFileRoot();
+        m_eState = HUD_STATE_TYPE_LOAD_FILE;
+        prepSideTypeHud("Enter a save name:", "Load Game", "Cancel");
         break;
     case ON_NEW_GAME:
-        GameManager::get()->newGame();
+        m_sInput = GameManager::get()->getCurGameFileRoot();
+        m_eState = HUD_STATE_TYPE_NEW_FILE;
+        prepSideTypeHud("Choose a save name:", "New Game", "Cancel");
         break;
     case ON_QUIT_GAME:
-        MGE::get()->stop();
+        prepSideConfirmHud("Are you sure?", "Quit", "Cancel");
+        m_eState = HUD_STATE_QUIT;
         break;
+    case ON_ACTION_BUTTON:
+        switch(m_eState) {
+        case HUD_STATE_TYPE_SAVE_FILE:
+            //Done getting the save file name, actually save the game
+            GameManager::get()->saveGame(m_sInput);
+            break;
+        case HUD_STATE_TYPE_LOAD_FILE:
+            GameManager::get()->loadGame(m_sInput);
+            break;
+        case HUD_STATE_TYPE_NEW_FILE:
+            GameManager::get()->newGame(m_sInput);
+            break;
+        case HUD_STATE_QUIT:
+            MGE::get()->stop();
+        default:
+            break;
+        }
+
+        //Afterwards, return to normal
+        prepSideButtonHud();
+        m_eState = HUD_STATE_NORMAL;
+
+        break;
+    case ON_INACTION_BUTTON:
+        prepSideButtonHud();
+        m_eState = HUD_STATE_NORMAL;
+        break;
+    case ON_BUTTON_INPUT: {
+        //We might be typing
+        switch(m_eState) {
+        case HUD_STATE_TYPE_SAVE_FILE:
+        case HUD_STATE_TYPE_LOAD_FILE:
+        case HUD_STATE_TYPE_NEW_FILE:
+            status = typeOnKeyPress((InputData*)data);
+            break;
+        default:
+            break;
+        }
+        if(status == EVENT_CAUGHT) {
+            break;
+        }
+
+        //Otherwise, continue. ON_BUTTON_INPUT needs to be handled by Draggable
+    }
     default:
         status = Draggable::callBack(uiEventHandlerId, data, uiEventId);
     }
@@ -559,6 +625,8 @@ DraggableHud::initPlayerHud() {
     //We keep these two specially so that they can be restored instantly
     m_pInventoryPanel = new ContainerRenderModel(rcInventoryPanel);
     m_pMainSidePanel = new ContainerRenderModel(rcSidePanel);
+    m_pTypeSidePanel = new ContainerRenderModel(rcSidePanel);
+    m_pConfirmSidePanel = new ContainerRenderModel(rcSidePanel);
 
     ContainerRenderModel *elementPanel = new ContainerRenderModel(rcInventoryPanel);
     panel->add(MGHUD_HEALTH_CONTAINER, healthPanel);
@@ -606,9 +674,11 @@ DraggableHud::initPlayerHud() {
     initItemBarHud(itembarPanel);
 
     /*
-     * Sidebutton panel
+     * Side panels
      */
     initSideButtonHud(m_pMainSidePanel);
+    initSideTypeHud(m_pTypeSidePanel);
+    initSideConfirmHud(m_pConfirmSidePanel);
 }
 
 void
@@ -690,6 +760,11 @@ DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
         ptSaveButtonPos.y + BUTTON_SPACING,
         0
     );
+    Point ptOptionsButtonPos(
+        ptQuitButtonPos.x,
+        ptQuitButtonPos.y + BUTTON_SPACING,
+        0
+    );
     D3HudRenderModel *label = new D3HudRenderModel("", rcItemNameLabel,1.0f);
     label->centerHorizontally(true);
     panel->add(MGHUD_SIDEBUTTON_ITEMNAME, label);
@@ -698,7 +773,7 @@ DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
     panel->add(MGHUD_SIDEBUTTON_ITEMDESC, label);
 
     GuiButton *btn;
-    btn = new GuiButton(panel, this, ON_NEW_GAME, "New Game", ptNewGameButtonPos, 1.f);
+    btn = new GuiButton(panel, this, ON_NEW_GAME, "New", ptNewGameButtonPos, 1.f);
     panel->add(MGHUD_SIDEBUTTON_NEWBUTTON, btn);
 
     btn = new GuiButton(panel, this, ON_LOAD_GAME, "Load", ptLoadButtonPos, 1.f);
@@ -709,6 +784,181 @@ DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
 
     btn = new GuiButton(panel, this, ON_QUIT_GAME, "Quit", ptQuitButtonPos, 1.f);
     panel->add(MGHUD_SIDEBUTTON_QUITBUTTON, btn);
+
+    btn = new GuiButton(panel, this, ON_OPTIONS, "Options", ptOptionsButtonPos, 1.f);
+    panel->add(MGHUD_SIDEBUTTON_OPTIONSBUTTON, btn);
+
+
+    //Enable buttons
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_NEWBUTTON)->enable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_LOADBUTTON)->enable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_SAVEBUTTON)->enable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_QUITBUTTON)->enable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_OPTIONSBUTTON)->enable();
+}
+
+
+void
+DraggableHud::initSideTypeHud(ContainerRenderModel *panel) {
+    Rect rcMessageLabel = Rect(
+        SIDEBAR_MARGIN,
+        TEXTURE_TILE_SIZE,
+        TEXTURE_TILE_SIZE * 6 - SIDEBAR_MARGIN,
+        TEXTURE_TILE_SIZE
+    );
+    Rect rcTextLabel = Rect(
+        rcMessageLabel.x,
+        rcMessageLabel.y + rcMessageLabel.h,
+        rcMessageLabel.w,
+        TEXTURE_TILE_SIZE * 3
+    );
+    Point ptActionButtonPos(
+        rcTextLabel.x + rcTextLabel.w / 2 - BUTTON_WIDTH / 2,
+        rcTextLabel.y + rcTextLabel.h,
+        0
+    );
+    Point ptInactionButtonPos(
+        ptActionButtonPos.x,
+        ptActionButtonPos.y + BUTTON_SPACING,
+        0
+    );
+    D3HudRenderModel *label = new D3HudRenderModel("", rcMessageLabel,1.0f);
+    label->centerHorizontally(true);
+    panel->add(MGHUD_SIDETYPE_MESSAGE, label);
+
+    label = new D3HudRenderModel("", rcTextLabel,0.9f);
+    panel->add(MGHUD_SIDETYPE_TEXT, label);
+
+    GuiButton *btn;
+    btn = new GuiButton(panel, this, ON_ACTION_BUTTON, "", ptActionButtonPos, 1.f);
+    btn->disable();
+    panel->add(MGHUD_SIDETYPE_ACTION_BUTTON, btn);
+
+    btn = new GuiButton(panel, this, ON_INACTION_BUTTON, "", ptInactionButtonPos, 1.f);
+    btn->disable();
+    panel->add(MGHUD_SIDETYPE_INACTION_BUTTON, btn);
+}
+
+void
+DraggableHud::initSideConfirmHud(ContainerRenderModel *panel) {
+    Rect rcMessageLabel = Rect(
+        SIDEBAR_MARGIN,
+        TEXTURE_TILE_SIZE,
+        TEXTURE_TILE_SIZE * 6 - SIDEBAR_MARGIN,
+        TEXTURE_TILE_SIZE
+    );
+    Rect rcBlankLabel = Rect(   //This exists just to make spacing more convenient
+        rcMessageLabel.x,
+        rcMessageLabel.y + rcMessageLabel.h,
+        rcMessageLabel.w,
+        TEXTURE_TILE_SIZE * 3
+    );
+    Point ptActionButtonPos(
+        rcBlankLabel.x + rcBlankLabel.w / 2 - BUTTON_WIDTH / 2,
+        rcBlankLabel.y + rcBlankLabel.h,
+        0
+    );
+    Point ptInactionButtonPos(
+        ptActionButtonPos.x,
+        ptActionButtonPos.y + BUTTON_SPACING,
+        0
+    );
+    D3HudRenderModel *label = new D3HudRenderModel("", rcMessageLabel,1.0f);
+    label->centerHorizontally(true);
+    panel->add(MGHUD_SIDECONFIRM_MESSAGE, label);
+
+    GuiButton *btn;
+    btn = new GuiButton(panel, this, ON_ACTION_BUTTON, "", ptActionButtonPos, 1.f);
+    btn->disable();
+    panel->add(MGHUD_SIDECONFIRM_ACTION_BUTTON, btn);
+
+    btn = new GuiButton(panel, this, ON_INACTION_BUTTON, "", ptInactionButtonPos, 1.f);
+    btn->disable();
+    panel->add(MGHUD_SIDECONFIRM_INACTION_BUTTON, btn);
+}
+
+void
+DraggableHud::prepSideTypeHud(const std::string &sMessageLabel, const std::string &sActionLabel, const std::string &sInactionLabel) {
+    unprepSideButtonHud();
+
+    //Set up message/button text
+    m_pTypeSidePanel->get<D3HudRenderModel*>(MGHUD_SIDETYPE_MESSAGE)->updateText(sMessageLabel);
+    m_pTypeSidePanel->get<D3HudRenderModel*>(MGHUD_SIDETYPE_TEXT)->updateText(m_sInput);
+    m_pTypeSidePanel->get<GuiButton*>(MGHUD_SIDETYPE_ACTION_BUTTON)->updateText(sActionLabel);
+    m_pTypeSidePanel->get<GuiButton*>(MGHUD_SIDETYPE_INACTION_BUTTON)->updateText(sInactionLabel);
+    m_pTypeSidePanel->get<GuiButton*>(MGHUD_SIDETYPE_ACTION_BUTTON)->enable();
+    m_pTypeSidePanel->get<GuiButton*>(MGHUD_SIDETYPE_INACTION_BUTTON)->enable();
+
+    //Remove whichever container is currently there
+    remove(MGHUD_SIDEBUTTON_CONTAINER);
+
+    //Add the appropriate container
+    add(MGHUD_SIDEBUTTON_CONTAINER, m_pTypeSidePanel);
+
+    //Setup typing input map
+    GameManager::get()->setTypingInputMapping();
+}
+
+void
+DraggableHud::prepSideConfirmHud(const std::string &sMessageLabel, const std::string &sActionLabel, const std::string &sInactionLabel) {
+    unprepSideButtonHud();
+
+    //Set up message/button text
+    m_pConfirmSidePanel->get<D3HudRenderModel*>(MGHUD_SIDECONFIRM_MESSAGE)->updateText(sMessageLabel);
+    m_pConfirmSidePanel->get<GuiButton*>(MGHUD_SIDECONFIRM_ACTION_BUTTON)->updateText(sActionLabel);
+    m_pConfirmSidePanel->get<GuiButton*>(MGHUD_SIDECONFIRM_INACTION_BUTTON)->updateText(sInactionLabel);
+    m_pConfirmSidePanel->get<GuiButton*>(MGHUD_SIDECONFIRM_ACTION_BUTTON)->enable();
+    m_pConfirmSidePanel->get<GuiButton*>(MGHUD_SIDECONFIRM_INACTION_BUTTON)->enable();
+
+    //Remove whichever container is currently there
+    remove(MGHUD_SIDEBUTTON_CONTAINER);
+
+    //Add the appropriate container
+    add(MGHUD_SIDEBUTTON_CONTAINER, m_pConfirmSidePanel);
+}
+
+void
+DraggableHud::prepSideButtonHud() {
+    //Lazy cleanup
+    unprepSideTypeHud();
+    unprepSideConfirmHud();
+
+    remove(MGHUD_SIDEBUTTON_CONTAINER);
+    add(MGHUD_SIDEBUTTON_CONTAINER, m_pMainSidePanel);
+
+    //Enable buttons
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_NEWBUTTON)->enable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_LOADBUTTON)->enable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_SAVEBUTTON)->enable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_QUITBUTTON)->enable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_OPTIONSBUTTON)->enable();
+
+    //Make sure the appropriate input mapping is setup
+    GameManager::get()->setDefaultInputMapping();   //TODO:
+}
+
+void
+DraggableHud::unprepSideTypeHud() {
+    //Disable buttons
+    m_pTypeSidePanel->get<GuiButton*>(MGHUD_SIDETYPE_ACTION_BUTTON)->disable();
+    m_pTypeSidePanel->get<GuiButton*>(MGHUD_SIDETYPE_INACTION_BUTTON)->disable();
+}
+
+void
+DraggableHud::unprepSideConfirmHud() {
+    //Disable buttons
+    m_pConfirmSidePanel->get<GuiButton*>(MGHUD_SIDECONFIRM_ACTION_BUTTON)->disable();
+    m_pConfirmSidePanel->get<GuiButton*>(MGHUD_SIDECONFIRM_INACTION_BUTTON)->disable();
+}
+
+void
+DraggableHud::unprepSideButtonHud() {
+    //Disable buttons
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_NEWBUTTON)->disable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_LOADBUTTON)->disable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_SAVEBUTTON)->disable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_QUITBUTTON)->disable();
+    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_OPTIONSBUTTON)->disable();
 }
 
 bool
@@ -733,4 +983,70 @@ DraggableHud::ItemDebugFunctor::operator()(uint itemIndex, RenderModel *rmdl) {
     printf("%d Render:   (%2.2f,%2.2f)\n", renderId, renderPos.x, renderPos.y);
     printf("? Expected: (%2.2f,%2.2f)\n\n", expPos.x, expPos.y);
     return false;   //Don't stop iterating
+}
+
+
+int
+DraggableHud::typeOnKeyPress(InputData *data) {
+    int status = EVENT_DROPPED;
+    if(data->getInputState(KIN_LETTER_PRESSED) && data->hasChanged(KIN_LETTER_PRESSED)) {
+        status = EVENT_CAUGHT;
+        uint letters = data->getLettersDown();
+        uint l = 1;
+        for(int i = 0; i < 26; ++i) {
+            if(letters & l && data->getInputState(IN_SHIFT)) {
+                m_sInput.append(1, 'A' + i);
+            } else if(letters & l) {
+                m_sInput.append(1, 'a' + i);
+            }
+            l = l << 1;
+        }
+    }
+    if(data->getInputState(KIN_NUMBER_PRESSED) && data->hasChanged(KIN_NUMBER_PRESSED)) {
+        status = EVENT_CAUGHT;
+        uint numbers = data->getNumbersDown();
+        uint n = 1;
+        for(int i = 0; i < 10; ++i) {
+            if(numbers & n) {
+                m_sInput.append(1, '0' + i);
+            }
+            n = n << 1;
+        }
+    }
+
+    if(data->getInputState(TP_IN_SPACE) && data->hasChanged(TP_IN_SPACE)) {
+        m_sInput.append(1, ' ');
+        status = EVENT_CAUGHT;
+    }
+    if(data->getInputState(TP_IN_PERIOD) && data->hasChanged(TP_IN_PERIOD)) {
+        m_sInput.append(1, '.');
+        status = EVENT_CAUGHT;
+    }
+    if(data->getInputState(TP_IN_UNDERSCORE) && data->hasChanged(TP_IN_UNDERSCORE)) {
+        if(data->getInputState(IN_SHIFT)) {
+            m_sInput.append(1, '_');
+            status = EVENT_CAUGHT;
+        } else {
+            m_sInput.append(1, '-');
+            status = EVENT_CAUGHT;
+        }
+    }
+    if(data->getInputState(TP_IN_SLASH) && data->hasChanged(TP_IN_SLASH)) {
+        m_sInput.append(1, '/');
+        status = EVENT_CAUGHT;
+    }
+    if(data->getInputState(TP_IN_COLON) && data->hasChanged(TP_IN_COLON)) {
+        m_sInput.append(1, ':');
+        status = EVENT_CAUGHT;
+    }
+    if(data->getInputState(TP_IN_BACKSPACE) && data->hasChanged(TP_IN_BACKSPACE) && m_sInput.size() > 0) {
+        m_sInput.resize(m_sInput.size() - 1);
+        status = EVENT_CAUGHT;
+    }
+    if(data->getInputState(TP_IN_ENTER) && data->hasChanged(TP_IN_ENTER)) {
+        //Handle positive end-of-type event
+        callBack(getId(), NULL, ON_ACTION_BUTTON);
+        status = EVENT_CAUGHT;
+    }
+    return status;
 }

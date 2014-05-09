@@ -135,6 +135,7 @@ enum EventIdAllocs {
 enum EventID {      //EventIDs: Add to the World object to listen to them.  Feel free to add to this list.
 	ON_MOUSE_MOVE = MGE_EVENTS_BEGIN, //Called when mouse moves.  WARNING: Mouse position may not be accurate if object is not on screen!
 	ON_BUTTON_INPUT,	        //Called on every registered key press or mouse click
+	ON_ANY_KEY_PRESSED,         //Called when any key is pressed (used for changing key layouts)
     NUM_EVENT_IDS
 };
 
@@ -163,6 +164,12 @@ enum EngineIDs {
     ID_FIRST_UNUSED
 };
 
+
+enum KeyTypes {
+    KEY_TYPE_NORMAL,
+    KEY_TYPE_JOYSTICK,
+    KEY_TYPE_OTHER
+};
 
 class InputData {
 private:
@@ -194,6 +201,16 @@ public:
     void setNumber(uint letter, bool bDown);
     uint getNumbersUp()   { return m_uiNumberKeyUp; }
     uint getNumbersDown() { return m_uiNumberKeyDown; }
+};
+
+struct AnyKeyEvent {
+    KeyTypes m_eKeyType;
+    int m_iKeyId;
+
+    AnyKeyEvent(KeyTypes eType, int iKeyId) {
+        m_eKeyType = eType;
+        m_iKeyId = iKeyId;
+    }
 };
 
 struct tRect;

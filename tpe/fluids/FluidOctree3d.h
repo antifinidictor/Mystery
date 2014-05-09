@@ -33,7 +33,7 @@ public:
     bool empty() { return m_bEmpty; }
 
 
-    void write(boost::property_tree::ptree &pt, const std::string &keyBase);
+    void write(boost::property_tree::ptree &pt, const std::string &keyBase, bool bIsSaveFile = false);
 
     //WARNING: ONLY SCHEDULER SHOULD CALL
     virtual void update(float fTime);

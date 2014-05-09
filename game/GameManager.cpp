@@ -6,6 +6,11 @@
 #include "game/gui/TextDisplay.h"
 #include "game/gui/GuiButton.h"
 #include "game/items/Item.h"
+#include "mge/ConfigManager.h"
+
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/info_parser.hpp>
+//#include <boost/filesystem.hpp>
 
 #define FADE_TIME_STEP 0.1f
 #define DEFAULT_WEIGHT 0.0f //Used to be 0.5f.  Now let's only change it if the world color changes
@@ -111,8 +116,9 @@ GameManager::update(float fDeltaTime) {
         cleanGame();
         break;
     case GM_NEW_GAME:
+        popState();
+        break;
     case GM_LOAD_GAME:
-        //For now, pop off
         popState();
         break;
 
@@ -162,8 +168,11 @@ GameManager::callBack(uint uiId, void *data, uint eventId) {
         break;
       }
     case PWE_ON_WORLD_CLEANED:
-        //Read in info
-        ObjectFactory::get()->read(m_sGameFileName);
+        //Read in basic info
+        readWorldFile();
+
+        //Read in save-game info
+        readSaveFile();
 
         //Make the world dirty
         m_bWorldIsClean = false;
@@ -180,6 +189,45 @@ GameManager::callBack(uint uiId, void *data, uint eventId) {
         break;
     }
     return status;
+}
+
+
+void
+GameManager::readWorldFile() {
+    using boost::property_tree::ptree;
+    ptree pt;
+    const string filename = "res/world.info";
+
+    //Read appropriate file format
+    uint fileExtIndex = filename.find_last_of(".");
+    if(filename.substr(fileExtIndex) == ".info") {
+        read_info(filename, pt);
+    } else {
+        read_xml(filename, pt);
+    }
+
+    //Read resources
+    D3RE::get()->read(pt, "resources");
+
+    //Read areas
+    PWE::get()->read(pt, "areas");
+}
+
+void
+GameManager::readSaveFile() {
+    using boost::property_tree::ptree;
+    ptree pt;
+
+    //Read appropriate file format
+    uint fileExtIndex = m_sGameFileName.find_last_of(".");
+    if(m_sGameFileName.substr(fileExtIndex) == ".info") {
+        read_info(m_sGameFileName, pt);
+    } else {
+        read_xml(m_sGameFileName, pt);
+    }
+
+    //Read areas
+    PWE::get()->read(pt, "areas");
 }
 
 void
@@ -238,10 +286,39 @@ GameManager::setDefaultInputMapping() {
     mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
 }
 
+void
+GameManager::setTypingInputMapping() {
+    MGE *mge = MGE::get();
+    mge->mapInput(SDLK_PERIOD, TP_IN_PERIOD);
+    mge->mapInput(SDLK_MINUS, TP_IN_UNDERSCORE);
+    mge->mapInput(SDLK_SPACE, TP_IN_SPACE);
+    mge->mapInput(SDLK_BACKSPACE, TP_IN_BACKSPACE);
+    mge->mapInput(SDLK_RETURN, TP_IN_ENTER);
+    mge->mapInput(SDLK_SLASH, TP_IN_SLASH);
+    mge->mapInput(SDLK_COLON, TP_IN_COLON);
+    mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
+    mge->mapInput(SDLK_LCTRL, IN_CTRL);
+}
 
 void
-GameManager::newGame() {
-    m_sGameFileName = "res/game.info";
+GameManager::resetInputMapping() {
+    //Start with default mapping as a base
+    setDefaultInputMapping();
+
+    //Use config mapping
+    ConfigManager::get()->setKeyMapping();
+}
+
+
+void
+GameManager::newGame(const std::string &filename) {
+    uint fileExtIndex = filename.find_last_of(".");
+    if(fileExtIndex == string::npos) {
+        m_sGameFileName = filename + ".info";  //default
+    } else {
+        m_sGameFileName = filename;
+    }
+
     pushState(GM_NEW_GAME);
     pushState(GM_CLEAN_GAME);
     pushState(GM_FADE_OUT);
@@ -250,12 +327,43 @@ GameManager::newGame() {
 }
 
 void
-GameManager::loadGame() {
-    m_sGameFileName = "res/game.info";
+GameManager::loadGame(const std::string &filename) {
+    uint fileExtIndex = filename.find_last_of(".");
+    if(fileExtIndex == string::npos) {
+        m_sGameFileName = filename + ".info";  //default
+    } else {
+        m_sGameFileName = filename;
+    }
+
     pushState(GM_LOAD_GAME);
     pushState(GM_CLEAN_GAME);
     pushState(GM_FADE_OUT);
     //cleanGame();
+}
+
+
+void
+GameManager::saveGame(const std::string &filename) {
+    uint fileExtIndex = filename.find_last_of(".");
+    if(fileExtIndex == string::npos) {
+        m_sGameFileName = filename + ".info";  //default
+        fileExtIndex = filename.find_last_of(".");
+    } else {
+        m_sGameFileName = filename;
+    }
+
+    //Write to a property tree
+    using boost::property_tree::ptree;
+    ptree pt;
+
+    PWE::get()->write(pt, "areas", true);   //'true' indicates this is a save file
+
+    //Write the prop tree to the specified file
+    if(filename.substr(fileExtIndex) == ".info") {
+        write_info(filename, pt);
+    } else {
+        write_xml(filename, pt);
+    }
 }
 
 void
@@ -462,3 +570,13 @@ GameManager::cleanCurState() {
     }
 }
 
+
+void
+GameManager::validateSaveFileName(std::string &filename) {
+}
+
+const std::string &
+GameManager::getCurGameFileRoot() {
+    //TODO: Install boost filesystem & finish implementing!
+    return m_sGameFileName;
+}

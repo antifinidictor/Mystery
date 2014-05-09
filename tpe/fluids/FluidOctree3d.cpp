@@ -262,17 +262,24 @@ FluidOctreeNode::find(uint uiObjId) {
 
 
 void
-FluidOctreeNode::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
+FluidOctreeNode::write(boost::property_tree::ptree &pt, const std::string &keyBase, bool bIsSaveFile) {
     //Write contents
     for(iter_t it = m_mContents.begin(); it != m_mContents.end(); ++it) {
         GameObject *obj = it->second;
-        obj->write(pt, keyBase + "." + obj->getClass() + "." + obj->getName());
+
+        //Two different kinds of passes: Write-to-world file (editor only) and write-to-save-file
+        bool bIsSaveFileObj = obj->getFlag(PWE_SAVE_FILE_OBJ);
+        bool bCanWrite = (bIsSaveFile && bIsSaveFileObj) ||
+                        (!bIsSaveFile && !bIsSaveFileObj);
+        if(bCanWrite) {
+            obj->write(pt, keyBase + "." + obj->getClass() + "." + obj->getName());
+        }
     }
 
     //Write children
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         if(m_apChildren[q] != NULL && !m_apChildren[q]->empty()) {
-            m_apChildren[q]->write(pt, keyBase);
+            m_apChildren[q]->write(pt, keyBase, bIsSaveFile);
         }
     }
 }

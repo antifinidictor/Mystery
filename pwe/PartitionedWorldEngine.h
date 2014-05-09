@@ -35,6 +35,7 @@ enum WorldEvents {
 enum WorldFlags {
     PWE_INFORM_OBJ_ADD = WORLD_FLAGS_BEGIN,
     PWE_INFORM_OBJ_REMOVE,
+    PWE_SAVE_FILE_OBJ,  //Obj should be read from/written to a save file
     PWE_NUM_FLAGS
 };
 
@@ -72,9 +73,13 @@ public:
 
     const std::string getAreaName(uint uiAreaId);
     void setAreaName(uint uiAreaId, const std::string &name);
-    void writeArea(uint uiAreaId, boost::property_tree::ptree &pt, const std::string &keyBase);
+
+    //Write/read particular areas
+    void writeArea(uint uiAreaId, boost::property_tree::ptree &pt, const std::string &keyBase, bool bIsSaveFile = false);
     void readArea(uint uiAreaId, boost::property_tree::ptree &pt, const std::string &keyBase);
-    void write(boost::property_tree::ptree &pt, const std::string &keyBase);
+
+    //Write/read world files
+    void write(boost::property_tree::ptree &pt, const std::string &keyBase, bool bIsSaveFile = false);
     void read(boost::property_tree::ptree &pt, const std::string &keyBase);
 
     void getAreas(std::vector<uint> &vAreas); //Populates the list with a list of areas

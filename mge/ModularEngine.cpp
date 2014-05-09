@@ -151,6 +151,18 @@ void ModularEngine::handleKey( SDL_Event *pEvent, bool bDown) {
 		break;
 	default:
         uint sdlKeyId = pEvent->key.keysym.sym;
+
+        //Some listeners want to know immediately if any key is pressed.
+        if(m_lsAnyKeyListeners.size() > 0) {
+            AnyKeyEvent ake(KEY_TYPE_NORMAL, sdlKeyId);
+            for(list<Listener*>::iterator it = m_lsAnyKeyListeners.begin(); it != m_lsAnyKeyListeners.end(); ++it) {
+                int status = (*it)->callBack(ID_MODULAR_ENGINE, &ake, ON_ANY_KEY_PRESSED);
+                if(status == EVENT_CAUGHT) {
+                    return;
+                }
+            }
+	    }
+
 		key = m_mInputMap.find(sdlKeyId);
 		//If the key mapping exists
 		if( key != m_mInputMap.end() ) {
@@ -232,6 +244,15 @@ void ModularEngine::addListener(Listener *pListener, uint id, char* triggerData)
 	    }
 	    m_lsButtonInputListeners.push_back(pListener);
 		break;
+    case ON_ANY_KEY_PRESSED:
+	    for(it = m_lsAnyKeyListeners.begin(); it != m_lsAnyKeyListeners.end(); ++it) {
+            if((*it)->getPriority() <= pListener->getPriority()) {
+                m_lsAnyKeyListeners.insert(it, pListener);
+                return;
+            }
+	    }
+        m_lsAnyKeyListeners.push_back(pListener);
+        break;
 	default:
 		cout << "Unsupported event handle " << id << ".\n";
 	}
@@ -257,6 +278,17 @@ bool ModularEngine::removeListener(uint uiListenerID, uint uiEventId) {
             if((*it)->getId() == uiListenerID) {
                 found = true;
                 m_lsButtonInputListeners.erase(it);
+                break;
+            }
+	    }
+	    return found;
+	}
+	case ON_ANY_KEY_PRESSED: {
+	    bool found = false;
+	    for(list<Listener*>::iterator it = m_lsAnyKeyListeners.begin(); it != m_lsAnyKeyListeners.end(); ++it) {
+            if((*it)->getId() == uiListenerID) {
+                found = true;
+                m_lsAnyKeyListeners.erase(it);
                 break;
             }
 	    }
