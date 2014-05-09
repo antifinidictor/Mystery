@@ -27,6 +27,8 @@
 					<Add library="gdi32" />
 					<Add library="winmm" />
 					<Add library="dxguid" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_system" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -52,6 +54,8 @@
 					<Add library="SDL2_image" />
 					<Add library="SDL2_mixer" />
 					<Add library="SDL2.dll" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_system" />
 				</Linker>
 			</Target>
 			<Target title="Editor">
@@ -75,6 +79,8 @@
 					<Add library="SDL2_image" />
 					<Add library="SDL2_mixer" />
 					<Add library="SDL2.dll" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_system" />
 				</Linker>
 			</Target>
 			<Target title="LinuxDebug">
@@ -97,6 +103,8 @@
 					<Add library="SDL2_mixer" />
 					<Add library="GL" />
 					<Add library="GLU" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_system" />
 					<Add directory="/home/naheisey/Documents/projects/games/Mystery/" />
 					<Add directory="/usr/lib" />
 				</Linker>
@@ -124,6 +132,8 @@
 					<Add library="SDL2_mixer" />
 					<Add library="GL" />
 					<Add library="GLU" />
+					<Add library="boost_filesystem" />
+					<Add library="boost_system" />
 					<Add directory="/home/naheisey/Documents/projects/games/Mystery/" />
 					<Add directory="/usr/lib" />
 				</Linker>
