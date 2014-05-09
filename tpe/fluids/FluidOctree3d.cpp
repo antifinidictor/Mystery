@@ -54,6 +54,13 @@ FluidOctreeNode::~FluidOctreeNode() {
     }
     m_lsObjsToAdd.clear();
 
+    //Clear all of our other lists
+    m_lsObjsToErase.clear();
+    m_lsObjsToRemove.clear();
+    m_lsDynamicObjs.clear();
+    m_lsStaticObjs.clear();
+    m_lsObjsLeftQuadrant.clear();
+
     SDL_UnlockMutex(m_mutex);
     SDL_DestroyMutex(m_mutex);
 }

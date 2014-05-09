@@ -19,21 +19,21 @@ DraggableItem::clearValidDropLocations() {
     s_vDropPoints.clear();
 }
 
-DraggableItem::DraggableItem(Item *item, uint uiIndex, const Rect &rcArea, Listener *pDropListener)
-    : D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea),
-      Draggable(this, Rect(-rcArea.w / 2.f, -rcArea.h / 2.f, rcArea.w, rcArea.h))
+DraggableItem::DraggableItem(Item *pItem, uint uiIndex, const Rect &rcArea, Listener *pDropListener)
+    :   D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea),
+        Draggable(this, Rect(-rcArea.w / 2.f, -rcArea.h / 2.f, rcArea.w, rcArea.h)),
+        m_pItem(pItem),
+        m_uiId(pItem->getId()),
+        m_uiIndex(uiIndex),
+        m_ptSnapPosition(),
+        m_pDropListener(pDropListener),
+        m_fTotalDragDistance(0.f)
 {
     setPriority(1); //Higher priority than the draggable HUD
-
-    m_pItem = item;
-    setFrameH(item->getItemId());
+    setFrameH(pItem->getItemId());
 
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
     MGE::get()->addListener(this, ON_BUTTON_INPUT);
-
-    m_pDropListener = pDropListener;
-
-    m_uiIndex = uiIndex;
 }
 
 DraggableItem::~DraggableItem()

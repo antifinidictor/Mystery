@@ -13,17 +13,18 @@ Point DraggableElementalSpellItem::s_ptMakeCurrentPoint;
 
 DraggableElementalSpellItem::DraggableElementalSpellItem(Item *pItem, const Rect &rcArea, Listener *pDropListener)
     : Draggable(this, Rect(-rcArea.w / 2.f, -rcArea.h / 2.f, rcArea.w, rcArea.h)),
-      D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea)
+      D3HudRenderModel(D3RE::get()->getImageId("items"), rcArea),
+        m_pItem(pItem),
+        m_uiId(pItem->getId()),
+        m_ptSnapPosition(),
+        m_pDropListener(pDropListener),
+        m_fTotalDragDistance(0.f)
 {
     setPriority(1); //Higher priority than the draggable HUD
     setFrameH(pItem->getItemId());
 
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
     MGE::get()->addListener(this, ON_BUTTON_INPUT);
-
-    m_pDropListener = pDropListener;
-
-    m_pItem = pItem;
 }
 
 DraggableElementalSpellItem::~DraggableElementalSpellItem()

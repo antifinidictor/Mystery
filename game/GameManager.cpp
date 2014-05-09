@@ -4,8 +4,6 @@
 #include "game/spells/ElementalVolume.h"
 #include "game/game_defs.h"
 #include "game/gui/TextDisplay.h"
-#include "game/gui/DraggableHud.h"
-#include "game/gui/DraggableItem.h"
 #include "game/gui/GuiButton.h"
 #include "game/items/Item.h"
 

@@ -16,7 +16,6 @@
 #include "tpe/TimePhysicsEngine.h"
 
 class ElementalVolume;
-class DraggableHud;
 class Player;
 
 class GameManager : public GameObject

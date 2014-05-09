@@ -71,11 +71,11 @@ private:
     void startClimbing();
     void startCasting();
 
+    static DraggableHud *s_pHud;
 
     //Models and similar
     D3SpriteRenderModel *m_pRenderModel;
     TimePhysicsModel    *m_pPhysicsModel;
-    DraggableHud        *m_pHud;
 
     //Identification
     uint m_uiId;

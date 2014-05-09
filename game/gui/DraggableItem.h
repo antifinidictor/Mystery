@@ -16,7 +16,7 @@ public:
     virtual ~DraggableItem();
 
     //Listener
-    virtual uint getId() { return m_pItem->getId(); }
+    virtual uint getId() { return m_uiId; }
 
     //Draggable functions
     virtual void onFollow(const Point &diff);
@@ -35,9 +35,10 @@ private:
     static std::vector<Point> s_vDropPoints;
 
     Item *m_pItem;
+    uint m_uiId;
+    uint m_uiIndex;
     Point m_ptSnapPosition;
     Listener *m_pDropListener;
-    uint m_uiIndex;
     float m_fTotalDragDistance;
 };
 

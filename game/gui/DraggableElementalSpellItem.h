@@ -16,7 +16,7 @@ public:
     virtual ~DraggableElementalSpellItem();
 
     //Listener
-    virtual uint getId() { return m_pItem->getId(); }
+    virtual uint getId() { return m_uiId; }
 
     //Draggable functions
     virtual void onFollow(const Point &diff);
@@ -35,6 +35,7 @@ private:
     void sendItemDropEvent(int newIndex);
 
     Item *m_pItem;
+    uint m_uiId;
     Point m_ptSnapPosition;
     Listener *m_pDropListener;
     float m_fTotalDragDistance;

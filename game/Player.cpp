@@ -15,6 +15,8 @@ using namespace std;
 #define SPRINT_ANIM_TIMER_MAX 1
 #define WALK_ANIM_TIMER_MAX 9
 
+DraggableHud *Player::s_pHud = NULL;
+
 enum PlayerAnims {
     PANIM_STANDING = 0,     //1 frame
     PANIM_WALKING = 1,      //4 frames
@@ -80,8 +82,11 @@ Player::Player(uint uiId, const Point &ptPos)
 
     //TODO: How can we design this better?
     GameManager::get()->registerPlayer(this);
-    m_pHud = new DraggableHud(PWE::get()->genId()); //The DraggableHud manages its own memory
-    m_pHud->registerPlayer(this);
+    if(s_pHud == NULL) {
+        //The DraggableHud gets deleted by the screen at the end of the game
+        s_pHud = new DraggableHud(PWE::get()->genId());
+    }
+    s_pHud->registerPlayer(this);
 
     //Flags
     setFlag(GAM_CAN_LINK, true);
@@ -155,7 +160,7 @@ Player::callBack(uint cID, void *data, uint uiEventId) {
     int status = EVENT_DROPPED;
     switch(uiEventId) {
     case ON_UPDATE_HUD:
-        m_pHud->updateItemAnimations();
+        s_pHud->updateItemAnimations();
         break;
     case ON_ITEM_DROPPED: {
         Item *item = ((ItemDropEvent*)data)->item;
@@ -457,7 +462,7 @@ void
 Player::upateHud() {
     ContainerRenderModel *panel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_TOPBAR);
     D3HudRenderModel *label = panel->get<D3HudRenderModel*>(MGHUD_CUR_ACTION);
-    SpellItem *item = m_pHud->getCurSpell();
+    SpellItem *item = s_pHud->getCurSpell();
     if(m_bCanClimb) {
         label->updateText("Climb");
     } else if(m_iStrafeSpeed != 0.f || m_iForwardSpeed != 0.f || m_bMouseDown) {
@@ -556,7 +561,7 @@ void
 Player::handleButtonCasting(InputData* data) {
     //If the spell became invalid, try to create a new one
     if(m_pCurSpell == NULL) {
-        SpellItem *item = m_pHud->getCurSpell();
+        SpellItem *item = s_pHud->getCurSpell();
         if(item != NULL) {
             m_pCurSpell = item->createSpell(SPELL_DURATION, 0.8f);
         }
@@ -636,7 +641,7 @@ Player::handleCollision(HandleCollisionData *data) {
     if(data->obj->getType() == TYPE_ITEM && data->obj->getFlag(GAM_CAN_PICK_UP)) {
         //Pick up the item
         Item *item = (Item*)data->obj;
-        if(m_pHud->addItem(item)) {    //Item successfully added to the index?
+        if(s_pHud->addItem(item)) {    //Item successfully added to the index?
             //Remove the item from the world
             PWE::get()->remove(item->getId());
             item->onItemPickup();
@@ -720,7 +725,7 @@ Player::startCasting() {
         m_eState = PLAYER_CASTING;
         m_pRenderModel->setFrameH(PANIM_STANDING);
 
-        SpellItem *item = m_pHud->getCurSpell();
+        SpellItem *item = s_pHud->getCurSpell();
         if(item != NULL) {
             m_pCurSpell = item->createSpell(SPELL_DURATION, 0.8f);
 

@@ -44,7 +44,7 @@ DraggableHud::DraggableHud(uint uiId)
     Point ptValid;
     for(ptValid.y = 240; ptValid.y <= 368; ptValid.y += 64) {
         for(ptValid.x = 80; ptValid.x <= 400; ptValid.x += 64) {
-                DraggableItem::addValidDropLocation(ptValid);
+            DraggableItem::addValidDropLocation(ptValid);
         }
     }
 

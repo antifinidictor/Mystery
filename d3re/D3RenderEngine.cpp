@@ -111,8 +111,8 @@ D3RenderEngine::~D3RenderEngine() {
     m_lsTransparentObjs.clear();
     m_lsObjsOnScreen.clear();
 
-    SDL_DestroyWindow(m_sdlWindow);
     SDL_GL_DeleteContext(m_glContext);
+    SDL_DestroyWindow(m_sdlWindow);
 
     delete m_pHudContainer;
 }

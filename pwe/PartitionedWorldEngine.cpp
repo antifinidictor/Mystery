@@ -669,7 +669,7 @@ PartitionedWorldEngine::cleanAllAreas() {
         //TODO: improve efficiency by sticking actual implementation here
         cleanAreaNow(itArea->first);
     }
-    m_mWorld.clear();
+    //m_mWorld.clear(); TODO: Somehow this line causes a major memory bug on new/load!
 }
 
 
