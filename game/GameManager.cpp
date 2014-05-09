@@ -311,11 +311,19 @@ GameManager::resetInputMapping() {
 }
 
 
-void
+bool
 GameManager::newGame(const std::string &filename) {
     if(!validateSaveFileName(filename, false)) {
         printf("ERROR: Bad save file %s\n", filename.c_str());
-        return;
+        return false;
+    }
+
+    //Copy the save-game template to the new game file name
+    namespace fs = boost::filesystem;
+    if(m_fsGameFile.extension().compare(".info") == 0) {
+        fs::copy_file(fs::path(SAVE_TEMPLATE_FILE_INFO), m_fsGameFile);
+    } else {
+        fs::copy_file(fs::path(SAVE_TEMPLATE_FILE_XML), m_fsGameFile);
     }
 
     pushState(GM_NEW_GAME);
@@ -323,27 +331,32 @@ GameManager::newGame(const std::string &filename) {
     pushState(GM_FADE_OUT);
     //cleanGame();
 
+    //Error-free exit
+    return true;
 }
 
-void
+bool
 GameManager::loadGame(const std::string &filename) {
     if(!validateSaveFileName(filename, true)) {
         printf("ERROR: Bad save file %s\n", filename.c_str());
-        return;
+        return false;
     }
 
     pushState(GM_LOAD_GAME);
     pushState(GM_CLEAN_GAME);
     pushState(GM_FADE_OUT);
     //cleanGame();
+
+    //Error-free exit
+    return true;
 }
 
 
-void
+bool
 GameManager::saveGame(const std::string &filename) {
     if(!validateSaveFileName(filename, false)) {
         printf("ERROR: Bad save file %s\n", filename.c_str());
-        return;
+        return false;
     }
 
     //Write to a property tree
@@ -359,6 +372,9 @@ GameManager::saveGame(const std::string &filename) {
     } else if(ext.compare(".xml") == 0) {
         write_xml(m_fsGameFile.string(), pt);
     }
+
+    //Error-free exit
+    return true;
 }
 
 void
@@ -587,10 +603,10 @@ GameManager::validateSaveFileName(const std::string &filename, bool bMustExist) 
     }
 
     //Verify that the save files do not override important game files
-    bool bBad = (path0.compare("res/world.info") == 0) ||
-        (path1.compare("res/world.xml") == 0) ||
-        (path0.compare("res/save-template.info") == 0) ||
-        (path1.compare("res/save-template.xml") == 0);
+    bool bBad = (path0.compare(WORLD_FILE_INFO) == 0) ||
+        (path1.compare(WORLD_FILE_XML) == 0) ||
+        (path0.compare(SAVE_TEMPLATE_FILE_INFO) == 0) ||
+        (path1.compare(SAVE_TEMPLATE_FILE_XML) == 0);
     if(bBad) {
         return false;
     }

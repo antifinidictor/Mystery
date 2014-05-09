@@ -16,6 +16,12 @@
 #include "tpe/TimePhysicsEngine.h"
 #include <boost/filesystem.hpp>
 
+//Special filenames
+#define WORLD_FILE_INFO "res/world.info"
+#define WORLD_FILE_XML "res/world.xml"
+#define SAVE_TEMPLATE_FILE_INFO "res/save-template.info"
+#define SAVE_TEMPLATE_FILE_XML "res/save-template.xml"
+
 class ElementalVolume;
 class Player;
 
@@ -57,9 +63,9 @@ public:
     void setDefaultInputMapping();
     void setTypingInputMapping();
     void resetInputMapping();
-    void newGame(const std::string &filename);     //Creates new save file & loads it
-    void loadGame(const std::string &filename);    //Loads save file (world file should already be loaded)
-    void saveGame(const std::string &filename);
+    bool newGame(const std::string &filename);     //Creates new save file & loads it
+    bool loadGame(const std::string &filename);    //Loads save file (world file should already be loaded)
+    bool saveGame(const std::string &filename);
     void getCurGameFileRoot(std::string &result);
 
     void readWorldFile();
