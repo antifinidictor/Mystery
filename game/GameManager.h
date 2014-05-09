@@ -70,6 +70,13 @@ private:
 
     void fadeArea();
 
+    void pushState(GameManagerState eNewState);
+    void popState();
+    void swapState(GameManagerState eNewState); //Pushes & pops without initializing the state below
+
+    void initCurState();
+    void cleanCurState();
+
     static GameManager *m_pInstance;
 
     uint m_uiId;

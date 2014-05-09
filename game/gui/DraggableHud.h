@@ -57,6 +57,8 @@ public:
 
     void updateItemAnimations();
 
+    void clearInventory();
+
 private:
 
     void initPlayerHud();

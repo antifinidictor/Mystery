@@ -116,6 +116,11 @@ enum GameManagerState {
     GM_NORMAL,
     GM_FADE_OUT,    //Fading between areas
     GM_FADE_IN,
+    GM_FADE_AREA,
+    GM_NEW_GAME,
+    GM_LOAD_GAME,
+    GM_CLEAN_GAME,
+    GM_WAIT_FOR_WORLD_CLEAN,
     GM_NUM_STATES
 };
 

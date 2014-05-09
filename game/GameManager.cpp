@@ -21,7 +21,7 @@ GameManager *GameManager::m_pInstance;
 GameManager::GameManager(uint uiId) {
     m_uiId = uiId;
     m_uiFlags = 0;
-    m_skState.push(GM_START);
+    pushState(GM_START);
     m_fFadeTimer = 0.f;
     m_uiNextArea = 0;
     m_crWorld = Color(0xFF,0xFF,0xFF);
@@ -72,29 +72,50 @@ GameManager::update(float fDeltaTime) {
         initBasicHud();
         initPlayerHud();
 
-        m_skState.push(GM_NORMAL);
+        pushState(GM_NORMAL);
         break;
+
     case GM_FADE_OUT:
         if(m_fFadeTimer < 1.f) {
             fadeArea();
             m_fFadeTimer += FADE_TIME_STEP;
         } else {
             m_fFadeTimer = 1.f;
-            m_skState.pop();
-            m_skState.push(GM_FADE_IN);
-            PWE::get()->setCurrentArea(m_uiNextArea);
+            popState();
+            //pushState(GM_FADE_IN);
+            //PWE::get()->setCurrentArea(m_uiNextArea);
         }
         break;
+
     case GM_FADE_IN:
         if(m_fFadeTimer > 0.f) {
             fadeArea();
             m_fFadeTimer -= FADE_TIME_STEP;
         } else {
             m_fFadeTimer = 0.f;
-            m_skState.pop();
+            popState();
             //PWE::get()->setState(PWE_RUNNING);
         }
         break;
+
+    case GM_FADE_AREA:
+        swapState(GM_FADE_IN);
+        PWE::get()->setCurrentArea(m_uiNextArea);
+        break;
+
+    case GM_CLEAN_GAME:
+        //Prepare to wait for the PWE to finish cleaning the world
+        swapState(GM_WAIT_FOR_WORLD_CLEAN);
+
+        //Clean the game
+        cleanGame();
+        break;
+    case GM_NEW_GAME:
+    case GM_LOAD_GAME:
+        //For now, pop off
+        popState();
+        break;
+
     default:
         break;
     }
@@ -128,9 +149,10 @@ GameManager::callBack(uint uiId, void *data, uint eventId) {
         m_uiNextArea = *((uint*)data);
         switch(m_skState.top()) {
         case GM_FADE_IN:
-            m_skState.pop();
+            popState();
         case GM_NORMAL:
-            m_skState.push(GM_FADE_OUT);
+            pushState(GM_FADE_AREA);
+            pushState(GM_FADE_OUT);
             break;
         default:
             status = EVENT_DROPPED;
@@ -145,6 +167,13 @@ GameManager::callBack(uint uiId, void *data, uint eventId) {
 
         //Make the world dirty
         m_bWorldIsClean = false;
+
+        //Pop off the WAIT_CLEAN state and push on a FADE_IN state
+        if(m_skState.top() == GM_WAIT_FOR_WORLD_CLEAN) {
+            swapState(GM_FADE_IN);
+        } else {
+            printf("ERROR: Invalid state! Expected GM_WAIT_FOR_WORLD_CLEAN but was %d\n", m_skState.top());
+        }
         break;
     default:
         status = EVENT_DROPPED;
@@ -213,14 +242,20 @@ GameManager::setDefaultInputMapping() {
 void
 GameManager::newGame() {
     m_sGameFileName = "res/game.info";
-    cleanGame();
+    pushState(GM_NEW_GAME);
+    pushState(GM_CLEAN_GAME);
+    pushState(GM_FADE_OUT);
+    //cleanGame();
 
 }
 
 void
 GameManager::loadGame() {
     m_sGameFileName = "res/game.info";
-    cleanGame();
+    pushState(GM_LOAD_GAME);
+    pushState(GM_CLEAN_GAME);
+    pushState(GM_FADE_OUT);
+    //cleanGame();
 }
 
 void
@@ -362,3 +397,68 @@ GameManager::registerPlayer(Listener *pPlayer) {
     //The GameManager needs to know about the player so it can tell it to update the HUD
     m_pPlayerListener = pPlayer;
 }
+
+
+void
+GameManager::pushState(GameManagerState eNewState) {
+    if(m_skState.size() > 0) {
+        //Clean the old state, if there was one
+        cleanCurState();
+    }
+
+    //Push the new state
+    m_skState.push(eNewState);
+
+    //Init the new state
+    initCurState();
+}
+
+void
+GameManager::popState() {
+    if(m_skState.size() > 1) {
+        //Clean the current state if there is at least one remaining state
+        cleanCurState();
+
+        //Pop the old state
+        m_skState.pop();
+
+        //Init the new current state
+        initCurState();
+    }
+}
+
+void
+GameManager::swapState(GameManagerState eNewState) {
+    if(m_skState.size() > 0) {
+        //Clean the old state, if there was one
+        cleanCurState();
+    }
+
+    //Pop the old state
+    m_skState.pop();
+
+    //Push the new state
+    m_skState.push(eNewState);
+
+    //Init the new state
+    initCurState();
+}
+
+void
+GameManager::initCurState() {
+    switch(m_skState.top()) {
+    default:
+        break;
+    }
+}
+
+void
+GameManager::cleanCurState() {
+    switch(m_skState.top()) {
+    case GM_LOAD_GAME:
+    case GM_NEW_GAME:
+    default:
+        break;
+    }
+}
+

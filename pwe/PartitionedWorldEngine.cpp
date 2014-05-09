@@ -207,7 +207,11 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         s_iNumMainThreadUpdates++;
 
         //Update the node
-        node->update(pwe->m_fCurDeltaTime);
+        if(m_eState == PWE_PAUSED) {
+            node->updateAddRemoveErase();
+        } else {
+            node->update(pwe->m_fCurDeltaTime);
+        }
 
         //Get the queue lock.  Notice we keep the lock if the queue is empty
         SDL_LockMutex(pwe->m_mxUpdateNodeQueue);

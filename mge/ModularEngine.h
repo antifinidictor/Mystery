@@ -35,6 +35,7 @@ public:
     //Less static methods
     void run();
     void stop() { m_bIsRunning = false; }
+    bool isRunning() { return m_bIsRunning; }
 
     //From EventHandler
 	virtual void addListener(Listener *pListener, uint id, char* triggerData = NULL);

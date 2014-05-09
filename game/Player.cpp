@@ -97,6 +97,10 @@ Player::~Player() {
         delete m_pCurSpell; //TODO: Possible cause of crash on exit (tries to access ev that does not exist)
     }
 
+    if(MGE::get()->isRunning()) {
+        s_pHud->clearInventory();
+    }
+
     PWE::get()->freeId(getId());
     delete m_pPhysicsModel;
     delete m_pRenderModel;

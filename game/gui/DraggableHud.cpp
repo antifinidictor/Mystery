@@ -188,6 +188,20 @@ DraggableHud::updateItemAnimations() {
     }
 }
 
+
+void
+DraggableHud::clearInventory() {
+    //Clear inventory
+    m_pInventoryPanel->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER)->clear();
+    m_pInventoryPanel->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER)->clear();
+    m_pInventoryPanel->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER)->clear();
+
+    //Clear current items
+    get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT)->setFrameH(0);
+    get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL)->setFrameH(0);
+    get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM)->setFrameH(0);
+}
+
 void
 DraggableHud::moveBy(const Point &ptShift) {
     ContainerRenderModel::moveBy(ptShift);
