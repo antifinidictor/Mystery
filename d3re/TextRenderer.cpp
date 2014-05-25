@@ -6,6 +6,7 @@
 #include "mge/Image.h"
 #include "mge/defs.h"
 #include "d3re/d3re.h"
+#include "mge/ConfigManager.h"
 using namespace std;
 
 #define COLOR_SIZE 7
@@ -289,9 +290,18 @@ void TextRenderer::splitText(string &str, float maxw, float size) {
 //#endif
 }
 
-Rect TextRenderer::getArea(const char *str, float x, float y, float size) {
+Rect TextRenderer::getArea(const std::string &str, float x, float y, float size) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
-    const float h = pFont->h / pFont->m_iNumFramesH;
+    float h;
+    int iFramesH;
+    if(pFont == NULL) {
+        //If the font has not yet been loaded, use the default values
+        iFramesH = ConfigManager::get()->get("font.framesHigh", 26);
+        h = ConfigManager::get()->get("font.charHeight", 45);
+    } else {
+        iFramesH = pFont->m_iNumFramesH;
+        h = pFont->h / pFont->m_iNumFramesH;
+    }
 
     float cur_w = 0.f,
           max_w = 0.f,
@@ -309,7 +319,7 @@ Rect TextRenderer::getArea(const char *str, float x, float y, float size) {
         }
         int iw = char2IndW(str[i]),
             ih = char2IndH(str[i]);
-        cur_w += m_aWidths[iw * pFont->m_iNumFramesH + ih] * size;
+        cur_w += m_aWidths[iw * iFramesH + ih] * size;
     }
     if(cur_w > max_w) max_w = cur_w;
 

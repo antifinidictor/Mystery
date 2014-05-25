@@ -201,7 +201,7 @@ enum SideConfirmElements {
 enum GameFlags {
     GAM_CAN_LINK = GAME_FLAGS_BEGIN,    //Can be transferred to new areas
     GAM_CAN_PICK_UP,                    //Item can be picked up by the player
-    GAM_WRITE_TO_SAVE_FILE,             //Item should be written to a save file instead of the world file
+//    GAM_WRITE_TO_SAVE_FILE,           //Flag replaced with PWE equivalent
     NUM_GAME_FLAGS
 };
 

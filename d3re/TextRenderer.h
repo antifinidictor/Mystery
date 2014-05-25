@@ -23,7 +23,7 @@ public:
     char *splitText(const char *str, float maxw, float size = 1.0);
     void splitText(std::string &str, float maxw, float size = 1.0);
     void setFont(uint uiFontId) { m_uiFontId = uiFontId; }
-    Rect getArea(const char *str, float x, float y, float size = 1.0);
+    Rect getArea(const std::string &str, float x, float y, float size = 1.0);
     int  getNextLine(const char *str, int start);
     float getLineHeight(float size = 1.0);
 

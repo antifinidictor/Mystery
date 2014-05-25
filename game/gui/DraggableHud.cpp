@@ -11,6 +11,8 @@
 #include "mge/Event.h"
 #include "GuiButton.h"
 #include "game/GameManager.h"
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 #define Y_HIDDEN (TEXTURE_TILE_SIZE - SCREEN_HEIGHT)
 #define Y_SHOWN (0.F)
@@ -40,8 +42,6 @@ DraggableHud::DraggableHud(uint uiId)
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
     MGE::get()->addListener(this, ON_BUTTON_INPUT);
 
-    //Fill the actual hud
-    initPlayerHud();
 
     //Fill the inventory with valid item points
     Point ptValid;
@@ -80,6 +80,12 @@ DraggableHud::~DraggableHud() {
 
     //Render model should be deleted by the render engine
     //delete m_pRenderModel;
+}
+
+void
+DraggableHud::initHud() {
+    //Fill the actual hud
+    initPlayerHud();
 }
 
 /*
@@ -212,6 +218,135 @@ DraggableHud::clearInventory() {
     get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ELEMENT)->setFrameH(0);
     get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_SPELL)->setFrameH(0);
     get<ContainerRenderModel*>(MGHUD_ITEMBAR_CONTAINER)->get<D3HudRenderModel*>(MGHUD_ELEMENT_ITEMBAR_CUR_ITEM)->setFrameH(0);
+}
+
+void
+DraggableHud::readInventory(const boost::property_tree::ptree &pt, const std::string &keyBase) {
+    using boost::property_tree::ptree;
+    //Read in stored inventory items
+    string itemKeyBase = keyBase + ".items";
+    string spellKeyBase = keyBase + ".spells";
+    string elementKeyBase = keyBase + ".elements";
+
+    ContainerRenderModel *itemPanel = m_pInventoryPanel
+            ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+    ContainerRenderModel *spellPanel = m_pInventoryPanel
+            ->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
+    ContainerRenderModel *elementPanel = m_pInventoryPanel
+            ->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
+
+    try {
+    BOOST_FOREACH(ptree::value_type item, pt.get_child(itemKeyBase)) {
+        string name = item.first.data();
+        string key = itemKeyBase + "." + name;
+        uint index = pt.get(key, 0);
+
+        //Read the appropriate item
+        Item *itm = (Item*)Item::read(pt, key);
+        Rect rcArea = indexToItemRect(index);
+        DraggableItem *ditem = new DraggableItem(itm, index, rcArea, this);
+
+        //Add to the inventory
+        itemPanel->add(index, ditem);
+    }
+    } catch(exception &e) {
+    }
+
+    try {
+    BOOST_FOREACH(ptree::value_type spell, pt.get_child(spellKeyBase)) {
+        string name = spell.first.data();
+        string key = itemKeyBase + "." + name;
+        uint index = pt.get(key, 0);
+
+        //Read the appropriate item
+        Item *item = (Item*)SpellItem::read(pt, key);
+        Rect rcArea = indexToSpellRect(index);
+        DraggableElementalSpellItem *ditem = new DraggableElementalSpellItem(item, rcArea, this);
+
+        //Add to the inventory
+        spellPanel->add(index, ditem);
+    }
+    } catch(exception &e) {
+    }
+
+    try {
+    BOOST_FOREACH(ptree::value_type element, pt.get_child(elementKeyBase)) {
+        string name = element.first.data();
+        string key = itemKeyBase + "." + name;
+        uint index = pt.get(key, 0);
+
+        //Read the appropriate item
+        Item *item = (Item*)Item::read(pt, key);
+        Rect rcArea = indexToElementRect(index);
+        DraggableElementalSpellItem *ditem = new DraggableElementalSpellItem(item, rcArea, this);
+
+        //Add to the inventory
+        elementPanel->add(index, ditem);
+    }
+    } catch(exception &e) {
+    }
+}
+
+class WriteItemModelFunctor {
+    boost::property_tree::ptree &m_pt;
+    const std::string m_keyBase;
+public:
+    WriteItemModelFunctor(boost::property_tree::ptree &pt, const std::string &keyBase)
+        :   m_pt(pt),
+            m_keyBase(keyBase)
+    {
+    }
+
+    bool operator()(uint index, RenderModel *rm) {
+        //Cast to the appropriate type
+        DraggableItem *item = dynamic_cast<DraggableItem*>(rm);
+        if(item != NULL) {
+            string keyBase = m_keyBase + ".item" + boost::lexical_cast<string>(index);
+            m_pt.put(keyBase, index);
+            item->getItem()->write(m_pt, keyBase);
+        }
+        return false;
+    }
+};
+
+class WriteSpellModelFunctor {
+    boost::property_tree::ptree &m_pt;
+    const std::string m_keyBase;
+public:
+    WriteSpellModelFunctor(boost::property_tree::ptree &pt, const std::string &keyBase)
+        :   m_pt(pt),
+            m_keyBase(keyBase)
+    {
+    }
+
+    bool operator()(uint index, RenderModel *rm) {
+        //Cast to the appropriate type
+        DraggableElementalSpellItem *item = dynamic_cast<DraggableElementalSpellItem*>(rm);
+        if(item != NULL) {
+            string keyBase = m_keyBase + ".spell" + boost::lexical_cast<string>(index);
+            m_pt.put(keyBase, index);
+            item->getItem()->write(m_pt, keyBase);
+        }
+        return false;
+    }
+};
+
+void
+DraggableHud::writeInventory(boost::property_tree::ptree &pt, const std::string &keyBase) {
+    //Write stored inventory items
+    ContainerRenderModel *itemPanel = m_pInventoryPanel
+            ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+    ContainerRenderModel *spellPanel = m_pInventoryPanel
+            ->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
+    ContainerRenderModel *elementPanel = m_pInventoryPanel
+            ->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
+
+    WriteItemModelFunctor itemFtor(pt, keyBase + ".items");
+    WriteSpellModelFunctor spellFtor(pt, keyBase + ".spells");
+    WriteSpellModelFunctor elementFtor(pt, keyBase + ".elements");
+    itemPanel->forEachModel(itemFtor);
+    spellPanel->forEachModel(spellFtor);
+    elementPanel->forEachModel(elementFtor);
 }
 
 void

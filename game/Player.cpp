@@ -82,14 +82,11 @@ Player::Player(uint uiId, const Point &ptPos)
 
     //TODO: How can we design this better?
     GameManager::get()->registerPlayer(this);
-    if(s_pHud == NULL) {
-        //The DraggableHud gets deleted by the screen at the end of the game
-        s_pHud = new DraggableHud(PWE::get()->genId());
-    }
     s_pHud->registerPlayer(this);
 
     //Flags
     setFlag(GAM_CAN_LINK, true);
+    setFlag(PWE_SAVE_FILE_OBJ, true);
 }
 
 Player::~Player() {
@@ -97,9 +94,13 @@ Player::~Player() {
         delete m_pCurSpell; //TODO: Possible cause of crash on exit (tries to access ev that does not exist)
     }
 
+    //If the game is still running, clear the inventory.  Otherwise we delete this stuff twice
     if(MGE::get()->isRunning()) {
         s_pHud->clearInventory();
     }
+
+    GameManager::get()->registerPlayer(NULL);
+    s_pHud->registerPlayer(NULL);
 
     PWE::get()->freeId(getId());
     delete m_pPhysicsModel;

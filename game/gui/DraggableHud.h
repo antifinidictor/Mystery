@@ -55,9 +55,11 @@ public:
     virtual void moveItem(uint startIndex, uint endIndex);
 
 
+    void initHud();
     void updateItemAnimations();
-
     void clearInventory();
+    void readInventory(const boost::property_tree::ptree &pt, const std::string &keyBase);
+    void writeInventory(boost::property_tree::ptree &pt, const std::string &keyBase);
 
 private:
     enum HudState {

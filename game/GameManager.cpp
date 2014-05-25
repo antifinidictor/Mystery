@@ -7,6 +7,7 @@
 #include "game/gui/GuiButton.h"
 #include "game/items/Item.h"
 #include "mge/ConfigManager.h"
+#include "game/Player.h"
 
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/info_parser.hpp>
@@ -22,19 +23,29 @@ using namespace std;
 
 GameManager *GameManager::m_pInstance;
 
-GameManager::GameManager(uint uiId) {
-    m_uiId = uiId;
-    m_uiFlags = 0;
+GameManager::GameManager(uint uiId)
+    :   m_uiId(uiId),
+        m_uiFlags(0),
+        m_fFadeTimer(0.f),
+        m_uiNextArea(0),
+        m_crWorld(0xFF,0xFF,0xFF),
+        m_crBackground(0x9a,0xd7,0xfb),
+        m_pPlayerListener(NULL),
+        m_hud(PWE::get()->genId()),
+        m_bFirstInit(true)
+{
+printf(__FILE__" %d\n",__LINE__);
     pushState(GM_START);
-    m_fFadeTimer = 0.f;
-    m_uiNextArea = 0;
-    m_crWorld = Color(0xFF,0xFF,0xFF);
-    m_crBackground = Color(0x9a,0xd7,0xfb);
+printf(__FILE__" %d\n",__LINE__);
 
     D3RE::get()->setWorldColor(m_crWorld);
     D3RE::get()->setBackgroundColor(m_crBackground);
     D3RE::get()->setColorWeight(DEFAULT_WEIGHT);
     TextDisplay::init();
+printf(__FILE__" %d\n",__LINE__);
+
+    Player::setHud(&m_hud);
+printf(__FILE__" %d\n",__LINE__);
 
     //Init draggable item location information
     //TODO: Fix so it is relative to the draggable hud and not so hardcoded?
@@ -68,7 +79,12 @@ bool
 GameManager::update(float fDeltaTime) {
     TextDisplay::get()->update(fDeltaTime);
 
-    m_pPlayerListener->callBack(getId(), &fDeltaTime, ON_UPDATE_HUD);
+/*
+    if(m_pPlayerListener != NULL) {
+        m_pPlayerListener->callBack(getId(), &fDeltaTime, ON_UPDATE_HUD);
+    }
+*/
+    m_hud.updateItemAnimations();
 
     switch(m_skState.top()) {
     case GM_START:
@@ -193,6 +209,7 @@ GameManager::callBack(uint uiId, void *data, uint eventId) {
 
 void
 GameManager::readWorldFile() {
+printf(__FILE__" %d\n",__LINE__);
     using boost::property_tree::ptree;
     ptree pt;
     const string filename = "res/world.info";
@@ -205,8 +222,15 @@ GameManager::readWorldFile() {
         read_xml(filename, pt);
     }
 
-    //Read resources
-    D3RE::get()->read(pt, "resources");
+    if(m_bFirstInit) {
+        //Read resources
+        D3RE::get()->read(pt, "resources");
+
+        //Init the hud now that the resources are initialized properly
+        m_hud.initHud();
+
+        m_bFirstInit = false;
+    }
 
     //Read areas
     PWE::get()->read(pt, "areas");
@@ -227,8 +251,12 @@ GameManager::readSaveFile() {
         read_xml(file, pt);
     }
 
+    //Read inventory
+    m_hud.readInventory(pt, "inventory");
+
     //Read areas
     PWE::get()->read(pt, "areas");
+
 }
 
 void
@@ -320,10 +348,17 @@ GameManager::newGame(const std::string &filename) {
 
     //Copy the save-game template to the new game file name
     namespace fs = boost::filesystem;
+    try {
     if(m_fsGameFile.extension().compare((string)".info") == 0) {
-        fs::copy_file(fs::path(SAVE_TEMPLATE_FILE_INFO), m_fsGameFile);
+        fs::copy_file(fs::path(SAVE_TEMPLATE_FILE_INFO), m_fsGameFile, fs::copy_option::overwrite_if_exists);
     } else {
-        fs::copy_file(fs::path(SAVE_TEMPLATE_FILE_XML), m_fsGameFile);
+        fs::copy_file(fs::path(SAVE_TEMPLATE_FILE_XML), m_fsGameFile, fs::copy_option::overwrite_if_exists);
+    }
+    } catch(exception &e) {
+        printf("ERROR: Failed to copy savefile template! Make sure %s and %s are not corrupted!\n",
+               SAVE_TEMPLATE_FILE_INFO, SAVE_TEMPLATE_FILE_XML);
+//printf(__FILE__" %d\n",__LINE__);
+        return false;
     }
 
     pushState(GM_NEW_GAME);
@@ -364,6 +399,8 @@ GameManager::saveGame(const std::string &filename) {
     ptree pt;
 
     PWE::get()->write(pt, "areas", true);   //'true' indicates this is a save file
+
+    m_hud.writeInventory(pt, "inventory");
 
     //Write the prop tree to the specified file
     string ext = m_fsGameFile.extension().string();

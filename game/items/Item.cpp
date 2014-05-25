@@ -20,6 +20,8 @@ Item::Item(uint id, uint itemId, const Point &pos)
     //setFlag(TPE_PASSABLE, true);
     //setFlag(TPE_FALLING, true);
 
+    //Items are save-file objects
+    setFlag(PWE_SAVE_FILE_OBJ, true);
 }
 
 Item::~Item() {

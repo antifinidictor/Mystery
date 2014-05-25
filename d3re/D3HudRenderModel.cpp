@@ -105,11 +105,11 @@ D3HudRenderModel::updateText(const std::string &data, float textSize) {
     } else if(m_fTextSize < 0.f) {
         m_fTextSize = 1.f;
     }
-    Rect rcOldTextArea = TextRenderer::get()->getArea(m_sData.c_str(), 0.f, 0.f, m_fTextSize);
+    Rect rcOldTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
     m_sData = data;
 
     //Center the text in the box
-    Rect rcNewTextArea = TextRenderer::get()->getArea(data.c_str(), 0.f, 0.f, m_fTextSize);
+    Rect rcNewTextArea = TextRenderer::get()->getArea(data, 0.f, 0.f, m_fTextSize);
 
     if(m_bVertCenter) {
         m_ptTextPos.y -= rcNewTextArea.h / 2 - rcOldTextArea.h / 2;
@@ -126,11 +126,11 @@ void
 D3HudRenderModel::centerVertically(bool bCenter) {
     if(m_bVertCenter && !bCenter) {
         //Shift the text so it is not centered
-        Rect rcTextArea = TextRenderer::get()->getArea(m_sData.c_str(), 0.f, 0.f, m_fTextSize);
+        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
         m_ptTextPos.y -= m_rcDrawArea.h / 2 - rcTextArea.h / 2;
     } else if(!m_bVertCenter && bCenter) {
         //Shift the text so it is centered
-        Rect rcTextArea = TextRenderer::get()->getArea(m_sData.c_str(), 0.f, 0.f, m_fTextSize);
+        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
         m_ptTextPos.y += m_rcDrawArea.h / 2 - rcTextArea.h / 2;
     }
     m_bVertCenter = bCenter;
@@ -140,11 +140,11 @@ void
 D3HudRenderModel::centerHorizontally(bool bCenter) {
     if(m_bHorizCenter && !bCenter) {
         //Shift the text so it is NOT centered
-        Rect rcTextArea = TextRenderer::get()->getArea(m_sData.c_str(), 0.f, 0.f, m_fTextSize);
+        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
         m_ptTextPos.x -= m_rcDrawArea.w / 2 - rcTextArea.w / 2;
     } else if(!m_bHorizCenter && bCenter) {
         //Shift the text so it IS centered
-        Rect rcTextArea = TextRenderer::get()->getArea(m_sData.c_str(), 0.f, 0.f, m_fTextSize);
+        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
         m_ptTextPos.x += m_rcDrawArea.w / 2 - rcTextArea.w / 2;
     }
     m_bHorizCenter = bCenter;

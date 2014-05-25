@@ -10,6 +10,7 @@
 #include "mge/GameObject.h"
 #include "mge/Event.h"
 #include "game/game_defs.h"
+#include "game/gui/DraggableHud.h"
 
 #include "d3re/d3re.h"
 #include "pwe/PartitionedWorldEngine.h"
@@ -106,6 +107,8 @@ private:
     boost::filesystem::path m_fsGameFile;
 
     Listener *m_pPlayerListener; //The player, as a listener
+    DraggableHud m_hud;
+    bool m_bFirstInit;
 
     std::stack<GameManagerState> m_skState;
     std::map<uint, ElementalVolume*> m_mActiveVolumes;

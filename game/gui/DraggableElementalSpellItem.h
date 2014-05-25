@@ -26,6 +26,7 @@ public:
     virtual void onMouseOut();
 
     //General
+    Item *getItem() { return m_pItem; }
     void removeItem() { m_pItem = NULL; }
 
 private:

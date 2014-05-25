@@ -41,6 +41,8 @@ public:
     //Input
     virtual int callBack(uint cID, void *data, uint uiEventId);
 
+    static void setHud(DraggableHud *hud) { s_pHud = hud; }
+
 private:
     enum PlayerState {
         PLAYER_NORMAL,
