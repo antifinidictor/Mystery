@@ -79,7 +79,7 @@ int
 SimplePhysicsObject::callBack(uint uiId, void *data, uint uiEventId) {
     int status = EVENT_CAUGHT;
     switch(uiEventId) {
-    case TPE_ON_COLLISION:
+    case TPE_ON_COLLISION: {
         /*
         if(!m_bPlayingSound) {
             HandleCollisionData *d = (HandleCollisionData*)data;
@@ -88,7 +88,18 @@ SimplePhysicsObject::callBack(uint uiId, void *data, uint uiEventId) {
             BAE::get()->playSound(AUD_DRAG);
         }
         */
+
+        HandleCollisionData *d = (HandleCollisionData*)data;
+static uint time = 0;
+        if(d->obj->getId() == 45) {
+            uint curTime = Clock::get()->getTime();
+            if(time == curTime) {
+                printf("Hit something, shift is %f (obj %d)\n", d->ptShift.magnitude(), d->obj->getId());
+            }
+            time = curTime;
+        }
         break;
+    }
     default:
         status = EVENT_DROPPED;
         break;
@@ -98,6 +109,13 @@ SimplePhysicsObject::callBack(uint uiId, void *data, uint uiEventId) {
 
 bool
 SimplePhysicsObject::update(float fDeltaTime) {
+    Point pos = m_pPhysicsModel->getPosition();
+static uint time = 0;
+    uint curTime = Clock::get()->getTime();
+    if(time == curTime) {
+        printf("Mypos: %f,%f,%f\n",pos.x, pos.y,pos.z);
+    }
+    time = curTime;
     //m_pPhysicsModel->applyForce(Point(0.f,0.f,0.1f));
     //Useful place to put test code
     #define MIN_SHIFT_FOR_SOUND 0.01f

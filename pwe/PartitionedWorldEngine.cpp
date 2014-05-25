@@ -19,7 +19,7 @@ int
 PartitionedWorldEngine::nodeUpdateThread(void *data) {
     SDL_threadID threadID = SDL_ThreadID();    //For debugging
     int iNumUpdates = 0;
-    printf("Thread %d executing\n", threadID);
+    printf("Thread 0x%8x executing\n", threadID);
 
     bool *bStop = (bool*)data;
     while(!*bStop) {
@@ -27,7 +27,7 @@ PartitionedWorldEngine::nodeUpdateThread(void *data) {
         SDL_LockMutex(pwe->m_mxUpdateNodeQueue);
         if(pwe->m_lsUpdateNodeQueue.size() < 2) {   //Last node or so needs to be updated by the root thread for some reason
 
-            //If the list is empty, unlock and wait a bit before trying again
+            //If the list is nearly empty, unlock and wait a bit before trying again
             SDL_UnlockMutex(pwe->m_mxUpdateNodeQueue);
 
             //printf("Thread %d did not find enough nodes to update\n", threadID);
@@ -37,6 +37,8 @@ PartitionedWorldEngine::nodeUpdateThread(void *data) {
             //Otherwise, get the next node waiting for processing
             FluidOctreeNode *node = pwe->m_lsUpdateNodeQueue.front();
             pwe->m_lsUpdateNodeQueue.pop_front();
+
+            //printf("Read %5x\n", node->getId());
             //int iNumItems = pwe->m_lsUpdateNodeQueue.size();
 
             //Unlock the list so other nodes can be updated
@@ -46,11 +48,15 @@ PartitionedWorldEngine::nodeUpdateThread(void *data) {
             iNumUpdates++;
 
             //Update the node
-            node->update(pwe->m_fCurDeltaTime);
+            if(pwe->m_eState == PWE_PAUSED) {
+                node->updateAddRemoveErase();
+            } else {
+                node->update(pwe->m_fCurDeltaTime);
+            }
         }
     }
 
-    printf("Thread %d exiting; updated %d times\n", threadID, iNumUpdates);
+    printf("Thread 0x%8x exiting; updated %d times\n", threadID, iNumUpdates);
     return 0;
 }
 
@@ -64,8 +70,8 @@ PartitionedWorldEngine::init() {
     string threadNameBase = "PWE_UpdateNode";
     for(int curThread = 0; curThread < numThreads; ++curThread) {
         string threadName = threadNameBase + lexical_cast<string>(curThread);
-        printf("Created thread %s\n", threadName.c_str());
         SDL_Thread *thread = SDL_CreateThread(nodeUpdateThread, threadName.c_str(), &pwe->m_bFinalCleaning);
+        //printf("Created thread %s (id 0x%8x, address 0x%8x)\n", threadName.c_str(), SDL_GetThreadID(thread), thread);
         pwe->m_lsUpdateThreads.push_back(thread);
     }
 }
@@ -198,6 +204,7 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         //Get the first item from the queue
         FluidOctreeNode *node = pwe->m_lsUpdateNodeQueue.front();
         m_lsUpdateNodeQueue.pop_front();
+        //printf("Read %5x\n", node->getId());
         //int iNumItems = m_lsUpdateNodeQueue.size();
 
         //Unlock the list so other nodes can be updated by other threads
@@ -631,6 +638,7 @@ PartitionedWorldEngine::removeListener(uint uiListenerId, uint eventId, uint uiA
 void
 PartitionedWorldEngine::scheduleUpdate(FluidOctreeNode *node) {
     //Assumes list is already locked
+    node->onSchedule();
     m_lsUpdateNodeQueue.push_back(node);
 }
 

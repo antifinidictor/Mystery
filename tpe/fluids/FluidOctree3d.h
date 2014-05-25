@@ -7,6 +7,8 @@
 #include <map>
 #include <list>
 #include <boost/property_tree/ptree.hpp>
+#include <iostream>
+#include "SDL.h"
 
 class GameObject;
 class Scheduler;
@@ -14,6 +16,8 @@ struct SDL_mutex;
 
 class FluidOctreeNode {
 public:
+    void print(std::ostream &o, int line, const std::string &msg = "");
+
     FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution = 1.f);
     virtual ~FluidOctreeNode();
 
@@ -40,7 +44,11 @@ public:
 
     void updateAddRemoveErase();
 
+    void onSchedule();
+
     virtual int tempGetClassId() { return 0; }
+    uint getId() { return m_uiEngineId; }
+
 protected:
     enum QuadrantNames {
         QUAD_FIRST = 0,                     //Used for iterating
@@ -78,6 +86,7 @@ protected:
         m_lsDynamicObjs.clear();
         m_lsStaticObjs.clear();
         m_lsObjsLeftQuadrant.clear();
+        m_bIsFinished = false;
     }
 
     //Octree node information
@@ -99,8 +108,12 @@ protected:
     std::list<uint> m_lsObjsToErase;
     std::list<uint> m_lsObjsToRemove;
 
-    //Information calculated on each scheduled update event, used by parents in their update event, cleared by parents
+    //Locking information: Used to ensure parents execute only when the children are finished
     SDL_mutex *m_mutex;
+    SDL_cond  *m_cond;
+    bool       m_bIsFinished;
+
+    //Information calculated on each scheduled update event, used by parents in their update event, cleared by parents
     objlist_t m_lsDynamicObjs;      //These objects have moved and must be compared against all objects
     objlist_t m_lsStaticObjs;       //These objects have not moved and must be compared against
     objlist_t m_lsObjsLeftQuadrant; //These objects left their quadrant and need to be added to the next level up
@@ -161,6 +174,7 @@ public:
         return m_sInstance;
     }
     virtual void scheduleUpdate(FluidOctreeNode *node) {
+        node->onSchedule();
         if(m_bPaused) {
             node->updateAddRemoveErase();
         } else {

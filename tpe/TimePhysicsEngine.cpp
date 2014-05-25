@@ -30,6 +30,8 @@ void TimePhysicsEngine::update(float fDeltaTime) {
     //m_uiLastUpdated = time;
 }
 
+#define PRINT_IF_ID(obj, id) if(obj->getId() == id) { printf(__FILE__" %d (obj %d)\n",__LINE__, id); }
+
 bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     AbstractTimePhysicsModel *tmdl = dynamic_cast<AbstractTimePhysicsModel*>(obj->getPhysicsModel());
     if(tmdl == NULL) return false;
@@ -58,7 +60,8 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
         obj->setFlag(TPE_FALLING, true);
     }
     if(bIsOnSurface) {
-        applyPhysics(tmdl->getParent(), tmdl->getSurface()->getParent());
+        GameObject *pObjSurface = tmdl->getSurface()->getParent();
+        applyPhysics(tmdl->getParent(), pObjSurface);
         if(bHasLeftSurface) {
             tmdl->setSurface(NULL);
         }
@@ -312,7 +315,7 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
         ptHmapShift = Point();
 
         //Somehow this prevents objects from falling through the heightmap
-        bool bBoxInHmap = ptBoxShift.y > 0.f;
+        bool bBoxInHmap = ptBoxShift.y >= 0.f;
         if(!bBoxInHmap) {
             if(tpmBox->getSurface() == tpmHmap) {
                 tpmBox->setSurface(NULL);

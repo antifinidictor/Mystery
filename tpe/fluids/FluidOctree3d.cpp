@@ -4,6 +4,7 @@
 #include "d3re/d3re.h"
 #include "pwe/PartitionedWorldEngine.h"
 #include "SDL.h"    //for the threading stuff
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -13,14 +14,151 @@ using namespace std;
 BasicScheduler *BasicScheduler::m_sInstance = new BasicScheduler();
 static SDL_mutex *s_mxRenderEngine = SDL_CreateMutex();
 
+
+//Debugging printing
+void
+FluidOctreeNode::print(ostream &o, int line, const std::string &msg) {
+#define PRINT_CONTENTS 0
+    //Dump the complete contents of this octree node
+    SDL_LockMutex(s_mxRenderEngine);
+    int levelprint = m_uiLevel * 4 + 10;
+    string prefix(levelprint, ' ');
+    string lineprefix = "line " + boost::lexical_cast<string>(line) + ";";
+    string remprefix(levelprint - lineprefix.length(), ' ');
+    o << lineprefix << remprefix << hex << m_uiEngineId << ":" << m_uiAreaId << ":" << m_uiLevel << dec
+      //<< "\n" << prefix << "  child{";
+      << " child{";
+    for(int i = FluidOctreeNode::QUAD_FIRST; i < FluidOctreeNode::QUAD_NUM_QUADS; ++i) {
+        if(m_apChildren[i] == NULL) {
+            o << "-";
+        } else {
+            o << i;
+        }
+    }
+#if 1
+    //o << "}\n" << prefix << "  cont{";
+    o << "}; cont{";
+#if PRINT_CONTENTS
+    bool first = true;
+    for(map<uint,GameObject*>::iterator it = m_mContents.begin(); it != m_mContents.end(); ++it) {
+        if(first) {
+            first = false;
+            o << it->first;
+        } else {
+            o << ", " << it->first;
+        }
+    }
+#else
+    o << m_mContents.size();
+#endif
+    //o << "}\n" << prefix << "  add{";
+    o << "}; add{";
+#if PRINT_CONTENTS
+    first = true;
+    for(list<GameObject*>::iterator it = m_lsObjsToAdd.begin(); it != m_lsObjsToAdd.end(); ++it) {
+        if(first) {
+            first = false;
+            o << (*it)->getId();
+        } else {
+            o << ", " << (*it)->getId();
+        }
+    }
+#else
+    o << m_lsObjsToAdd.size();
+#endif
+    //o << "}\n" << prefix << "  rem{";
+    o << "}; rem{";
+#if PRINT_CONTENTS
+    first = true;
+    for(list<uint>::iterator it = m_lsObjsToRemove.begin(); it != m_lsObjsToRemove.end(); ++it) {
+        if(first) {
+            first = false;
+            o << (*it);
+        } else {
+            o << ", " << (*it);
+        }
+    }
+#else
+    o << m_lsObjsToRemove.size();
+#endif
+    //o << "}\n" << prefix << "  erase{";
+    o << "}; erase{";
+#if PRINT_CONTENTS
+    first = true;
+    for(list<uint>::iterator it = m_lsObjsToErase.begin(); it != m_lsObjsToErase.end(); ++it) {
+        if(first) {
+            first = false;
+            o << (*it);
+        } else {
+            o << ", " << (*it);
+        }
+    }
+#else
+    o << m_lsObjsToErase.size();
+#endif
+    //o << "}\n" << prefix << "  dyn{";
+    o << "}; dyn{";
+#if PRINT_CONTENTS
+    first = true;
+    for(FluidOctreeNode::objlist_iter_t it = m_lsDynamicObjs.begin(); it != m_lsDynamicObjs.end(); ++it) {
+        if(first) {
+            first = false;
+            o << (*it)->getId();
+        } else {
+            o << ", " << (*it)->getId();
+        }
+    }
+#else
+    o << m_lsDynamicObjs.size();
+#endif
+    //o << "}\n" << prefix << "  stat{";
+    o << "}; stat{";
+#if PRINT_CONTENTS
+    first = true;
+    for(FluidOctreeNode::objlist_iter_t it = m_lsStaticObjs.begin(); it != m_lsStaticObjs.end(); ++it) {
+        if(first) {
+            first = false;
+            o << (*it)->getId();
+        } else {
+            o << ", " << (*it)->getId();
+        }
+    }
+#else
+    o << m_lsStaticObjs.size();
+#endif
+    //o << "}\n" << prefix << "  left{";
+    o << "}; left{";
+#if PRINT_CONTENTS
+    first = true;
+    for(FluidOctreeNode::objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
+        if(first) {
+            first = false;
+            o << (*it)->getId();
+        } else {
+            o << ", " << (*it)->getId();
+        }
+    }
+#else
+    o << m_lsObjsLeftQuadrant.size();
+#endif
+#endif
+    o << "} " << msg << "\n";
+    o.flush();
+    SDL_UnlockMutex(s_mxRenderEngine);
+}
+
+
+
 FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution)
-    : m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Point())
+    :   m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Point()),
+        m_mutex(SDL_CreateMutex()),
+        m_cond(SDL_CreateCond()),
+        m_bIsFinished(true)             //A node newly created has no contents, so it has finished updating
 {
+    SDL_LockMutex(m_mutex);
     m_uiEngineId = uiEngineId;
     m_uiAreaId = uiAreaId;
     m_uiLevel = uiLevel;
-
-    m_mutex = SDL_CreateMutex();    //Used for ensuring update ops don't overlap
 
     m_bEmpty = true;
     m_bxBounds = bxBounds;
@@ -30,6 +168,7 @@ FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, c
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
         m_apChildren[q] = NULL;
     }
+    SDL_UnlockMutex(m_mutex);
 }
 
 FluidOctreeNode::~FluidOctreeNode() {
@@ -298,7 +437,15 @@ FluidOctreeNode::update(float fTime) {
     handleChildrenUpdateResults();  //Children mutex's acquired in here
 
     updateEmptiness();
+
+    m_bIsFinished = true;   //Reset by cleanResults()
+    SDL_CondSignal(m_cond);
     SDL_UnlockMutex(m_mutex);
+}
+
+void
+FluidOctreeNode::onSchedule() {
+    //SDL_LockMutex(m_mutex);
 }
 
 
@@ -326,6 +473,9 @@ FluidOctreeNode::updateAddRemoveErase() {
 void
 FluidOctreeNode::updateContents(float fTime) {
     TimePhysicsEngine *pe = TimePhysicsEngine::get();
+
+    //printf(__FILE__" %d: Octree node %5x updated at time %5d by thread 0x%8x\n", __LINE__, m_uiEngineId, Clock::get()->getTime(), SDL_ThreadID());
+
     for(iter_t it = m_mContents.begin(); it != m_mContents.end(); ++it) {
         //Update the object's logic
         if(it->second->update(fTime)) {
@@ -387,8 +537,22 @@ void
 FluidOctreeNode::handleChildrenUpdateResults() {
     TimePhysicsEngine *pe = TimePhysicsEngine::get();
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
-        if(m_apChildren[q] != NULL/* && !m_apChildren[q]->empty()*/) {
+        if(m_apChildren[q] != NULL) {
+        /*
+            if(m_apChildren[q]->empty()) {
+                m_apChildren[q]->updateAddRemoveErase();
+                continue;
+            }
+        */
+
+            //The while loop ensures the state does not change as soon as the thread awakens.
+            //Such a state change should be impossible, but it is probably better form to
+            //include the while loop.
             SDL_LockMutex(m_apChildren[q]->m_mutex);
+            while(!m_apChildren[q]->m_bIsFinished) {
+                SDL_CondWait(m_apChildren[q]->m_cond, m_apChildren[q]->m_mutex);
+            }
+
             //To get here, the child must have already been updated
             //Perform collision checks on relevant lists
             //Dynamic objects from child must be checked against my static objects
@@ -440,6 +604,7 @@ FluidOctreeNode::handleChildrenUpdateResults() {
                 m_apChildren[q]->m_lsDynamicObjs.begin(),
                 m_apChildren[q]->m_lsDynamicObjs.end()
             );
+
             m_lsStaticObjs.insert(
                 m_lsStaticObjs.end(),
                 m_apChildren[q]->m_lsStaticObjs.begin(),
@@ -449,6 +614,7 @@ FluidOctreeNode::handleChildrenUpdateResults() {
             //Clear child lists
             m_apChildren[q]->cleanResults();
 
+            //The child will unlock it
             SDL_UnlockMutex(m_apChildren[q]->m_mutex);
         }
     }
@@ -460,10 +626,16 @@ FluidOctreeNode::recursiveScheduleUpdates(Scheduler *s) {
     int numUpdatesScheduled = 1;
     //Updates are scheduled as a stack, with children getting updated first
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
-        if(m_apChildren[q] != NULL && !m_apChildren[q]->empty()) {
+        if(m_apChildren[q] != NULL/* && !m_apChildren[q]->empty()*/) {
             numUpdatesScheduled += m_apChildren[q]->recursiveScheduleUpdates(s);    //The node should schedule itself
         }
     }
+    /*
+    printf("Scheduled %4x:%x:%x {%2.2f,%2.2f,%2.2f;%2.2f,%2.2f,%2.2f}\n",
+        m_uiEngineId, m_uiAreaId, m_uiLevel,
+        m_bxBounds.x, m_bxBounds.y, m_bxBounds.z,
+        m_bxBounds.w, m_bxBounds.h, m_bxBounds.l);
+    */
     s->scheduleUpdate(this);
     return numUpdatesScheduled;
 }

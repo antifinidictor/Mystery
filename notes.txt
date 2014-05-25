@@ -1,0 +1,24 @@
+To hide the secret "death level" (where you wake up in the White Magic facility), the player has a number of lives.  When you die, it shows your life count, then you see it decrease.
+
+E.g:
+
+You died.
+Lives: 8
+
+->
+
+You died.
+Lives: 7
+
+Several options:
+    Make the life count so high that you never reach 0
+    Make the event happen after you've reached 0 several times
+    Make it be part of a 'continue' option.
+        continue -> return to game
+        quit -> are you sure
+            yes -> quit
+            no -> wake up in hospital.  Length of time depends on number of deaths.
+
+I like the continue option. You can hide it deeper in the main menu.
+
+Also: Have the game essentially be on a timer.  Behind the scenes, your character is in a hospital which is in some sort of war zone.  At some point in the game, the hospital is abandoned, leaving your character behind; if you don't wake up and feed yourself, you will die of starvation in real life and suffer negative effects in the imaginary world.  Perhaps this could be put off as some evil mage using his magic to draw out the life force from people?  The trick will be to hide it so that unless you wake up and discover your character is starving, you will think the eventual death of your character is unavoidable.
