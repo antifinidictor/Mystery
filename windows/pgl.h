@@ -6,7 +6,8 @@
 #ifndef PGL_H
 #define PGL_H
 
-#include <gl/gl.h>
-#include <gl/glu.h>
+#include <windows.h>
+#include <gl/GL.h>
+#include <gl/GLU.h>
 
 #endif //PGL_H

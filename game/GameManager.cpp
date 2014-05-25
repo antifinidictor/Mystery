@@ -320,7 +320,7 @@ GameManager::newGame(const std::string &filename) {
 
     //Copy the save-game template to the new game file name
     namespace fs = boost::filesystem;
-    if(m_fsGameFile.extension().compare(".info") == 0) {
+    if(m_fsGameFile.extension().compare((string)".info") == 0) {
         fs::copy_file(fs::path(SAVE_TEMPLATE_FILE_INFO), m_fsGameFile);
     } else {
         fs::copy_file(fs::path(SAVE_TEMPLATE_FILE_XML), m_fsGameFile);
@@ -603,10 +603,10 @@ GameManager::validateSaveFileName(const std::string &filename, bool bMustExist) 
     }
 
     //Verify that the save files do not override important game files
-    bool bBad = (path0.compare(WORLD_FILE_INFO) == 0) ||
-        (path1.compare(WORLD_FILE_XML) == 0) ||
-        (path0.compare(SAVE_TEMPLATE_FILE_INFO) == 0) ||
-        (path1.compare(SAVE_TEMPLATE_FILE_XML) == 0);
+    bool bBad = (path0.compare((string)WORLD_FILE_INFO) == 0) ||
+        (path1.compare((string)WORLD_FILE_XML) == 0) ||
+        (path0.compare((string)SAVE_TEMPLATE_FILE_INFO) == 0) ||
+        (path1.compare((string)SAVE_TEMPLATE_FILE_XML) == 0);
     if(bBad) {
         return false;
     }

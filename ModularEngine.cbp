@@ -27,8 +27,8 @@
 					<Add library="gdi32" />
 					<Add library="winmm" />
 					<Add library="dxguid" />
-					<Add library="boost_filesystem" />
-					<Add library="boost_system" />
+					<Add library="boost_system-mgw44-mt-d-1_54" />
+					<Add library="boost_filesystem-mgw44-mt-d-1_54" />
 				</Linker>
 			</Target>
 			<Target title="Release">

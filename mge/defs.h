@@ -12,6 +12,11 @@
 #include <ostream>
 #include <boost/cstdint.hpp>
 
+//Make sure PI is defined
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
+
 typedef unsigned int uint;
 typedef uint_least64_t flag_t;
 

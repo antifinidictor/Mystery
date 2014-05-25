@@ -22,7 +22,7 @@ TextDisplay::registerText(const std::string &text, OnTextDoneCallback cb, float 
     ContainerRenderModel *panel = D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_BOTTOMBAR);
     Rect rcPanelArea = panel->getDrawArea();
     Rect rcTextArea = TextRenderer::get()->getArea(text.c_str(), rcPanelArea.w, rcPanelArea.h / 2);
-    rcTextArea.y -= rcTextArea.h / 2 + fabs((rand() % 10)) * 5;
+    rcTextArea.y -= rcTextArea.h / 2 + fabs((float)(rand() % 10)) * 5;
     D3HudRenderModel *hmdl = new D3HudRenderModel(text, rcTextArea);
 
     //

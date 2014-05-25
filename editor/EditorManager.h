@@ -118,7 +118,7 @@ private:
 
     uint m_uiCurImageId;
 
-    static const float BUTTON_TEXT_SIZE = 0.8f;
+    static const float BUTTON_TEXT_SIZE;// = 0.8f;
 };
 
 #endif //EDITOR_MANAGER_H
