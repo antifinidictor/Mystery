@@ -224,65 +224,82 @@ void
 DraggableHud::readInventory(const boost::property_tree::ptree &pt, const std::string &keyBase) {
     using boost::property_tree::ptree;
     //Read in stored inventory items
-    string itemKeyBase = keyBase + ".items";
-    string spellKeyBase = keyBase + ".spells";
-    string elementKeyBase = keyBase + ".elements";
-
-    ContainerRenderModel *itemPanel = m_pInventoryPanel
-            ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
-    ContainerRenderModel *spellPanel = m_pInventoryPanel
-            ->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
-    ContainerRenderModel *elementPanel = m_pInventoryPanel
-            ->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
-
     try {
-    BOOST_FOREACH(ptree::value_type item, pt.get_child(itemKeyBase)) {
-        string name = item.first.data();
-        string key = itemKeyBase + "." + name;
-        uint index = pt.get(key, 0);
+        string itemKeyBase = keyBase + ".items";
+        ContainerRenderModel *itemPanel = m_pInventoryPanel
+                ->get<ContainerRenderModel*>(MGHUD_ITEM_CONTAINER);
+        BOOST_FOREACH(ptree::value_type invClass, pt.get_child(itemKeyBase)) {
+            string className = invClass.first.data();
+            string classKeyBase = itemKeyBase + "." + className;
+            ObjectFactory::get()->initClass(className);
+            BOOST_FOREACH(ptree::value_type item, invClass.second) {
+                string name = item.first.data();
+                string key = classKeyBase + "." + name;
+                uint index = pt.get(key, 0);
 
-        //Read the appropriate item
-        Item *itm = (Item*)Item::read(pt, key);
-        Rect rcArea = indexToItemRect(index);
-        DraggableItem *ditem = new DraggableItem(itm, index, rcArea, this);
+                //Read the appropriate item
+                Item *itm = dynamic_cast<Item*>(ObjectFactory::get()->createFromTree(pt, key));
+                if(itm != NULL) {
+                    //Add to the inventory
+                    Rect rcArea = indexToItemRect(index);
+                    DraggableItem *ditem = new DraggableItem(itm, index, rcArea, this);
+                    itemPanel->add(index, ditem);
+                }
 
-        //Add to the inventory
-        itemPanel->add(index, ditem);
-    }
+            }
+        }
     } catch(exception &e) {
     }
 
     try {
-    BOOST_FOREACH(ptree::value_type spell, pt.get_child(spellKeyBase)) {
-        string name = spell.first.data();
-        string key = itemKeyBase + "." + name;
-        uint index = pt.get(key, 0);
+        string spellKeyBase = keyBase + ".spells";
+        ContainerRenderModel *spellPanel = m_pInventoryPanel
+                ->get<ContainerRenderModel*>(MGHUD_SPELL_CONTAINER);
+        BOOST_FOREACH(ptree::value_type invClass, pt.get_child(spellKeyBase)) {
+            string className = invClass.first.data();
+            string classKeyBase = spellKeyBase + "." + className;
+            ObjectFactory::get()->initClass(className);
+            BOOST_FOREACH(ptree::value_type spell, invClass.second) {
+                string name = spell.first.data();
+                string key = classKeyBase + "." + name;
+                uint index = pt.get(key, 0);
 
-        //Read the appropriate item
-        Item *item = (Item*)SpellItem::read(pt, key);
-        Rect rcArea = indexToSpellRect(index);
-        DraggableElementalSpellItem *ditem = new DraggableElementalSpellItem(item, rcArea, this);
-
-        //Add to the inventory
-        spellPanel->add(index, ditem);
-    }
+                //Read the appropriate item
+                Item *item = dynamic_cast<Item*>(ObjectFactory::get()->createFromTree(pt, key));
+                if(item != NULL) {
+                    //Add to the inventory
+                    Rect rcArea = indexToSpellRect(index);
+                    DraggableElementalSpellItem *ditem = new DraggableElementalSpellItem(item, rcArea, this);
+                    spellPanel->add(index, ditem);
+                }
+            }
+        }
     } catch(exception &e) {
     }
 
     try {
-    BOOST_FOREACH(ptree::value_type element, pt.get_child(elementKeyBase)) {
-        string name = element.first.data();
-        string key = itemKeyBase + "." + name;
-        uint index = pt.get(key, 0);
+        ContainerRenderModel *elementPanel = m_pInventoryPanel
+                ->get<ContainerRenderModel*>(MGHUD_ELEMENT_CONTAINER);
+        string elementKeyBase = keyBase + ".elements";
+        BOOST_FOREACH(ptree::value_type invClass, pt.get_child(elementKeyBase)) {
+            string className = invClass.first.data();
+            string classKeyBase = elementKeyBase + "." + className;
+            ObjectFactory::get()->initClass(className);
+            BOOST_FOREACH(ptree::value_type element, invClass.second/*pt.get_child(elementKeyBase)*/) {
+                string name = element.first.data();
+                string key = classKeyBase + "." + name;
+                uint index = pt.get(key, 0);
 
-        //Read the appropriate item
-        Item *item = (Item*)Item::read(pt, key);
-        Rect rcArea = indexToElementRect(index);
-        DraggableElementalSpellItem *ditem = new DraggableElementalSpellItem(item, rcArea, this);
-
-        //Add to the inventory
-        elementPanel->add(index, ditem);
-    }
+                //Read the appropriate item
+                Item *item = dynamic_cast<Item*>(ObjectFactory::get()->createFromTree(pt, key));
+                if(item != NULL) {
+                    //Add to the inventory
+                    Rect rcArea = indexToElementRect(index);
+                    DraggableElementalSpellItem *ditem = new DraggableElementalSpellItem(item, rcArea, this);
+                    elementPanel->add(index, ditem);
+                }
+            }
+        }
     } catch(exception &e) {
     }
 }
@@ -301,7 +318,7 @@ public:
         //Cast to the appropriate type
         DraggableItem *item = dynamic_cast<DraggableItem*>(rm);
         if(item != NULL) {
-            string keyBase = m_keyBase + ".item" + boost::lexical_cast<string>(index);
+            string keyBase = m_keyBase + "." + item->getItem()->getClassName() + ".item" + boost::lexical_cast<string>(index);
             m_pt.put(keyBase, index);
             item->getItem()->write(m_pt, keyBase);
         }
@@ -323,7 +340,7 @@ public:
         //Cast to the appropriate type
         DraggableElementalSpellItem *item = dynamic_cast<DraggableElementalSpellItem*>(rm);
         if(item != NULL) {
-            string keyBase = m_keyBase + ".spell" + boost::lexical_cast<string>(index);
+            string keyBase = m_keyBase + "." + item->getItem()->getClassName() + ".spell" + boost::lexical_cast<string>(index);
             m_pt.put(keyBase, index);
             item->getItem()->write(m_pt, keyBase);
         }
