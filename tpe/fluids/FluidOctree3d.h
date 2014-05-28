@@ -3,6 +3,7 @@
 
 //#include "mge/Octree3d.h"
 #include "Vorton.h"
+#include "InterpGrid.h"
 #include "mge/defs.h"
 #include <map>
 #include <list>
@@ -18,7 +19,7 @@ class FluidOctreeNode {
 public:
     void print(std::ostream &o, int line, const std::string &msg = "");
 
-    FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution = 1.f);
+    FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, FluidOctreeNode *parent, const Box &bxBounds, float fMinResolution = 1.f);
     virtual ~FluidOctreeNode();
 
     //Schedules object for appending to the appropriate node and returns true if it can be done
@@ -48,7 +49,7 @@ public:
 
     virtual int tempGetClassId() { return 0; }
     uint getId() { return m_uiEngineId; }
-
+    FluidOctreeNode *getParent() { return m_pParent; }
 protected:
     enum QuadrantNames {
         QUAD_FIRST = 0,                     //Used for iterating
@@ -91,7 +92,7 @@ protected:
 
     //Octree node information
     Box m_bxBounds;                                 //Non-relative bounds.  Fluids may expand, but they don't actually move.
-    //FluidOctreeNode *m_pParent;
+    FluidOctreeNode *m_pParent;
     FluidOctreeNode *m_apChildren[QUAD_NUM_QUADS];
     bool m_bEmpty;
     float m_fMinResolution;
@@ -137,20 +138,28 @@ public:
     void debugPrintBounds();
 
 protected:
-    FluidOctreeRoot *neighbors[NUM_CARDINAL_DIRECTIONS];
+    typedef Matrix<3,3> Mat33;
+    //FluidOctreeRoot *neighbors[NUM_CARDINAL_DIRECTIONS];
     //TimeField field;
+
+    InterpGrid<Vec3f> m_igVelocities;
+    InterpGrid<Mat33> m_igJacobians;
 };
 
 class FluidOctreeLeaf : public FluidOctreeNode {
 public:
-    FluidOctreeLeaf(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution = 1.f);
+    FluidOctreeLeaf(uint uiEngineId, uint uiAreaId, uint uiLevel, FluidOctreeNode *parent, const Box &bxBounds, float fMinResolution = 1.f);
     virtual ~FluidOctreeLeaf();
 
     //Adding to a leaf node is much simpler than adding to a general node
     virtual bool add(GameObject *obj, bool bForce = false);
+    virtual void update(float fTime);
     virtual int tempGetClassId() { return 1; }
 
 protected:
+    void updateVortons(float fDeltaTime);
+
+    FluidOctreeRoot *m_pRoot;   //Faster than accessing through the parent
     std::list<Vorton> m_lsVortons;
 };
 

@@ -9,8 +9,9 @@
 //convert a volume from px to meters
 
 enum CollisionModelType {
-    CM_BOX,
-    CM_Y_HEIGHTMAP,
+    CM_BOX,                         //Used for most objects
+    CM_Y_HEIGHTMAP,                 //Used for uneven ground
+    CM_VORTON,                      //Used for fluid physics
     CM_NUM_COLLISION_MODEL_TYPES
 };
 
@@ -55,5 +56,21 @@ public:
     const PixelMap *m_pxMap;
     Box m_bxBounds;
 };
+
+/*
+class VortonCollisionModel : public CollisionModel {
+public:
+    VortonCollisionModel();
+
+    virtual ~CollisionModel() {}
+    virtual Box getBounds() { return m_bxRangeOfEffect; }
+    virtual CollisionModelType getType() { return CM_VORTON; }
+    virtual float getVolume() { return 0.f; }   //Vortons essentially have no volume
+
+    Box m_bxRangeOfEffect;
+    Point m_ptVelocity;
+    Point m_ptVorticity;
+};
+*/
 
 #endif //COLLISION_MODEL_H

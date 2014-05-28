@@ -149,20 +149,20 @@ FluidOctreeNode::print(ostream &o, int line, const std::string &msg) {
 
 
 
-FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution)
-    :   m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Point()),
+FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, FluidOctreeNode *parent, const Box &bxBounds, float fMinResolution)
+    :   m_bxBounds(bxBounds),
+        m_pParent(parent),
+        m_bEmpty(true),
+        m_fMinResolution(fMinResolution),
+        m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Point()),
+        m_uiEngineId(uiEngineId),
+        m_uiAreaId(uiAreaId),
+        m_uiLevel(uiLevel),
         m_mutex(SDL_CreateMutex()),
         m_cond(SDL_CreateCond()),
         m_bIsFinished(true)             //A node newly created has no contents, so it has finished updating
 {
     SDL_LockMutex(m_mutex);
-    m_uiEngineId = uiEngineId;
-    m_uiAreaId = uiAreaId;
-    m_uiLevel = uiLevel;
-
-    m_bEmpty = true;
-    m_bxBounds = bxBounds;
-    m_fMinResolution = fMinResolution;
 
     //Children are allocated as needed when objects are added
     for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
@@ -675,6 +675,7 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
                         uiNewEngineId,
                         m_uiAreaId,
                         uiNewLevel,
+                        this,               //I am the parent
                         bxChildBounds,
                         m_fMinResolution
                     );
@@ -685,6 +686,7 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
                         uiNewEngineId,
                         m_uiAreaId,
                         uiNewLevel,
+                        this,               //I am the parent
                         bxChildBounds,
                         m_fMinResolution
                     );
@@ -842,7 +844,9 @@ FluidOctreeNode::updateEmptiness() {
  */
 
 FluidOctreeRoot::FluidOctreeRoot(uint uiEngineId, uint uiAreaId, const Box &bxBounds, float fMinResolution)
-    : FluidOctreeNode(uiEngineId, uiAreaId, 0, bxBounds, fMinResolution)
+    :   FluidOctreeNode(uiEngineId, uiAreaId, 0, NULL, bxBounds, fMinResolution),
+        m_igVelocities(NULL, bxBounds, fMinResolution),
+        m_igJacobians(NULL, bxBounds, fMinResolution)
 {
 }
 
@@ -869,7 +873,7 @@ FluidOctreeRoot::update(float fTime) {
     }
     SDL_UnlockMutex(s_mxRenderEngine);
 
-    //If any objects left the root, they should be returned to the root
+    //If any objects left the root, they should be added back
     for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
         //For now, just add them to me
         m_mContents[(*it)->getId()] = *it;
@@ -930,9 +934,14 @@ FluidOctreeRoot::debugPrintBounds() {
  * FluidOctreeLeaf
  */
 
-FluidOctreeLeaf::FluidOctreeLeaf(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution)
-    : FluidOctreeNode(uiEngineId, uiAreaId, uiLevel, bxBounds, fMinResolution)
+FluidOctreeLeaf::FluidOctreeLeaf(uint uiEngineId, uint uiAreaId, uint uiLevel, FluidOctreeNode *parent, const Box &bxBounds, float fMinResolution)
+    : FluidOctreeNode(uiEngineId, uiAreaId, uiLevel, parent, bxBounds, fMinResolution)
 {
+    //Find the root
+    while(parent->getParent() != NULL) {
+        parent = parent->getParent();
+    }
+    m_pRoot = (FluidOctreeRoot*)parent;
 }
 
 FluidOctreeLeaf::~FluidOctreeLeaf() {
@@ -963,4 +972,33 @@ printf("%sInserting obj %d @ node %x (level %d)\n", spaces.c_str(), obj->getId()
 }
 #endif
     return bCanAdd;
+}
+
+void
+FluidOctreeLeaf::update(float fTime) {
+    //Largely the same as a node update, but no handle children and no aggregate vorton from children
+    //Perform parts of a standard update
+    SDL_LockMutex(m_mutex);
+
+    //Update objects that should be added to/removed from/erased from this node
+    updateAddRemoveErase();
+
+    //Update internal container elements
+    updateContents(fTime);
+
+    updateEmptiness();
+
+    m_bIsFinished = true;   //Reset by cleanResults()
+    SDL_CondSignal(m_cond);
+    SDL_UnlockMutex(m_mutex);
+
+    //Update vortons and aggregates
+}
+
+void
+FluidOctreeLeaf::updateVortons(float fDeltaTime) {
+    for(list<Vorton>::iterator vt = m_lsVortons.begin(); vt != m_lsVortons.end(); ++vt) {
+        //Update vortons
+        //vt->update(fDeltaTime, )
+    }
 }
