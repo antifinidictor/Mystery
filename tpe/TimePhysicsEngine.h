@@ -63,10 +63,14 @@ private:
     //Primary collision model handlers
     void boxOnUnknownCollision(GameObject *obj1, GameObject *obj2, uint uiMdl2);
     void hmapOnUnknownCollision(GameObject *objHmap, GameObject *obj2, uint uiMdlHmap);
+    void vortonOnUnknownCollision(GameObject *objVorton, GameObject *obj2, uint uiMdlVorton);
 
     //Secondary collision model handlers
     void boxOnBoxCollision(GameObject *obj1, GameObject *obj2, uint uiMdl1, uint uiMdl2);
     void boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, uint uiMdlBox, uint uiMdlHmap);
+    void vortonOnVortonCollision(GameObject *obj1, GameObject *obj2, uint uiMdl1, uint uiMdl2);
+    void vortonOnBoxCollision(GameObject *objVorton, GameObject *objBox, uint uiMdlVorton, uint uiMdlBox);
+    void vortonOnHmapCollision(GameObject *objVorton, GameObject *objHmap, uint uiMdlVorton, uint uiMdlHmap);
 
     //Physics collision helpers
     void splitShift(GameObject *obj1, GameObject *obj2, float fShift, Point *ptShift1, Point *ptShift2);

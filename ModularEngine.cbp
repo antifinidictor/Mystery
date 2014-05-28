@@ -265,6 +265,7 @@
 		<Unit filename="game/world/SimplePhysicsObject.h" />
 		<Unit filename="game/world/SimpleResettableObject.cpp" />
 		<Unit filename="game/world/SimpleResettableObject.h" />
+		<Unit filename="game/world/VortonObject.h" />
 		<Unit filename="game/world/Wall.cpp" />
 		<Unit filename="game/world/Wall.h" />
 		<Unit filename="game/world/Water.cpp" />
@@ -305,7 +306,6 @@
 		<Unit filename="tpe/TimePhysicsModel.h" />
 		<Unit filename="tpe/fluids/BruteForceFluidTest.cpp" />
 		<Unit filename="tpe/fluids/BruteForceFluidTest.h" />
-		<Unit filename="tpe/fluids/CellGrid.h" />
 		<Unit filename="tpe/fluids/FluidOctree3d.cpp" />
 		<Unit filename="tpe/fluids/FluidOctree3d.h" />
 		<Unit filename="tpe/fluids/InterpGrid.h" />

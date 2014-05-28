@@ -1,5 +1,8 @@
 #include "CollisionModel.h"
 
+/*
+ * PixelMapCollisionModel
+ */
 float
 PixelMapCollisionModel::getVolume() {
     //Approximate the volume.  This won't be perfectly accurate but it should be fairly close
@@ -88,4 +91,53 @@ PixelMapCollisionModel::getNormalAtPoint(const Point &ptPos) {
         normal.normalize();
     }
     return normal;
+}
+
+/*
+ * VortonCollisionModel
+ */
+VortonCollisionModel::VortonCollisionModel(Positionable *pParent, const Vec3f &v3InitVorticity, float fRadius)
+    :   m_pParent(pParent),
+        m_v3Vorticity(v3InitVorticity),
+        m_fRadius(fRadius)
+{
+}
+
+void
+VortonCollisionModel::update(float fTimeQuantum) {
+    Point ptPosition = m_pParent->getPosition();
+    Matrix<3,3> matJacobian = m_pJacobianGrid->getAt(ptPosition);
+    Vec3f v3Velocity = m_pVelocityGrid->getAt(ptPosition);
+
+    //Stretching and tilting (halve this to preserve stability)
+    m_v3Vorticity += matMult(m_v3Vorticity, matJacobian) * fTimeQuantum * 0.05f;
+
+    //Advect each vorton
+    m_pParent->moveBy(v3Velocity * fTimeQuantum);
+    //m_ptVelocity = ptVelocity;
+}
+
+Vec3f
+VortonCollisionModel::velocityAt(const Point &pos) {
+    //Taken directly from intel code
+    Vec3f diff = pos - m_pParent->getPosition();
+    float radius2 = m_fRadius * m_fRadius;
+    float dist2 = diff.magSq();
+    float oneOverDist = 1.f / sqrt(dist2);
+    float distLaw = (dist2 < radius2) ? (oneOverDist / radius2) : (oneOverDist / dist2);
+    float oneOverFourPi = 1 / M_PI / 4;
+    return cross(m_v3Vorticity, diff) * oneOverFourPi * ( 8.0f * radius2 * m_fRadius ) * distLaw;
+}
+
+void
+VortonCollisionModel::exchangeVorticityWith(float fViscocity, VortonCollisionModel *v) {
+    //Vorticity adjustment is based on the viscocity from 0-1
+    Point v3VorticityExchange = (m_v3Vorticity - v->m_v3Vorticity) *  fViscocity;
+    float fRemainingVorticity = 1.f - fViscocity;
+
+    //Adjust my vorticity
+    m_v3Vorticity = m_v3Vorticity * fRemainingVorticity + v3VorticityExchange;
+
+    //Adjust their vorticity
+    v->m_v3Vorticity = v->m_v3Vorticity * fRemainingVorticity - v3VorticityExchange;
 }

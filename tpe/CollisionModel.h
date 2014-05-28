@@ -6,11 +6,13 @@
 #define COLLISION_MODEL_H
 
 #include "mge/PixelMap.h"
-//convert a volume from px to meters
+#include "tpe/fluids/mgeMath.h"
+#include "tpe/fluids/InterpGrid.h"
 
 enum CollisionModelType {
     CM_BOX,
     CM_Y_HEIGHTMAP,
+    CM_VORTON,
     CM_NUM_COLLISION_MODEL_TYPES
 };
 
@@ -54,6 +56,27 @@ public:
 
     const PixelMap *m_pxMap;
     Box m_bxBounds;
+};
+
+class VortonCollisionModel : public CollisionModel {
+public:
+    VortonCollisionModel(Positionable *pParent, const Vec3f &v3InitVorticity, float fRadius);
+    virtual ~VortonCollisionModel() {}
+    virtual Box getBounds() { return Box(); }
+    virtual CollisionModelType getType() { return CM_VORTON; }
+    virtual float getVolume() { return 0.f; }
+
+    void update(float fTimeQuantum);
+    Vec3f velocityAt(const Point &pos);
+    void exchangeVorticityWith(float fViscocity, VortonCollisionModel *v);
+
+    //Vorton CMs are responsible for knowing which fluid they are a part of
+    InterpGrid< Matrix<3,3> > *m_pJacobianGrid;
+    InterpGrid< Vec3f >       *m_pVelocityGrid;
+
+    Positionable *m_pParent;
+    Vec3f m_v3Vorticity;
+    float m_fRadius;    //Radius after which linear scaling occurs
 };
 
 #endif //COLLISION_MODEL_H

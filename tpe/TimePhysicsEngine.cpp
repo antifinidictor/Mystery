@@ -89,6 +89,9 @@ TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
         case CM_Y_HEIGHTMAP:
             hmapOnUnknownCollision(obj1, obj2, uiMdl1);
             break;
+        case CM_VORTON:
+            vortonOnUnknownCollision(obj1, obj2, uiMdl1);
+            break;
         default:
             break;
         }
@@ -108,7 +111,7 @@ TimePhysicsEngine::applyCollisionPhysics(list<GameObject*> &ls1, list<GameObject
 }
 
 void
-TimePhysicsEngine::boxOnUnknownCollision(GameObject *obj1, GameObject *obj2, uint uiMdl1) {
+TimePhysicsEngine::boxOnUnknownCollision(GameObject *objBox, GameObject *obj2, uint uiMdlBox) {
     AbstractTimePhysicsModel *tpm2 = (AbstractTimePhysicsModel*)(obj2->getPhysicsModel());
 
     //Otherwise, iterate through collision models.  Yes, I know it's n^2
@@ -116,10 +119,13 @@ TimePhysicsEngine::boxOnUnknownCollision(GameObject *obj1, GameObject *obj2, uin
         CollisionModel *mdl2 = tpm2->getCollisionModel(uiMdl2);
         switch(mdl2->getType()) {
         case CM_BOX:
-            boxOnBoxCollision(obj1, obj2, uiMdl1, uiMdl2);
+            boxOnBoxCollision(objBox, obj2, uiMdlBox, uiMdl2);
             break;
         case CM_Y_HEIGHTMAP:
-            boxOnHmapCollision(obj1, obj2, uiMdl1, uiMdl2);
+            boxOnHmapCollision(objBox, obj2, uiMdlBox, uiMdl2);
+            break;
+        case CM_VORTON:
+            vortonOnBoxCollision(obj2, objBox, uiMdl2, uiMdlBox);
             break;
         default:
             break;
@@ -138,8 +144,35 @@ TimePhysicsEngine::hmapOnUnknownCollision(GameObject *objHmap, GameObject *obj2,
         case CM_BOX:
             boxOnHmapCollision(obj2, objHmap, uiMdl2, uiMdlHmap);
             break;
+        case CM_VORTON:
+            vortonOnHmapCollision(obj2, objHmap, uiMdl2, uiMdlHmap);
+            break;
         case CM_Y_HEIGHTMAP:
             //We don't want to handle this case yet
+        default:
+            break;
+        }
+    }
+}
+
+
+void
+TimePhysicsEngine::vortonOnUnknownCollision(GameObject *objVorton, GameObject *obj2, uint uiMdlVorton) {
+    AbstractTimePhysicsModel *tpm2 = (AbstractTimePhysicsModel*)(obj2->getPhysicsModel());
+
+    //Otherwise, iterate through collision models.  Yes, I know it's n^2
+    for(uint uiMdl2 = 0; uiMdl2 < tpm2->getNumModels(); ++uiMdl2) {
+        CollisionModel *mdl2 = tpm2->getCollisionModel(uiMdl2);
+        switch(mdl2->getType()) {
+        case CM_BOX:
+            vortonOnBoxCollision(objVorton, obj2, uiMdlVorton, uiMdl2);
+            break;
+        case CM_Y_HEIGHTMAP:
+            vortonOnHmapCollision(objVorton, obj2, uiMdlVorton, uiMdl2);
+            break;
+        case CM_VORTON:
+            vortonOnVortonCollision(objVorton, obj2, uiMdlVorton, uiMdl2);
+            break;
         default:
             break;
         }
@@ -392,6 +425,25 @@ TimePhysicsEngine::boxOnHmapCollision(GameObject *objBox, GameObject *objHmap, u
                         sDataHmap(objBox, iDirHmap, uiMdlBox, ptHmapShift);
     tpmBox->handleCollisionEvent(&sDataBox);
     tpmHmap->handleCollisionEvent(&sDataHmap);
+}
+
+void
+TimePhysicsEngine::vortonOnVortonCollision(GameObject *obj1, GameObject *obj2, uint uiMdl1, uint uiMdl2) {
+    TimePhysicsModel *tpm1 = (TimePhysicsModel*)obj1->getPhysicsModel();
+    TimePhysicsModel *tpm2 = (TimePhysicsModel*)obj2->getPhysicsModel();
+    VortonCollisionModel *vcm1 = (VortonCollisionModel*)tpm1->getCollisionModel(uiMdl1);
+    VortonCollisionModel *vcm2 = (VortonCollisionModel*)tpm2->getCollisionModel(uiMdl2);
+
+    //TODO: Check fluid ids first before interacting!
+    vcm1->exchangeVorticityWith(0.1f, vcm2);
+}
+
+void
+TimePhysicsEngine::vortonOnBoxCollision(GameObject *objVorton, GameObject *objBox, uint uiMdlVorton, uint uiMdlBox) {
+}
+
+void
+TimePhysicsEngine::vortonOnHmapCollision(GameObject *objVorton, GameObject *objHmap, uint uiMdlVorton, uint uiMdlHmap) {
 }
 
 #define MAX_B_FORCE 1.5f
