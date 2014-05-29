@@ -306,6 +306,8 @@
 		<Unit filename="tpe/TimePhysicsModel.h" />
 		<Unit filename="tpe/fluids/BruteForceFluidTest.cpp" />
 		<Unit filename="tpe/fluids/BruteForceFluidTest.h" />
+		<Unit filename="tpe/fluids/FluidManager.cpp" />
+		<Unit filename="tpe/fluids/FluidManager.h" />
 		<Unit filename="tpe/fluids/FluidOctree3d.cpp" />
 		<Unit filename="tpe/fluids/FluidOctree3d.h" />
 		<Unit filename="tpe/fluids/InterpGrid.h" />

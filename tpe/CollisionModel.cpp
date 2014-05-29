@@ -106,15 +106,18 @@ VortonCollisionModel::VortonCollisionModel(Positionable *pParent, const Vec3f &v
 void
 VortonCollisionModel::update(float fTimeQuantum) {
     Point ptPosition = m_pParent->getPosition();
-    Matrix<3,3> matJacobian = m_pJacobianGrid->getAt(ptPosition);
-    Vec3f v3Velocity = m_pVelocityGrid->getAt(ptPosition);
+    Matrix<3,3> matJacobian = m_pFluidManager->getJacobianAt(ptPosition);
+    Vec3f v3Velocity        = m_pFluidManager->getVelocityAt(ptPosition);
 
     //Stretching and tilting (halve this to preserve stability)
-    m_v3Vorticity += matMult(m_v3Vorticity, matJacobian) * fTimeQuantum * 0.05f;
+    m_v3Vorticity += matMult(m_v3Vorticity, matJacobian) * fTimeQuantum * 0.5f;
 
-    //Advect each vorton
+    //Advect this vorton
     m_pParent->moveBy(v3Velocity * fTimeQuantum);
     //m_ptVelocity = ptVelocity;
+
+    //Inform the fluid manager that this update has occurred
+    m_pFluidManager->onVortonUpdated();
 }
 
 Vec3f

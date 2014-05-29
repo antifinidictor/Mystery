@@ -7,7 +7,7 @@
 
 #include "mge/PixelMap.h"
 #include "tpe/fluids/mgeMath.h"
-#include "tpe/fluids/InterpGrid.h"
+#include "tpe/fluids/FluidManager.h"
 
 enum CollisionModelType {
     CM_BOX,
@@ -71,8 +71,7 @@ public:
     void exchangeVorticityWith(float fViscocity, VortonCollisionModel *v);
 
     //Vorton CMs are responsible for knowing which fluid they are a part of
-    InterpGrid< Matrix<3,3> > *m_pJacobianGrid;
-    InterpGrid< Vec3f >       *m_pVelocityGrid;
+    FluidManager *m_pFluidManager;
 
     Positionable *m_pParent;
     Vec3f m_v3Vorticity;
