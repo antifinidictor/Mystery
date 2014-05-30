@@ -4,14 +4,15 @@
 //#include "mge/Octree3d.h"
 #include "Vorton.h"
 #include "mge/defs.h"
+#include "mge/Octree3d.h"
 #include <map>
 #include <list>
+#include <vector>
 #include <boost/property_tree/ptree.hpp>
 #include <iostream>
 #include "SDL.h"
 
 class GameObject;
-class Scheduler;
 struct SDL_mutex;
 
 class FluidOctreeNode {
@@ -71,7 +72,25 @@ protected:
 
     void updateContents(float fTime);   //Performs old-school update & collision checks
     void handleChildrenUpdateResults();
-    int recursiveScheduleUpdates(Scheduler *s);
+    template<class Scheduler>
+    int recursiveScheduleUpdates(Scheduler *s) {
+        int numUpdatesScheduled = 1;
+        //Updates are scheduled as a stack, with children getting updated first
+        for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
+            if(m_apChildren[q] != NULL/* && !m_apChildren[q]->empty()*/) {
+                numUpdatesScheduled += m_apChildren[q]->recursiveScheduleUpdates(s);    //The node should schedule itself
+            }
+        }
+        /*
+        printf("Scheduled %4x:%x:%x {%2.2f,%2.2f,%2.2f;%2.2f,%2.2f,%2.2f}\n",
+            m_uiEngineId, m_uiAreaId, m_uiLevel,
+            m_bxBounds.x, m_bxBounds.y, m_bxBounds.z,
+            m_bxBounds.w, m_bxBounds.h, m_bxBounds.l);
+        */
+        s->scheduleUpdate(this);
+        return numUpdatesScheduled;
+    }
+
 
     bool addToChildren(GameObject *obj);
     void addNow(GameObject *obj);   //Adds object to this node's contents
@@ -89,6 +108,8 @@ protected:
         m_bIsFinished = false;
     }
 
+    void addFluid();
+
     //Octree node information
     Box m_bxBounds;                                 //Non-relative bounds.  Fluids may expand, but they don't actually move.
     //FluidOctreeNode *m_pParent;
@@ -97,7 +118,8 @@ protected:
     float m_fMinResolution;
 
     //Fluid physics
-    Vorton m_vrtAggregate;
+    //Vorton m_vrtAggregate;
+    std::vector<Vorton> m_vAggregates;
 
     //Container information
     uint m_uiEngineId;
@@ -124,8 +146,9 @@ public:
     FluidOctreeRoot(uint uiEngineId, uint uiAreaId, const Box &bxBounds, float fMinResolution = 1.f);
     virtual ~FluidOctreeRoot();
 
+    template<class Scheduler>
     void scheduleUpdates(Scheduler *s) {
-        FluidOctreeNode::recursiveScheduleUpdates(s);
+        FluidOctreeNode::recursiveScheduleUpdates<Scheduler>(s);
         //int updates = FluidOctreeNode::recursiveScheduleUpdates(s);
         //printf("%d updates scheduled\n", updates);
     }
@@ -138,6 +161,7 @@ public:
 
 protected:
     FluidOctreeRoot *neighbors[NUM_CARDINAL_DIRECTIONS];
+    //std::vector<FluidManager*> m_vFluids;
     //TimeField field;
 };
 
@@ -151,16 +175,10 @@ public:
     virtual int tempGetClassId() { return 1; }
 
 protected:
-    std::list<Vorton> m_lsVortons;
+    //std::vector<FluidManager*> m_vFluids;
 };
 
-
-class Scheduler {
-public:
-    virtual void scheduleUpdate(FluidOctreeNode *node) = 0;
-};
-
-class BasicScheduler : public Scheduler {
+class BasicScheduler {
     static BasicScheduler *m_sInstance;
     float m_fTime;
     bool m_bPaused;

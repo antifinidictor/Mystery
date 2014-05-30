@@ -14,7 +14,7 @@
 #include "mge/RenderEngine.h"
 #include "mge/GameObject.h"
 #include "mge/Event.h"
-#include "tpe/fluids/FluidOctree3d.h"
+#include "WorldOctree.h"
 
 enum WorldState {
     PWE_PAUSED,
@@ -39,7 +39,7 @@ enum WorldFlags {
     PWE_NUM_FLAGS
 };
 
-class PartitionedWorldEngine : public WorldEngine, public Listener, public EventHandler, public Scheduler {
+class PartitionedWorldEngine : public WorldEngine, public Listener, public EventHandler {
 public:
     static void init();
     static void clean() { delete pwe; }
@@ -96,7 +96,7 @@ public:
     bool removeListener(uint uiListenerId, uint eventId, uint uiAreaId);
 
     //Scheduler
-    virtual void scheduleUpdate(FluidOctreeNode *node);
+    virtual void scheduleUpdate(Octree3dNode<GameObject> *node);
 
     //General
     void setState(WorldState eState) { m_eNextState = eState; }
@@ -121,7 +121,7 @@ private:
             }
         }
         std::string m_sName;
-        FluidOctreeRoot *m_pOctree;
+        WorldOctree *m_pOctree;
         std::map<uint, Listener*> m_mMouseMoveListeners;
         std::map<uint, Listener*> m_mButtonInputListeners;
         std::map<uint, Listener*> m_mAreaChangeListeners;
@@ -153,7 +153,7 @@ private:
 
     //Scheduled events
     std::list<uint> m_lsAreasToClean;
-    std::list<FluidOctreeNode*> m_lsUpdateNodeQueue;
+    std::list<WorldOctree*> m_lsUpdateNodeQueue;
     std::list<SDL_Thread*> m_lsUpdateThreads;
     SDL_mutex *m_mxUpdateNodeQueue;
 

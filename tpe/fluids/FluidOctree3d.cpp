@@ -150,8 +150,7 @@ FluidOctreeNode::print(ostream &o, int line, const std::string &msg) {
 
 
 FluidOctreeNode::FluidOctreeNode(uint uiEngineId, uint uiAreaId, uint uiLevel, const Box &bxBounds, float fMinResolution)
-    :   m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Point()),
-        m_mutex(SDL_CreateMutex()),
+    :   m_mutex(SDL_CreateMutex()),
         m_cond(SDL_CreateCond()),
         m_bIsFinished(true)             //A node newly created has no contents, so it has finished updating
 {
@@ -618,26 +617,6 @@ FluidOctreeNode::handleChildrenUpdateResults() {
             SDL_UnlockMutex(m_apChildren[q]->m_mutex);
         }
     }
-}
-
-
-int
-FluidOctreeNode::recursiveScheduleUpdates(Scheduler *s) {
-    int numUpdatesScheduled = 1;
-    //Updates are scheduled as a stack, with children getting updated first
-    for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
-        if(m_apChildren[q] != NULL/* && !m_apChildren[q]->empty()*/) {
-            numUpdatesScheduled += m_apChildren[q]->recursiveScheduleUpdates(s);    //The node should schedule itself
-        }
-    }
-    /*
-    printf("Scheduled %4x:%x:%x {%2.2f,%2.2f,%2.2f;%2.2f,%2.2f,%2.2f}\n",
-        m_uiEngineId, m_uiAreaId, m_uiLevel,
-        m_bxBounds.x, m_bxBounds.y, m_bxBounds.z,
-        m_bxBounds.w, m_bxBounds.h, m_bxBounds.l);
-    */
-    s->scheduleUpdate(this);
-    return numUpdatesScheduled;
 }
 
 bool

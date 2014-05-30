@@ -123,8 +123,8 @@ Water::handleCollision(HandleCollisionData *data) {
     //We'll have some other conditions for failure to expand, but for now this will do
     if(data->obj->getFlag(TPE_STATIC)) {
         //Direction is meaningless.  Need to get the position of the object relative to myself
-        Box bxMe = m_pPhysicsModel->getCollisionVolume();
-        Box bxThem = data->obj->getPhysicsModel()->getCollisionVolume();
+        //Box bxMe = m_pPhysicsModel->getCollisionVolume();
+        //Box bxThem = data->obj->getPhysicsModel()->getCollisionVolume();
         int iDir = data->iDirection;    //DOWN;
         switch(iDir) {
         case BIT_NORTH:

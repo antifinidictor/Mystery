@@ -298,6 +298,8 @@
 		<Unit filename="mge/defs.h" />
 		<Unit filename="pwe/PartitionedWorldEngine.cpp" />
 		<Unit filename="pwe/PartitionedWorldEngine.h" />
+		<Unit filename="pwe/WorldOctree.cpp" />
+		<Unit filename="pwe/WorldOctree.h" />
 		<Unit filename="tpe/CollisionModel.cpp" />
 		<Unit filename="tpe/CollisionModel.h" />
 		<Unit filename="tpe/TimePhysicsEngine.cpp" />

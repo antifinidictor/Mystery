@@ -35,6 +35,8 @@ public:
         getPhysicsModel()->moveBy(ptShift);
     }
 
+    virtual Box getBounds() { return getPhysicsModel()->getCollisionVolume(); }
+
     //Render model
     virtual RenderModel  *getRenderModel() = 0;
     virtual PhysicsModel *getPhysicsModel() = 0;
