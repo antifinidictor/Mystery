@@ -107,7 +107,8 @@ private:
     boost::filesystem::path m_fsGameFile;
 
     Listener *m_pPlayerListener; //The player, as a listener
-    DraggableHud m_hud;
+    //DraggableHud m_hud;
+    DraggableHud *m_pHud;
     bool m_bFirstInit;
 
     std::stack<GameManagerState> m_skState;

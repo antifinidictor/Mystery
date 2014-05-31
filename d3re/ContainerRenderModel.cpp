@@ -30,12 +30,6 @@ ContainerRenderModel::render(RenderEngine *re) {
 void
 ContainerRenderModel::moveBy(const Point &ptShift) {
     m_rcTotalArea += ptShift;
-    /*
-    for(std::map<uint, RenderModel*>::iterator iter = m_mModels.begin();
-            iter != m_mModels.end(); ++iter) {
-        iter->second->moveBy(ptShift);
-    }
-    */
 }
 
 Point

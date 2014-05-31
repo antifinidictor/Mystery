@@ -31,21 +31,19 @@ GameManager::GameManager(uint uiId)
         m_crWorld(0xFF,0xFF,0xFF),
         m_crBackground(0x9a,0xd7,0xfb),
         m_pPlayerListener(NULL),
-        m_hud(PWE::get()->genId()),
+        //m_hud(PWE::get()->genId()),
+        m_pHud(new DraggableHud(PWE::get()->genId())),
         m_bFirstInit(true)
 {
-printf(__FILE__" %d\n",__LINE__);
     pushState(GM_START);
-printf(__FILE__" %d\n",__LINE__);
 
     D3RE::get()->setWorldColor(m_crWorld);
     D3RE::get()->setBackgroundColor(m_crBackground);
     D3RE::get()->setColorWeight(DEFAULT_WEIGHT);
     TextDisplay::init();
-printf(__FILE__" %d\n",__LINE__);
 
-    Player::setHud(&m_hud);
-printf(__FILE__" %d\n",__LINE__);
+    //Player::setHud(&m_hud);
+    Player::setHud(m_pHud);
 
     //Init draggable item location information
     //TODO: Fix so it is relative to the draggable hud and not so hardcoded?
@@ -59,6 +57,7 @@ GameManager::~GameManager() {
 
     cleanPlayerHud();
     cleanBasicHud();
+//    delete m_pHud;
 }
 
 GameObject*
@@ -84,7 +83,8 @@ GameManager::update(float fDeltaTime) {
         m_pPlayerListener->callBack(getId(), &fDeltaTime, ON_UPDATE_HUD);
     }
 */
-    m_hud.updateItemAnimations();
+    //m_hud.updateItemAnimations();
+    m_pHud->updateItemAnimations();
 
     switch(m_skState.top()) {
     case GM_START:
@@ -227,7 +227,8 @@ printf(__FILE__" %d\n",__LINE__);
         D3RE::get()->read(pt, "resources");
 
         //Init the hud now that the resources are initialized properly
-        m_hud.initHud();
+        //m_hud.initHud();
+        m_pHud->initHud();
 
         m_bFirstInit = false;
     }
@@ -252,7 +253,8 @@ GameManager::readSaveFile() {
     }
 
     //Read inventory
-    m_hud.readInventory(pt, "inventory");
+    //m_hud.readInventory(pt, "inventory");
+    m_pHud->readInventory(pt, "inventory");
 
     //Read areas
     PWE::get()->read(pt, "areas");
@@ -400,7 +402,8 @@ GameManager::saveGame(const std::string &filename) {
 
     PWE::get()->write(pt, "areas", true);   //'true' indicates this is a save file
 
-    m_hud.writeInventory(pt, "inventory");
+    //m_hud.writeInventory(pt, "inventory");
+    m_pHud->writeInventory(pt, "inventory");
 
     //Write the prop tree to the specified file
     string ext = m_fsGameFile.extension().string();

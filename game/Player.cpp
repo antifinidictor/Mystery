@@ -94,7 +94,7 @@ Player::~Player() {
         delete m_pCurSpell; //TODO: Possible cause of crash on exit (tries to access ev that does not exist)
     }
 
-    //If the game is still running, clear the inventory.  Otherwise we delete this stuff twice
+    //If the game is still running, clear the inventory.  Otherwise we leave it to the render engine
     if(MGE::get()->isRunning()) {
         s_pHud->clearInventory();
     }

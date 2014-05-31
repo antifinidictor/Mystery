@@ -78,8 +78,13 @@ DraggableHud::~DraggableHud() {
     //If this is a new-game or load-game reset, we want to be sure these get cleared
     DraggableItem::clearValidDropLocations();
 
-    //Render model should be deleted by the render engine
-    //delete m_pRenderModel;
+    //Clear only the HUDs that were not cleared by ContainerRenderModel
+    if(m_pCurSidePanel != m_pMainSidePanel)     { delete m_pMainSidePanel; }
+    if(m_pCurSidePanel != m_pTypeSidePanel)     { delete m_pTypeSidePanel; }
+    if(m_pCurSidePanel != m_pConfirmSidePanel)  { delete m_pConfirmSidePanel; }
+
+    //Prevent the render engine from doing a double-delete
+    D3RE::get()->getHudContainer()->remove(HUD_TOPBAR);
 }
 
 void
@@ -118,21 +123,27 @@ DraggableHud::onEndDragging() {
     float fTop = getDrawArea().y;
     if(m_bHidden) {
         if(fTop > Y_SHOW_BOUND) {
+            //Sufficiently moved for it to be shown
             Point ptShift = Point(0.f, Y_SHOWN - fTop, 0.f);
             moveBy(ptShift);
             m_bHidden = false;
+            enablePanel(m_pCurSidePanel);
         } else {
+            //Move back, no change
             Point ptShift = Point(0.f, Y_HIDDEN - fTop, 0.f);
             moveBy(ptShift);
             PWE::get()->setState(PWE_RUNNING);
         }
     } else {
         if(fTop < Y_HIDE_BOUND) {
+            //Sufficiently moved for it to hide
             Point ptShift = Point(0.f, Y_HIDDEN - fTop, 0.f);
             moveBy(ptShift);
             m_bHidden = true;
+            disablePanel(m_pCurSidePanel);
             PWE::get()->setState(PWE_RUNNING);
         } else {
+            //Move back, no change
             Point ptShift = Point(0.f, Y_SHOWN - fTop, 0.f);
             moveBy(ptShift);
         }
@@ -785,6 +796,7 @@ DraggableHud::initPlayerHud() {
     panel->add(MGHUD_ITEMBAR_CONTAINER, itembarPanel);
     panel->add(MGHUD_MAIN_CONTAINER, m_pInventoryPanel);
     panel->add(MGHUD_SIDEBUTTON_CONTAINER, m_pMainSidePanel);
+    m_pCurSidePanel = m_pMainSidePanel;
 
     m_pInventoryPanel->add(MGHUD_SPELL_CONTAINER, spellPanel);
     m_pInventoryPanel->add(MGHUD_ITEM_CONTAINER, itemPanel);
@@ -1031,7 +1043,7 @@ DraggableHud::initSideConfirmHud(ContainerRenderModel *panel) {
 
 void
 DraggableHud::prepSideTypeHud(const std::string &sMessageLabel, const std::string &sActionLabel, const std::string &sInactionLabel) {
-    unprepSideButtonHud();
+    disablePanel(m_pCurSidePanel);
 
     //Set up message/button text
     m_pTypeSidePanel->get<D3HudRenderModel*>(MGHUD_SIDETYPE_MESSAGE)->updateText(sMessageLabel);
@@ -1046,6 +1058,7 @@ DraggableHud::prepSideTypeHud(const std::string &sMessageLabel, const std::strin
 
     //Add the appropriate container
     add(MGHUD_SIDEBUTTON_CONTAINER, m_pTypeSidePanel);
+    m_pCurSidePanel = m_pTypeSidePanel;
 
     //Setup typing input map
     GameManager::get()->setTypingInputMapping();
@@ -1053,7 +1066,7 @@ DraggableHud::prepSideTypeHud(const std::string &sMessageLabel, const std::strin
 
 void
 DraggableHud::prepSideConfirmHud(const std::string &sMessageLabel, const std::string &sActionLabel, const std::string &sInactionLabel) {
-    unprepSideButtonHud();
+    disablePanel(m_pCurSidePanel);
 
     //Set up message/button text
     m_pConfirmSidePanel->get<D3HudRenderModel*>(MGHUD_SIDECONFIRM_MESSAGE)->updateText(sMessageLabel);
@@ -1067,16 +1080,17 @@ DraggableHud::prepSideConfirmHud(const std::string &sMessageLabel, const std::st
 
     //Add the appropriate container
     add(MGHUD_SIDEBUTTON_CONTAINER, m_pConfirmSidePanel);
+    m_pCurSidePanel = m_pConfirmSidePanel;
 }
 
 void
 DraggableHud::prepSideButtonHud() {
-    //Lazy cleanup
-    unprepSideTypeHud();
-    unprepSideConfirmHud();
+    //Cleanup the current panel
+    disablePanel(m_pCurSidePanel);
 
     remove(MGHUD_SIDEBUTTON_CONTAINER);
     add(MGHUD_SIDEBUTTON_CONTAINER, m_pMainSidePanel);
+    m_pCurSidePanel = m_pMainSidePanel;
 
     //Enable buttons
     m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_NEWBUTTON)->enable();
@@ -1085,32 +1099,42 @@ DraggableHud::prepSideButtonHud() {
     m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_QUITBUTTON)->enable();
     m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_OPTIONSBUTTON)->enable();
 
+
     //Make sure the appropriate input mapping is setup
     GameManager::get()->setDefaultInputMapping();   //TODO:
 }
 
+class PanelEnablerFunctor {
+public:
+    PanelEnablerFunctor(bool bEnable)
+        :   m_bEnable(bEnable)
+    {
+    }
+
+    bool operator()(uint itemIndex, RenderModel *rmdl) {
+        GuiButton *button = dynamic_cast<GuiButton*>(rmdl);
+        if(button != NULL) {
+            if(m_bEnable) {
+                button->enable();
+            } else {
+                button->disable();
+            }
+        }
+        return false;
+    }
+    bool m_bEnable;
+};
+
 void
-DraggableHud::unprepSideTypeHud() {
-    //Disable buttons
-    m_pTypeSidePanel->get<GuiButton*>(MGHUD_SIDETYPE_ACTION_BUTTON)->disable();
-    m_pTypeSidePanel->get<GuiButton*>(MGHUD_SIDETYPE_INACTION_BUTTON)->disable();
+DraggableHud::disablePanel(ContainerRenderModel *panel) {
+    PanelEnablerFunctor ftor(false);
+    panel->forEachModel(ftor);
 }
 
 void
-DraggableHud::unprepSideConfirmHud() {
-    //Disable buttons
-    m_pConfirmSidePanel->get<GuiButton*>(MGHUD_SIDECONFIRM_ACTION_BUTTON)->disable();
-    m_pConfirmSidePanel->get<GuiButton*>(MGHUD_SIDECONFIRM_INACTION_BUTTON)->disable();
-}
-
-void
-DraggableHud::unprepSideButtonHud() {
-    //Disable buttons
-    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_NEWBUTTON)->disable();
-    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_LOADBUTTON)->disable();
-    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_SAVEBUTTON)->disable();
-    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_QUITBUTTON)->disable();
-    m_pMainSidePanel->get<GuiButton*>(MGHUD_SIDEBUTTON_OPTIONSBUTTON)->disable();
+DraggableHud::enablePanel(ContainerRenderModel *panel) {
+    PanelEnablerFunctor ftor(true);
+    panel->forEachModel(ftor);
 }
 
 bool

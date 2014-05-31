@@ -75,8 +75,12 @@ private:
     };
 
     int handleMouseEvent(InputData *data, bool bAlwaysDrop) {
-        Point ptMouse = Point(data->getInputState(MIN_MOUSE_X), data->getInputState(MIN_MOUSE_Y), 0)
-            - m_pParent->getPosition();
+        Point ptPos = m_pParent->getPosition();
+        Point ptMouse = Point(
+            data->getInputState(MIN_MOUSE_X) - ptPos.x,
+            data->getInputState(MIN_MOUSE_Y) - ptPos.y,
+            0
+        );
         int status = EVENT_DROPPED;
         if(ptInRect(ptMouse, getDrawArea())) {
             if(data->getInputState(IN_SELECT)) {

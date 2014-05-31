@@ -81,9 +81,8 @@ private:
     void prepSideTypeHud(const std::string &sMessageLabel, const std::string &sActionLabel, const std::string &sInactionLabel);
     void prepSideConfirmHud(const std::string &sMessageLabel, const std::string &sActionLabel, const std::string &sInactionLabel);
     void prepSideButtonHud();
-    void unprepSideTypeHud();
-    void unprepSideConfirmHud();
-    void unprepSideButtonHud();
+    void disablePanel(ContainerRenderModel *panel);
+    void enablePanel(ContainerRenderModel *panel);
 
     void removeScheduledItems();
 
@@ -114,6 +113,7 @@ private:
     ContainerRenderModel *m_pTypeSidePanel;
     ContainerRenderModel *m_pConfirmSidePanel;
     ContainerRenderModel *m_pInventoryPanel;
+    ContainerRenderModel *m_pCurSidePanel;
 
     std::string m_sInput;
 

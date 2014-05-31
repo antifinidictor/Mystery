@@ -105,7 +105,8 @@ WorldOctreeNode::updateContents(float fTime) {
             pe->applyPhysics(it->second, *mv);
         }
     }
-    this->print(cout, __LINE__);
+
+    //this->print(cout, __LINE__);
 }
 
 void
@@ -230,7 +231,7 @@ Octree3dNode<GameObject> *
 WorldOctreeNode::createNode(Octree3dNode<GameObject> *parent, uint childId, const Box &bxBounds, float fMinResolution) {
     uint uiNewLevel = parent->getLevel() + 1;
     uint uiNewNodeId = (childId << (uiNewLevel * 4)) | parent->getId();
-printf(__FILE__" %d: Parent id = %4x:%x, my id = %4x:%x\n",__LINE__, parent->getId(), parent->getLevel(), uiNewNodeId, uiNewLevel);
+//printf(__FILE__" %d: Parent id = %4x:%x, my id = %4x:%x\n",__LINE__, parent->getId(), parent->getLevel(), uiNewNodeId, uiNewLevel);
     WorldOctreeNode *node = new WorldOctreeNode(
         uiNewNodeId,
         uiNewLevel,
@@ -262,6 +263,10 @@ WorldOctree::update(float fTime) {
     for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
         m_mContents[(*it)->getId()] = (*it);
     }
+
+    SDL_LockMutex(s_mxRenderEngine);
+    D3RE::get()->drawBox(m_bxBounds, Color(m_uiNodeId));    //Color(255, 0, 0));
+    SDL_UnlockMutex(s_mxRenderEngine);
 
     cleanResults();
 }

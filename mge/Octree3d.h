@@ -479,7 +479,7 @@ protected:
     virtual Octree3dNode<Object> *createNode(Octree3dNode<Object> *parent, uint childId, const Box &bxBounds, float fMinResolution) {
         uint uiNewLevel = parent->getLevel() + 1;
         uint uiNewNodeId = (childId << (uiNewLevel * 4)) | parent->getId();
-printf(__FILE__" %d: Parent id = %4x:%x, my id = %4x:%x\n",__LINE__, parent->getId(), parent->getLevel(), uiNewNodeId, uiNewLevel);
+//printf(__FILE__" %d: Parent id = %4x:%x, my id = %4x:%x\n",__LINE__, parent->getId(), parent->getLevel(), uiNewNodeId, uiNewLevel);
         Octree3dNode<Object> *node = new Octree3dNode<Object>(
             uiNewNodeId,
             uiNewLevel,

@@ -727,9 +727,9 @@ PartitionedWorldEngine::toPowerOfTwo(Box &bx) {
     l = 1 << (logl + 1);
 
     Point ptCenter = bxCenter(bx);
-    bx.x = floor(ptCenter.x) - w / 2;
-    bx.y = floor(ptCenter.y) - h / 2;
-    bx.z = floor(ptCenter.z) - l / 2;
+    bx.x = ceil(ptCenter.x) - w / 2;
+    bx.y = ceil(ptCenter.y) - h / 2;
+    bx.z = ceil(ptCenter.z) - l / 2;
     bx.w = w;
     bx.h = h;
     bx.l = l;

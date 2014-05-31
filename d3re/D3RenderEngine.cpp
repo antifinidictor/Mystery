@@ -161,7 +161,7 @@ rayIntersects(const Point &ptRay, const Point &ptRayStart, const Box &bxBounds) 
 
 void
 D3RenderEngine::render() {
-    glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Update look direction
     if(m_fDesiredLookAngle < m_fLookAngle - CAM_ROTATE_SPEED) {
@@ -172,7 +172,7 @@ D3RenderEngine::render() {
         m_fLookAngle = m_fDesiredLookAngle;
     }
 
-    prepCamera();
+    //prepCamera();
 
     //Nontransparent objects
     glEnable(GL_ALPHA_TEST);
@@ -226,6 +226,9 @@ D3RenderEngine::render() {
 
     //glBindTexture(GL_TEXTURE_2D, 0);
     SDL_GL_SwapWindow(m_sdlWindow);
+
+    glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    prepCamera();
 }
 
 void
