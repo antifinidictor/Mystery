@@ -59,6 +59,8 @@ public:
 
     virtual void applyCollisionPhysics(std::list<GameObject*> &ls1, std::list<GameObject*> &ls2);
 
+    void updateFluid(FluidOctree *fluid);
+
 private:
     TimePhysicsEngine();
     virtual ~TimePhysicsEngine();

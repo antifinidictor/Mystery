@@ -286,6 +286,13 @@ TimePhysicsEngine::applyCollisionPhysics(list<GameObject*> &ls1, list<GameObject
 }
 
 void
+TimePhysicsEngine::updateFluid(FluidOctree *fluid) {
+    SDL_LockMutex(m_mxUpdateFluidQueue);
+    m_lsUpdateFluidQueue.push_back(fluid);
+    SDL_UnlockMutex(m_mxUpdateFluidQueue);
+}
+
+void
 TimePhysicsEngine::boxOnUnknownCollision(GameObject *objBox, GameObject *obj2, uint uiMdlBox) {
     AbstractTimePhysicsModel *tpm2 = (AbstractTimePhysicsModel*)(obj2->getPhysicsModel());
 
