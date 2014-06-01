@@ -175,7 +175,12 @@ FluidOctree::update(float fTime) {
     m_vrtAggregate.dividePosition(m_fTotalVortMag);
     cleanResults();
 
-    //Now the hairy stuff has to happen: The velocities and jacobians need to be calculated
+    //Velocities and vorticities are calculated on fluid updates.
+    // Note that to avoid concurrent read/write accesses, the following
+    // operations cannot happen concurrently:
+    // (1) Velocity calculation
+    // (2) Jacobian calculation
+    // (3) Octree update (vortons shared, updated, aggregated)
 }
 
 void

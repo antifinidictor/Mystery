@@ -2,31 +2,206 @@
 #include "mge/GameObject.h"
 #include "mge/RenderModel.h"
 #include "tpe/tpe.h"
+#include <boost/lexical_cast.hpp>
+#include "mge/ConfigManager.h"
 
 #define GRAV_ACCEL 0.1f
+#define DEFAULT_NUM_THREADS 4
 
 using namespace std;
 
 
 TimePhysicsEngine *TimePhysicsEngine::tpe;
 
-TimePhysicsEngine::TimePhysicsEngine() {
+int
+TimePhysicsEngine::fluidUpdateThread(void *data) {
+    SDL_threadID threadID = SDL_ThreadID();    //For debugging
+    int iNumUpdates = 0;
+    int iNumThreads = ConfigManager::get()->get("tpe.threads", DEFAULT_NUM_THREADS);
+
+    printf("Thread 0x%8x executing\n", threadID);
+
+    bool *bStop = (bool*)data;
+    while(!*bStop) {
+        //Get the queue lock
+        SDL_LockMutex(tpe->m_mxUpdateFluidQueue);
+        if(tpe->m_lsUpdateFluidQueue.size() < 1) {
+
+            //If the list is nearly empty, unlock and wait a bit before trying again
+            SDL_UnlockMutex(tpe->m_mxUpdateFluidQueue);
+
+            //printf("Thread %d did not find enough nodes to update\n", threadID);
+            SDL_Delay(1);
+        } else {
+
+            //Otherwise, get the next node waiting for processing
+            FluidInfo &info = tpe->m_lsUpdateFluidQueue.front();
+
+            //We will pop if completed
+            //tpe->m_lsUpdateNodeQueue.pop_front();
+            SDL_LockMutex(info.m_mxUpdateFluid);
+            bool bVelocityCanUpdate = info.m_iVelocityUpdatesStarted < info.m_iTotalVelocityUpdates;
+            bool bJacobianCanUpdate = info.m_iJacobianUpdatesStarted < info.m_iTotalJacobianUpdates;
+            bool bVelocityFinished  = info.m_iVelocityUpdatesFinished == info.m_iTotalVelocityUpdates;
+            bool bJacobianFinished  = bVelocityFinished && info.m_iJacobianUpdatesFinished == info.m_iTotalJacobianUpdates;
+            bool bFluidFinished     = bJacobianFinished && info.m_lsUpdateNodeQueue.size() == 0;
+            SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+            if(bFluidFinished) {
+                //This fluid is done, make sure no more threads attempt to
+                // update it. Note that if any thread is still updating this
+                // info object, then they are working on a node and no longer
+                // require access to the info itself.
+                tpe->m_lsUpdateFluidQueue.pop_front();
+
+                //Are there any more fluids to update?
+                if(tpe->m_lsUpdateFluidQueue.size() > 0) {
+                    //Get the next fluid instead
+                    info = tpe->m_lsUpdateFluidQueue.front();
+                } else {
+                    //No more fluids to update
+                    SDL_UnlockMutex(tpe->m_mxUpdateFluidQueue);
+                    continue;
+                }
+            }
+
+            //Unlock the list so other threads can prepare to update this info object or the next one
+            SDL_UnlockMutex(tpe->m_mxUpdateFluidQueue);
+
+            //Now that we have a node, we determine what needs updating
+            SDL_LockMutex(info.m_mxUpdateFluid);
+
+            if(bVelocityCanUpdate) {
+                int iUpdatesPerThread = info.m_iTotalVelocityUpdates / iNumThreads;
+                if(iUpdatesPerThread < 1) { iUpdatesPerThread = 1; }
+                int iStartIndex = info.m_iVelocityUpdatesStarted;
+                int iEndIndex = iStartIndex + iUpdatesPerThread;
+                if(iEndIndex > info.m_iTotalVelocityUpdates) { iEndIndex = info.m_iTotalVelocityUpdates; }
+
+                //We're ready to start updating velocities
+                SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+                //Update velocities
+                //TODO: Make more efficient by dividing into three loops of x, y, z?
+                FluidOctree *pRoot = info.m_pRoot;
+                const InterpGrid<Vec3f> *grid = pRoot->getVelocityGrid();
+                int iSizeX = grid->getSizeX();
+                int iSizeY = grid->getSizeY();
+                int iSizeZ = grid->getSizeZ();
+                int iSizeXY = iSizeX * iSizeY;
+                for(int index = iStartIndex; index < iEndIndex; ++index) {
+                    int x = index % iSizeX;
+                    int y = (index / iSizeX) % iSizeY;
+                    int z = (index / iSizeXY) % iSizeZ;
+                    pRoot->computeVelocityAt(x, y, z);
+                }
+
+                //We've finished this update, so we can inform the info object
+                SDL_LockMutex(info.m_mxUpdateFluid);
+                info.m_iVelocityUpdatesFinished += (iEndIndex - iStartIndex);
+                SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+            } else if(bVelocityFinished && bJacobianCanUpdate) {
+                int iUpdatesPerThread = info.m_iTotalJacobianUpdates / iNumThreads;
+                if(iUpdatesPerThread < 1) { iUpdatesPerThread = 1; }
+                int iStartIndex = info.m_iJacobianUpdatesStarted;
+                int iEndIndex = iStartIndex + iUpdatesPerThread;
+                if(iEndIndex > info.m_iTotalJacobianUpdates) { iEndIndex = info.m_iTotalJacobianUpdates; }
+
+                //We're ready to start updating jacobians
+                SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+                //Update Jacobians
+                //TODO: Make more efficient by dividing into three loops of x, y, z?
+                FluidOctree *pRoot = info.m_pRoot;
+                const InterpGrid<Matrix<3,3> > *grid = pRoot->getJacobianGrid();
+                int iSizeX = grid->getSizeX();
+                int iSizeY = grid->getSizeY();
+                int iSizeZ = grid->getSizeZ();
+                int iSizeXY = iSizeX * iSizeY;
+                for(int index = iStartIndex; index < iEndIndex; ++index) {
+                    int x = index % iSizeX;
+                    int y = (index / iSizeX) % iSizeY;
+                    int z = (index / iSizeXY) % iSizeZ;
+                    pRoot->computeJacobianAt(x, y, z);
+                }
+
+                //We've finished this update, so we can inform the info object
+                SDL_LockMutex(info.m_mxUpdateFluid);
+                info.m_iJacobianUpdatesFinished += (iEndIndex - iStartIndex);
+                SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+            } else if(bJacobianFinished && !bFluidFinished) {
+                //We're ready to start updating nodes
+                FluidOctreeNode *node = info.m_lsUpdateNodeQueue.front();
+                info.m_lsUpdateNodeQueue.pop_front();
+
+                //Allow other nodes to start processing this info object
+                SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+                //Update the node
+                node->update(tpe->m_fDeltaTime);
+
+            } else {
+                //Otherwise, we can't do anything and have to wait
+                SDL_UnlockMutex(info.m_mxUpdateFluid);
+            }
+
+            //printf("Thread %d found %d+1 nodes awaiting update\n", threadID, iNumItems);
+            iNumUpdates++;
+        }
+    }
+
+    printf("Thread 0x%8x exiting; updated %d times\n", threadID, iNumUpdates);
+    return 0;
+}
+
+void
+TimePhysicsEngine::init() {
+    tpe = new TimePhysicsEngine();
+
+    //Generate fluid update threads
+    using boost::lexical_cast;
+    int numThreads = ConfigManager::get()->get("tpe.threads", DEFAULT_NUM_THREADS);
+    string sThreadNameBase = "TPE_UpdateFluid";
+    for(int iCurThread = 0; iCurThread < numThreads; ++iCurThread) {
+        string sThreadName = sThreadNameBase + lexical_cast<string>(iCurThread);
+        SDL_Thread *thread = SDL_CreateThread(fluidUpdateThread, sThreadName.c_str(), &tpe->m_bFinalCleaning);
+        tpe->m_lsUpdateThreads.push_back(thread);
+    }
+}
+
+TimePhysicsEngine::TimePhysicsEngine()
+    :   m_bFinalCleaning(false),
+        m_mxUpdateFluidQueue(SDL_CreateMutex())
+{
     assert(TPE_NUM_FLAGS <= PHYSICS_FLAGS_END);
 
+    //Unlocked again when there is something in it
+    SDL_LockMutex(m_mxUpdateFluidQueue);
+
     printf("Physics engine initialized\n");
-    //ctor
 }
 
 TimePhysicsEngine::~TimePhysicsEngine() {
+    //Tell the threads to exit
+    m_bFinalCleaning = true;
+    SDL_UnlockMutex(m_mxUpdateFluidQueue);
+    for(list<SDL_Thread*>::iterator it = m_lsUpdateThreads.begin(); it != m_lsUpdateThreads.end(); ++it) {
+        int status;
+        SDL_WaitThread(*it, &status);
+    }
+    m_lsUpdateThreads.clear();
+    m_lsUpdateFluidQueue.clear();
+    SDL_DestroyMutex(m_mxUpdateFluidQueue);
+
     printf("Physics engine cleaned\n");
-    //dtor
 }
 
 
 
 void TimePhysicsEngine::update(float fDeltaTime) {
-    //m_uiDeltaTime = time - m_uiLastUpdated;
-    m_uiDeltaTime = 12;
+    m_fDeltaTime = 12;
     //m_uiLastUpdated = time;
 }
 
@@ -48,7 +223,7 @@ bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
     }
 
     //Apply general physics updates to object
-    tmdl->update(m_uiDeltaTime);
+    tmdl->update(m_fDeltaTime);
     tmdl->setWasPushed(false);
 
     hasChanged = hasChanged || tmdl->getLastVelocity() != Point();

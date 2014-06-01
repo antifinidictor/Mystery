@@ -296,6 +296,8 @@
 		<Unit filename="mge/WorldEngine.h" />
 		<Unit filename="mge/defs.cpp" />
 		<Unit filename="mge/defs.h" />
+		<Unit filename="mge/mgeMath.cpp" />
+		<Unit filename="mge/mgeMath.h" />
 		<Unit filename="pwe/PartitionedWorldEngine.cpp" />
 		<Unit filename="pwe/PartitionedWorldEngine.h" />
 		<Unit filename="pwe/WorldOctree.cpp" />
@@ -310,14 +312,12 @@
 		<Unit filename="tpe/fluids/BruteForceFluidTest.h" />
 		<Unit filename="tpe/fluids/FluidManager.cpp" />
 		<Unit filename="tpe/fluids/FluidManager.h" />
-		<Unit filename="tpe/fluids/FluidOctree3d.cpp" />
-		<Unit filename="tpe/fluids/FluidOctree3d.h" />
+		<Unit filename="tpe/fluids/FluidOctree.cpp" />
+		<Unit filename="tpe/fluids/FluidOctree.h" />
 		<Unit filename="tpe/fluids/InterpGrid.h" />
 		<Unit filename="tpe/fluids/SpacePartitionedContainer.h" />
 		<Unit filename="tpe/fluids/Vorton.cpp" />
 		<Unit filename="tpe/fluids/Vorton.h" />
-		<Unit filename="tpe/fluids/mgeMath.cpp" />
-		<Unit filename="tpe/fluids/mgeMath.h" />
 		<Unit filename="tpe/tpe.h" />
 		<Unit filename="windows/pgl.h">
 			<Option target="Debug" />

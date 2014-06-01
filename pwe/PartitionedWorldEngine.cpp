@@ -10,6 +10,8 @@
 #include <boost/lexical_cast.hpp>
 #include "mge/ConfigManager.h"
 
+#define DEFAULT_NUM_THREADS 4
+
 using namespace std;
 
 static int s_iNumMainThreadUpdates = 0;
@@ -65,7 +67,7 @@ PartitionedWorldEngine::init() {
 
     //Create the threads
     using boost::lexical_cast;
-    int numThreads = ConfigManager::get()->get("pwe.threads", 4);
+    int numThreads = ConfigManager::get()->get("pwe.threads", DEFAULT_NUM_THREADS);
     string threadNameBase = "PWE_UpdateNode";
     for(int curThread = 0; curThread < numThreads; ++curThread) {
         string threadName = threadNameBase + lexical_cast<string>(curThread);
