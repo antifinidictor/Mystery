@@ -7,23 +7,18 @@
  */
 
 Vorton::Vorton(uint uiId, const Point &ptPos, float fRadius, const Point &ptInitVorticity)
+    :   m_uiId(uiId),
+        m_fRadius(fRadius),
+        m_ptPosition(ptPos),
+        m_ptVorticity(ptInitVorticity),
+        m_ptDeltaVorticity(Vec3f())
 {
-    m_uiId = uiId;
-    m_bxBounds = Box(
-        ptPos.x - fRadius,
-        ptPos.y - fRadius,
-        ptPos.z - fRadius,
-        fRadius * 2,
-        fRadius * 2,
-        fRadius * 2
-    );
-    m_ptVorticity = ptInitVorticity;
 }
 
 Vorton::Vorton(const Vorton &v)
     :   m_uiId(v.m_uiId),
-        m_bxBounds(v.m_bxBounds),
-        m_ptVorticity(v.m_ptVorticity),
+        m_fRadius(v.m_fRadius),
+        m_ptPosition(v.m_ptPosition),
         m_ptDeltaVorticity(v.m_ptDeltaVorticity)
 {
 }
@@ -43,7 +38,7 @@ Vorton::update(float fTimeQuantum, const Matrix<3,3> &matJacobian, const Point &
     m_ptDeltaVorticity = Point();
 
     //Advect each vorton
-    m_bxBounds += ptVelocity * fTimeQuantum;
+    m_ptPosition += ptVelocity * fTimeQuantum;
     //m_ptVelocity = ptVelocity;
 }
 
@@ -88,11 +83,10 @@ Point
 Vorton::velocityAt(const Point &pos) {
     //Taken directly from intel code
     Point diff = pos - getPosition();
-    float radius = m_bxBounds.w / 2.f;
-    float radius2 = radius * radius;
+    float radius2 = m_fRadius * m_fRadius;
     float dist2 = diff.magSq();
     float oneOverDist = 1.f / sqrt(dist2);
     float distLaw = (dist2 < radius2) ? (oneOverDist / radius2) : (oneOverDist / dist2);
     float oneOverFourPi = 1 / M_PI / 4;
-    return cross(m_ptVorticity, diff) * oneOverFourPi * ( 8.0f * radius2 * radius ) * distLaw;
+    return cross(m_ptVorticity, diff) * oneOverFourPi * ( 8.0f * radius2 * m_fRadius ) * distLaw;
 }

@@ -6,6 +6,8 @@
 #include "mge/mgeMath.h"
 #include "InterpGrid.h"
 
+class FluidOctree;
+
 class FluidOctreeNode : public Octree3dNode<Vorton>
 {
 protected:
@@ -14,28 +16,34 @@ protected:
     //virtual void onAdd(Vorton *obj);
     //virtual void onRemove(Vorton *obj);
     //virtual void onErase(Vorton *obj);
+
     virtual Octree3dNode<Vorton> *createChild(uint childId, const Box &bxBounds) const;
+
+    //This function only exists because of certain members' protected status.
+    // It is only used by the root.
+    void positionSearchForVelocity(const Point &ptPosition, Vec3f &v3Velocity);
 
     Vorton m_vrtAggregate;
     float  m_fTotalVortMag;
+    FluidOctree *m_pRoot;
 
 public:
-    FluidOctreeNode(uint uiNodeId, uint uiLevel, const Box &bxBounds, float fOctreeMinRes = 1.f);
+    FluidOctreeNode(FluidOctree *pRoot, uint uiNodeId, uint uiLevel, const Box &bxBounds, float fOctreeMinRes = 1.f);
     virtual ~FluidOctreeNode();
 };
 
 
-
+/*
 class FluidOctreeLeaf : public FluidOctreeNode
 {
 protected:
-    virtual void updateContents(float fTime);
     virtual void handleChildUpdateResults(Octree3dNode<Vorton> *child, int q) {}
 
 public:
-    FluidOctreeLeaf(uint uiNodeId, uint uiLevel, const Box &bxBounds, float fOctreeMinRes = 1.f);
+    FluidOctreeLeaf(FluidOctree *pRoot, uint uiNodeId, uint uiLevel, const Box &bxBounds, float fOctreeMinRes = 1.f);
     virtual ~FluidOctreeLeaf();
 };
+*/
 
 class FluidOctree : public FluidOctreeNode
 {
@@ -48,6 +56,8 @@ protected:
 public:
     FluidOctree(Positionable *parent, uint uiNodeId, const Box &bxBounds, float fOctreeMinRes, float fVelocityMinRes, float fJacobianMinRes);
     virtual ~FluidOctree();
+
+    virtual void update(float fTime);
 
     void computeVelocityAt(int x, int y, int z);
     void computeJacobianAt(int x, int y, int z);

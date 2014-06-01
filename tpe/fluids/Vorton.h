@@ -18,9 +18,9 @@ public:
     virtual ~Vorton();
 
     uint getId() { return m_uiId; }
-    Box  getBounds() { return m_bxBounds; }
-    virtual Point getPosition() { return bxCenter(m_bxBounds); }
-    virtual void moveBy(const Point &ptShift) { m_bxBounds += ptShift; }
+    Box  getBounds() { return Box(m_ptPosition.x, m_ptPosition.y, m_ptPosition.z, 0.f, 0.f, 0.f); }
+    virtual Point getPosition() { return m_ptPosition; }
+    virtual void moveBy(const Point &ptShift) { m_ptPosition += ptShift; }
 
     /** Performs stretching/tilting and advection operations */
     void update(float fTimeQuantum, const Matrix<3,3> &matJacobian, const Point &ptVelocity);
@@ -31,14 +31,18 @@ public:
     /** Determine the velocity due to this vorton at some position */
     Point velocityAt(const Point &pos);
 
+    /** Access the vorticity of this vorton */
     Point getVorticity() { return m_ptVorticity; }
+
+    /* Used when aggregating vortons */
+    void dividePosition(float divisor) { m_ptPosition /= divisor; }
+    void accumVorticity(const Vec3f &vort) { m_ptVorticity += vort; }
 
 protected:
 private:
     uint m_uiId;
-    Box m_bxBounds;
-    //float m_fRadius;
-    //Point m_ptPosition;
+    float m_fRadius;
+    Point m_ptPosition;
     //Point m_ptVelocity;
     Point m_ptVorticity;
     Point m_ptDeltaVorticity;

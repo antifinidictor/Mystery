@@ -36,7 +36,7 @@ public:
     }
 
 #define TO_INDEX(x, y, z) (x * m_iNumY * m_iNumZ + y * m_iNumZ + z)
-    ItemType getAt(const Point &pos) {
+    ItemType getAt(const Point &pos) const {
         //Get integer x/y/z indices
         Point ipos = pointToIndexFloats(pos);
         int minX = BOUND(0, (int)floor(ipos.x), m_iNumX-1);
@@ -100,7 +100,7 @@ public:
     }
 protected:
 private:
-    Point pointToIndexFloats(const Point &desiredPos) {
+    Point pointToIndexFloats(const Point &desiredPos) const {
         Point myPos;
         if(m_pParent != NULL) {
             myPos = m_pParent->getPosition();

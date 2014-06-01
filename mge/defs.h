@@ -257,6 +257,7 @@ typedef struct Vec3f {
 
 	//Nonconstant operators
 	void operator*=(const float val) { x *= val; y *= val; z *= val; }
+	void operator/=(const float val) { x /= val; y /= val; z /= val; }
 	void operator-=(const Vec3f &pt) { x -= pt.x; y -= pt.y; z -= pt.z; }
 	void operator+=(const Vec3f &pt) { x += pt.x; y += pt.y; z += pt.z; }
 	void operator=(const Vec3f &pt) { x = pt.x; y = pt.y; z = pt.z; }
