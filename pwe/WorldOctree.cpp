@@ -110,94 +110,46 @@ WorldOctreeNode::updateContents(float fTime) {
 }
 
 void
-WorldOctreeNode::handleChildrenUpdateResults() {
+WorldOctreeNode::handleChildUpdateResults(Octree3dNode<GameObject> *node, int q) {
+    WorldOctreeNode *child = (WorldOctreeNode*)(node);
     TimePhysicsEngine *pe = TimePhysicsEngine::get();
-    for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
-        WorldOctreeNode *child = dynamic_cast<WorldOctreeNode*>(m_apChildren[q]);
-        if(child == NULL && m_apChildren[q] != NULL) {
-            printf("ERROR: Non-WorldOctreeNode node!\n");
-        }
-        if(child != NULL) {
-        /*
-            if(child->empty()) {
-                child->updateAddRemoveErase();
-                continue;
-            }
-        */
+    //Perform collision checks on relevant lists
+    //Dynamic objects from child must be checked against my static objects
+    pe->applyCollisionPhysics(child->m_lsDynamicObjs, m_lsStaticObjs);
 
-            //The while loop ensures the state does not change as soon as the thread awakens.
-            //Such a state change should be impossible, but it is probably better form to
-            //include the while loop.
-            SDL_LockMutex(child->m_mutex);
-            while(!child->m_bIsFinished) {
-                SDL_CondWait(child->m_cond, child->m_mutex);
-            }
+    //Static objects from child must be checked against my dynamic objects
+    pe->applyCollisionPhysics(child->m_lsStaticObjs, m_lsDynamicObjs);
 
-            //To get here, the child must have already been updated
-            //Perform collision checks on relevant lists
-            //Dynamic objects from child must be checked against my static objects
-            pe->applyCollisionPhysics(child->m_lsDynamicObjs, m_lsStaticObjs);
+    //Dynamic objects from child must be checked against my dynamic objects
+    pe->applyCollisionPhysics(child->m_lsDynamicObjs, m_lsDynamicObjs);
 
-            //Static objects from child must be checked against my dynamic objects
-            pe->applyCollisionPhysics(child->m_lsStaticObjs, m_lsDynamicObjs);
-
-            //Dynamic objects from child must be checked against my dynamic objects
-            pe->applyCollisionPhysics(child->m_lsDynamicObjs, m_lsDynamicObjs);
-
-            //Objects that left the child's quadrant need to be checked against
-            // the other children
-            for(int q2 = q + 1; q2 < QUAD_NUM_QUADS; ++q2) {
-                if(m_apChildren[q2] != NULL) {
-                    pe->applyCollisionPhysics(
-                        child->m_lsObjsLeftQuadrant,
-                        child->m_lsDynamicObjs
-                    );
-                    pe->applyCollisionPhysics(
-                        child->m_lsObjsLeftQuadrant,
-                        child->m_lsStaticObjs
-                    );
-                }
-            }
-
-            //Augment my lists by children's lists
-            //Objects that left the child's quadrant need to be added to other lists
-            for(objlist_iter_t itObjLeftChild = child->m_lsObjsLeftQuadrant.begin();
-                    itObjLeftChild != child->m_lsObjsLeftQuadrant.end();
-                    ++itObjLeftChild)
-            {
-
-                Box bxObjBounds = (*itObjLeftChild)->getPhysicsModel()->getCollisionVolume();
-                char dirs = bxOutOfBounds(bxObjBounds, m_bxBounds);
-
-                if(dirs) {
-                    //Object left my quadrant too
-                    m_lsObjsLeftQuadrant.push_back(*itObjLeftChild);
-                } else {
-                    //Object is in my quadrant, so add it
-                    m_lsObjsToAdd.push_back(*itObjLeftChild);
-                }
-            }
-
-            //Copy child lists into my lists
-            m_lsDynamicObjs.insert(
-                m_lsDynamicObjs.end(),
-                child->m_lsDynamicObjs.begin(),
-                child->m_lsDynamicObjs.end()
+    //Objects that left the child's quadrant need to be checked against
+    // the other children
+    for(int q2 = q + 1; q2 < QUAD_NUM_QUADS; ++q2) {
+        if(m_apChildren[q2] != NULL) {
+            pe->applyCollisionPhysics(
+                child->m_lsObjsLeftQuadrant,
+                child->m_lsDynamicObjs
             );
-
-            m_lsStaticObjs.insert(
-                m_lsStaticObjs.end(),
-                child->m_lsStaticObjs.begin(),
-                child->m_lsStaticObjs.end()
+            pe->applyCollisionPhysics(
+                child->m_lsObjsLeftQuadrant,
+                child->m_lsStaticObjs
             );
-
-            //Clear child lists
-            child->cleanResults();
-
-            //The child will unlock it
-            SDL_UnlockMutex(child->m_mutex);
         }
     }
+
+    //Copy child lists into my lists
+    m_lsDynamicObjs.insert(
+        m_lsDynamicObjs.end(),
+        child->m_lsDynamicObjs.begin(),
+        child->m_lsDynamicObjs.end()
+    );
+
+    m_lsStaticObjs.insert(
+        m_lsStaticObjs.end(),
+        child->m_lsStaticObjs.begin(),
+        child->m_lsStaticObjs.end()
+    );
 }
 
 void
@@ -228,16 +180,15 @@ WorldOctreeNode::onErase(GameObject *obj) {
 }
 
 Octree3dNode<GameObject> *
-WorldOctreeNode::createNode(Octree3dNode<GameObject> *parent, uint childId, const Box &bxBounds, float fMinResolution) {
-    uint uiNewLevel = parent->getLevel() + 1;
-    uint uiNewNodeId = (childId << (uiNewLevel * 4)) | parent->getId();
-//printf(__FILE__" %d: Parent id = %4x:%x, my id = %4x:%x\n",__LINE__, parent->getId(), parent->getLevel(), uiNewNodeId, uiNewLevel);
+WorldOctreeNode::createChild(uint childId, const Box &bxBounds) const {
+    uint uiNewLevel = m_uiLevel + 1;
+    uint uiNewNodeId = (childId << (uiNewLevel * 4)) | m_uiNodeId;
     WorldOctreeNode *node = new WorldOctreeNode(
         uiNewNodeId,
         uiNewLevel,
-        ((WorldOctreeNode*)parent)->getAreaId(),
+        m_uiAreaId,
         bxBounds,
-        fMinResolution
+        m_fMinResolution
     );
     return node;
 }
@@ -265,6 +216,11 @@ WorldOctree::update(float fTime) {
     }
 
     SDL_LockMutex(s_mxRenderEngine);
+
+    for(objlist_iter_t it = m_lsDynamicObjs.begin(); it != m_lsDynamicObjs.end(); ++it) {
+        D3RE::get()->manageObjOnScreen(*it);
+    }
+
     D3RE::get()->drawBox(m_bxBounds, Color(m_uiNodeId));    //Color(255, 0, 0));
     SDL_UnlockMutex(s_mxRenderEngine);
 

@@ -17,21 +17,18 @@ public:
 
 protected:
     virtual void updateContents(float fTime);
-    virtual void handleChildrenUpdateResults();
+    virtual void handleChildUpdateResults(Octree3dNode<GameObject> *child, int q);
     virtual void onAdd(GameObject *obj);
     virtual void onRemove(GameObject *obj);
     virtual void onErase(GameObject *obj);
-    virtual void onSchedule() {}
+    //virtual void onSchedule() {}
     virtual void cleanResults() {
         m_lsDynamicObjs.clear();
         m_lsStaticObjs.clear();
         m_lsObjsLeftQuadrant.clear();
         m_bIsFinished = false;
     }
-    virtual Octree3dNode<GameObject> *createNode(Octree3dNode<GameObject> *parent, uint childId, const Box &bxBounds, float fMinResolution);
-    virtual Octree3dNode<GameObject> *createLeaf(Octree3dNode<GameObject> *parent, uint childId, const Box &bxBounds, float fMinResolution) {
-        return createNode(parent, childId, bxBounds, fMinResolution);
-    }
+    virtual Octree3dNode<GameObject> *createChild(uint childId, const Box &bxBounds) const;
 
     uint m_uiAreaId;
     objlist_t m_lsDynamicObjs;      //These objects have moved and must be compared against all objects

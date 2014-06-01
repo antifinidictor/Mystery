@@ -20,6 +20,14 @@ Vorton::Vorton(uint uiId, const Point &ptPos, float fRadius, const Point &ptInit
     m_ptVorticity = ptInitVorticity;
 }
 
+Vorton::Vorton(const Vorton &v)
+    :   m_uiId(v.m_uiId),
+        m_bxBounds(v.m_bxBounds),
+        m_ptVorticity(v.m_ptVorticity),
+        m_ptDeltaVorticity(v.m_ptDeltaVorticity)
+{
+}
+
 Vorton::~Vorton()
 {
     //dtor
@@ -36,7 +44,7 @@ Vorton::update(float fTimeQuantum, const Matrix<3,3> &matJacobian, const Point &
 
     //Advect each vorton
     m_bxBounds += ptVelocity * fTimeQuantum;
-    m_ptVelocity = ptVelocity;
+    //m_ptVelocity = ptVelocity;
 }
 
 void

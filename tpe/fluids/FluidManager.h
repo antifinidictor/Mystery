@@ -4,7 +4,7 @@
  * Contains basic info for a fluid, but not information on, say, how to draw it
  */
 #include "InterpGrid.h"
-#include "mgeMath.h"
+#include "mge/mgeMath.h"
 #include "SDL.h"
 #include <vector>
 

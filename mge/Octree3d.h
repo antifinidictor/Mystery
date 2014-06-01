@@ -243,7 +243,46 @@ public:
         updateContents(fTime);
 
         //Deal with childrens' update-results
-        handleChildrenUpdateResults();  //Children mutex's acquired in here
+        for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
+            if(m_apChildren[q] != NULL) {
+                //Handle the child's update as soon as it is ready.
+                //The while loop ensures the state does not change as soon as the thread awakens.
+                //Such a state change should be impossible, but it is probably better form to
+                //include the while loop.
+                SDL_LockMutex(m_apChildren[q]->m_mutex);
+                while(!m_apChildren[q]->m_bIsFinished) {
+                    SDL_CondWait(m_apChildren[q]->m_cond, m_apChildren[q]->m_mutex);
+                }
+
+                //Handle child's results
+                handleChildUpdateResults(m_apChildren[q], q);
+
+                //Augment my lists by children's lists
+                //Objects that left the child's quadrant need to be added to other lists
+                for(objlist_iter_t itObjLeftChild = m_apChildren[q]->m_lsObjsLeftQuadrant.begin();
+                        itObjLeftChild != m_apChildren[q]->m_lsObjsLeftQuadrant.end();
+                        ++itObjLeftChild)
+                {
+
+                    Box bxObjBounds = (*itObjLeftChild)->getBounds();
+                    char dirs = bxOutOfBounds(bxObjBounds, m_bxBounds);
+
+                    if(dirs) {
+                        //Object left my quadrant too
+                        m_lsObjsLeftQuadrant.push_back(*itObjLeftChild);
+                    } else {
+                        //Object is in my quadrant, so add it
+                        m_lsObjsToAdd.push_back(*itObjLeftChild);
+                    }
+                }
+
+                //Clear child lists
+                m_apChildren[q]->cleanResults();
+
+                //Allow access to this child
+                SDL_UnlockMutex(m_apChildren[q]->m_mutex);
+            }
+        }
 
         updateEmptiness();
 
@@ -467,7 +506,7 @@ protected:
 
     //Functions that probably should be implemented by the base class
     virtual void updateContents(float fTime) {}
-    virtual void handleChildrenUpdateResults() {}
+    virtual void handleChildUpdateResults(Octree3dNode<Object> *child, int q) {}
     virtual void onAdd(Object *obj) {}
     virtual void onRemove(Object *obj) {}
     virtual void onErase(Object *obj)  {}
@@ -476,26 +515,22 @@ protected:
         m_lsObjsLeftQuadrant.clear();
         m_bIsFinished = false;
     }
-    virtual Octree3dNode<Object> *createNode(Octree3dNode<Object> *parent, uint childId, const Box &bxBounds, float fMinResolution) {
-        uint uiNewLevel = parent->getLevel() + 1;
-        uint uiNewNodeId = (childId << (uiNewLevel * 4)) | parent->getId();
-//printf(__FILE__" %d: Parent id = %4x:%x, my id = %4x:%x\n",__LINE__, parent->getId(), parent->getLevel(), uiNewNodeId, uiNewLevel);
+    virtual Octree3dNode<Object> *createChild(uint childId, const Box &bxBounds) const {
+        uint uiNewLevel = m_uiLevel + 1;
+        uint uiNewNodeId = (childId << (uiNewLevel * 4)) | m_uiNodeId;
         Octree3dNode<Object> *node = new Octree3dNode<Object>(
             uiNewNodeId,
             uiNewLevel,
             bxBounds,
-            fMinResolution
+            m_fMinResolution
         );
         return node;
-    }
-    virtual Octree3dNode<Object> *createLeaf(Octree3dNode<Object> *parent, uint childId, const Box &bxBounds, float fMinResolution) {
-        return createNode(parent, childId, bxBounds, fMinResolution);
     }
 
     bool addToChildren(Object *obj) {
         //Try adding this object to my children.  Note that they won't actually get
         // added to the contents here, only scheduled for addition.
-        Box bxObjBounds = obj->getPhysicsModel()->getCollisionVolume();
+        Box bxObjBounds = obj->getBounds();
 
 #ifdef DEBUG_Octree3d
 string spaces(m_uiLevel,'\t');
@@ -518,24 +553,7 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
                 //If we could make a valid child here and it would be inside this child
                 if(getChildBounds(q, m_bxBounds, bxChildBounds) && bxOutOfBounds(bxObjBounds, bxChildBounds) == 0) {
                     //Create a new child Octree3d here
-                    if(childIsLeafNode(bxChildBounds)) {
-                        //Leaf Octree3d node
-                        m_apChildren[q] = createLeaf(
-                            this,
-                            q,
-                            bxChildBounds,
-                            m_fMinResolution
-                        );
-
-                    } else {
-                        //Generic Octree3d node
-                        m_apChildren[q] = createNode(
-                            this,
-                            q,
-                            bxChildBounds,
-                            m_fMinResolution
-                        );
-                    }
+                    m_apChildren[q] = createChild(q, bxChildBounds);
 
                     //Add to child
                     bSomeChildCanAdd = m_apChildren[q]->add(obj, false);
@@ -585,7 +603,7 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
         }
     }
 
-    bool getChildBounds(int iQuadName, const Box &bxMyBounds, Box &bxChildBounds) {
+    bool getChildBounds(int iQuadName, const Box &bxMyBounds, Box &bxChildBounds) const {
         //Half-widths
         float hw = bxMyBounds.w / 2;
         float hh = bxMyBounds.h / 2;
@@ -639,7 +657,7 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
         return true;
     }
 
-    bool childIsLeafNode(const Box &bxChildBounds) {
+    bool childIsLeafNode(const Box &bxChildBounds) const {
         float hw = bxChildBounds.w / 2;
         float hh = bxChildBounds.h / 2;
         float hl = bxChildBounds.l / 2;

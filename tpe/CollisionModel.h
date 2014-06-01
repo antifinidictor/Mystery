@@ -6,7 +6,7 @@
 #define COLLISION_MODEL_H
 
 #include "mge/PixelMap.h"
-#include "tpe/fluids/mgeMath.h"
+#include "mge/mgeMath.h"
 #include "tpe/fluids/FluidManager.h"
 
 enum CollisionModelType {

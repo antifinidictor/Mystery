@@ -32,7 +32,7 @@
 #include "mge/PixelMap.h"
 #include "game/gui/TextDisplay.h"
 #include "game/gui/DraggableHud.h"
-#include "tpe/fluids/mgeMath.h"
+#include "mge/mgeMath.h"
 #include "tpe/fluids/BruteForceFluidTest.h"
 
 using namespace std;

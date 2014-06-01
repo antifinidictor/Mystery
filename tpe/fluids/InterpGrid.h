@@ -76,7 +76,7 @@ public:
         return m_vItems[TO_INDEX(bx,by,bz)];
     }
 
-    Point toPosition(int x, int y, int z) {
+    Point toPosition(int x, int y, int z) const {
         Point myPos;
         if(m_pParent != NULL) {
             myPos = m_pParent->getPosition();
@@ -88,10 +88,10 @@ public:
         );
     }
 
-    int getSizeX() { return m_iNumX; }
-    int getSizeY() { return m_iNumY; }
-    int getSizeZ() { return m_iNumZ; }
-    Box getBounds() {
+    int getSizeX() const { return m_iNumX; }
+    int getSizeY() const  { return m_iNumY; }
+    int getSizeZ() const  { return m_iNumZ; }
+    Box getBounds() const {
         Point myPos;
         if(m_pParent != NULL) {
             myPos = m_pParent->getPosition();

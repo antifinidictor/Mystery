@@ -1,7 +1,7 @@
 #ifndef VORTON_H
 #define VORTON_H
 
-#include "mgeMath.h"
+#include "mge/mgeMath.h"
 #include "SpacePartitionedContainer.h"
 
 #include "mge/defs.h"
@@ -14,6 +14,7 @@ class Vorton : public Positionable
 {
 public:
     Vorton(uint uiId, const Point &ptPos, float fRadius, const Point &ptInitVorticity);
+    Vorton(const Vorton &v);
     virtual ~Vorton();
 
     uint getId() { return m_uiId; }
@@ -38,7 +39,7 @@ private:
     Box m_bxBounds;
     //float m_fRadius;
     //Point m_ptPosition;
-    Point m_ptVelocity;
+    //Point m_ptVelocity;
     Point m_ptVorticity;
     Point m_ptDeltaVorticity;
 
