@@ -82,6 +82,7 @@ void ModularEngine::clean() {
 
     //Kill the queue mutex
     SDL_DestroyMutex(mge->m_mxWorklist);
+    SDL_DestroySemaphore(mge->m_semWorklist);
 
     delete mge;
     mge = NULL;
@@ -116,6 +117,7 @@ ModularEngine::ModularEngine(int iSDLVideoFlags) {
 	}
 
 	m_mxWorklist = SDL_CreateMutex();
+	m_semWorklist = SDL_CreateSemaphore(0);
 
     m_bIsRunning = true;
     Clock::init();

@@ -151,7 +151,12 @@ FluidOctree::FluidOctree(Positionable *parent, uint uiNodeId, const Box &bxBound
     :   FluidOctreeNode(this, uiNodeId, 0, bxBounds, fOctreeMinRes),
         m_igVelocities(parent, bxBounds, fVelocityMinRes),
         m_igJacobians(parent, bxBounds, fJacobianMinRes),
-        m_pParent(parent)
+        m_pParent(parent),
+        m_uiVelocityUpdateCount(0),
+        m_uiJacobianUpdateCount(0),
+        m_mxUpdateCounts(SDL_CreateMutex()),
+        m_cdWaitVelocities(SDL_CreateCond()),
+        m_cdWaitJacobians(SDL_CreateCond())
 {
     //ctor
 }

@@ -65,17 +65,35 @@ public:
         SDL_LockMutex(m_mxWorklist);
         m_qWorklist.push(item);
         SDL_UnlockMutex(m_mxWorklist);
+        SDL_SemPost(m_semWorklist);     //A new worklist item is available
     }
 
     WorklistItem *getNextWorklistItem() {
         WorklistItem *item = NULL;
 
-        SDL_LockMutex(m_mxWorklist);
-        if(m_qWorklist.size() > 0) {
+        //Wait for a new worklist item to be available
+        if(SDL_SemWait(m_semWorklist) == 0) {
+            //Remove an item from the worklist, if no error occurred
+            SDL_LockMutex(m_mxWorklist);
             item = m_qWorklist.front();
             m_qWorklist.pop();
+            SDL_UnlockMutex(m_mxWorklist);
         }
-        SDL_UnlockMutex(m_mxWorklist);
+
+        return item;
+    }
+
+
+    WorklistItem *tryNextWorklistItem() {
+        WorklistItem *item = NULL;
+
+        if(SDL_SemTryWait(m_semWorklist) == 0) {
+            //Successful wait: There was a worklist item, remove from worklist
+            SDL_LockMutex(m_mxWorklist);
+            item = m_qWorklist.front();
+            m_qWorklist.pop();
+            SDL_UnlockMutex(m_mxWorklist);
+        }
 
         return item;
     }
@@ -108,6 +126,7 @@ private:
 	std::queue<WorklistItem*> m_qWorklist;
     std::list<SDL_Thread*> m_lsWorkerThreads;
     SDL_mutex *m_mxWorklist;
+    SDL_sem   *m_semWorklist;
 
     //General
 	bool m_bIsRunning;

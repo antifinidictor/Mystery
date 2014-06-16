@@ -59,7 +59,7 @@ public:
 
     virtual void applyCollisionPhysics(std::list<GameObject*> &ls1, std::list<GameObject*> &ls2);
 
-    void updateFluid(FluidOctree *fluid);
+    //void updateFluid(FluidOctree *fluid);
 
 private:
     TimePhysicsEngine();
@@ -84,84 +84,11 @@ private:
     bool isOnSurface(const Box &bxObj, const Box &bxSurface);
     void extractCollisionDirections(const Point &ptCenterDif, float fXShift, float fYShift, float fZShift, int *iDir1, int *iDir2);
 
-
-    static int fluidUpdateThread(void *data);
-
     static TimePhysicsEngine *tpe;
 
     uint m_uiLastUpdated;
     float m_fDeltaTime;
     bool m_bFinalCleaning;
-
-    //Fluid thread scheduling
-    struct FluidInfo {
-        FluidOctree *m_pRoot;
-        int m_iVelocityUpdatesStarted,  //Used to determine which velocity updates need to be performed
-            m_iVelocityUpdatesFinished, //Used to determine when all velocity updates are complete
-            m_iTotalVelocityUpdates;    //Used to bound the number of velocity updates
-        int m_iJacobianUpdatesStarted,
-            m_iJacobianUpdatesFinished,
-            m_iTotalJacobianUpdates;
-        std::list<FluidOctreeNode*> m_lsUpdateNodeQueue;
-        SDL_mutex *m_mxUpdateFluid;
-
-        FluidInfo(FluidOctree *pRoot)
-            :   m_pRoot(pRoot),
-                m_iVelocityUpdatesStarted(0),
-                m_iVelocityUpdatesFinished(0),
-                m_iJacobianUpdatesStarted(0),
-                m_iJacobianUpdatesFinished(0),
-                m_mxUpdateFluid(SDL_CreateMutex())
-        {
-            //Make sure none of the threads try to access me while I'm initializing
-            SDL_LockMutex(m_mxUpdateFluid);
-
-            //Calculate the total velocity/jacabian updates
-            const InterpGrid<Vec3f> *vg = m_pRoot->getVelocityGrid();
-            const InterpGrid<Matrix<3,3> > *jg = m_pRoot->getJacobianGrid();
-            m_iTotalVelocityUpdates = vg->getSizeX() * vg->getSizeY() * vg->getSizeZ();
-            m_iTotalJacobianUpdates = jg->getSizeX() * jg->getSizeY() * jg->getSizeZ();
-
-            //Schedule updates
-            m_pRoot->scheduleUpdates(this);
-
-            //Done initializing, unlock
-            SDL_UnlockMutex(m_mxUpdateFluid);
-        }
-
-        FluidInfo(const FluidInfo &info)
-            :   m_pRoot(info.m_pRoot),
-                m_iVelocityUpdatesStarted(info.m_iVelocityUpdatesStarted),
-                m_iVelocityUpdatesFinished(info.m_iVelocityUpdatesFinished),
-                m_iTotalVelocityUpdates(info.m_iTotalVelocityUpdates),
-                m_iJacobianUpdatesStarted(info.m_iJacobianUpdatesStarted),
-                m_iJacobianUpdatesFinished(info.m_iJacobianUpdatesFinished),
-                m_iTotalJacobianUpdates(info.m_iTotalJacobianUpdates),
-                m_mxUpdateFluid(SDL_CreateMutex())
-        {
-            //Make sure none of the threads try to access me while I'm initializing
-            SDL_LockMutex(m_mxUpdateFluid);
-
-            //for(std::list<FluidOctreeNode*>::iterator it = info.m_lsUpdateNodeQueue.begin(); it != info.m_lsUpdateNodeQueue.end(); ++it) {
-            //    m_lsUpdateNodeQueue.push_back(*it);
-            //}
-            m_pRoot->scheduleUpdates(this);
-
-            //Done initializing, unlock
-            SDL_UnlockMutex(m_mxUpdateFluid);
-        }
-
-        ~FluidInfo() {
-            SDL_DestroyMutex(m_mxUpdateFluid);
-        }
-
-        void scheduleUpdate(Octree3dNode<Vorton> *node) {
-            m_lsUpdateNodeQueue.push_back((FluidOctreeNode*)node);
-        }
-    };
-    std::list<FluidInfo> m_lsUpdateFluidQueue;
-    std::list<SDL_Thread*> m_lsUpdateThreads;
-    SDL_mutex *m_mxUpdateFluidQueue;
 };
 
 #endif // TIME_PHYSICS_ENGINE_H

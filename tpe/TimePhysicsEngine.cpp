@@ -13,6 +13,78 @@ using namespace std;
 
 TimePhysicsEngine *TimePhysicsEngine::tpe;
 
+#if 0
+
+    //Fluid thread scheduling
+    struct FluidInfo {
+        FluidOctree *m_pRoot;
+        int m_iVelocityUpdatesStarted,  //Used to determine which velocity updates need to be performed
+            m_iVelocityUpdatesFinished, //Used to determine when all velocity updates are complete
+            m_iTotalVelocityUpdates;    //Used to bound the number of velocity updates
+        int m_iJacobianUpdatesStarted,
+            m_iJacobianUpdatesFinished,
+            m_iTotalJacobianUpdates;
+        std::list<FluidOctreeNode*> m_lsUpdateNodeQueue;
+        SDL_mutex *m_mxUpdateFluid;
+
+        FluidInfo(FluidOctree *pRoot)
+            :   m_pRoot(pRoot),
+                m_iVelocityUpdatesStarted(0),
+                m_iVelocityUpdatesFinished(0),
+                m_iJacobianUpdatesStarted(0),
+                m_iJacobianUpdatesFinished(0),
+                m_mxUpdateFluid(SDL_CreateMutex())
+        {
+            //Make sure none of the threads try to access me while I'm initializing
+            SDL_LockMutex(m_mxUpdateFluid);
+
+            //Calculate the total velocity/jacabian updates
+            const InterpGrid<Vec3f> *vg = m_pRoot->getVelocityGrid();
+            const InterpGrid<Matrix<3,3> > *jg = m_pRoot->getJacobianGrid();
+            m_iTotalVelocityUpdates = vg->getSizeX() * vg->getSizeY() * vg->getSizeZ();
+            m_iTotalJacobianUpdates = jg->getSizeX() * jg->getSizeY() * jg->getSizeZ();
+
+            //Schedule updates
+            m_pRoot->scheduleUpdates(this);
+
+            //Done initializing, unlock
+            SDL_UnlockMutex(m_mxUpdateFluid);
+        }
+
+        FluidInfo(const FluidInfo &info)
+            :   m_pRoot(info.m_pRoot),
+                m_iVelocityUpdatesStarted(info.m_iVelocityUpdatesStarted),
+                m_iVelocityUpdatesFinished(info.m_iVelocityUpdatesFinished),
+                m_iTotalVelocityUpdates(info.m_iTotalVelocityUpdates),
+                m_iJacobianUpdatesStarted(info.m_iJacobianUpdatesStarted),
+                m_iJacobianUpdatesFinished(info.m_iJacobianUpdatesFinished),
+                m_iTotalJacobianUpdates(info.m_iTotalJacobianUpdates),
+                m_mxUpdateFluid(SDL_CreateMutex())
+        {
+            //Make sure none of the threads try to access me while I'm initializing
+            SDL_LockMutex(m_mxUpdateFluid);
+
+            //for(std::list<FluidOctreeNode*>::iterator it = info.m_lsUpdateNodeQueue.begin(); it != info.m_lsUpdateNodeQueue.end(); ++it) {
+            //    m_lsUpdateNodeQueue.push_back(*it);
+            //}
+            m_pRoot->scheduleUpdates(this);
+
+            //Done initializing, unlock
+            SDL_UnlockMutex(m_mxUpdateFluid);
+        }
+
+        ~FluidInfo() {
+            SDL_DestroyMutex(m_mxUpdateFluid);
+        }
+
+        void scheduleUpdate(Octree3dNode<Vorton> *node) {
+            m_lsUpdateNodeQueue.push_back((FluidOctreeNode*)node);
+        }
+    };
+    std::list<FluidInfo> m_lsUpdateFluidQueue;
+    std::list<SDL_Thread*> m_lsUpdateThreads;
+    SDL_mutex *m_mxUpdateFluidQueue;
+
 int
 TimePhysicsEngine::fluidUpdateThread(void *data) {
     SDL_threadID threadID = SDL_ThreadID();    //For debugging
@@ -158,131 +230,6 @@ TimePhysicsEngine::fluidUpdateThread(void *data) {
     return 0;
 }
 
-void
-TimePhysicsEngine::init() {
-    tpe = new TimePhysicsEngine();
-
-    //Generate fluid update threads
-    using boost::lexical_cast;
-    int numThreads = ConfigManager::get()->get("tpe.threads", DEFAULT_NUM_THREADS);
-    string sThreadNameBase = "TPE_UpdateFluid";
-    for(int iCurThread = 0; iCurThread < numThreads; ++iCurThread) {
-        string sThreadName = sThreadNameBase + lexical_cast<string>(iCurThread);
-        SDL_Thread *thread = SDL_CreateThread(fluidUpdateThread, sThreadName.c_str(), &tpe->m_bFinalCleaning);
-        tpe->m_lsUpdateThreads.push_back(thread);
-    }
-}
-
-TimePhysicsEngine::TimePhysicsEngine()
-    :   m_bFinalCleaning(false),
-        m_mxUpdateFluidQueue(SDL_CreateMutex())
-{
-    assert(TPE_NUM_FLAGS <= PHYSICS_FLAGS_END);
-
-    printf("Physics engine initialized\n");
-}
-
-TimePhysicsEngine::~TimePhysicsEngine() {
-    //Tell the threads to exit
-    m_bFinalCleaning = true;
-    SDL_UnlockMutex(m_mxUpdateFluidQueue);
-    for(list<SDL_Thread*>::iterator it = m_lsUpdateThreads.begin(); it != m_lsUpdateThreads.end(); ++it) {
-        int status;
-        SDL_WaitThread(*it, &status);
-    }
-    m_lsUpdateThreads.clear();
-    m_lsUpdateFluidQueue.clear();
-    SDL_DestroyMutex(m_mxUpdateFluidQueue);
-
-    printf("Physics engine cleaned\n");
-}
-
-
-
-void TimePhysicsEngine::update(float fDeltaTime) {
-    m_fDeltaTime = 12;
-    //m_uiLastUpdated = time;
-}
-
-#define PRINT_IF_ID(obj, id) if(obj->getId() == id) { printf(__FILE__" %d (obj %d)\n",__LINE__, id); }
-
-bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
-    AbstractTimePhysicsModel *tmdl = dynamic_cast<AbstractTimePhysicsModel*>(obj->getPhysicsModel());
-    if(tmdl == NULL) return false;
-    bool hasChanged = tmdl->wasPushed() || tmdl->getPhysicsChanged();
-    /*
-    if(obj->getFlag(TPE_STATIC)) {
-        return false;
-    }
-    */
-
-    //Apply gravity
-    if(/*obj->getFlag(TPE_FALLING) && */!obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC)) {
-        tmdl->applyForce(Point(0,-GRAV_ACCEL * tmdl->getMass(),0));
-    }
-
-    //Apply general physics updates to object
-    tmdl->update(m_fDeltaTime);
-    tmdl->setWasPushed(false);
-
-    hasChanged = hasChanged || tmdl->getLastVelocity() != Point();
-    bool bCanFall = !obj->getFlag(TPE_PASSABLE) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC);
-    bool bIsOnSurface = tmdl->getSurface() != NULL;
-    bool bHasLeftSurface = hasChanged && (!bIsOnSurface || isNotInArea(tmdl->getCollisionVolume(), tmdl->getSurface()->getCollisionVolume()));
-    if(bCanFall) {
-        //Ensures normal force is applied
-        obj->setFlag(TPE_FALLING, true);
-    }
-    if(bIsOnSurface) {
-        GameObject *pObjSurface = tmdl->getSurface()->getParent();
-        applyPhysics(tmdl->getParent(), pObjSurface);
-        if(bHasLeftSurface) {
-            tmdl->setSurface(NULL);
-        }
-    }
-    return (hasChanged);
-}
-
-void
-TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
-    //We need to find the point from the two last velocities and current
-    // position that the two objects do not collide and have not passed
-    AbstractTimePhysicsModel *tpm1 = dynamic_cast<AbstractTimePhysicsModel*>(obj1->getPhysicsModel()),
-                      *tpm2 = dynamic_cast<AbstractTimePhysicsModel*>(obj2->getPhysicsModel());
-    if(tpm1 == NULL || tpm2 == NULL || !bxIntersectsEq(tpm1->getCollisionVolume(), tpm2->getCollisionVolume())) {
-        return;    //no physics model or no collision
-    }
-
-    //Otherwise, iterate through collision models.  Most objects only have one
-    for(uint uiMdl1 = 0; uiMdl1 < tpm1->getNumModels(); ++uiMdl1) {
-        CollisionModel *mdl1 = tpm1->getCollisionModel(uiMdl1);
-        switch(mdl1->getType()) {
-        case CM_BOX:
-            boxOnUnknownCollision(obj1, obj2, uiMdl1);
-            break;
-        case CM_Y_HEIGHTMAP:
-            hmapOnUnknownCollision(obj1, obj2, uiMdl1);
-            break;
-        case CM_VORTON:
-            vortonOnUnknownCollision(obj1, obj2, uiMdl1);
-            break;
-        default:
-            break;
-        }
-    }
-}
-
-
-void
-TimePhysicsEngine::applyCollisionPhysics(list<GameObject*> &ls1, list<GameObject*> &ls2) {
-    for(list<GameObject*>::iterator it1 = ls1.begin(); it1 != ls1.end(); ++it1) {
-        for(list<GameObject*>::iterator it2 = ls2.begin(); it2 != ls2.end(); ++it2) {
-            if((*it1)->getId() != (*it2)->getId()) {
-                applyPhysics(*it1, *it2);
-            }
-        }
-    }
-}
 
 void
 TimePhysicsEngine::updateFluid(FluidOctree *fluid) {
@@ -411,6 +358,113 @@ TimePhysicsEngine::updateFluid(FluidOctree *fluid) {
     } while(tpe->m_lsUpdateFluidQueue.size() > 0);
 
     SDL_UnlockMutex(tpe->m_mxUpdateFluidQueue);
+}
+
+
+#endif
+
+void
+TimePhysicsEngine::init() {
+    tpe = new TimePhysicsEngine();
+}
+
+TimePhysicsEngine::TimePhysicsEngine()
+    :   m_bFinalCleaning(false)
+{
+    assert(TPE_NUM_FLAGS <= PHYSICS_FLAGS_END);
+
+    printf("Physics engine initialized\n");
+}
+
+TimePhysicsEngine::~TimePhysicsEngine() {
+    printf("Physics engine cleaned\n");
+}
+
+
+
+void TimePhysicsEngine::update(float fDeltaTime) {
+    m_fDeltaTime = 12;
+    //m_uiLastUpdated = time;
+}
+
+#define PRINT_IF_ID(obj, id) if(obj->getId() == id) { printf(__FILE__" %d (obj %d)\n",__LINE__, id); }
+
+bool TimePhysicsEngine::applyPhysics(GameObject *obj) {
+    AbstractTimePhysicsModel *tmdl = dynamic_cast<AbstractTimePhysicsModel*>(obj->getPhysicsModel());
+    if(tmdl == NULL) return false;
+    bool hasChanged = tmdl->wasPushed() || tmdl->getPhysicsChanged();
+    /*
+    if(obj->getFlag(TPE_STATIC)) {
+        return false;
+    }
+    */
+
+    //Apply gravity
+    if(/*obj->getFlag(TPE_FALLING) && */!obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC)) {
+        tmdl->applyForce(Point(0,-GRAV_ACCEL * tmdl->getMass(),0));
+    }
+
+    //Apply general physics updates to object
+    tmdl->update(m_fDeltaTime);
+    tmdl->setWasPushed(false);
+
+    hasChanged = hasChanged || tmdl->getLastVelocity() != Point();
+    bool bCanFall = !obj->getFlag(TPE_PASSABLE) && !obj->getFlag(TPE_FLOATING) && !obj->getFlag(TPE_STATIC);
+    bool bIsOnSurface = tmdl->getSurface() != NULL;
+    bool bHasLeftSurface = hasChanged && (!bIsOnSurface || isNotInArea(tmdl->getCollisionVolume(), tmdl->getSurface()->getCollisionVolume()));
+    if(bCanFall) {
+        //Ensures normal force is applied
+        obj->setFlag(TPE_FALLING, true);
+    }
+    if(bIsOnSurface) {
+        GameObject *pObjSurface = tmdl->getSurface()->getParent();
+        applyPhysics(tmdl->getParent(), pObjSurface);
+        if(bHasLeftSurface) {
+            tmdl->setSurface(NULL);
+        }
+    }
+    return (hasChanged);
+}
+
+void
+TimePhysicsEngine::applyPhysics(GameObject *obj1, GameObject *obj2) {
+    //We need to find the point from the two last velocities and current
+    // position that the two objects do not collide and have not passed
+    AbstractTimePhysicsModel *tpm1 = dynamic_cast<AbstractTimePhysicsModel*>(obj1->getPhysicsModel()),
+                      *tpm2 = dynamic_cast<AbstractTimePhysicsModel*>(obj2->getPhysicsModel());
+    if(tpm1 == NULL || tpm2 == NULL || !bxIntersectsEq(tpm1->getCollisionVolume(), tpm2->getCollisionVolume())) {
+        return;    //no physics model or no collision
+    }
+
+    //Otherwise, iterate through collision models.  Most objects only have one
+    for(uint uiMdl1 = 0; uiMdl1 < tpm1->getNumModels(); ++uiMdl1) {
+        CollisionModel *mdl1 = tpm1->getCollisionModel(uiMdl1);
+        switch(mdl1->getType()) {
+        case CM_BOX:
+            boxOnUnknownCollision(obj1, obj2, uiMdl1);
+            break;
+        case CM_Y_HEIGHTMAP:
+            hmapOnUnknownCollision(obj1, obj2, uiMdl1);
+            break;
+        case CM_VORTON:
+            vortonOnUnknownCollision(obj1, obj2, uiMdl1);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+
+void
+TimePhysicsEngine::applyCollisionPhysics(list<GameObject*> &ls1, list<GameObject*> &ls2) {
+    for(list<GameObject*>::iterator it1 = ls1.begin(); it1 != ls1.end(); ++it1) {
+        for(list<GameObject*>::iterator it2 = ls2.begin(); it2 != ls2.end(); ++it2) {
+            if((*it1)->getId() != (*it2)->getId()) {
+                applyPhysics(*it1, *it2);
+            }
+        }
+    }
 }
 
 void

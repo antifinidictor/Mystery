@@ -3,7 +3,8 @@
 
 FluidOctreeTest::FluidOctreeTest()
     :   m_pRenderModel(new ContainerRenderModel(Rect())),
-        m_pPhysicsModel(new NullTimePhysicsModel(Point()))
+        m_pPhysicsModel(new NullTimePhysicsModel(Point())),
+        m_fCurDeltaTime(1.f)
 {
     ConfigManager *config = ConfigManager::get();
     int numVorts = config->get("test.fluid.numVortons", 0);
@@ -47,6 +48,7 @@ FluidOctreeTest::~FluidOctreeTest()
 
 GameObject*
 FluidOctreeTest::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
+    return NULL;
 }
 
 void
@@ -55,7 +57,62 @@ FluidOctreeTest::write(boost::property_tree::ptree &pt, const std::string &keyBa
 
 bool
 FluidOctreeTest::update(float fDeltaTime) {
-    TimePhysicsEngine::get()->updateFluid(m_pRoot);
+    m_fCurDeltaTime = fDeltaTime;
+
+    //TimePhysicsEngine::get()->updateFluid(m_pRoot);
+    //Schedule fluid updates
+    int numUpdatesPerThread = ConfigManager::get()->get("test.fluid.numIndicesPerThread", 10);
+
+    //Calculate the total number of updates we are waiting for
+    const InterpGrid<Vec3f> *velGrid = m_pRoot->getVelocityGrid();
+    uint uiVelSize = velGrid->getSizeX() * velGrid->getSizeY() * velGrid->getSizeZ();
+    uint numVelBlocks = uiVelSize / numUpdatesPerThread;
+    uint remVelUpdates = uiVelSize % numUpdatesPerThread;
+
+    for(uint i = 0; i < numVelBlocks; ++i) {
+        int minIndex = i * numUpdatesPerThread;
+        WorklistItem *item = new FluidVelocityWorklistItem(m_pRoot, minIndex, minIndex + numUpdatesPerThread);
+        MGE::get()->addItemToWorklist(item);
+    }
+
+    //The number of updates may not be evenly divisible by the number of indices per thread
+    if(remVelUpdates > 0) {
+        int minIndex = numVelBlocks * numUpdatesPerThread;
+        WorklistItem *item = new FluidVelocityWorklistItem(m_pRoot, minIndex, minIndex + remVelUpdates);
+        MGE::get()->addItemToWorklist(item);
+    }
+
+    //Calculate the total number of updates we are waiting for
+    const InterpGrid<Matrix<3,3> > *jacGrid = m_pRoot->getJacobianGrid();
+    uint uiJacSize = jacGrid->getSizeX() * jacGrid->getSizeY() * jacGrid->getSizeZ();
+    uint numJacBlocks = uiJacSize / numUpdatesPerThread;
+    uint remJacUpdates = uiJacSize % numUpdatesPerThread;
+
+    for(uint i = 0; i < numJacBlocks; ++i) {
+        int minIndex = i * numUpdatesPerThread;
+        WorklistItem *item = new FluidJacobianWorklistItem(m_pRoot, minIndex, minIndex + numUpdatesPerThread);
+        MGE::get()->addItemToWorklist(item);
+    }
+
+    //The number of updates may not be evenly divisible by the number of indices per thread
+    if(remJacUpdates > 0) {
+        int minIndex = numJacBlocks * numUpdatesPerThread;
+        WorklistItem *item = new FluidJacobianWorklistItem(m_pRoot, minIndex, minIndex + remJacUpdates);
+        MGE::get()->addItemToWorklist(item);
+    }
+
+    //Schedule the vorton updates/aggregation
+    m_pRoot->scheduleUpdates(this);
+
+    //Help update the worklist?
+
+    return false;
+}
+
+void
+FluidOctreeTest::scheduleUpdate(Octree3dNode<Vorton> *node) {
+    WorklistItem *item = new FluidOctreeWorklistItem(m_pRoot, (FluidOctreeNode*)node, m_fCurDeltaTime);
+    MGE::get()->addItemToWorklist(item);
 }
 
 

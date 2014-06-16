@@ -293,6 +293,7 @@
 		<Unit filename="mge/Positionable.h" />
 		<Unit filename="mge/RenderEngine.h" />
 		<Unit filename="mge/RenderModel.h" />
+		<Unit filename="mge/WorklistItem.h" />
 		<Unit filename="mge/WorldEngine.h" />
 		<Unit filename="mge/defs.cpp" />
 		<Unit filename="mge/defs.h" />
@@ -314,6 +315,8 @@
 		<Unit filename="tpe/fluids/FluidManager.h" />
 		<Unit filename="tpe/fluids/FluidOctree.cpp" />
 		<Unit filename="tpe/fluids/FluidOctree.h" />
+		<Unit filename="tpe/fluids/FluidOctreeTest.cpp" />
+		<Unit filename="tpe/fluids/FluidOctreeTest.h" />
 		<Unit filename="tpe/fluids/InterpGrid.h" />
 		<Unit filename="tpe/fluids/SpacePartitionedContainer.h" />
 		<Unit filename="tpe/fluids/Vorton.cpp" />

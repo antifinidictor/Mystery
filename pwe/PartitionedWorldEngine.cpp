@@ -155,11 +155,11 @@ PartitionedWorldEngine::update(float fDeltaTime) {
     m_pCurArea->m_pOctree->scheduleUpdates(this);
 
     MGE *mge = MGE::get();
-    WorklistItem *item = mge->getNextWorklistItem();
+    WorklistItem *item = mge->tryNextWorklistItem();
     while(item != NULL) {
         item->update();                     //Update item
         delete item;                        //Free memory
-        item = mge->getNextWorklistItem();  //Get next item
+        item = mge->tryNextWorklistItem();  //Get next item
     }
 
     //Perform any post processing

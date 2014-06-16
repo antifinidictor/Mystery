@@ -33,6 +33,10 @@ public:
 
     //Input
     virtual int callBack(uint cID, void *data, uint uiEventId);
+
+    //Scheduler
+    void scheduleUpdate(Octree3dNode<Vorton> *node);
+
 protected:
 private:
     uint m_uiId;
@@ -43,6 +47,8 @@ private:
     FluidOctree *m_pRoot;
 
     PixelMap *m_pxHmap;
+
+    float m_fCurDeltaTime;
 };
 
 #endif // FLUIDOCTREETEST_H
