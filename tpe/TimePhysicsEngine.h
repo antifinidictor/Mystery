@@ -128,6 +128,29 @@ private:
             //Done initializing, unlock
             SDL_UnlockMutex(m_mxUpdateFluid);
         }
+
+        FluidInfo(const FluidInfo &info)
+            :   m_pRoot(info.m_pRoot),
+                m_iVelocityUpdatesStarted(info.m_iVelocityUpdatesStarted),
+                m_iVelocityUpdatesFinished(info.m_iVelocityUpdatesFinished),
+                m_iTotalVelocityUpdates(info.m_iTotalVelocityUpdates),
+                m_iJacobianUpdatesStarted(info.m_iJacobianUpdatesStarted),
+                m_iJacobianUpdatesFinished(info.m_iJacobianUpdatesFinished),
+                m_iTotalJacobianUpdates(info.m_iTotalJacobianUpdates),
+                m_mxUpdateFluid(SDL_CreateMutex())
+        {
+            //Make sure none of the threads try to access me while I'm initializing
+            SDL_LockMutex(m_mxUpdateFluid);
+
+            //for(std::list<FluidOctreeNode*>::iterator it = info.m_lsUpdateNodeQueue.begin(); it != info.m_lsUpdateNodeQueue.end(); ++it) {
+            //    m_lsUpdateNodeQueue.push_back(*it);
+            //}
+            m_pRoot->scheduleUpdates(this);
+
+            //Done initializing, unlock
+            SDL_UnlockMutex(m_mxUpdateFluid);
+        }
+
         ~FluidInfo() {
             SDL_DestroyMutex(m_mxUpdateFluid);
         }

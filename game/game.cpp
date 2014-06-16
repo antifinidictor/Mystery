@@ -34,7 +34,7 @@
 #include "game/gui/DraggableHud.h"
 #include "mge/mgeMath.h"
 #include "tpe/fluids/BruteForceFluidTest.h"
-
+#include "tpe/fluids/FluidOctreeTest.h"
 using namespace std;
 
 void testTextCb(uint id);
@@ -146,6 +146,9 @@ void initWorld() {
     );
     PWE::get()->add(bfft);
 #endif
+
+    FluidOctreeTest *fot = new FluidOctreeTest();
+    PWE::get()->add(fot);
 }
 
 

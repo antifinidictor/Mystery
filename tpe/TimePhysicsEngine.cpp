@@ -77,6 +77,7 @@ TimePhysicsEngine::fluidUpdateThread(void *data) {
                 int iStartIndex = info.m_iVelocityUpdatesStarted;
                 int iEndIndex = iStartIndex + iUpdatesPerThread;
                 if(iEndIndex > info.m_iTotalVelocityUpdates) { iEndIndex = info.m_iTotalVelocityUpdates; }
+                info.m_iVelocityUpdatesStarted += (iEndIndex - iStartIndex);
 
                 //We're ready to start updating velocities
                 SDL_UnlockMutex(info.m_mxUpdateFluid);
@@ -107,6 +108,7 @@ TimePhysicsEngine::fluidUpdateThread(void *data) {
                 int iStartIndex = info.m_iJacobianUpdatesStarted;
                 int iEndIndex = iStartIndex + iUpdatesPerThread;
                 if(iEndIndex > info.m_iTotalJacobianUpdates) { iEndIndex = info.m_iTotalJacobianUpdates; }
+                info.m_iJacobianUpdatesStarted += (iEndIndex - iStartIndex);
 
                 //We're ready to start updating jacobians
                 SDL_UnlockMutex(info.m_mxUpdateFluid);
@@ -176,9 +178,6 @@ TimePhysicsEngine::TimePhysicsEngine()
         m_mxUpdateFluidQueue(SDL_CreateMutex())
 {
     assert(TPE_NUM_FLAGS <= PHYSICS_FLAGS_END);
-
-    //Unlocked again when there is something in it
-    SDL_LockMutex(m_mxUpdateFluidQueue);
 
     printf("Physics engine initialized\n");
 }
@@ -287,9 +286,131 @@ TimePhysicsEngine::applyCollisionPhysics(list<GameObject*> &ls1, list<GameObject
 
 void
 TimePhysicsEngine::updateFluid(FluidOctree *fluid) {
+    int iNumThreads = ConfigManager::get()->get("tpe.threads", DEFAULT_NUM_THREADS);
+
     SDL_LockMutex(m_mxUpdateFluidQueue);
     m_lsUpdateFluidQueue.push_back(fluid);
-    SDL_UnlockMutex(m_mxUpdateFluidQueue);
+
+    do {
+        //Otherwise, get the next node waiting for processing
+        FluidInfo &info = tpe->m_lsUpdateFluidQueue.front();
+
+        //We will pop if completed
+        //tpe->m_lsUpdateNodeQueue.pop_front();
+        SDL_LockMutex(info.m_mxUpdateFluid);
+        bool bVelocityCanUpdate = info.m_iVelocityUpdatesStarted < info.m_iTotalVelocityUpdates;
+        bool bJacobianCanUpdate = info.m_iJacobianUpdatesStarted < info.m_iTotalJacobianUpdates;
+        bool bVelocityFinished  = info.m_iVelocityUpdatesFinished == info.m_iTotalVelocityUpdates;
+        bool bJacobianFinished  = bVelocityFinished && info.m_iJacobianUpdatesFinished == info.m_iTotalJacobianUpdates;
+        bool bFluidFinished     = bJacobianFinished && info.m_lsUpdateNodeQueue.size() == 0;
+        SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+        if(bFluidFinished) {
+            //This fluid is done, make sure no more threads attempt to
+            // update it. Note that if any thread is still updating this
+            // info object, then they are working on a node and no longer
+            // require access to the info itself.
+            tpe->m_lsUpdateFluidQueue.pop_front();
+
+            //Are there any more fluids to update?
+            if(tpe->m_lsUpdateFluidQueue.size() > 0) {
+                //Get the next fluid instead
+                info = tpe->m_lsUpdateFluidQueue.front();
+            } else {
+                //No more fluids to update
+                SDL_UnlockMutex(tpe->m_mxUpdateFluidQueue);
+                continue;
+            }
+        }
+
+        //Unlock the list so other threads can prepare to update this info object or the next one
+        SDL_UnlockMutex(tpe->m_mxUpdateFluidQueue);
+
+        //Now that we have a node, we determine what needs updating
+        SDL_LockMutex(info.m_mxUpdateFluid);
+
+        if(bVelocityCanUpdate) {
+            int iUpdatesPerThread = info.m_iTotalVelocityUpdates / iNumThreads;
+            if(iUpdatesPerThread < 1) { iUpdatesPerThread = 1; }
+            int iStartIndex = info.m_iVelocityUpdatesStarted;
+            int iEndIndex = iStartIndex + iUpdatesPerThread;
+            if(iEndIndex > info.m_iTotalVelocityUpdates) { iEndIndex = info.m_iTotalVelocityUpdates; }
+            info.m_iVelocityUpdatesStarted += (iEndIndex - iStartIndex);
+
+            //We're ready to start updating velocities
+            SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+            //Update velocities
+            //TODO: Make more efficient by dividing into three loops of x, y, z?
+            FluidOctree *pRoot = info.m_pRoot;
+            const InterpGrid<Vec3f> *grid = pRoot->getVelocityGrid();
+            int iSizeX = grid->getSizeX();
+            int iSizeY = grid->getSizeY();
+            int iSizeZ = grid->getSizeZ();
+            int iSizeXY = iSizeX * iSizeY;
+            for(int index = iStartIndex; index < iEndIndex; ++index) {
+                int x = index % iSizeX;
+                int y = (index / iSizeX) % iSizeY;
+                int z = (index / iSizeXY) % iSizeZ;
+                pRoot->computeVelocityAt(x, y, z);
+            }
+
+            //We've finished this update, so we can inform the info object
+            SDL_LockMutex(info.m_mxUpdateFluid);
+            info.m_iVelocityUpdatesFinished += (iEndIndex - iStartIndex);
+            SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+        } else if(bVelocityFinished && bJacobianCanUpdate) {
+            int iUpdatesPerThread = info.m_iTotalJacobianUpdates / iNumThreads;
+            if(iUpdatesPerThread < 1) { iUpdatesPerThread = 1; }
+            int iStartIndex = info.m_iJacobianUpdatesStarted;
+            int iEndIndex = iStartIndex + iUpdatesPerThread;
+            if(iEndIndex > info.m_iTotalJacobianUpdates) { iEndIndex = info.m_iTotalJacobianUpdates; }
+            info.m_iJacobianUpdatesStarted += (iEndIndex - iStartIndex);
+
+            //We're ready to start updating jacobians
+            SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+            //Update Jacobians
+            //TODO: Make more efficient by dividing into three loops of x, y, z?
+            FluidOctree *pRoot = info.m_pRoot;
+            const InterpGrid<Matrix<3,3> > *grid = pRoot->getJacobianGrid();
+            int iSizeX = grid->getSizeX();
+            int iSizeY = grid->getSizeY();
+            int iSizeZ = grid->getSizeZ();
+            int iSizeXY = iSizeX * iSizeY;
+            for(int index = iStartIndex; index < iEndIndex; ++index) {
+                int x = index % iSizeX;
+                int y = (index / iSizeX) % iSizeY;
+                int z = (index / iSizeXY) % iSizeZ;
+                pRoot->computeJacobianAt(x, y, z);
+            }
+
+            //We've finished this update, so we can inform the info object
+            SDL_LockMutex(info.m_mxUpdateFluid);
+            info.m_iJacobianUpdatesFinished += (iEndIndex - iStartIndex);
+            SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+        } else if(bJacobianFinished && !bFluidFinished) {
+            //We're ready to start updating nodes
+            FluidOctreeNode *node = info.m_lsUpdateNodeQueue.front();
+            info.m_lsUpdateNodeQueue.pop_front();
+
+            //Allow other nodes to start processing this info object
+            SDL_UnlockMutex(info.m_mxUpdateFluid);
+
+            //Update the node
+            node->update(tpe->m_fDeltaTime);
+
+        } else {
+            //Otherwise, we can't do anything and have to wait
+            SDL_UnlockMutex(info.m_mxUpdateFluid);
+        }
+
+        SDL_LockMutex(m_mxUpdateFluidQueue);
+    } while(tpe->m_lsUpdateFluidQueue.size() > 0);
+
+    SDL_UnlockMutex(tpe->m_mxUpdateFluidQueue);
 }
 
 void

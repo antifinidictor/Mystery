@@ -2,6 +2,8 @@
 #include "mge/ConfigManager.h"
 
 FluidOctreeTest::FluidOctreeTest()
+    :   m_pRenderModel(new ContainerRenderModel(Rect())),
+        m_pPhysicsModel(new NullTimePhysicsModel(Point()))
 {
     ConfigManager *config = ConfigManager::get();
     int numVorts = config->get("test.fluid.numVortons", 0);
