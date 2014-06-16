@@ -15,6 +15,7 @@
 
 #include <list>
 #include <map>
+#include <queue>
 
 #include "mge/RenderEngine.h"
 #include "mge/WorldEngine.h"
@@ -23,6 +24,7 @@
 #include "mge/Clock.h"
 
 #include "mge/Event.h"
+#include "mge/WorklistItem.h"
 
 class ModularEngine : public EventHandler {
 public:
@@ -59,6 +61,25 @@ public:
     //Polling input
     InputData *getInputState() { return &m_sInputData; }
 
+    void addItemToWorklist(WorklistItem *item) {
+        SDL_LockMutex(m_mxWorklist);
+        m_qWorklist.push(item);
+        SDL_UnlockMutex(m_mxWorklist);
+    }
+
+    WorklistItem *getNextWorklistItem() {
+        WorklistItem *item = NULL;
+
+        SDL_LockMutex(m_mxWorklist);
+        if(m_qWorklist.size() > 0) {
+            item = m_qWorklist.front();
+            m_qWorklist.pop();
+        }
+        SDL_UnlockMutex(m_mxWorklist);
+
+        return item;
+    }
+
 protected:
 private:
     ModularEngine(int iSDLVideoFlags);
@@ -82,6 +103,11 @@ private:
 	std::list<Listener*>m_lsButtonInputListeners;
 	std::list<Listener*>m_lsMouseMoveListeners;
 	std::list<Listener*>m_lsAnyKeyListeners;
+
+    //Worklist
+	std::queue<WorklistItem*> m_qWorklist;
+    std::list<SDL_Thread*> m_lsWorkerThreads;
+    SDL_mutex *m_mxWorklist;
 
     //General
 	bool m_bIsRunning;

@@ -16175,7 +16175,7 @@
 	"mge/ModularEngine.h"
 	<boost/property_tree/ptree.hpp>
 
-1399625869 /home/naheisey/Documents/projects/games/Mystery/mge/ModularEngine.h
+1402936875 /home/naheisey/Documents/projects/games/Mystery/mge/ModularEngine.h
 	<stdio.h>
 	<iostream>
 	"SDL.h"
@@ -16183,12 +16183,14 @@
 	"SDL_image.h"
 	<list>
 	<map>
+	<queue>
 	"mge/RenderEngine.h"
 	"mge/WorldEngine.h"
 	"mge/PhysicsEngine.h"
 	"mge/AudioEngine.h"
 	"mge/Clock.h"
 	"mge/Event.h"
+	"mge/WorklistItem.h"
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery/mge/WorldEngine.h
 	"mge/defs.h"
@@ -16320,7 +16322,7 @@
 	"d3re/d3re.h"
 	"game/game_defs.h"
 
-1401609587 source:/home/naheisey/Documents/projects/games/Mystery/game/game.cpp
+1402937531 source:/home/naheisey/Documents/projects/games/Mystery/game/game.cpp
 	"game.h"
 	<SDL.h>
 	"pgl.h"
@@ -16705,16 +16707,18 @@
 	<stdlib.h>
 	"Image.h"
 
-1399626715 source:/home/naheisey/Documents/projects/games/Mystery/mge/ModularEngine.cpp
+1402938731 source:/home/naheisey/Documents/projects/games/Mystery/mge/ModularEngine.cpp
 	"ModularEngine.h"
 	"defs.h"
 	"ConfigManager.h"
+	<boost/foreach.hpp>
+	<boost/lexical_cast.hpp>
 
 1397616328 source:/home/naheisey/Documents/projects/games/Mystery/mge/PixelMap.cpp
 	"PixelMap.h"
 	<stdlib.h>
 
-1401601414 source:/home/naheisey/Documents/projects/games/Mystery/pwe/PartitionedWorldEngine.cpp
+1402937484 source:/home/naheisey/Documents/projects/games/Mystery/pwe/PartitionedWorldEngine.cpp
 	"PartitionedWorldEngine.h"
 	"mge/ModularEngine.h"
 	"game/ObjectFactory.h"
@@ -16807,7 +16811,7 @@
 	"mge/ModularEngine.h"
 	<boost/property_tree/ptree.hpp>
 
-1399625869 /home/naheisey/Documents/projects/games/Mystery//mge/ModularEngine.h
+1402936875 /home/naheisey/Documents/projects/games/Mystery//mge/ModularEngine.h
 	<stdio.h>
 	<iostream>
 	"SDL.h"
@@ -16815,12 +16819,14 @@
 	"SDL_image.h"
 	<list>
 	<map>
+	<queue>
 	"mge/RenderEngine.h"
 	"mge/WorldEngine.h"
 	"mge/PhysicsEngine.h"
 	"mge/AudioEngine.h"
 	"mge/Clock.h"
 	"mge/Event.h"
+	"mge/WorklistItem.h"
 
 1397616328 /home/naheisey/Documents/projects/games/Mystery//mge/WorldEngine.h
 	"mge/defs.h"
@@ -18263,4 +18269,6 @@
 	"mge/GameObject.h"
 	"d3re/d3re.h"
 	"game/game_defs.h"
+
+1402937839 /home/naheisey/Documents/projects/games/Mystery//mge/WorklistItem.h
 

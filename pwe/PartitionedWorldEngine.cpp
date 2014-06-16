@@ -16,6 +16,28 @@ using namespace std;
 
 static int s_iNumMainThreadUpdates = 0;
 
+class OctreeWorklistItem : public WorklistItem {
+    WorldOctreeNode *m_pNode;
+    bool m_bIsPaused;
+    float m_fDeltaTime;
+
+public:
+    OctreeWorklistItem(WorldOctreeNode *pNode, bool bIsPaused, float fDeltaTime)
+        :   m_pNode(pNode),
+            m_bIsPaused(bIsPaused),
+            m_fDeltaTime(fDeltaTime)
+    {
+    }
+
+    virtual void update() {
+        if(m_bIsPaused) {
+            m_pNode->updateAddRemoveErase();
+        } else {
+            m_pNode->update(m_fDeltaTime);
+        }
+    }
+};
+
 int
 PartitionedWorldEngine::nodeUpdateThread(void *data) {
     SDL_threadID threadID = SDL_ThreadID();    //For debugging

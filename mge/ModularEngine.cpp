@@ -1,11 +1,47 @@
 #include "ModularEngine.h"
 #include "defs.h"
 #include "ConfigManager.h"
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+
+#define DEFAULT_NUM_THREADS 4
 
 using namespace std;
 
 ModularEngine *ModularEngine::mge;
 Clock *Clock::m_pInstance;
+
+int
+workerThread(void *data) {
+    ModularEngine *mge = ModularEngine::get();
+
+    SDL_threadID threadID = SDL_ThreadID();    //For debugging
+    int iNumUpdates = 0;
+    printf("Thread 0x%8x executing\n", threadID);
+
+    bool *bRun = (bool*)data;
+    while(*bRun) {
+        WorklistItem *item = mge->getNextWorklistItem();
+
+        if(item == NULL) {
+            //Wait a little while in case a new item shows up
+            SDL_Delay(1);
+
+        } else {
+            //Update the item we found
+            item->update();
+
+            //Track the number of updates
+            iNumUpdates++;
+
+            //Free whatever space was allocated for this item
+            delete item;
+        }
+    }
+
+    printf("Thread 0x%8x exiting; updated %d times\n", threadID, iNumUpdates);
+    return 0;
+}
 
 //Static methods
 void ModularEngine::init(int iSDLVideoFlags) {
@@ -13,9 +49,40 @@ void ModularEngine::init(int iSDLVideoFlags) {
 
     ConfigManager::init();
     ConfigManager::get()->load("res/config.info");
+
+    //Create worker threads
+    //These next few lines prepare the thread name
+    using boost::lexical_cast;
+    int numThreads = ConfigManager::get()->get("mge.threads", DEFAULT_NUM_THREADS);
+    string threadNameBase = "MGE_Worker";
+    for(int curThread = 0; curThread < numThreads; ++curThread) {
+        //Complete the thread name
+        string threadName = threadNameBase + lexical_cast<string>(curThread);
+
+        //Create the thread
+        SDL_Thread *thread = SDL_CreateThread(workerThread, threadName.c_str(), &mge->m_bIsRunning);
+
+        //Add the worker to the list of workers
+        mge->m_lsWorkerThreads.push_back(thread);
+    }
 }
 
 void ModularEngine::clean() {
+    //Kill all of the threads
+    for(list<SDL_Thread*>::iterator it = mge->m_lsWorkerThreads.begin(); it != mge->m_lsWorkerThreads.end(); ++it) {
+        int status;
+        SDL_WaitThread(*it, &status);
+    }
+
+    //Make sure the worklist is empty
+    while(mge->m_qWorklist.size() > 0) {
+        delete mge->m_qWorklist.front();
+        mge->m_qWorklist.pop();
+    }
+
+    //Kill the queue mutex
+    SDL_DestroyMutex(mge->m_mxWorklist);
+
     delete mge;
     mge = NULL;
 
@@ -47,6 +114,8 @@ ModularEngine::ModularEngine(int iSDLVideoFlags) {
 		printf("Failed to initialize image loader.  Error: %s\n", IMG_GetError());
 		exit(-1);
 	}
+
+	m_mxWorklist = SDL_CreateMutex();
 
     m_bIsRunning = true;
     Clock::init();

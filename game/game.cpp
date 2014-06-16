@@ -147,8 +147,8 @@ void initWorld() {
     PWE::get()->add(bfft);
 #endif
 
-    FluidOctreeTest *fot = new FluidOctreeTest();
-    PWE::get()->add(fot);
+    //FluidOctreeTest *fot = new FluidOctreeTest();
+    //PWE::get()->add(fot);
 }
 
 
