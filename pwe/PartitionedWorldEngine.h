@@ -137,7 +137,6 @@ private:
 
     void toPowerOfTwo(Box &in);
 
-    static int nodeUpdateThread(void *data);
     static PartitionedWorldEngine *pwe;
 
     PhysicsEngine *pe;
@@ -153,10 +152,6 @@ private:
 
     //Scheduled events
     std::list<uint> m_lsAreasToClean;
-    std::list<WorldOctree*> m_lsUpdateNodeQueue;
-    std::list<SDL_Thread*> m_lsUpdateThreads;
-    SDL_mutex *m_mxUpdateNodeQueue;
-
 
     GameObject *m_pManagerObject;   //This object performs management functions
     Listener *m_pCleanListener;     //This object listens for mid-game world-clean events

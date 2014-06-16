@@ -38,65 +38,9 @@ public:
     }
 };
 
-int
-PartitionedWorldEngine::nodeUpdateThread(void *data) {
-    SDL_threadID threadID = SDL_ThreadID();    //For debugging
-    int iNumUpdates = 0;
-    printf("Thread 0x%8x executing\n", threadID);
-
-    bool *bStop = (bool*)data;
-    while(!*bStop) {
-        //Get the queue lock
-        SDL_LockMutex(pwe->m_mxUpdateNodeQueue);
-        if(pwe->m_lsUpdateNodeQueue.size() < 2) {   //Last node or so needs to be updated by the root thread for some reason
-
-            //If the list is nearly empty, unlock and wait a bit before trying again
-            SDL_UnlockMutex(pwe->m_mxUpdateNodeQueue);
-
-            //printf("Thread %d did not find enough nodes to update\n", threadID);
-            SDL_Delay(1);
-        } else {
-
-            //Otherwise, get the next node waiting for processing
-            WorldOctree *node = pwe->m_lsUpdateNodeQueue.front();
-            pwe->m_lsUpdateNodeQueue.pop_front();
-
-            //printf("Read %5x\n", node->getId());
-            //int iNumItems = pwe->m_lsUpdateNodeQueue.size();
-
-            //Unlock the list so other nodes can be updated
-            SDL_UnlockMutex(pwe->m_mxUpdateNodeQueue);
-
-            //printf("Thread %d found %d+1 nodes awaiting update\n", threadID, iNumItems);
-            iNumUpdates++;
-
-            //Update the node
-            if(pwe->m_eState == PWE_PAUSED) {
-                node->updateAddRemoveErase();
-            } else {
-                node->update(pwe->m_fCurDeltaTime);
-            }
-        }
-    }
-
-    printf("Thread 0x%8x exiting; updated %d times\n", threadID, iNumUpdates);
-    return 0;
-}
-
 void
 PartitionedWorldEngine::init() {
     pwe = new PartitionedWorldEngine();
-
-    //Create the threads
-    using boost::lexical_cast;
-    int numThreads = ConfigManager::get()->get("pwe.threads", DEFAULT_NUM_THREADS);
-    string threadNameBase = "PWE_UpdateNode";
-    for(int curThread = 0; curThread < numThreads; ++curThread) {
-        string threadName = threadNameBase + lexical_cast<string>(curThread);
-        SDL_Thread *thread = SDL_CreateThread(nodeUpdateThread, threadName.c_str(), &pwe->m_bFinalCleaning);
-        //printf("Created thread %s (id 0x%8x, address 0x%8x)\n", threadName.c_str(), SDL_GetThreadID(thread), thread);
-        pwe->m_lsUpdateThreads.push_back(thread);
-    }
 }
 
 PartitionedWorldEngine *PartitionedWorldEngine::pwe;
@@ -111,7 +55,6 @@ PartitionedWorldEngine::PartitionedWorldEngine()
         m_bFirstRun(true),
         m_bFinalCleaning(false),
         m_fCurDeltaTime(1.f),
-        m_mxUpdateNodeQueue(SDL_CreateMutex()),
         m_pManagerObject(NULL),
         m_pCleanListener(NULL),
         m_uiNextId(ID_FIRST_UNUSED),    //The first few ids are reserved for the engines
@@ -127,27 +70,18 @@ PartitionedWorldEngine::PartitionedWorldEngine()
     mge->addListener(this, ON_MOUSE_MOVE);
     mge->addListener(this, ON_BUTTON_INPUT);
 
-    //Create the mutex and initially lock it
-    SDL_LockMutex(m_mxUpdateNodeQueue);
-
     //Threads are created after pwe is initialized
 }
 
 PartitionedWorldEngine::~PartitionedWorldEngine() {
     printf("World engine cleaning\n");
     m_bFinalCleaning = true;
-    SDL_UnlockMutex(m_mxUpdateNodeQueue);
-    for(list<SDL_Thread*>::iterator it = m_lsUpdateThreads.begin(); it != m_lsUpdateThreads.end(); ++it) {
-        int status;
-        SDL_WaitThread(*it, &status);
-    }
 
     MGE::get()->removeListener(this->getId(), ON_MOUSE_MOVE);
     MGE::get()->removeListener(this->getId(), ON_BUTTON_INPUT);
     //Need to free everything
     cleanAllAreas();
 
-    SDL_DestroyMutex(m_mxUpdateNodeQueue);
     printf("Main thread updated %d times\n", s_iNumMainThreadUpdates);
 }
 
@@ -230,35 +164,6 @@ PartitionedWorldEngine::update(float fDeltaTime) {
 
     //Perform any post processing
     m_pCurArea->m_pOctree->postUpdate(fDeltaTime);
-
-#if 0
-    //Perform updates using this thread. The queue is locked by this thread between updates;
-    // other threads
-    while(m_lsUpdateNodeQueue.size() > 0) {
-        //Get the first item from the queue
-        WorldOctree *node = pwe->m_lsUpdateNodeQueue.front();
-        m_lsUpdateNodeQueue.pop_front();
-        //printf("Read %5x\n", node->getId());
-        //int iNumItems = m_lsUpdateNodeQueue.size();
-
-        //Unlock the list so other nodes can be updated by other threads
-        SDL_UnlockMutex(pwe->m_mxUpdateNodeQueue);
-
-        //printf("Main thread updates list, num items = %d\n", iNumItems);
-        s_iNumMainThreadUpdates++;
-
-        //Update the node
-        if(m_eState == PWE_PAUSED) {
-            node->updateAddRemoveErase();
-        } else {
-            node->update(pwe->m_fCurDeltaTime);
-        }
-
-        //Get the queue lock.  Notice we keep the lock if the queue is empty
-        SDL_LockMutex(pwe->m_mxUpdateNodeQueue);
-    }
-    //printf("Main thread finished updating the list (%d items)\n", m_lsUpdateNodeQueue.size());
-#endif
 
     if(m_pCleanListener) {
         re->clearScreen();
