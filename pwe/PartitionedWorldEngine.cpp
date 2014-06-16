@@ -218,9 +218,20 @@ PartitionedWorldEngine::update(float fDeltaTime) {
 
     pe->update(fDeltaTime);
 
-    //m_pCurArea->m_pOctree->scheduleUpdates(BasicScheduler::get(fDeltaTime, m_eState == PWE_PAUSED));
     m_pCurArea->m_pOctree->scheduleUpdates(this);
 
+    MGE *mge = MGE::get();
+    WorklistItem *item = mge->getNextWorklistItem();
+    while(item != NULL) {
+        item->update();                     //Update item
+        delete item;                        //Free memory
+        item = mge->getNextWorklistItem();  //Get next item
+    }
+
+    //Perform any post processing
+    m_pCurArea->m_pOctree->postUpdate(fDeltaTime);
+
+#if 0
     //Perform updates using this thread. The queue is locked by this thread between updates;
     // other threads
     while(m_lsUpdateNodeQueue.size() > 0) {
@@ -247,6 +258,7 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         SDL_LockMutex(pwe->m_mxUpdateNodeQueue);
     }
     //printf("Main thread finished updating the list (%d items)\n", m_lsUpdateNodeQueue.size());
+#endif
 
     if(m_pCleanListener) {
         re->clearScreen();
@@ -661,7 +673,9 @@ PartitionedWorldEngine::removeListener(uint uiListenerId, uint eventId, uint uiA
 void
 PartitionedWorldEngine::scheduleUpdate(Octree3dNode<GameObject> *node) {
     //Assumes list is already locked
-    m_lsUpdateNodeQueue.push_back((WorldOctree*)node);
+    //m_lsUpdateNodeQueue.push_back((WorldOctree*)node);
+    OctreeWorklistItem *item = new OctreeWorklistItem((WorldOctreeNode*)node, m_eState == PWE_PAUSED, m_fCurDeltaTime);
+    MGE::get()->addItemToWorklist(item);
 }
 
 int

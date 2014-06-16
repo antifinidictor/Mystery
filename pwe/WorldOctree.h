@@ -41,7 +41,7 @@ public:
     WorldOctree(uint uiNodeId, uint uiAreaId, const Box &bxBounds, float fMinResolution = 1.f);
     virtual ~WorldOctree();
 
-    virtual void update(float fTime);
+    void postUpdate(float fTime);
 protected:
 };
 

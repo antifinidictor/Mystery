@@ -206,10 +206,8 @@ WorldOctree::~WorldOctree() {
 }
 
 void
-WorldOctree::update(float fTime) {
-    //Perform a normal update
-    WorldOctreeNode::update(fTime);
-
+WorldOctree::postUpdate(float fTime) {
+    //Post-processing after a normal update
     //Add objects back to contents
     for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
         m_mContents[(*it)->getId()] = (*it);
