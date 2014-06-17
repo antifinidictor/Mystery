@@ -6,8 +6,9 @@ FluidOctreeTest::FluidOctreeTest()
         m_pPhysicsModel(new NullTimePhysicsModel(Point())),
         m_fCurDeltaTime(1.f)
 {
+printf(__FILE__" %d: Created new fluid octree test\n", __LINE__);
     ConfigManager *config = ConfigManager::get();
-    int numVorts = config->get("test.fluid.numVortons", 0);
+    int numVorts = config->get("test.fluid.numVortons", 5);
     Box vol      = config->get("test.fluid.volume", Box());
     float visc   = config->get("test.fluid.viscocity", 0.1f);
     float resOct = config->get("test.fluid.resolution.octree", 2.f);
@@ -15,6 +16,7 @@ FluidOctreeTest::FluidOctreeTest()
     float resJac = config->get("test.fluid.resolution.jacobian", 2.f);
     float rad    = config->get("test.fluid.radius", 0.1f);
     m_pRoot = new FluidOctree(NULL, 0xA, vol, resOct, resVel, resJac);
+printf(__FILE__" %d: %d vortons\n", __LINE__, numVorts);
     for(int i = 0; i < numVorts; ++i) {
         Point ptPos = Point(
             (rand() % (int)vol.w) + vol.x,
@@ -35,6 +37,7 @@ FluidOctreeTest::FluidOctreeTest()
         );
         m_pRenderModel->add(i, pSpriteModel);
         m_pRoot->add(vort);
+//printf(__FILE__" %d: Created new fluid render model thing\n", __LINE__);
     }
 }
 
@@ -48,7 +51,7 @@ FluidOctreeTest::~FluidOctreeTest()
 
 GameObject*
 FluidOctreeTest::read(const boost::property_tree::ptree &pt, const std::string &keyBase) {
-    return NULL;
+    return new FluidOctreeTest();
 }
 
 void
@@ -105,6 +108,7 @@ FluidOctreeTest::update(float fDeltaTime) {
     m_pRoot->scheduleUpdates(this);
 
     //Help update the worklist?
+    D3RE::get()->drawBox(m_pPhysicsModel->getCollisionVolume(), Color(0, 255, 0));
 
     return false;
 }

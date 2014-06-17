@@ -30,6 +30,7 @@ D3RenderEngine::D3RenderEngine()
         m_fDesiredLookAngle(LOOK_ANGLE),
         m_crWorld(0xFF, 0xFF, 0xFF),
         m_fColorWeight(0.5f),
+        m_mxDrawPrimitive(SDL_CreateMutex()),
         m_pHudContainer(new ContainerRenderModel(Rect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT))),
         m_bGuiMode(false),
         m_bDrawCollisions(false),
@@ -218,6 +219,18 @@ D3RenderEngine::render() {
             glVertex3f(m_ptMouseInWorld.x, m_ptMouseInWorld.y, m_ptMouseInWorld.z);
         glEnd();
     }
+
+    SDL_LockMutex(m_mxDrawPrimitive);
+    for(list<DrawBoxInfo>::iterator it = m_lsBoxesToDraw.begin(); it != m_lsBoxesToDraw.end(); ++it) {
+        drawBoxNow(it->m_bx, it->m_cr);
+    }
+    m_lsBoxesToDraw.clear();
+
+    for(list<DrawCircleInfo>::iterator it = m_lsCirclesToDraw.begin(); it != m_lsCirclesToDraw.end(); ++it) {
+        drawCircleNow(it->m_pt, it->m_rad, it->m_cr);
+    }
+    m_lsCirclesToDraw.clear();
+    SDL_UnlockMutex(m_mxDrawPrimitive);
 
     prepHud();
     glDisable(GL_DEPTH_TEST);   //Disable depth test
@@ -425,6 +438,20 @@ void D3RenderEngine::resize(uint width, uint height) {
 
 void
 D3RenderEngine::drawBox(const Box &bx, const Color &cr) {
+    SDL_LockMutex(m_mxDrawPrimitive);
+    m_lsBoxesToDraw.push_back(DrawBoxInfo(bx, cr));
+    SDL_UnlockMutex(m_mxDrawPrimitive);
+}
+
+void
+D3RenderEngine::drawCircle(const Point &ptCenter, float radius, const Color &cr) {
+    SDL_LockMutex(m_mxDrawPrimitive);
+    m_lsCirclesToDraw.push_back(DrawCircleInfo(ptCenter, radius, cr));
+    SDL_UnlockMutex(m_mxDrawPrimitive);
+}
+
+void
+D3RenderEngine::drawBoxNow(const Box &bx, const Color &cr) {
     //D3RE::get()->prepCamera();
 
     glBindTexture( GL_TEXTURE_2D, 0);
@@ -472,7 +499,7 @@ D3RenderEngine::drawBox(const Box &bx, const Color &cr) {
 }
 
 void
-D3RenderEngine::drawCircle(const Point &ptCenter, float radius, const Color &cr) {
+D3RenderEngine::drawCircleNow(const Point &ptCenter, float radius, const Color &cr) {
     const float STEP = M_PI / 10;
     glBindTexture( GL_TEXTURE_2D, 0);
     glBegin(GL_LINE_LOOP);

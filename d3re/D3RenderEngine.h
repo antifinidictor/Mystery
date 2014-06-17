@@ -109,6 +109,10 @@ private:
     bool comesBefore(GameObject *obj1, GameObject *obj2);
     void updateMousePos(int x, int y);
 
+
+    void drawBoxNow(const Box &bxVolume, const Color &cr = Color(0xFF, 0xFF, 0xFF));
+    void drawCircleNow(const Point &ptCenter, float radius, const Color &cr = Color(0xFF, 0xFF, 0xFF));
+
     static D3RenderEngine *re;
     Point m_ptPos, m_ptCamPos;
     float m_fCamDist, m_fCamAngle;
@@ -118,10 +122,26 @@ private:
 //    uint m_uiMouseFrame, m_uiMouseTimer;
     uint m_uiWidth, m_uiHeight;
 
+    struct DrawBoxInfo {
+        Box m_bx;
+        Color m_cr;
+        DrawBoxInfo(const Box &bx, const Color &cr) : m_bx(bx), m_cr(cr) {}
+    };
+
+    struct DrawCircleInfo {
+        float m_rad;
+        Point m_pt;
+        Color m_cr;
+        DrawCircleInfo(const Point &pt, float rad, const Color &cr) : m_rad(rad), m_pt(pt), m_cr(cr) {}
+    };
+
     std::list<GameObject *> m_lsObjsOnScreen;
     std::list<GameObject *> m_lsTransparentObjs;
+    std::list<DrawBoxInfo> m_lsBoxesToDraw;
+    std::list<DrawCircleInfo> m_lsCirclesToDraw;
     std::vector<Image*> m_vImages;
     std::map<std::string, uint> m_mImageNameToId;
+    SDL_mutex *m_mxDrawPrimitive;
     ContainerRenderModel *m_pHudContainer;
     bool m_bGuiMode;
     bool m_bDrawCollisions;

@@ -3,14 +3,17 @@
 #include "d3re/d3re.h"
 #include "pwe/PartitionedWorldEngine.h"
 #include <iostream>
+#include "mge/ConfigManager.h"
 using namespace std;
 static SDL_mutex *s_mxRenderEngine = SDL_CreateMutex();
+static bool s_bDisplayBounds;
 
 WorldOctreeNode::WorldOctreeNode(uint uiNodeId, uint uiLevel, uint uiAreaId, const Box &bxBounds, float fMinResolution)
     :   Octree3dNode<GameObject>(uiNodeId, uiLevel, bxBounds, fMinResolution),
         m_uiAreaId(uiAreaId)
 {
     printf(__FILE__" %d\n",__LINE__);
+    s_bDisplayBounds = ConfigManager::get()->get("pwe.drawBounds", false);
 }
 
 WorldOctreeNode::~WorldOctreeNode()
@@ -47,6 +50,9 @@ WorldOctreeNode::write(boost::property_tree::ptree &pt, const std::string &keyBa
 void
 WorldOctreeNode::updateContents(float fTime) {
     TimePhysicsEngine *pe = TimePhysicsEngine::get();
+    if(s_bDisplayBounds) {
+        D3RE::get()->drawBox(m_bxBounds, Color(m_uiNodeId, m_uiLevel * 85, m_uiAreaId * 85));
+    }
 
     //printf(__FILE__" %d: Octree node %5x updated at time %5d by thread 0x%8x\n", __LINE__, m_uiNodeId, Clock::get()->getTime(), SDL_ThreadID());
 
@@ -243,7 +249,6 @@ WorldOctree::postUpdate(float fTime) {
         D3RE::get()->manageObjOnScreen(*it);
     }
 
-    D3RE::get()->drawBox(m_bxBounds, Color(m_uiNodeId));    //Color(255, 0, 0));
     SDL_UnlockMutex(s_mxRenderEngine);
 
     cleanResults();

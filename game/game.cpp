@@ -136,19 +136,22 @@ void initWorld() {
     //Test text
     //testTextCb(0);
     //testTextCb2(0);
-#if 0
+/*
+#if 1
     BruteForceFluidTest *bfft = new BruteForceFluidTest(
         NULL,                               //Pixel map
-        Box(1.f, 1.f, 5.f, 5.f, 1.f, 5.f),  //Bounds
+        Box(-3.f, 1.f, -3.f, 6.f, 2.f, 6.f),  //Bounds
         5,                                 //Num vortons
         0.1,                               //Cell size
         0.01f                                 //Viscocity
     );
     PWE::get()->add(bfft);
-#endif
+#else
 
-    //FluidOctreeTest *fot = new FluidOctreeTest();
-    //PWE::get()->add(fot);
+    FluidOctreeTest *fot = new FluidOctreeTest();
+    PWE::get()->add(fot);
+#endif
+*/
 }
 
 

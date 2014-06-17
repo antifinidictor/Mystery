@@ -17,6 +17,10 @@
 #include "game/items/SpellItem.h"
 #include "game/character/Character.h"
 
+//Test includes
+#include "tpe/fluids/BruteForceFluidTest.h"
+#include "tpe/fluids/FluidOctreeTest.h"
+
 void registerClasses() {
     ObjectFactory *fac = ObjectFactory::get();
     fac->registerClass(Player::getClassName(), Player::read)
@@ -109,5 +113,11 @@ void registerClasses() {
         .registerAttribute("ID", "id", ATYPE_OBJECT_ID)
         .registerAttribute("Item ID", "itemId", ATYPE_UINT)
         .registerAttribute("Position", "pos", ATYPE_POINT)
+    ;
+
+    fac->registerClass(BruteForceFluidTest::getClassName(), BruteForceFluidTest::read)
+    ;
+
+    fac->registerClass(FluidOctreeTest::getClassName(), FluidOctreeTest::read)
     ;
 }

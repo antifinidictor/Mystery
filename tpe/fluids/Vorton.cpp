@@ -30,6 +30,7 @@ Vorton::~Vorton()
 
 void
 Vorton::update(float fTimeQuantum, const Matrix<3,3> &matJacobian, const Point &ptVelocity) {
+//printf(__FILE__" %d: Vorton %d being updated\n",__LINE__, getId());
     //Stretching and tilting (halve this to preserve stability)
     m_ptDeltaVorticity += matMult(m_ptVorticity, matJacobian);
 

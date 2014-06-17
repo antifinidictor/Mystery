@@ -93,7 +93,14 @@ ConfigManager::get(const std::string &key, const std::string &defaultValue) {
 
 bool
 ConfigManager::get(const std::string &key, bool defaultValue) {
-    return m_configInfo.get(CONFIG_OPT_BASE + key, defaultValue);
+    string sVal = m_configInfo.get(CONFIG_OPT_BASE + key, defaultValue ? "true" : "false");
+    bool bVal = defaultValue;
+    if(sVal.compare("true") == 0 || sVal.compare("yes") == 0) {
+        bVal = true;
+    } else if(sVal.compare("false") == 0 || sVal.compare("no") == 0) {
+        bVal = false;
+    }
+    return bVal;
 }
 
 int
