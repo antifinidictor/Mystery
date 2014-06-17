@@ -205,24 +205,25 @@ WorldOctree::WorldOctree(uint uiNodeId, uint uiAreaId, const Box &bxBounds, floa
 WorldOctree::~WorldOctree() {
 }
 
-
+/*
 void
 WorldOctree::update(float fTime) {
-//printf(__FILE__" %d\n",__LINE__);
-//    int preSemNum = SDL_SemValue(m_sem);
+int preSemNum = SDL_SemValue(m_sem);
+printf(__FILE__" %d: %d/?\n",__LINE__, preSemNum);
     Octree3dNode<GameObject>::update(fTime);
-//    int postSemNum = SDL_SemValue(m_sem);
-//printf(__FILE__" %d: %d/%d\n", __LINE__, preSemNum, postSemNum);
+int postSemNum = SDL_SemValue(m_sem);
+printf(__FILE__" %d: %d/%d\n", __LINE__, preSemNum, postSemNum);
 }
+*/
 
 void
 WorldOctree::postUpdate(float fTime) {
     //Post-processing after a normal update
     //Make sure processing is complete
-//printf(__FILE__" %d\n",__LINE__);
-//    int preSemNum = SDL_SemValue(m_sem);
+//int preSemNum = SDL_SemValue(m_sem);
+//printf(__FILE__" %d: %d/?\n",__LINE__, preSemNum);
     SDL_SemWait(m_sem);
-//    int postSemNum = SDL_SemValue(m_sem);
+//int postSemNum = SDL_SemValue(m_sem);
 //printf(__FILE__" %d: %d/%d\n", __LINE__, preSemNum, postSemNum);
     /*
     SDL_LockMutex(m_mutex);

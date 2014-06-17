@@ -14,7 +14,7 @@ template<class Object>
 class Octree3dNode {
 public:
 
-    Octree3dNode(uint uiNodeId, uint uiLevel, const Box &bxBounds, float fMinResolution = 1.f)
+    Octree3dNode(uint uiNodeId, uint uiLevel, const Box &bxBounds, float fMinResolution = 1.f, int iInitSems = 0)
         :   m_bxBounds(bxBounds),
             m_bEmpty(true),
             m_fMinResolution(fMinResolution),
@@ -22,8 +22,9 @@ public:
             m_uiLevel(uiLevel),
             //m_mutex(SDL_CreateMutex()),
             //m_cond(SDL_CreateCond()),
-            m_sem(SDL_CreateSemaphore(0)),
-            m_bIsFinished(true)             //A node newly created has no contents, so it has finished updating
+            m_sem(SDL_CreateSemaphore(iInitSems)),
+            m_bIsFinished(true),            //A node newly created has no contents, so it has finished updating
+            m_bIsNew(true)
     {
         //SDL_LockMutex(m_mutex);
 
@@ -236,6 +237,7 @@ public:
 
     //WARNING: ONLY SCHEDULER SHOULD CALL THESE
     virtual void update(float fTime) {
+        m_bIsNew = false;   //If it gets an update then we are good
         //SDL_LockMutex(m_mutex);
 
         //Update objects that should be added to/removed from/erased from this node
@@ -246,7 +248,7 @@ public:
 
         //Deal with childrens' update-results
         for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
-            if(m_apChildren[q] != NULL) {
+            if(m_apChildren[q] != NULL && !m_apChildren[q]->m_bIsNew) {
                 //Handle the child's update as soon as it is ready.
                 //The while loop ensures the state does not change as soon as the thread awakens.
                 //Such a state change should be impossible, but it is probably better form to
@@ -703,6 +705,7 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
     //SDL_cond  *m_cond;
     SDL_sem   *m_sem;
     bool       m_bIsFinished;
+    bool       m_bIsNew;
 
     //Information calculated on each scheduled update event, used by parents in their update event, cleared by parents
     objlist_t m_lsObjsLeftQuadrant; //These objects left their quadrant and need to be added to the next level up
