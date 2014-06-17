@@ -20,21 +20,22 @@ public:
             m_fMinResolution(fMinResolution),
             m_uiNodeId(uiNodeId),
             m_uiLevel(uiLevel),
-            m_mutex(SDL_CreateMutex()),
-            m_cond(SDL_CreateCond()),
+            //m_mutex(SDL_CreateMutex()),
+            //m_cond(SDL_CreateCond()),
+            m_sem(SDL_CreateSemaphore(0)),
             m_bIsFinished(true)             //A node newly created has no contents, so it has finished updating
     {
-        SDL_LockMutex(m_mutex);
+        //SDL_LockMutex(m_mutex);
 
         //Children are allocated as needed when objects are added
         for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
             m_apChildren[q] = NULL;
         }
-        SDL_UnlockMutex(m_mutex);
+        //SDL_UnlockMutex(m_mutex);
     }
 
     virtual ~Octree3dNode() {
-        SDL_LockMutex(m_mutex); //TODO: Necessary?
+        //SDL_LockMutex(m_mutex); //TODO: Necessary?
         for(int q = QUAD_FIRST; q < QUAD_NUM_QUADS; ++q) {
             if(m_apChildren[q] != NULL) {
                 delete m_apChildren[q];
@@ -60,8 +61,9 @@ public:
         m_lsObjsToRemove.clear();
         m_lsObjsLeftQuadrant.clear();
 
-        SDL_UnlockMutex(m_mutex);
-        SDL_DestroyMutex(m_mutex);
+        //SDL_UnlockMutex(m_mutex);
+        //SDL_DestroyMutex(m_mutex);
+        SDL_DestroySemaphore(m_sem);
     }
 
     //Schedules object for appending to the appropriate node and returns true if it can be done
@@ -234,7 +236,7 @@ public:
 
     //WARNING: ONLY SCHEDULER SHOULD CALL THESE
     virtual void update(float fTime) {
-        SDL_LockMutex(m_mutex);
+        //SDL_LockMutex(m_mutex);
 
         //Update objects that should be added to/removed from/erased from this node
         updateAddRemoveErase();
@@ -249,10 +251,13 @@ public:
                 //The while loop ensures the state does not change as soon as the thread awakens.
                 //Such a state change should be impossible, but it is probably better form to
                 //include the while loop.
+                SDL_SemWait(m_apChildren[q]->m_sem);
+                /*
                 SDL_LockMutex(m_apChildren[q]->m_mutex);
                 while(!m_apChildren[q]->m_bIsFinished) {
                     SDL_CondWait(m_apChildren[q]->m_cond, m_apChildren[q]->m_mutex);
                 }
+                */
 
                 //Handle child's results
                 handleChildUpdateResults(m_apChildren[q], q);
@@ -280,15 +285,16 @@ public:
                 m_apChildren[q]->cleanResults();
 
                 //Allow access to this child
-                SDL_UnlockMutex(m_apChildren[q]->m_mutex);
+                //SDL_UnlockMutex(m_apChildren[q]->m_mutex);
             }
         }
 
         updateEmptiness();
 
         m_bIsFinished = true;   //Reset by cleanResults()
-        SDL_CondSignal(m_cond);
-        SDL_UnlockMutex(m_mutex);
+        SDL_SemPost(m_sem);
+        //SDL_CondSignal(m_cond);
+        //SDL_UnlockMutex(m_mutex);
     }
 
     void updateAddRemoveErase() {
@@ -384,7 +390,7 @@ public:
     void print(std::ostream &o, int line, const std::string &msg = "") {
     #define PRINT_CONTENTS 0
         //Dump the complete contents of this Octree3d node
-        SDL_LockMutex(m_mutex);
+        //SDL_LockMutex(m_mutex);
         int levelprint = m_uiLevel * 4 + 10;
         std::string prefix(levelprint, ' ');
         std::string lineprefix = "line " + boost::lexical_cast<std::string>(line) + ";";
@@ -478,7 +484,7 @@ public:
     #endif
         o << "} " << msg << "\n";
         o.flush();
-        SDL_UnlockMutex(m_mutex);
+        //SDL_UnlockMutex(m_mutex);
     }
 
 protected:
@@ -693,8 +699,9 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
     idlist_t  m_lsObjsToRemove;
 
     //Locking information: Used to ensure parents execute only when the children are finished
-    SDL_mutex *m_mutex;
-    SDL_cond  *m_cond;
+    //SDL_mutex *m_mutex;
+    //SDL_cond  *m_cond;
+    SDL_sem   *m_sem;
     bool       m_bIsFinished;
 
     //Information calculated on each scheduled update event, used by parents in their update event, cleared by parents

@@ -205,9 +205,32 @@ WorldOctree::WorldOctree(uint uiNodeId, uint uiAreaId, const Box &bxBounds, floa
 WorldOctree::~WorldOctree() {
 }
 
+
+void
+WorldOctree::update(float fTime) {
+//printf(__FILE__" %d\n",__LINE__);
+//    int preSemNum = SDL_SemValue(m_sem);
+    Octree3dNode<GameObject>::update(fTime);
+//    int postSemNum = SDL_SemValue(m_sem);
+//printf(__FILE__" %d: %d/%d\n", __LINE__, preSemNum, postSemNum);
+}
+
 void
 WorldOctree::postUpdate(float fTime) {
     //Post-processing after a normal update
+    //Make sure processing is complete
+//printf(__FILE__" %d\n",__LINE__);
+//    int preSemNum = SDL_SemValue(m_sem);
+    SDL_SemWait(m_sem);
+//    int postSemNum = SDL_SemValue(m_sem);
+//printf(__FILE__" %d: %d/%d\n", __LINE__, preSemNum, postSemNum);
+    /*
+    SDL_LockMutex(m_mutex);
+    while(m_bIsFinished) {
+        SDL_CondWait(m_cond, m_mutex);
+    }
+    */
+
     //Add objects back to contents
     for(objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
         m_mContents[(*it)->getId()] = (*it);
@@ -223,4 +246,5 @@ WorldOctree::postUpdate(float fTime) {
     SDL_UnlockMutex(s_mxRenderEngine);
 
     cleanResults();
+    //SDL_UnlockMutex(m_mutex);
 }

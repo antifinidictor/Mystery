@@ -162,8 +162,10 @@ PartitionedWorldEngine::update(float fDeltaTime) {
         item = mge->tryNextWorklistItem();  //Get next item
     }
 
-    //Perform any post processing
-    m_pCurArea->m_pOctree->postUpdate(fDeltaTime);
+    //Perform any post processing, but only if not paused
+    if(m_eState != PWE_PAUSED) {
+        m_pCurArea->m_pOctree->postUpdate(fDeltaTime);
+    }
 
     if(m_pCleanListener) {
         re->clearScreen();
