@@ -75,8 +75,10 @@ public:
         if(SDL_SemWait(m_semWorklist) == 0) {
             //Remove an item from the worklist, if no error occurred
             SDL_LockMutex(m_mxWorklist);
-            item = m_qWorklist.front();
-            m_qWorklist.pop();
+            if(m_qWorklist.size() > 0) {
+                item = m_qWorklist.front();
+                m_qWorklist.pop();
+            }
             SDL_UnlockMutex(m_mxWorklist);
         }
 
@@ -90,8 +92,10 @@ public:
         if(SDL_SemTryWait(m_semWorklist) == 0) {
             //Successful wait: There was a worklist item, remove from worklist
             SDL_LockMutex(m_mxWorklist);
-            item = m_qWorklist.front();
-            m_qWorklist.pop();
+            if(m_qWorklist.size() > 0) {
+                item = m_qWorklist.front();
+                m_qWorklist.pop();
+            }
             SDL_UnlockMutex(m_mxWorklist);
         }
 

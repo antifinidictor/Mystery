@@ -6,7 +6,9 @@ FluidOctreeTest::FluidOctreeTest()
         m_pPhysicsModel(new NullTimePhysicsModel(Point())),
         m_fCurDeltaTime(1.f)
 {
+#if DEBUG_VORTONS
 printf(__FILE__" %d: Created new fluid octree test\n", __LINE__);
+#endif
     ConfigManager *config = ConfigManager::get();
     int numVorts = config->get("test.fluid.numVortons", 5);
     Box vol      = config->get("test.fluid.volume", Box());
@@ -16,7 +18,9 @@ printf(__FILE__" %d: Created new fluid octree test\n", __LINE__);
     float resJac = config->get("test.fluid.resolution.jacobian", 2.f);
     float rad    = config->get("test.fluid.radius", 0.1f);
     m_pRoot = new FluidOctree(NULL, 0xA, vol, resOct, resVel, resJac);
+#if DEBUG_VORTONS
 printf(__FILE__" %d: %d vortons\n", __LINE__, numVorts);
+#endif
     for(int i = 0; i < numVorts; ++i) {
         Point ptPos = Point(
             (rand() % (int)vol.w) + vol.x,

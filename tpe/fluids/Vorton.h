@@ -6,6 +6,7 @@
 
 #include "mge/defs.h"
 #include "mge/Positionable.h"
+#include <vector>
 
 /*
  * Design thanks to Intel's fluid physics for games article
@@ -35,7 +36,11 @@ public:
     Point getVorticity() { return m_ptVorticity; }
 
     /* Used when aggregating vortons */
-    void dividePosition(float divisor) { m_ptPosition /= divisor; }
+    void dividePosition(float divisor) {
+        if(divisor != 0.f) {
+            m_ptPosition /= divisor;
+        }
+    }
     void accumVorticity(const Vec3f &vort) { m_ptVorticity += vort; }
 
 protected:

@@ -68,6 +68,12 @@ void ModularEngine::init(int iSDLVideoFlags) {
 }
 
 void ModularEngine::clean() {
+    //Make sure each of the threads will be able to stop running
+    const int iNumThreads = mge->m_lsWorkerThreads.size();
+    for(int i = 0; i < iNumThreads; ++i) {
+        SDL_SemPost(mge->m_semWorklist);
+    }
+
     //Kill all of the threads
     for(list<SDL_Thread*>::iterator it = mge->m_lsWorkerThreads.begin(); it != mge->m_lsWorkerThreads.end(); ++it) {
         int status;

@@ -1,11 +1,17 @@
 #include "FluidOctree.h"
 #define DEFAULT_VORTON_RADIUS 0.1
+#include "d3re/d3re.h"
+#include "mge/ConfigManager.h"
+static bool s_bDisplayBounds;
+static SDL_mutex *s_mxDebugPrint = SDL_CreateMutex();
+
 FluidOctreeNode::FluidOctreeNode(FluidOctree *pRoot, uint uiNodeId, uint uiLevel, const Box &bxBounds, float fOctreeMinRes)
     :   Octree3dNode<Vorton>(uiNodeId, uiLevel, bxBounds, fOctreeMinRes),
         m_vrtAggregate(0, bxCenter(bxBounds), DEFAULT_VORTON_RADIUS, Vec3f()),
         m_pRoot(pRoot)
 {
     //ctor
+    s_bDisplayBounds = ConfigManager::get()->get("test.fluid.drawBounds", false);
 }
 
 FluidOctreeNode::~FluidOctreeNode()
@@ -15,6 +21,10 @@ FluidOctreeNode::~FluidOctreeNode()
 
 void
 FluidOctreeNode::updateContents(float fTime) {
+    if(s_bDisplayBounds) {
+        D3RE::get()->drawBox(m_bxBounds, Color(0, 255, 255));
+    }
+
     //Prepare to aggregate vortons
     m_vrtAggregate = Vorton(0, bxCenter(m_bxBounds), DEFAULT_VORTON_RADIUS, Vec3f());
     m_fTotalVortMag = 0.f;
@@ -113,6 +123,9 @@ FluidOctreeNode::positionSearchForVelocity(const Point &ptPosition, Vec3f &v3Vel
     if(dirs) {
         //Not in the octree at all, use the aggregate vorton
         v3Velocity += m_vrtAggregate.velocityAt(ptPosition);
+#if DEBUG_VORTONS
+printf(__FILE__" %d: (%f,%f,%f)\n", __LINE__, v3Velocity.x, v3Velocity.y, v3Velocity.z);
+#endif
     } else {
         //In the octree, descend and find the appropriate nodes
         FluidOctreeNode *curNode = this;
@@ -120,6 +133,9 @@ FluidOctreeNode::positionSearchForVelocity(const Point &ptPosition, Vec3f &v3Vel
             //Get the total velocity due to the contents of this node
             for(objmap_iter_t it = curNode->m_mContents.begin(); it != curNode->m_mContents.end(); ++it) {
                 v3Velocity += it->second->velocityAt(ptPosition);
+#if DEBUG_VORTONS
+printf(__FILE__" %d: (%f,%f,%f)\n", __LINE__, v3Velocity.x, v3Velocity.y, v3Velocity.z);
+#endif
             }
 
             //Get the total velocity due to the vortons that are children of this node
@@ -132,14 +148,26 @@ FluidOctreeNode::positionSearchForVelocity(const Point &ptPosition, Vec3f &v3Vel
                     if(dirs) {
                         //Not in this area, use aggregate vorton
                         v3Velocity += child->m_vrtAggregate.velocityAt(ptPosition);
+#if DEBUG_VORTONS
+printf(__FILE__" %d: (%f,%f,%f)\n", __LINE__, v3Velocity.x, v3Velocity.y, v3Velocity.z);
+#endif
                     } else {
                         //We are in this node.  We will search the contents
                         nextNode = child;
+#if DEBUG_VORTONS
+printf(__FILE__" %d: (%f,%f,%f)\n", __LINE__, v3Velocity.x, v3Velocity.y, v3Velocity.z);
+#endif
                     }
                 }
             }
+#if DEBUG_VORTONS
+printf(__FILE__" %d: (%f,%f,%f)\n", __LINE__, v3Velocity.x, v3Velocity.y, v3Velocity.z);
+#endif
             curNode = nextNode;
         } while(curNode != NULL);
+#if DEBUG_VORTONS
+printf(__FILE__" %d: (%f,%f,%f)\n", __LINE__, v3Velocity.x, v3Velocity.y, v3Velocity.z);
+#endif
     }
 }
 
@@ -242,6 +270,28 @@ FluidOctree::computeJacobianAt(int x, int y, int z) {
     const Vec3f &v3VelocityX0Y0ZM = m_igVelocities.at(x,  y,  z-1);
     const Vec3f &v3VelocityX0Y0ZP = m_igVelocities.at(x,  y,  z+1);
 
+#if DEBUG_VORTONS
+SDL_LockMutex(s_mxDebugPrint);
+printf(__FILE__" %d:[[%2.2f,%2.2f,%2.2f]\n", __LINE__,
+    matJacobian[0][0], matJacobian[0][1], matJacobian[0][2]
+);
+printf(__FILE__" %d: [%2.2f,%2.2f,%2.2f]\n", __LINE__,
+    matJacobian[1][0], matJacobian[1][1], matJacobian[1][2]
+);
+printf(__FILE__" %d: [%2.2f,%2.2f,%2.2f]]\n", __LINE__,
+    matJacobian[2][0], matJacobian[2][1], matJacobian[2][2]
+);
+printf("Some factors: w/h/l %f/%f/%f; xm=%f, xp=%f, ym=%f, yp=%f, zm=%f, zp=%f\n",
+    fCellWDivisor, fCellLDivisor, fCellHDivisor,
+    v3VelocityXMY0Z0.magnitude(),
+    v3VelocityXPY0Z0.magnitude(),
+    v3VelocityX0YMZ0.magnitude(),
+    v3VelocityX0YPZ0.magnitude(),
+    v3VelocityX0Y0ZM.magnitude(),
+    v3VelocityX0Y0ZP.magnitude()
+);
+SDL_UnlockMutex(s_mxDebugPrint);
+#endif
     //Each row is made by combining x, y, z velocities
     #define X 0
     #define Y 1
@@ -257,4 +307,18 @@ FluidOctree::computeJacobianAt(int x, int y, int z) {
     matJacobian[Z][X] = (v3VelocityX0Y0ZP.x - v3VelocityX0Y0ZM.x) / fCellLDivisor;
     matJacobian[Z][Y] = (v3VelocityX0Y0ZP.y - v3VelocityX0Y0ZM.y) / fCellLDivisor;
     matJacobian[Z][Z] = (v3VelocityX0Y0ZP.z - v3VelocityX0Y0ZM.z) / fCellLDivisor;
+
+#if DEBUG_VORTONS
+SDL_LockMutex(s_mxDebugPrint);
+printf(__FILE__" %d:[[%2.2f,%2.2f,%2.2f]\n", __LINE__,
+    matJacobian[0][0], matJacobian[0][1], matJacobian[0][2]
+);
+printf(__FILE__" %d: [%2.2f,%2.2f,%2.2f]\n", __LINE__,
+    matJacobian[1][0], matJacobian[1][1], matJacobian[1][2]
+);
+printf(__FILE__" %d: [%2.2f,%2.2f,%2.2f]]\n", __LINE__,
+    matJacobian[2][0], matJacobian[2][1], matJacobian[2][2]
+);
+SDL_UnlockMutex(s_mxDebugPrint);
+#endif
 }
