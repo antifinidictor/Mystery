@@ -35,12 +35,13 @@ Vorton::~Vorton()
 void
 Vorton::update(float fTimeQuantum, const Matrix<3,3> &matJacobian, const Point &ptVelocity) {
 
-#if DEBUG_VORTONS
-printf(__FILE__" %d: Vorton %d being updated @ pos (%f,%f,%f), vort (%f,%f,%f), delta vort (%f,%f,%f)\n",
+#if 1
+printf(__FILE__" %d: Vorton %d being updated @ pos (%f,%f,%f), vort (%f,%f,%f), delta vort (%f,%f,%f), vel mag = %f\n",
     __LINE__, getId(),
     m_ptPosition.x, m_ptPosition.y, m_ptPosition.z,
     m_ptVorticity.x, m_ptVorticity.y, m_ptVorticity.z,
-    m_ptDeltaVorticity.x, m_ptDeltaVorticity.y, m_ptDeltaVorticity.z
+    m_ptDeltaVorticity.x, m_ptDeltaVorticity.y, m_ptDeltaVorticity.z,
+    ptVelocity.magnitude()
 );
 #endif
     //Stretching and tilting (halve this to preserve stability)

@@ -76,6 +76,17 @@ public:
         return m_vItems[TO_INDEX(bx,by,bz)];
     }
 
+    const ItemType &at(int index) const {
+        int bx = BOUND(0, index, m_iNumY * m_iNumX * m_iNumZ - 1);
+        return m_vItems[index];
+    }
+
+    ItemType &at(int index) {
+        int bx = BOUND(0, index, m_iNumY * m_iNumX * m_iNumZ - 1);
+        return m_vItems[index];
+    }
+
+
     Point toPosition(int x, int y, int z) const {
         Point myPos;
         if(m_pParent != NULL) {
@@ -85,6 +96,19 @@ public:
             (x * m_bxBounds.w / m_iNumX) + (myPos.x + m_bxBounds.x),
             (y * m_bxBounds.h / m_iNumY) + (myPos.y + m_bxBounds.y),
             (z * m_bxBounds.l / m_iNumZ) + (myPos.z + m_bxBounds.z)
+        );
+    }
+
+    Point toPosition(int index) const {
+        Point myPos;
+        if(m_pParent != NULL) {
+            myPos = m_pParent->getPosition();
+        }
+        int iNumXY = m_iNumX * m_iNumY;
+        return Point(
+            ( (index % m_iNumX)            * m_bxBounds.w / m_iNumX) + (myPos.x + m_bxBounds.x),
+            (((index / m_iNumX) % m_iNumY) * m_bxBounds.h / m_iNumY) + (myPos.y + m_bxBounds.y),
+            (((index / iNumXY)  % m_iNumZ) * m_bxBounds.l / m_iNumZ) + (myPos.z + m_bxBounds.z)
         );
     }
 

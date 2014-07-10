@@ -25,6 +25,7 @@ FluidOctreeNode::updateContents(float fTime) {
         D3RE::get()->drawBox(m_bxBounds, Color(0, 255, 255));
     }
 
+#if 1
     //Prepare to aggregate vortons
     m_vrtAggregate = Vorton(0, bxCenter(m_bxBounds), DEFAULT_VORTON_RADIUS, Vec3f());
     m_fTotalVortMag = 0.f;
@@ -46,7 +47,25 @@ FluidOctreeNode::updateContents(float fTime) {
         m_fTotalVortMag += fChildVortMag;                   //Increase the total vorticity represented here
         m_vrtAggregate.moveBy(ptPos * fChildVortMag);       //Add to the vorton position (will be normalized later)
         m_vrtAggregate.accumVorticity(v3ChildVorticity);
+
+        if(s_bDisplayBounds) {
+            if(bxOutOfBounds(it->second->getBounds(), m_bxBounds)) {
+                D3RE::get()->drawCircle(ptPos, 0.1f, Color(255,128,128));
+            } else {
+                D3RE::get()->drawCircle(ptPos, 0.1f, Color(128,255,128));
+            }
+        }
     }
+#else
+
+    //Display each vorton
+    if(s_bDisplayBounds) {
+        for(objmap_iter_t it = m_mContents.begin(); it != m_mContents.end(); ++it) {
+            Point ptPos = it->second->getPosition();
+            D3RE::get()->drawCircle(ptPos, 0.1f, Color(128,255,128));
+        }
+    }
+#endif
 
     //In addition, all children's aggregate vortons will be aggregated into my vorton.
 }
@@ -84,6 +103,7 @@ FluidOctreeNode::createChild(uint childId, const Box &bxBounds) const {
             bxBounds,
             m_fMinResolution
         );
+        printf(__FILE__" %d: Created child!\n", __LINE__);
     /*
     } else {
         node = new FluidOctreeLeaf(

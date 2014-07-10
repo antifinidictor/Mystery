@@ -1,5 +1,6 @@
 #include "FluidOctreeTest.h"
 #include "mge/ConfigManager.h"
+#include "pwe/PartitionedWorldEngine.h"
 
 FluidOctreeTest::FluidOctreeTest()
     :   m_pRenderModel(new ContainerRenderModel(Rect())),
@@ -9,6 +10,8 @@ FluidOctreeTest::FluidOctreeTest()
 #if DEBUG_VORTONS
 printf(__FILE__" %d: Created new fluid octree test\n", __LINE__);
 #endif
+    m_uiId = PWE::get()->reserveId(100);
+
     ConfigManager *config = ConfigManager::get();
     int numVorts = config->get("test.fluid.numVortons", 5);
     Box vol      = config->get("test.fluid.volume", Box());
