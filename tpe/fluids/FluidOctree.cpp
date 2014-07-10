@@ -48,6 +48,21 @@ FluidOctreeNode::updateContents(float fTime) {
         m_vrtAggregate.moveBy(ptPos * fChildVortMag);       //Add to the vorton position (will be normalized later)
         m_vrtAggregate.accumVorticity(v3ChildVorticity);
 
+        //Does the vorton need to get moved to a different quadrant?
+        char dirs = bxOutOfBounds(it->second->getBounds(), m_bxBounds);
+        if(dirs) {
+            //Leaves bounds in at least one direction
+            m_lsObjsToRemove.push_back(it->first);
+            m_lsObjsLeftQuadrant.push_back(it->second);
+        } else {
+            //If the object can be added to a child's list, then it should be removed
+            if(addToChildren(it->second)) {
+                m_lsObjsToRemove.push_back(it->first);
+            }
+        }
+
+
+        //Debug displays
         if(s_bDisplayBounds) {
             if(bxOutOfBounds(it->second->getBounds(), m_bxBounds)) {
                 D3RE::get()->drawCircle(ptPos, 0.1f, Color(255,128,128));
@@ -56,6 +71,19 @@ FluidOctreeNode::updateContents(float fTime) {
             }
         }
     }
+/*
+    bool first = true;
+    printf(__FILE__" %d: Vortons left %s = ",__LINE__, m_lsObjsLeftQuadrant.size() > 0 ? "SOME" : "NONE");
+    for(Octree3dNode<Vorton>::objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
+        if(first) {
+            first = false;
+            printf("%d",(*it)->getId());
+        } else {
+            printf(", %d", (*it)->getId());
+        }
+    }
+    printf("\n");
+*/
 #else
 
     //Display each vorton
