@@ -54,11 +54,16 @@ FluidOctreeNode::updateContents(float fTime) {
             //Leaves bounds in at least one direction
             m_lsObjsToRemove.push_back(it->first);
             m_lsObjsLeftQuadrant.push_back(it->second);
-        } else {
+printf(__FILE__" %d: Vorton %d left quadrant %x (level %d, dirs %x)\n",
+    __LINE__,
+    it->first,
+    m_uiNodeId,
+    m_uiLevel,
+    dirs
+);
+        } else if(addToChildren(it->second)) {
             //If the object can be added to a child's list, then it should be removed
-            if(addToChildren(it->second)) {
-                m_lsObjsToRemove.push_back(it->first);
-            }
+            m_lsObjsToRemove.push_back(it->first);
         }
 
 
@@ -71,9 +76,9 @@ FluidOctreeNode::updateContents(float fTime) {
             }
         }
     }
-/*
+
     bool first = true;
-    printf(__FILE__" %d: Vortons left %s = ",__LINE__, m_lsObjsLeftQuadrant.size() > 0 ? "SOME" : "NONE");
+    printf(__FILE__" %d: Quadrant %x (level %d) has vortons left %s = ",__LINE__, m_uiNodeId, m_uiLevel, m_lsObjsLeftQuadrant.size() > 0 ? "SOME" : "NONE");
     for(Octree3dNode<Vorton>::objlist_iter_t it = m_lsObjsLeftQuadrant.begin(); it != m_lsObjsLeftQuadrant.end(); ++it) {
         if(first) {
             first = false;
@@ -83,7 +88,6 @@ FluidOctreeNode::updateContents(float fTime) {
         }
     }
     printf("\n");
-*/
 #else
 
     //Display each vorton

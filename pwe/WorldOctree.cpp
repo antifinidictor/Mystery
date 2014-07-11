@@ -133,13 +133,16 @@ WorldOctreeNode::handleChildUpdateResults(Octree3dNode<GameObject> *node, int q)
     // the other children
     for(int q2 = q + 1; q2 < QUAD_NUM_QUADS; ++q2) {
         if(m_apChildren[q2] != NULL) {
+            WorldOctreeNode *otherChild = (WorldOctreeNode*)(m_apChildren[q2]);
             pe->applyCollisionPhysics(
                 child->m_lsObjsLeftQuadrant,
-                child->m_lsDynamicObjs
+                otherChild->m_lsDynamicObjs
+                //child->m_lsDynamicObjs
             );
             pe->applyCollisionPhysics(
                 child->m_lsObjsLeftQuadrant,
-                child->m_lsStaticObjs
+                otherChild->m_lsStaticObjs
+                //child->m_lsStaticObjs
             );
         }
     }
