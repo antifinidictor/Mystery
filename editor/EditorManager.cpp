@@ -19,7 +19,7 @@ using namespace boost;
 #define UNUSED_TEXTURE_ID 0xFFFFFFFF
 
 EditorManager *EditorManager::m_pInstance;
-EditorManager::BUTTON_TEXT_SIZE = 0.8f;
+//float EditorManager::BUTTON_TEXT_SIZE = 0.8f;
 
 EditorManager::EditorManager(uint uiId) {
     m_uiId = uiId;

@@ -140,6 +140,14 @@ GameManager::update(float fDeltaTime) {
     default:
         break;
     }
+
+    if(m_iHideHud == 0x3) {
+        D3RE::get()->getHudContainer()->add(HUD_TOPBAR, m_pHud);
+    } else if(m_iHideHud == 0x1) {
+        D3RE::get()->getHudContainer()->remove(HUD_TOPBAR);
+    }
+    m_iHideHud &= 0x2;
+
     return false;
 }
 
@@ -224,7 +232,7 @@ printf(__FILE__" %d\n",__LINE__);
 
     if(m_bFirstInit) {
         //Read resources
-        D3RE::get()->read(pt, "resources");
+//        D3RE::get()->read(pt, "resources");
 
         //Init the hud now that the resources are initialized properly
         //m_hud.initHud();

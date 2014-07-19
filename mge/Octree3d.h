@@ -277,9 +277,11 @@ public:
                     if(dirs) {
                         //Object left my quadrant too
                         m_lsObjsLeftQuadrant.push_back(*itObjLeftChild);
+printf(__FILE__" %d: Object %d has left child's quadrant and mine as well (I am %x:%d)\n", __LINE__, (*itObjLeftChild)->getId(), m_uiNodeId, m_uiLevel);
                     } else {
                         //Object is in my quadrant, so add it
                         m_lsObjsToAdd.push_back(*itObjLeftChild);
+printf(__FILE__" %d: Object %d is in my quadrant (I am %x:%d)\n", __LINE__, (*itObjLeftChild)->getId(), m_uiNodeId, m_uiLevel);
                     }
                 }
 
@@ -314,6 +316,7 @@ public:
 
         //Add queued objects to the container
         for(objlist_iter_t itObj = m_lsObjsToAdd.begin(); itObj != m_lsObjsToAdd.end(); ++itObj) {
+printf(__FILE__" %d: Adding Object %d now (I am %x:%d)\n",__LINE__,(*itObj)->getId(),m_uiNodeId,m_uiLevel);
             addNow(*itObj);
         }
         m_lsObjsToAdd.clear();
@@ -563,12 +566,14 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
                     //Create a new child Octree3d here
                     m_apChildren[q] = createChild(q, bxChildBounds);
 
+printf(__FILE__" %d: Object %d fits in a null child (%x:%d creating %x:%d)\n",__LINE__,obj->getId(), m_uiNodeId, m_uiLevel, m_apChildren[q]->m_uiNodeId, m_apChildren[q]->m_uiLevel);
                     //Add to child
                     bSomeChildCanAdd = m_apChildren[q]->add(obj, false);
                     break;
                 }
             } else if(m_apChildren[q]->add(obj, false)) {
                 //Child does exist
+printf(__FILE__" %d: Object %d fits in an existing child (%x:%d putting in %x:%d)\n",__LINE__,obj->getId(), m_uiNodeId, m_uiLevel, m_apChildren[q]->m_uiNodeId, m_apChildren[q]->m_uiLevel);
                 bSomeChildCanAdd = true;
                 break;
             }
@@ -577,6 +582,7 @@ printf("%sInserting obj %d @ node %x (level %d) (%.1f,%.1f,%.1f; %.1f,%.1f,%.1f)
     }
 
     void addNow(Object *obj) {
+printf(__FILE__" %d: Adding Object %d now (I am %x:%d)\n",__LINE__,(obj)->getId(),m_uiNodeId,m_uiLevel);
         m_mContents[obj->getId()] = obj;
 
         //Allow subclass to perform some action

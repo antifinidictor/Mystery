@@ -62,6 +62,13 @@ printf(__FILE__" %d: Vorton %d left quadrant %x (level %d, dirs %x)\n",
     dirs
 );
         } else if(addToChildren(it->second)) {
+printf(__FILE__" %d: Vorton %d stepped down from quadrant %x (level %d, dirs %x)\n",
+    __LINE__,
+    it->first,
+    m_uiNodeId,
+    m_uiLevel,
+    dirs
+);
             //If the object can be added to a child's list, then it should be removed
             m_lsObjsToRemove.push_back(it->first);
         }

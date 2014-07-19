@@ -60,9 +60,9 @@ D3PrismRenderModel::render(RenderEngine *re) {
     renderFace(
         m_aTextures[DOWN],
         Point(         0.f,          0.f,          0.f),
-        Point(m_bxVolume.w,          0.f,          0.f),
+        Point(         0.f,          0.f, m_bxVolume.l),
         Point(m_bxVolume.w,          0.f, m_bxVolume.l),
-        Point(         0.f,          0.f, m_bxVolume.l)
+        Point(m_bxVolume.w,          0.f,          0.f)
     );
 
     // Front face  (z = v.z)
@@ -77,19 +77,19 @@ D3PrismRenderModel::render(RenderEngine *re) {
     // Back face (z = 0.f)
     renderFace(
         m_aTextures[NORTH],
-        Point(         0.f, m_bxVolume.h,          0.f),
         Point(m_bxVolume.w, m_bxVolume.h,          0.f),
-        Point(m_bxVolume.w,          0.f,          0.f),
-        Point(         0.f,          0.f,          0.f)
+        Point(         0.f, m_bxVolume.h,          0.f),
+        Point(         0.f,          0.f,          0.f),
+        Point(m_bxVolume.w,          0.f,          0.f)
     );
 
     // Left face (x = 0.f)
     renderFace(
         m_aTextures[WEST],
-        Point(         0.f, m_bxVolume.h, m_bxVolume.l),
         Point(         0.f, m_bxVolume.h,          0.f),
-        Point(         0.f,          0.f,          0.f),
-        Point(         0.f,          0.f, m_bxVolume.l)
+        Point(         0.f, m_bxVolume.h, m_bxVolume.l),
+        Point(         0.f,          0.f, m_bxVolume.l),
+        Point(         0.f,          0.f,          0.f)
     );
 
     // Right face (x = 1.0f)

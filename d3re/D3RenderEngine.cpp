@@ -8,6 +8,7 @@
 #include "pgl.h"
 
 #include "mge/GameObject.h"
+#include "mge/ConfigManager.h"
 #include "game/game_defs.h"
 #include <boost/lexical_cast.hpp>
 
@@ -77,6 +78,9 @@ D3RenderEngine::D3RenderEngine()
     glShadeModel(GL_SMOOTH);   // Enable smooth shading
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+
 /*
     glEnable(GL_FOG);
     {
@@ -97,6 +101,9 @@ D3RenderEngine::D3RenderEngine()
     updateCamPos();
 
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
+
+    //Read info from the config, which should already be loaded.  Additional resource info can be read at any time
+    read(ConfigManager::get()->getRawPropTree(), "resources.images");
 }
 
 D3RenderEngine::~D3RenderEngine() {

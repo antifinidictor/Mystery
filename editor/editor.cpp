@@ -89,7 +89,10 @@ void initWorld() {
     ObjectFactory::init();
     EditorManager::init();
     GameManager::init();
+    TextRenderer::init();
     we->setManager(EditorManager::get());
+
+    GameManager::get()->setHideHud(true);
 
     registerClasses();
 
@@ -100,7 +103,7 @@ void initWorld() {
     mge->mapInput(SDLK_PERIOD, TP_IN_PERIOD);
     mge->mapInput(SDLK_MINUS, TP_IN_UNDERSCORE);
     mge->mapInput(SDLK_SPACE, TP_IN_SPACE);
-    mge->mapInput(SDLK_BACKSPACE, ED_IN_BACKSPACE);
+    mge->mapInput(SDLK_BACKSPACE, TP_IN_BACKSPACE);
     mge->mapInput(SDLK_RETURN, TP_IN_ENTER);
     mge->mapInput(SDLK_SLASH, TP_IN_SLASH);
     mge->mapInput(SDLK_COLON, TP_IN_COLON);
@@ -148,12 +151,12 @@ void initWorld() {
     D3RE::get()->createImage(IMG_WALL_BOTTOM, "res/world/wallBottom.png");
     D3RE::get()->createImage(IMG_WALL_SIDE, "res/world/wallSide.png");
     */
+    GameManager::get()->readWorldFile();
 
     //Load audio resources
     //BAE::get()->loadSound(AUD_STEP, "res/audio/step.wav");
 
     //Other singleton initializations
-    TextRenderer::init();
 
     //Initialize starting area
     we->generateArea(ED_AREA_0);
@@ -165,6 +168,9 @@ void initWorld() {
     EditorCursor *ed = new EditorCursor(we->genId(), ED_AREA_0, Point());
     EditorManager::get()->setEditorCursor(ed);
     we->add(ed);
+
+    //Hack to hide the HUD
+    D3RE::get()->getHudContainer()->remove(HUD_TOPBAR);
 }
 
 void cleanWorld() {

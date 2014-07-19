@@ -404,15 +404,15 @@ EditorCursor::typeOnKeyPress(InputData *data) {
         }
     }
 
-    if(data->getInputState(ED_IN_SPACE) && data->hasChanged(ED_IN_SPACE)) {
+    if(data->getInputState(TP_IN_SPACE) && data->hasChanged(TP_IN_SPACE)) {
         m_sInput.append(1, ' ');
         status = EVENT_CAUGHT;
     }
-    if(data->getInputState(ED_IN_PERIOD) && data->hasChanged(ED_IN_PERIOD)) {
+    if(data->getInputState(TP_IN_PERIOD) && data->hasChanged(TP_IN_PERIOD)) {
         m_sInput.append(1, '.');
         status = EVENT_CAUGHT;
     }
-    if(data->getInputState(ED_IN_UNDERSCORE) && data->hasChanged(ED_IN_UNDERSCORE)) {
+    if(data->getInputState(TP_IN_UNDERSCORE) && data->hasChanged(TP_IN_UNDERSCORE)) {
         if(data->getInputState(IN_SHIFT)) {
             m_sInput.append(1, '_');
             status = EVENT_CAUGHT;
@@ -421,19 +421,19 @@ EditorCursor::typeOnKeyPress(InputData *data) {
             status = EVENT_CAUGHT;
         }
     }
-    if(data->getInputState(ED_IN_SLASH) && data->hasChanged(ED_IN_SLASH)) {
+    if(data->getInputState(TP_IN_SLASH) && data->hasChanged(TP_IN_SLASH)) {
         m_sInput.append(1, '/');
         status = EVENT_CAUGHT;
     }
-    if(data->getInputState(ED_IN_COLON) && data->hasChanged(ED_IN_COLON)) {
+    if(data->getInputState(TP_IN_COLON) && data->hasChanged(TP_IN_COLON)) {
         m_sInput.append(1, ':');
         status = EVENT_CAUGHT;
     }
-    if(data->getInputState(ED_IN_BACKSPACE) && data->hasChanged(ED_IN_BACKSPACE) && m_sInput.size() > 0) {
+    if(data->getInputState(TP_IN_BACKSPACE) && data->hasChanged(TP_IN_BACKSPACE) && m_sInput.size() > 0) {
         m_sInput.resize(m_sInput.size() - 1);
         status = EVENT_CAUGHT;
     }
-    if(data->getInputState(ED_IN_ENTER) && data->hasChanged(ED_IN_ENTER)) {
+    if(data->getInputState(TP_IN_ENTER) && data->hasChanged(TP_IN_ENTER)) {
         if(m_eState == EDC_STATE_TYPE_FIELD) {
             EditorManager::get()->callBack(this->getId(), NULL, ED_HUD_OP_FINALIZE);
             status = EVENT_CAUGHT;

@@ -42,6 +42,9 @@ public:
     void set(const std::string &key, const Rect &value);
     void set(const std::string &key, const Box &value);
 
+    //Some things have lists of properties that they want to access
+    boost::property_tree::ptree &getRawPropTree() { return m_configInfo; }
+
 protected:
 private:
     ConfigManager();
