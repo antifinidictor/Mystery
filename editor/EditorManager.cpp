@@ -626,7 +626,7 @@ EditorManager::initClassListPanel(uint uiStart) {
 
     //Display available classes
     uint i = 0;
-    for(iter = m_vClasses.begin() + uiStart; iter != m_vClasses.end() && i < MAX_LIST_SIZE + 1; ++iter) {
+    for(iter = m_vClasses.begin() + uiStart; iter != m_vClasses.end() && i < MAX_LIST_SIZE; ++iter) {
         GuiButton *classButton = new GuiButton(lspanel, this, ED_HUD_OP_CHOOSE_OBJ, **iter, Point(0.f ,BUTTON_HEIGHT * i, 0.f), BUTTON_TEXT_SIZE);
         lspanel->add(i, classButton);
         if(i == 0) {
