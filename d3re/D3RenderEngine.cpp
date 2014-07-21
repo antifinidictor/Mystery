@@ -79,7 +79,7 @@ D3RenderEngine::D3RenderEngine()
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
 
     glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
+    glCullFace(GL_FRONT);       //I accidentally made all of the faces reversed
 
 /*
     glEnable(GL_FOG);
@@ -617,7 +617,7 @@ D3RenderEngine::callBack(uint uiEventHandlerId, void *data, uint uiEventId) {
         m_iMouseX = idat->getInputState(MIN_MOUSE_X);
         m_iMouseY = idat->getInputState(MIN_MOUSE_Y);
         //updateMousePos(x, y);
-        return EVENT_CAUGHT;
+        return EVENT_DROPPED;   //Should always drop a mouse move event
       }
     default:
         return EVENT_DROPPED;

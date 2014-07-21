@@ -26,9 +26,12 @@ public:
             m_uiId(PWE::get()->genId()),    //For listener use
             m_uiEventId(uiEventId),
             m_uiHudId(s_uiHudId++),         //Ensures consecutive IDs for Editor use
+            m_bDisabled(false),
             m_pParent(parent),
-            m_pListener(pListener)
+            m_pListener(pListener),
+            m_sText(label)
     {
+//printf(__FILE__" %d: Button with text '%s' has id %d\n",__LINE__, label.c_str(), m_uiId);
         //Add myself to the MGE
         MGE::get()->addListener(this, ON_MOUSE_MOVE);
         MGE::get()->addListener(this, ON_BUTTON_INPUT);

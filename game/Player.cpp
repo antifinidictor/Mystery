@@ -26,6 +26,21 @@ enum PlayerAnims {
     NUM_PANIMS
 };
 
+
+
+void moveScreenToPlayerPos(const Point &ptPos) {
+/*
+Works, but not very fast.
+    Image *img = D3RE::get()->getImage("player");
+    int iw = img->h / img->m_iNumFramesH;
+    float h = iw / (float)TEXTURE_TILE_SIZE;    //img->h / img->m_iNumFramesH;
+    float fBxHeight = 3 * h / 4;
+    D3RE::get()->moveScreenTo(ptPos + Point(0.f, fBxHeight, 0.f));
+*/
+    D3RE::get()->moveScreenTo(ptPos);
+}
+
+
 Player::Player(uint uiId, const Point &ptPos)
     :   m_uiId(uiId),
         m_uiFlags(0),
@@ -305,7 +320,7 @@ Player::updateNormal(float fDeltaTime) {
     //Collisions continuously change the animation frame: make sure it gets reset
     m_uiAnimFrameStart = PANIM_WALKING;
     Point ptPos = m_pPhysicsModel->getPosition();
-    D3RE::get()->moveScreenTo(ptPos);
+    moveScreenToPlayerPos(ptPos);
 }
 
 void
@@ -353,9 +368,8 @@ Player::updateCasting(float fDeltaTime) {
     m_pRenderModel->setFrameW(angle2dir(myRelativeAngle));
 
     Point ptScreenPos = (ptPos + ptMouse) / 2.f;
-    D3RE::get()->moveScreenTo(ptScreenPos);
+    moveScreenToPlayerPos(ptScreenPos);
 }
-
 
 void
 Player::updateClimbingTrans(float fDeltaTime) {
@@ -416,7 +430,7 @@ Player::updateClimbingTrans(float fDeltaTime) {
 
         //Move myself and the screen to the new position
         moveBy(ptNewPos - ptMyPos);
-        D3RE::get()->moveScreenTo(ptNewPos);
+        moveScreenToPlayerPos(ptNewPos);
     }
 
     //Finish climbing?
@@ -679,7 +693,7 @@ Player::handleCollision(HandleCollisionData *data) {
             //Step up
             moveBy(Point(-data->ptShift.x, (fObjHeight) - (mbx.y), -data->ptShift.z));
             Point ptPos = m_pPhysicsModel->getPosition();
-            D3RE::get()->moveScreenTo(ptPos);
+            moveScreenToPlayerPos(ptPos);
             m_pPhysicsModel->setSurface(pmdl);
         } else {
             //We might be able to climb, if we didn't step up.

@@ -281,7 +281,6 @@ void ModularEngine::informListeners(uint id) {
 			++iter ) {
 			int status = (*iter)->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
 			if(status == EVENT_CAUGHT) {
-                //printf("Obj %d caught the mouse move event\n", (*iter)->getId());
                 return;
 			}
 		}
@@ -290,7 +289,7 @@ void ModularEngine::informListeners(uint id) {
 		for( iter = m_lsButtonInputListeners.begin(); iter != m_lsButtonInputListeners.end(); ++iter ) {
 			int status = (*iter)->callBack(ID_MODULAR_ENGINE, &m_sInputData, id);
 			if(status == EVENT_CAUGHT) {
-                //printf("Obj %d caught the button event\n", (*iter)->getId());
+//printf(__FILE__" %d: Obj %d caught the button event\n", __LINE__, (*iter)->getId());
                 return;
 			}
 		}

@@ -92,14 +92,15 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
     //right edge
     glBegin(GL_QUAD_STRIP);
     x = (m_pxMap->m_uiW - 1);
+    uint lmul = m_pxMap->m_uiH * l;
     for(z = 0; z < m_pxMap->m_uiH; ++z) {
         float y = m_pxMap->m_pData[x][z] * (bxVolume.h);
 
-        glTexCoord2f(z * l, 1);
-        glVertex3f(x * w, 0, z * l);
-
-        glTexCoord2f(z * l, 1 - y / bxVolume.h);
+        glTexCoord2f(lmul - z * l, 1 - y / bxVolume.h);
         glVertex3f(x * w, y, z * l);
+
+        glTexCoord2f(lmul - z * l, 1);
+        glVertex3f(x * w, 0, z * l);
     }
     glEnd();
 
@@ -120,14 +121,15 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
     //north edge
     glBegin(GL_QUAD_STRIP);
     z = 0;
+    uint wmul = m_pxMap->m_uiW * w;
     for(x = 0; x < m_pxMap->m_uiW; ++x) {
         float y = m_pxMap->m_pData[x][z] * (bxVolume.h);
 
-        glTexCoord2f(x * w, 1);
-        glVertex3f(x * w, 0, z * l);
-
-        glTexCoord2f(x * w, 1 - y / bxVolume.h);
+        glTexCoord2f(wmul - x * w, 1 - y / bxVolume.h);
         glVertex3f(x * w, y, z * l);
+
+        glTexCoord2f(wmul - x * w, 1);
+        glVertex3f(x * w, 0, z * l);
     }
     glEnd();
     glPopMatrix();
