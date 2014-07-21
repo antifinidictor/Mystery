@@ -55,7 +55,7 @@ EditorCursor::write(boost::property_tree::ptree &pt, const std::string &keyBase)
 
 bool
 EditorCursor::update(float fDeltaTime) {
-GameObject *me = PWE::get()->find(getId());
+//GameObject *me = PWE::get()->find(getId());
 //printf("Found me? %s (%d)\n", me == NULL ? "no" : "yes", getId());
     switch(m_eState) {
     case EDC_STATE_STATIC:
@@ -316,52 +316,71 @@ int
 EditorCursor::moveOnKeyPress(InputData *data) {
     m_fDeltaPitch = 0.f;
     int status = EVENT_DROPPED;
+    float fForward = 0.f, fStrafe = 0.f, fVertical = 0.f;
     if(data->getInputState(IN_SHIFT)) {
         if(data->getInputState(IN_NORTH)) {
-            m_ptDeltaPos.y = MOVE_SPEED;
+            fVertical = 1.f;
             status = EVENT_CAUGHT;
         } else if(data->getInputState(IN_SOUTH)) {
-            m_ptDeltaPos.y = -MOVE_SPEED;
+            fVertical = -1.f;
             status = EVENT_CAUGHT;
         } else {
-            m_ptDeltaPos.y = 0.f;
+            fVertical = 0.f;
         }
-        m_ptDeltaPos.z = 0;
+        //m_ptDeltaPos.z = 0;
 
         m_fDeltaZoom = 0.f;
     } else if(data->getInputState(IN_CTRL)) {
         if(data->getInputState(IN_NORTH)) {
-            m_fDeltaZoom = -MOVE_SPEED;
+            m_fDeltaZoom = -1.f;
             status = EVENT_CAUGHT;
         } else if(data->getInputState(IN_SOUTH)) {
-            m_fDeltaZoom = MOVE_SPEED;
+            m_fDeltaZoom = 1.f;
             status = EVENT_CAUGHT;
         } else {
             m_fDeltaZoom = 0.f;
         }
-        m_ptDeltaPos.z = 0;
+        //m_ptDeltaPos.z = 0;
     } else {
         if(data->getInputState(IN_NORTH)) {
-            m_ptDeltaPos.z = -MOVE_SPEED;
+            fForward = -1.f;
             status = EVENT_CAUGHT;
         } else if(data->getInputState(IN_SOUTH)) {
-            m_ptDeltaPos.z = MOVE_SPEED;
+            fForward = 1.f;
             status = EVENT_CAUGHT;
         } else {
-            m_ptDeltaPos.z = 0;
+            fForward = 0;
         }
         m_fDeltaZoom = 0.f;
     }
 
     if(data->getInputState(IN_WEST)) {
-        m_ptDeltaPos.x = -MOVE_SPEED;
+        fStrafe = -1.f;
         status = EVENT_CAUGHT;
     } else if(data->getInputState(IN_EAST)) {
-        m_ptDeltaPos.x = MOVE_SPEED;
+        fStrafe = 1.f;
         status = EVENT_CAUGHT;
     } else {
-        m_ptDeltaPos.x = 0;
+        fStrafe = 0;
     }
+
+    float fLookAngle = D3RE::get()->getLookAngle();
+    m_ptDeltaPos = Point(
+        fForward * cos(fLookAngle) - fStrafe * sin(-fLookAngle),
+        fVertical,
+        fForward * sin(fLookAngle) - fStrafe * cos(-fLookAngle)
+    );
+    m_ptDeltaPos.normalize();
+    m_ptDeltaPos *= MOVE_SPEED;
+
+    float fCurLookAngle = D3RE::get()->getLookAngle();
+    float fCurDesiredLookAngle = D3RE::get()->getDesiredLookAngle();
+    if(data->getInputState(IN_ROTATE_LEFT) && data->hasChanged(IN_ROTATE_LEFT) && fCurDesiredLookAngle <= fCurLookAngle) {
+        D3RE::get()->adjustLookAngle(M_PI / 2);
+    } else  if(data->getInputState(IN_ROTATE_RIGHT) && data->hasChanged(IN_ROTATE_RIGHT) && fCurDesiredLookAngle >= fCurLookAngle) {
+        D3RE::get()->adjustLookAngle(-M_PI / 2);
+    }
+
     return status;
 }
 
