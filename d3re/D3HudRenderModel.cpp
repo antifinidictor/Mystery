@@ -6,41 +6,36 @@
 #include "mge/GameObject.h"
 #include "TextRenderer.h"
 
-D3HudRenderModel::D3HudRenderModel(uint uiImageId, const Rect &rcArea) {
-    m_uiImageId = uiImageId;
-    m_rcDrawArea = rcArea;
-
-    m_fTextSize = -1.f;
-    m_sData = "";
-    m_ptTextPos = Point(rcArea.x, rcArea.y, 0.f);
-
-    m_iFrameW = 0;
-    m_iFrameH = 0;
-    m_iRepsW = 1;
-    m_iRepsH = 1;
-
-    m_bVertCenter = false;
-    m_bHorizCenter = false;
-
-    m_crImageColor = Color(0xFF, 0xFF, 0xFF);
+D3HudRenderModel::D3HudRenderModel(uint uiImageId, const Rect &rcArea)
+    :   m_uiImageId(uiImageId),
+        m_sData(""),
+        m_fTextSize(-1.f),
+        m_rcDrawArea(rcArea),
+        m_ptTextPos(rcArea.x, rcArea.y, 0.f),
+        m_bVertCenter(false),
+        m_bHorizCenter(false),
+        m_iFrameW(0),
+        m_iFrameH(0),
+        m_iRepsW(1),
+        m_iRepsH(1),
+        m_crImageColor(0xFF, 0xFF, 0xFF)
+{
 }
 
-D3HudRenderModel::D3HudRenderModel(const std::string &data, const Rect &rcArea, float textSize) {
-    m_uiImageId = 0;
-    m_rcDrawArea = rcArea;
-
-    m_fTextSize = textSize;
-    m_sData = data;
-    m_ptTextPos = Point(rcArea.x, rcArea.y, 0.f);
-
-    m_iFrameW = 0;
-    m_iFrameH = 0;
-    m_iRepsW = 1;
-    m_iRepsH = 1;
-
-    m_crImageColor = Color(0xFF, 0xFF, 0xFF);
-    m_bVertCenter = false;
-    m_bHorizCenter = false;
+D3HudRenderModel::D3HudRenderModel(const std::string &data, const Rect &rcArea, float textSize)
+    :   m_uiImageId(0),
+        m_sData(data),
+        m_fTextSize(textSize),
+        m_rcDrawArea(rcArea),
+        m_ptTextPos(rcArea.x, rcArea.y, 0.f),
+        m_bVertCenter(false),
+        m_bHorizCenter(false),
+        m_iFrameW(0),
+        m_iFrameH(0),
+        m_iRepsW(1),
+        m_iRepsH(1),
+        m_crImageColor(0xFF, 0xFF, 0xFF)
+{
 }
 
 D3HudRenderModel::D3HudRenderModel(uint uiImageId, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize) {
