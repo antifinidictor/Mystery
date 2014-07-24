@@ -6,7 +6,7 @@
 using namespace std;
 
 BruteForceFluidTest::BruteForceFluidTest(PixelMap *pxHmap, Box bxBounds, int numVortons, float fCellSize, float fViscocity)
-    :   m_pRenderModel(new ContainerRenderModel(Rect())),
+    :   m_pRenderModel(new ContainerRenderModel(NULL, Rect())),
         m_pPhysicsModel(new NullTimePhysicsModel(Point())),
         m_vVortons(numVortons, Vorton(0,Point(),0.f,Point())),
         m_cgVelocities(m_pPhysicsModel, bxBounds, fCellSize),

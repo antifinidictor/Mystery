@@ -50,8 +50,6 @@ private:
     int m_iRepsW, m_iRepsH;
 
     Color m_crColor;
-
-    Positionable *m_pParent;
 };
 
 #endif

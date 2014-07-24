@@ -16,9 +16,9 @@ typedef void (*opOnRenderModel)(uint id, RenderModel *rm);
 
 class ContainerRenderModel : public RenderModel, public Positionable {
 public:
-    ContainerRenderModel(Rect rcArea);
+    ContainerRenderModel(Positionable *pParent, Rect rcArea);
     //This is a hack
-    ContainerRenderModel(Rect rcArea, Point ptOffset);
+    ContainerRenderModel(Positionable *pParent, Rect rcArea, Point ptOffset);
     virtual ~ContainerRenderModel();
 
     virtual void render(RenderEngine *re);

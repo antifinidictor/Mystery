@@ -39,8 +39,6 @@ private:
     int m_iRepsW, m_iRepsH;
 
     Color m_crColor;
-
-    Positionable *m_pParent;
 };
 
 #endif //D3_XZ_SPRITE_RENDER_MODEL_H

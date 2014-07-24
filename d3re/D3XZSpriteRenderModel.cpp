@@ -49,7 +49,7 @@ D3XZSpriteRenderModel::render(RenderEngine *re) {
           fTexRight  = m_iFrameW * 1.0F / pImage->m_iNumFramesW + m_iRepsW * 1.0F / pImage->m_iNumFramesW,
           fTexBottom = m_iFrameH * 1.0F / pImage->m_iNumFramesH + m_iRepsH * 1.0F / pImage->m_iNumFramesH;
 
-    Point ptPos = m_pParent->getPosition();
+    Point ptPos = getParentPosition();
     glTranslatef((ptPos.x + m_rcDrawArea.x), (ptPos.y), (ptPos.z + m_rcDrawArea.y));
 
     //Bind the texture to which subsequent calls refer to
@@ -77,19 +77,3 @@ D3XZSpriteRenderModel::render(RenderEngine *re) {
     glPopMatrix();
 }
 
-/*
-Rect
-D3XZSpriteRenderModel::getDrawArea() {
-    Point ptPos = getPosition();
-    return Rect(ptPos.x + m_rcDrawArea.x, ptPos.y + m_rcDrawArea.y, m_rcDrawArea.w, m_rcDrawArea.h);
-}
-
-Point
-D3XZSpriteRenderModel::getPosition() {
-    Point ptPos = Point();
-    if(m_pParent != NULL) {
-        ptPos = m_pParent->getPhysicsModel()->getPosition();
-    }
-    return ptPos;
-}
-*/

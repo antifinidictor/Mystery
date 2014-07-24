@@ -77,7 +77,8 @@ D3HudRenderModel::getDrawArea() {
 
 Point
 D3HudRenderModel::getPosition() {
-    return Point(m_rcDrawArea.x + m_rcDrawArea.w / 2, m_rcDrawArea.y + m_rcDrawArea.h / 2, 0.f);
+    Point ptPos = getParentPosition();
+    return Point(m_rcDrawArea.x + m_rcDrawArea.w / 2 + ptPos.x, m_rcDrawArea.y + m_rcDrawArea.h / 2 + ptPos.y, ptPos.z);
 }
 
 void
@@ -159,6 +160,10 @@ D3HudRenderModel::renderImage(Image *pImage) {
 
     //Bind the texture to which subsequent calls refer to
     glBindTexture( GL_TEXTURE_2D, pImage->m_uiTexture );
+
+    Point ptPos = getParentPosition();
+    glTranslatef(ptPos.x, ptPos.y, ptPos.z);
+
     //glDepthMask(GL_FALSE);
     glBegin(GL_QUADS);
         glColor3f(ourColor.r / 255.f, ourColor.g / 255.f, ourColor.b / 255.f);
@@ -185,6 +190,10 @@ D3HudRenderModel::renderImage(Image *pImage) {
 void
 D3HudRenderModel::renderText() {
     glPushMatrix();
+
+    Point ptPos = getParentPosition();
+    glTranslatef(ptPos.x, ptPos.y, ptPos.z);
+
     std::string splitData = m_sData;
     float margin = m_ptTextPos.x - m_rcDrawArea.x;
     glColor3f(1.f,1.f,1.f);

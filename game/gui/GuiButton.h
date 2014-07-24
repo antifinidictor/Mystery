@@ -27,7 +27,6 @@ public:
             m_uiEventId(uiEventId),
             m_uiHudId(s_uiHudId++),         //Ensures consecutive IDs for Editor use
             m_bDisabled(false),
-            m_pParent(parent),
             m_pListener(pListener),
             m_sText(label)
     {
@@ -78,14 +77,18 @@ private:
     };
 
     int handleMouseEvent(InputData *data, bool bAlwaysDrop) {
+        //Get the parent of the HUD-Rmdl. The HUD-Rmdl's position takes into
+        // account both its parent and its draw area, which we don't want since
+        // we are using the raw draw area.
         Point ptPos = m_pParent->getPosition();
+        Rect rcDrawArea = getDrawArea();
         Point ptMouse = Point(
             data->getInputState(MIN_MOUSE_X) - ptPos.x,
             data->getInputState(MIN_MOUSE_Y) - ptPos.y,
             0
         );
         int status = EVENT_DROPPED;
-        if(ptInRect(ptMouse, getDrawArea())) {
+        if(ptInRect(ptMouse, rcDrawArea)) {
             if(data->getInputState(IN_SELECT)) {
                 setFrameH(HUD_BUTTON_DOWN);
                 if(!bAlwaysDrop) {
@@ -109,7 +112,6 @@ private:
 
     uint m_uiId, m_uiEventId, m_uiHudId;
     bool m_bDisabled;
-    Positionable *m_pParent;
     Listener *m_pListener;
     static uint s_uiHudId;  //Defined in GameManager
     std::string m_sText;

@@ -8,9 +8,9 @@
 D3HeightmapRenderModel::D3HeightmapRenderModel(PhysicsModel *parent, uint uiTexture, const PixelMap *pxMap, Box bxVolume)
     : m_uiTexture(uiTexture),
       m_pxMap(pxMap),
-      m_crColor(0xFF, 0xFF, 0xFF),
-      m_pParent(parent)
+      m_crColor(0xFF, 0xFF, 0xFF)
 {
+      m_pParent = parent;
 }
 
 
@@ -37,7 +37,8 @@ D3HeightmapRenderModel::render(RenderEngine *re) {
                            m_crColor.g * (1 - fWeight) + worldColor.g * fWeight,
                            m_crColor.b * (1 - fWeight) + worldColor.b * fWeight);
 
-    Box bxVolume = m_pParent->getCollisionVolume();
+    //TODO: Hacky
+    Box bxVolume = ((PhysicsModel*)m_pParent)->getCollisionVolume();
 
     //glTranslatef(ptPos.x, ptPos.y, ptPos.z);
     glTranslatef(bxVolume.x, bxVolume.y, bxVolume.z);

@@ -49,7 +49,7 @@ D3SpriteRenderModel::render(RenderEngine *re) {
           fTexRight  = m_iFrameW * 1.0F / pImage->m_iNumFramesW + m_iRepsW * 1.0F / pImage->m_iNumFramesW,
           fTexBottom = m_iFrameH * 1.0F / pImage->m_iNumFramesH + m_iRepsH * 1.0F / pImage->m_iNumFramesH;
 
-    Point ptPos = m_pParent->getPosition();
+    Point ptPos = getParentPosition();
     glTranslatef((ptPos.x), (ptPos.y), (ptPos.z));
     glRotatef(-D3RE::get()->getLookAngle() * 180 / M_PI + 90, 0.f, 1.f, 0.f);
 

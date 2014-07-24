@@ -33,8 +33,6 @@ private:
     Box m_bxVolume;
 
     Color m_crColor;
-
-    Positionable *m_pParent;
 };
 
 #endif

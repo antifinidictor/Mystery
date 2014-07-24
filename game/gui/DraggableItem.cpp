@@ -50,7 +50,7 @@ DraggableItem::~DraggableItem()
 
 void
 DraggableItem::onStartDragging() {
-    m_ptSnapPosition = m_pParent->getPosition();
+    m_ptSnapPosition = getPosition();
     m_fTotalDragDistance = 0.f;
     //printf("Picked up at (%f,%f)\n", m_ptSnapPosition.x, m_ptSnapPosition.y);
 }
@@ -58,7 +58,7 @@ DraggableItem::onStartDragging() {
 void
 DraggableItem::onEndDragging() {
     //Check: If close to a viable position, then react to that viable position.  Otherwise, snap back.
-    Point ptCurPos = m_pParent->getPosition();
+    Point ptCurPos = getPosition();
 
     //If the position is invalid
     int index = 0;
@@ -120,7 +120,7 @@ DraggableItem::onMouseOut() {
 
 void
 DraggableItem::snapToIndex(uint index) {
-    Point ptShift = s_vDropPoints[index] - m_pParent->getPosition();
+    Point ptShift = s_vDropPoints[index] - getPosition();
     onFollow(ptShift);
     m_uiIndex = index;
 }

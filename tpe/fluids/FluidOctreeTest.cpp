@@ -3,7 +3,7 @@
 #include "pwe/PartitionedWorldEngine.h"
 
 FluidOctreeTest::FluidOctreeTest()
-    :   m_pRenderModel(new ContainerRenderModel(Rect())),
+    :   m_pRenderModel(new ContainerRenderModel(NULL, Rect())),
         m_pPhysicsModel(new NullTimePhysicsModel(Point())),
         m_fCurDeltaTime(1.f)
 {

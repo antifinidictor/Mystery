@@ -32,7 +32,7 @@ D3RenderEngine::D3RenderEngine()
         m_crWorld(0xFF, 0xFF, 0xFF),
         m_fColorWeight(0.5f),
         m_mxDrawPrimitive(SDL_CreateMutex()),
-        m_pHudContainer(new ContainerRenderModel(Rect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT))),
+        m_pHudContainer(new ContainerRenderModel(NULL, Rect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT))),
         m_bGuiMode(false),
         m_bDrawCollisions(false),
         m_bDrawRealMouse(true),

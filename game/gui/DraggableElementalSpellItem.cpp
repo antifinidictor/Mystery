@@ -47,14 +47,14 @@ DraggableElementalSpellItem::onFollow(const Point &diff) {
 
 void
 DraggableElementalSpellItem::onStartDragging() {
-    m_ptSnapPosition = m_pParent->getPosition();
+    m_ptSnapPosition = getPosition();
     m_fTotalDragDistance = 0.f;
 }
 
 void
 DraggableElementalSpellItem::onEndDragging() {
     //Check: If close to a viable position, then react to that viable position.  Otherwise, snap back.
-    Point ptCurPos = m_pParent->getPosition();
+    Point ptCurPos = getPosition();
 
     //Send the appropriate drop event
     if(dist(s_ptMakeCurrentPoint, ptCurPos) < VALID_DROP_RADIUS) {

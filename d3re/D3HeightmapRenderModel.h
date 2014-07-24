@@ -31,8 +31,6 @@ private:
     const PixelMap *m_pxMap;
 
     Color m_crColor;
-
-    PhysicsModel *m_pParent;
 };
 
 #endif //D3_HEIGHTMAP_RENDER_MODEL_H

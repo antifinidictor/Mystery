@@ -437,7 +437,7 @@ void
 GameManager::initBasicHud() {
     ContainerRenderModel *panel = D3RE::get()->getHudContainer();
 
-    ContainerRenderModel *bottomBar = new ContainerRenderModel(Rect(0.f, SCREEN_HEIGHT - 2 * TEXTURE_TILE_SIZE, SCREEN_WIDTH, TEXTURE_TILE_SIZE * 2));
+    ContainerRenderModel *bottomBar = new ContainerRenderModel(NULL, Rect(0.f, SCREEN_HEIGHT - 2 * TEXTURE_TILE_SIZE, SCREEN_WIDTH, TEXTURE_TILE_SIZE * 2));
     panel->add(HUD_BOTTOMBAR, bottomBar);
 }
 

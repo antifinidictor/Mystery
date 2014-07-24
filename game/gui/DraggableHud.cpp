@@ -26,7 +26,7 @@ using namespace std;
 #define BUTTON_SPACING 48
 
 DraggableHud::DraggableHud(uint uiId)
-    :   ContainerRenderModel(Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT)),
+    :   ContainerRenderModel(NULL, Rect(0, Y_HIDDEN, SCREEN_WIDTH, SCREEN_HEIGHT)),
         Draggable(this, Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)),
         m_uiId(uiId),
         m_eState(HUD_STATE_NORMAL),
@@ -96,6 +96,29 @@ DraggableHud::initHud() {
 /*
  * Draggable
  */
+/*
+class MoveElementFunctor {
+private:
+    Point m_ptShift;
+public:
+    MoveElementFunctor(const Point &shift) : m_ptShift(shift) {}
+
+    bool operator()(uint itemIndex, RenderModel *rmdl) {
+        D3HudRenderModel *dmdl = dynamic_cast<D3HudRenderModel*>(rmdl);
+        ContainerRenderModel *cmdl = dynamic_cast<ContainerRenderModel*>(rmdl);
+        if(dmdl) {
+            dmdl->moveBy(m_ptShift);
+            printf("DMDL\n");
+        } else if(cmdl) {
+            cmdl->moveBy(m_ptShift);
+            printf("CMDL\n");
+        } else {
+            printf("ERROR: Other type!\n");
+        }
+        return false;
+    }
+};
+*/
 void
 DraggableHud::onFollow(const Point &diff) {
     float fTop = getDrawArea().y;
@@ -108,6 +131,10 @@ DraggableHud::onFollow(const Point &diff) {
         ptShift.y = diff.y;
     }
     moveBy(ptShift);
+
+    //Shift contained items
+    //MoveElementFunctor ftor(ptShift);
+    //forEachModel(ftor);
 }
 
 void
@@ -121,33 +148,35 @@ DraggableHud::onStartDragging() {
 void
 DraggableHud::onEndDragging() {
     float fTop = getDrawArea().y;
+    Point ptShift;
     if(m_bHidden) {
         if(fTop > Y_SHOW_BOUND) {
             //Sufficiently moved for it to be shown
-            Point ptShift = Point(0.f, Y_SHOWN - fTop, 0.f);
-            moveBy(ptShift);
+            ptShift = Point(0.f, Y_SHOWN - fTop, 0.f);
             m_bHidden = false;
             enablePanel(m_pCurSidePanel);
         } else {
             //Move back, no change
-            Point ptShift = Point(0.f, Y_HIDDEN - fTop, 0.f);
-            moveBy(ptShift);
+            ptShift = Point(0.f, Y_HIDDEN - fTop, 0.f);
             PWE::get()->setState(PWE_RUNNING);
         }
     } else {
         if(fTop < Y_HIDE_BOUND) {
             //Sufficiently moved for it to hide
-            Point ptShift = Point(0.f, Y_HIDDEN - fTop, 0.f);
-            moveBy(ptShift);
+            ptShift = Point(0.f, Y_HIDDEN - fTop, 0.f);
             m_bHidden = true;
             disablePanel(m_pCurSidePanel);
             PWE::get()->setState(PWE_RUNNING);
         } else {
             //Move back, no change
-            Point ptShift = Point(0.f, Y_SHOWN - fTop, 0.f);
-            moveBy(ptShift);
+            ptShift = Point(0.f, Y_SHOWN - fTop, 0.f);
         }
     }
+
+    //Shift myself and my contained items
+    moveBy(ptShift);
+    //MoveElementFunctor ftor(ptShift);
+    //forEachModel(ftor);
 
     if(m_bHidden) {
         BAE::get()->playSound(AUD_POPDOWN);
@@ -780,18 +809,18 @@ DraggableHud::initPlayerHud() {
         TEXTURE_TILE_SIZE * 3,
         TEXTURE_TILE_SIZE
     );
-    ContainerRenderModel *healthPanel = new ContainerRenderModel(rcHealthPanel);
-    ContainerRenderModel *itembarPanel = new ContainerRenderModel(rcItembarPanel);
-    ContainerRenderModel *spellPanel = new ContainerRenderModel(rcInventoryPanel);
-    ContainerRenderModel *itemPanel = new ContainerRenderModel(rcInventoryPanel);
+    ContainerRenderModel *healthPanel = new ContainerRenderModel(NULL, rcHealthPanel);
+    ContainerRenderModel *itembarPanel = new ContainerRenderModel(NULL, rcItembarPanel);
+    ContainerRenderModel *spellPanel = new ContainerRenderModel(NULL, rcInventoryPanel);
+    ContainerRenderModel *itemPanel = new ContainerRenderModel(NULL, rcInventoryPanel);
 
     //We keep these two specially so that they can be restored instantly
-    m_pInventoryPanel = new ContainerRenderModel(rcInventoryPanel);
-    m_pMainSidePanel = new ContainerRenderModel(rcSidePanel);
-    m_pTypeSidePanel = new ContainerRenderModel(rcSidePanel);
-    m_pConfirmSidePanel = new ContainerRenderModel(rcSidePanel);
+    m_pInventoryPanel = new ContainerRenderModel(NULL, rcInventoryPanel);
+    m_pMainSidePanel = new ContainerRenderModel(NULL, rcSidePanel);
+    m_pTypeSidePanel = new ContainerRenderModel(NULL, rcSidePanel);
+    m_pConfirmSidePanel = new ContainerRenderModel(NULL, rcSidePanel);
 
-    ContainerRenderModel *elementPanel = new ContainerRenderModel(rcInventoryPanel);
+    ContainerRenderModel *elementPanel = new ContainerRenderModel(NULL, rcInventoryPanel);
     panel->add(MGHUD_HEALTH_CONTAINER, healthPanel);
     panel->add(MGHUD_ITEMBAR_CONTAINER, itembarPanel);
     panel->add(MGHUD_MAIN_CONTAINER, m_pInventoryPanel);
