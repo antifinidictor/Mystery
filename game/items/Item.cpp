@@ -19,6 +19,7 @@ Item::Item(uint id, uint itemId, const Point &pos)
     m_pRenderModel->setFrameH(itemId);
     //setFlag(TPE_PASSABLE, true);
     //setFlag(TPE_FALLING, true);
+    //setFlag(TPE_STATIC, true);
 
     //Items are save-file objects
     setFlag(PWE_SAVE_FILE_OBJ, true);
@@ -95,6 +96,10 @@ Item::callBack(uint uiID, void *data, uint id) {
             m_bCollidingWithPlayer = true;
             //printf("I hit the player @ time %d\n", Clock::get()->getTime());
         }
+        break;
+    }
+    case ON_OBJ_MOUSE_OVER: {
+        printf(__FILE__" %d: Moused over item %d\n", __LINE__, getId());
         break;
     }
     default:

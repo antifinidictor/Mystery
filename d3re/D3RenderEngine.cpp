@@ -184,7 +184,7 @@ D3RenderEngine::render() {
 
     //Nontransparent objects
     glEnable(GL_ALPHA_TEST);
-    bool mouseInObject = false;
+    //bool mouseInObject = false;
     float mouseOverT = std::numeric_limits<float>::max();
     m_pMouseOverObject = NULL;
     for(list<GameObject *>::iterator it = m_lsObjsOnScreen.begin();
@@ -195,7 +195,7 @@ D3RenderEngine::render() {
             //if(ptOutOfBounds(m_ptMouseInWorld, (*it)->getPhysicsModel()->getCollisionVolume()) == 0) {
             float t = rayIntersects(m_v3MouseRay, m_ptCamPos, obj->getPhysicsModel()->getCollisionVolume());
             if(fabs(t) < fabs(mouseOverT)) {
-                mouseInObject = true;
+                //mouseInObject = true;
                 mouseOverT = t;
                 m_pMouseOverObject = *it;
             }
@@ -210,11 +210,16 @@ D3RenderEngine::render() {
             (*it)->getRenderModel()->render(this);
             float t = rayIntersects(m_v3MouseRay, m_ptCamPos, (*it)->getPhysicsModel()->getCollisionVolume());
             if(fabs(t) < fabs(mouseOverT)) {
-                mouseInObject = true;
+                //mouseInObject = true;
                 mouseOverT = t;
                 m_pMouseOverObject = *it;
             }
         }
+    }
+
+    //Handle object mouseover
+    if(m_pMouseOverObject != NULL) {
+        m_pMouseOverObject->callBack(getId(), NULL, ON_OBJ_MOUSE_OVER);
     }
 
     updateMousePos(m_iMouseX, m_iMouseY);

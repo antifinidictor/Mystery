@@ -317,10 +317,12 @@ GameManager::setDefaultInputMapping() {
     mge->mapInput(SDLK_END,   IN_ROTATE_RIGHT);
 
     mge->mapInput(SDLK_SPACE, IN_CAST);
+    //mge->mapInput(SDL_BUTTON_RIGHT, IN_CAST);
     mge->mapInput(SDLK_LSHIFT, IN_SHIFT);
     mge->mapInput(SDLK_LCTRL, IN_CTRL);
     mge->mapInput(SDL_BUTTON_LEFT, IN_SELECT);
     mge->mapInput(SDL_BUTTON_RIGHT, IN_RCLICK);
+    //mge->mapInput(SDLK_SPACE, IN_RCLICK);
     mge->mapInput(SDLK_h,     IN_BREAK);
     mge->mapInput(SDLK_F1, IN_TOGGLE_DEBUG_MODE);
 }

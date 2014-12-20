@@ -98,6 +98,7 @@ enum GameEvent {
     ON_UPDATE_HUD,          //HUD animations should be updated
     ON_ITEM_CLICK_USE,      //Current item receives a mouse click (button up/down, mouse location)
     ON_ITEM_DRAG_USE,       //Current item receives a mouse-drag event (mouse location)
+    ON_OBJ_MOUSE_OVER,      //Object is moused over, doesn't need to be listening to receive this event
     ON_SAVE_GAME,
     ON_LOAD_GAME,
     ON_QUIT_GAME,
