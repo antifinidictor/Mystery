@@ -345,16 +345,17 @@ Player::updateCasting(float fDeltaTime) {
 
 
     //Move the screen to halfway between the player and the mouse
-    Point ptMouse;
-    //if(D3RE::get()->getMouseOverObject() == NULL) {
+    Point ptMouse = D3RE::get()->getMousePos();
+    float myY = m_pPhysicsModel->getPosition().y;
+
+    //If the mouse is above or below the player by a certain amount, use the
+    // mouse look vector instead.
+    if(ptMouse.y < myY - 100.f || ptMouse.y > myY + 100.f) {
         Point ptMouseVec = D3RE::get()->getMouseRay();
         Point ptCamPos = D3RE::get()->getCameraPosition();
-        float myY = m_pPhysicsModel->getPosition().y;
         float t = (myY - ptCamPos.y) / ptMouseVec.y;
         ptMouse =  ptCamPos + ptMouseVec * t;
-    //} else {
-    //    ptMouse = D3RE::get()->getMousePos();
-    //}
+    }
 
     //Calculate player look direction
     Point ptPos = m_pPhysicsModel->getPosition();

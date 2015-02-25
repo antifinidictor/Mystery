@@ -37,7 +37,7 @@ DraggableHud::DraggableHud(uint uiId)
         m_pCurSpell(NULL),
         m_pCurElement(NULL),
         m_pMyPlayer(NULL),
-        m_sInput("")
+        m_sInput("MySave")
 {
     MGE::get()->addListener(this, ON_MOUSE_MOVE);
     MGE::get()->addListener(this, ON_BUTTON_INPUT);
