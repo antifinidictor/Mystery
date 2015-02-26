@@ -74,6 +74,8 @@ public:
 
     void setHideHud(bool bHideHud) { m_iHideHud = bHideHud ? 0x1 : 0x3; }
 
+    uint getMiscHudId() { return ++m_uiMiscHudId; }
+
 private:
     GameManager(uint uiId);
     virtual ~GameManager();
@@ -106,6 +108,7 @@ private:
     Color m_crBackground;
     bool m_bWorldIsClean;   //True if world is definitely clean
     int m_iHideHud;         //0x0 if not hidden and not changed, 0x1 if hidden and changed, 0x2 if not hidden and not changed, 0x3 if not hidden and changed
+    uint m_uiMiscHudId;
 
     boost::filesystem::path m_fsGameFile;
 

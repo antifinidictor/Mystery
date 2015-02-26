@@ -35,6 +35,7 @@
 #include "mge/mgeMath.h"
 #include "tpe/fluids/BruteForceFluidTest.h"
 #include "tpe/fluids/FluidOctreeTest.h"
+#include "game/gui/SpeechBubble.h"
 using namespace std;
 
 void testTextCb(uint id);

@@ -30,6 +30,7 @@ GameManager::GameManager(uint uiId)
         m_uiNextArea(0),
         m_crWorld(0xFF,0xFF,0xFF),
         m_crBackground(0x9a,0xd7,0xfb),
+        m_uiMiscHudId(0),
         m_pPlayerListener(NULL),
         //m_hud(PWE::get()->genId()),
         m_pHud(new DraggableHud(PWE::get()->genId())),
@@ -441,6 +442,9 @@ GameManager::initBasicHud() {
 
     ContainerRenderModel *bottomBar = new ContainerRenderModel(NULL, Rect(0.f, SCREEN_HEIGHT - 2 * TEXTURE_TILE_SIZE, SCREEN_WIDTH, TEXTURE_TILE_SIZE * 2));
     panel->add(HUD_BOTTOMBAR, bottomBar);
+
+    ContainerRenderModel *miscHudItems = new ContainerRenderModel(NULL, Rect(0.f, 0.f, SCREEN_HEIGHT, SCREEN_WIDTH));
+    panel->add(HUD_MISC, miscHudItems);
 }
 
 void

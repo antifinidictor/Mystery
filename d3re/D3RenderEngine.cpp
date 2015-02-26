@@ -646,6 +646,21 @@ D3RenderEngine::comesBefore(GameObject *obj1, GameObject *obj2) {
             right1 < bx2.x);
 }
 
+Point
+D3RenderEngine::projectPoint(const Point &worldPos) {
+    GLint viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    GLdouble winX, winY, winZ;
+
+    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+    glGetDoublev( GL_PROJECTION_MATRIX, projection );
+    glGetIntegerv( GL_VIEWPORT, viewport );
+
+    gluProject(worldPos.x, worldPos.y, worldPos.z, modelview, projection, viewport, &winX, &winY, &winZ);
+
+    return Point(winX, winY, winZ);
+}
 
 void
 D3RenderEngine::showRealMouse() {

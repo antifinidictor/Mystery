@@ -2,6 +2,9 @@
 #include "Action.h"
 #include "WanderAction.h"
 #include "pwe/PartitionedWorldEngine.h"
+#include "game/gui/SpeechBubble.h"
+#include "game/GameManager.h"
+
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
 #define WALK_FORCE 1.0f
 #define ANIM_TIMER_MAX 3
@@ -12,10 +15,14 @@ enum NpcAnim {
     NUM_NPC_ANIMS
 };
 
-Character::Character(uint uiId, uint uiImageId, Point ptPos) {
-    m_uiId = uiId;
-    m_uiFlags = 0;
-
+Character::Character(uint uiId, uint uiImageId, Point ptPos)
+    :   m_uiId(uiId),
+        m_uiFlags(0),
+        m_iAnimTimer(0),
+        m_uiAnimState(0),
+        m_iDirection(SOUTH),
+        m_uiSpeechBubbleId(GameManager::get()->getMiscHudId())
+{
     Image *img = D3RE::get()->getImage(uiImageId);
     int iw = img->h / img->m_iNumFramesH;
     float w = WORLD_TILE_SIZE / 2;    //img->w / img->m_iNumFramesW,
@@ -32,12 +39,8 @@ Character::Character(uint uiId, uint uiImageId, Point ptPos) {
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pRenderModel = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
     m_pRenderModel->setFrameW(SOUTH);
-    m_iDirection = SOUTH;
     m_pCurAction = new WanderAction(this);//NoAction();
     m_pPhysicsModel->setListener(m_pCurAction);
-
-    m_iAnimTimer = 0;
-    m_uiAnimState = 0;
 }
 
 Character::~Character() {
@@ -45,6 +48,14 @@ Character::~Character() {
     delete m_pPhysicsModel;
     delete m_pRenderModel;
     delete m_pCurAction;
+
+    //Delete the speech bubble if it and its parent panels still exist
+    ContainerRenderModel *panel;
+    SpeechBubble *bubble;
+    panel  = D3RE::get()->getHudContainer();
+    panel  = (panel != NULL) ? panel->get<ContainerRenderModel*>(HUD_MISC) : NULL;
+    bubble = (panel != NULL) ? panel->get<SpeechBubble*>(m_uiSpeechBubbleId) : NULL;
+    if(bubble != NULL) { delete bubble; }
 }
 
 GameObject*
@@ -76,12 +87,29 @@ bool
 Character::update(float fDeltaTime) {
     m_pCurAction->update(fDeltaTime);
 
+    //TODO: Remove this test
+    static bool first = true;
+    if(first) {
+        first = false;
+        SpeechBubble *bubble = new SpeechBubble("#000000#This #FF0000#is #00FF00#a #0000FF#simple #000000#message.", m_pPhysicsModel->getCenter());
+        D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_MISC)->add(m_uiSpeechBubbleId, bubble);
+    }
+
     //Update direction frame
     int relativeDir = m_iDirection - angle2dir(D3RE::get()->getLookAngle() + M_PI / 2);
     if(relativeDir < 0) {
         relativeDir += NUM_CARDINAL_DIRECTIONS;
     }
     m_pRenderModel->setFrameW(relativeDir);
+
+    //Update speech bubble position, if we have a bubble
+    SpeechBubble *bubble = D3RE::get()->getHudContainer()
+        ->get<ContainerRenderModel*>(HUD_MISC)
+        ->get<SpeechBubble*>(m_uiSpeechBubbleId);
+    if(bubble != NULL) {
+        Point pos = m_pPhysicsModel->getPosition();
+        bubble->updatePosition(pos);
+    }
 
     return false;
 }

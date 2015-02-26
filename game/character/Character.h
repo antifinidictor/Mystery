@@ -64,6 +64,8 @@ private:
     int m_iAnimTimer;
     uint m_uiAnimState;
     int m_iDirection;
+
+    uint m_uiSpeechBubbleId;
 };
 
 #endif // CHARACTER_H

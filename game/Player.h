@@ -110,6 +110,9 @@ private:
     uint m_uiClimbObjCmdlId;    //ID of the collision model the player is climbing up
     Point m_ptClimbShift;           //The direction in which you are climbing
     Point m_ptStartClimbPos;        //Where you were when you start climbing
+
+    //Speech bubble info
+    uint m_uiSpeechBubbleId;
 };
 
 #endif // PLAYER_H

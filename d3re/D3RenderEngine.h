@@ -95,6 +95,8 @@ public:
     GameObject *getMouseOverObject() { return m_pMouseOverObject; }
     Point getMouseRay() { return m_v3MouseRay; }
 
+    Point projectPoint(const Point &worldPos);
+
 private:
     D3RenderEngine();
     virtual ~D3RenderEngine();

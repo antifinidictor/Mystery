@@ -5,6 +5,8 @@
 #include "game/spells/SourceSinkSpell.h"
 #include "game/spells/FlowSpell.h"
 #include "game/items/SpellItem.h"
+#include "game/gui/SpeechBubble.h"
+
 using namespace std;
 
 #define DENSITY 900.f  //1000kg/m^3 ~ density of water
@@ -74,8 +76,10 @@ Player::Player(uint uiId, const Point &ptPos)
         m_uiClimbObjId(0),
         m_uiClimbObjCmdlId(0),
         m_ptClimbShift(),
-        m_ptStartClimbPos()
+        m_ptStartClimbPos(),
 
+        //Speech bubble
+        m_uiSpeechBubbleId(GameManager::get()->getMiscHudId())
 {
 
     Image *img = D3RE::get()->getImage("player");
@@ -93,7 +97,6 @@ Player::Player(uint uiId, const Point &ptPos)
     m_pPhysicsModel->setListener(this);
 
     m_pRenderModel  = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
-
 
     //TODO: How can we design this better?
     GameManager::get()->registerPlayer(this);
@@ -120,6 +123,14 @@ Player::~Player() {
     PWE::get()->freeId(getId());
     delete m_pPhysicsModel;
     delete m_pRenderModel;
+
+    //Delete the speech bubble if it and its parent panels still exist
+    ContainerRenderModel *panel;
+    SpeechBubble *bubble;
+    panel  = D3RE::get()->getHudContainer();
+    panel  = (panel != NULL) ? panel->get<ContainerRenderModel*>(HUD_MISC) : NULL;
+    bubble = (panel != NULL) ? panel->get<SpeechBubble*>(m_uiSpeechBubbleId) : NULL;
+    if(bubble != NULL) { delete bubble; }
 }
 
 GameObject*
@@ -167,8 +178,16 @@ Player::update(float fDeltaTime) {
     }
 
 
-    //Point pos = m_pPhysicsModel->getPosition();
+    Point pos = m_pPhysicsModel->getPosition();
     //printf("Player position (line %d): (%f,%f,%f)\n", __LINE__, pos.x, pos.y, pos.z);
+
+    //Update speech bubble position, if we have a bubble
+    SpeechBubble *bubble = D3RE::get()->getHudContainer()
+        ->get<ContainerRenderModel*>(HUD_MISC)
+        ->get<SpeechBubble*>(m_uiSpeechBubbleId);
+    if(bubble != NULL) {
+        bubble->updatePosition(pos);
+    }
 
     m_bFirst = false;
     return false;
