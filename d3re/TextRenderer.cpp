@@ -3,9 +3,9 @@
  */
 
 #include "TextRenderer.h"
-#include "mge/Image.h"
 #include "mge/defs.h"
 #include "d3re/d3re.h"
+#include "mge/Image.h"
 #include "mge/ConfigManager.h"
 using namespace std;
 
@@ -121,9 +121,9 @@ float TextRenderer::thMax(int ih) {
 }
 
 
-float TextRenderer::getLineHeight(float size) {
+float TextRenderer::getLineHeight(float charSize) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
-    return size * pFont->h / pFont->m_iNumFramesH;
+    return charSize * pFont->h / pFont->m_iNumFramesH;
 }
 
 int TextRenderer::getNextLine(const char *str, int start) {
@@ -133,7 +133,12 @@ int TextRenderer::getNextLine(const char *str, int start) {
     else return i + 1;
 }
 
-void TextRenderer::render(const char *str, float x, float y, float size) {
+void TextRenderer::render(const char *str, float x, float y, float charSize) {
+    BasicCharacterFilter filter(charSize);
+    render(str, x, y, &filter);
+}
+
+void TextRenderer::render(const char *str, float x, float y, CharacterFilter *filter) {
     float x_start = x;
 
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
@@ -141,16 +146,20 @@ void TextRenderer::render(const char *str, float x, float y, float size) {
     //glDisable(GL_ALPHA_TEST);
     glBindTexture( GL_TEXTURE_2D, pFont->m_uiTexture );
 
-    for(int i = 0; str[i] != '\0'; ++i) {
+    for(int i = 0, line = 0, adjIx = 0; str[i] != '\0'; ++i) {
+        float charSize = filter->getSize(i, adjIx, line);
+        float offsetSize = filter->getOffsetSize(i, adjIx, line);
         if(str[i] == '\n') {
-            y += pFont->h / pFont->m_iNumFramesH * size;
+            y += pFont->h / pFont->m_iNumFramesH * offsetSize;
             x = x_start;
+            ++line;
             continue;
         } else if(str[i] == '#') {
             i += setColor(str + i + 1);
             continue;
         }
-        x += renderChar(pFont, str[i], x, y, size);
+        ++adjIx;
+        x += renderChar(pFont, str[i], x, y, charSize, offsetSize);
     }
     //Reset the color to default
     glColor3f(1.f, 1.f, 1.f);
@@ -164,14 +173,21 @@ int TextRenderer::setColor(const char *hexColor) {
     return end - hexColor + 1;
 }
 
-float TextRenderer::renderChar(Image *pFont, char c, float x, float y, float size) {
+float TextRenderer::renderChar(Image *pFont, char c, float x, float y, float charSize, float offsetSize) {
     int iw = char2IndW(c),
         ih = char2IndH(c);
     if(ih < 0) {
-        return SPACE_WIDTH * size;   //Space & unsupported characters
+        return SPACE_WIDTH * offsetSize;   //Space & unsupported characters
     }
-    float w = m_aWidths[iw * pFont->m_iNumFramesH + ih] * size,
-          h = pFont->h / pFont->m_iNumFramesH * size;
+    float w = m_aWidths[iw * pFont->m_iNumFramesH + ih] * charSize,
+          h = pFont->h / pFont->m_iNumFramesH * charSize;
+
+    //Center the character inside of the offset-size bounding area, where x and
+    // y are the origin of that area
+    float ow = m_aWidths[iw * pFont->m_iNumFramesH + ih] * offsetSize,
+          oh = pFont->h / pFont->m_iNumFramesH * offsetSize;
+    x += (ow / 2 - w / 2);
+    y += (oh / 2 - h / 2);
 
 	glBegin( GL_QUADS );
 		//Top-left vertex (corner)
@@ -190,60 +206,17 @@ float TextRenderer::renderChar(Image *pFont, char c, float x, float y, float siz
 		glTexCoord2f( twMin(iw), thMax(ih) );
         glVertex3f( x, y + h, 0.0f );
 	glEnd();
-	return w;
+
+	//TODO: Returning 'w' looks neater, but it might not look good when old lines start shrinking
+	return ow;
 }
 
-char* TextRenderer::splitText(const char *str, float maxw, float size) {
-    Image *pFont = D3RE::get()->getImage(m_uiFontId);
-//#if 0
-    float xw = 0;
-    int lastSpace = 0;
-    int oi = 0;
-    char *out = (char*)SDL_calloc(strlen(str) * 2, sizeof(char));
-    for(int i = 0; str[i] != '\0'; ++i) {
-        if(str[i] == '\n') {
-            lastSpace = 0;
-            out[oi] = str[i];
-            oi++;
-            xw = 0;
-            continue;
-        } else if(str[i] == '#') {
-            i += COLOR_SIZE;
-            continue;
-        }
-
-        int iw = char2IndW(str[i]),
-            ih = char2IndH(str[i]);
-
-        xw += m_aWidths[iw * pFont->m_iNumFramesH + ih] * size;
-        if(xw > maxw) {
-            if(lastSpace == 0) {
-                out[oi] = '\n';
-                ++oi;
-                --i;
-                xw = 0;
-                continue;
-            } else {
-                oi -= i - lastSpace;
-                i = lastSpace;
-                out[oi] = '\n';
-                oi++;
-                xw = 0;
-                continue;
-            }
-        }
-        if(ih < 0) {
-            lastSpace = i;
-        }
-        out[oi] = str[i];
-        oi++;
-    }
-    out[oi] = '\0';
-    return out;
-//#endif
+void TextRenderer::splitText(string &str, float maxw, float charSize) {
+    BasicCharacterFilter filter(charSize);
+    splitText(str, maxw, &filter);
 }
 
-void TextRenderer::splitText(string &str, float maxw, float size) {
+void TextRenderer::splitText(string &str, float maxw, CharacterFilter *filter) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     if(maxw < 0) {
         printf("ERROR: illegal width %f when splitting text\n", maxw);
@@ -253,44 +226,59 @@ void TextRenderer::splitText(string &str, float maxw, float size) {
 //#if 0
     float xw = 0;
     int lastSpace = 0;
+    int lastAdjSpace = 0;
     //int oi = 0;
     //char *out = (char*)SDL_calloc(strlen(str) * 2, sizeof(char));
+    int line = 0, adjIx = 0;
     for(string::iterator curChar = str.begin(); curChar < str.end(); ++curChar) {
         if(*curChar == '\n') {
             lastSpace = 0;
             xw = 0;
+            ++line;
             continue;
         } else if(*curChar == '#') {
             curChar += COLOR_SIZE;
             continue;
         }
 
+        float offsetSize = filter->getOffsetSize(curChar - str.begin(), adjIx, line);
         int iw = char2IndW(*curChar),
             ih = char2IndH(*curChar);
-        xw += m_aWidths[iw * pFont->m_iNumFramesH + ih] * size;
+        xw += m_aWidths[iw * pFont->m_iNumFramesH + ih] * offsetSize;
 
         if(xw > maxw) {
-            if(lastSpace == 0) {    //word is too long
+            if(lastSpace == 0) {    //whole word is too long
                 curChar = str.insert(curChar, '\n');
                 xw = 0;
+                ++line;
                 continue;
             } else {
                 str[lastSpace] = '\n';
                 curChar = str.begin() + lastSpace;
+                adjIx = lastAdjSpace;
+                ++line;
                 xw = 0;
                 lastSpace = 0;
                 continue;
             }
         }
+
+        //This is a non-printing (space) character
         if(ih < 0) {
             lastSpace = curChar - str.begin();
+            lastAdjSpace = adjIx;
         }
-
+        ++adjIx;
     }
 //#endif
 }
 
-Rect TextRenderer::getArea(const std::string &str, float x, float y, float size) {
+Rect TextRenderer::getArea(const std::string &str, float x, float y, float charSize) {
+    BasicCharacterFilter filter(charSize);
+    return getArea(str, x, y, &filter);
+}
+
+Rect TextRenderer::getArea(const std::string &str, float x, float y, CharacterFilter *filter) {
     Image *pFont = D3RE::get()->getImage(m_uiFontId);
     float h;
     int iFramesH;
@@ -305,13 +293,16 @@ Rect TextRenderer::getArea(const std::string &str, float x, float y, float size)
 
     float cur_w = 0.f,
           max_w = 0.f,
-          max_h = h * size;
+          max_h = h * filter->getOffsetSize(0, 0, 0);
 
-    for(int i = 0; str[i] != '\0'; ++i) {
+    for(int i = 0, adjIx = 0, line = 0; str[i] != '\0'; ++i) {
+        float offsetSize = filter->getOffsetSize(i, adjIx, line);
+
         if(str[i] == '\n') {
-            max_h += h;
+            max_h += h * offsetSize;
             if(cur_w > max_w) max_w = cur_w;
             cur_w = 0;
+            ++line;
             continue;
         } else if(str[i] == '#') {
             i += COLOR_SIZE;
@@ -319,7 +310,8 @@ Rect TextRenderer::getArea(const std::string &str, float x, float y, float size)
         }
         int iw = char2IndW(str[i]),
             ih = char2IndH(str[i]);
-        cur_w += m_aWidths[iw * iFramesH + ih] * size;
+        cur_w += m_aWidths[iw * iFramesH + ih] * offsetSize;
+        ++adjIx;
     }
     if(cur_w > max_w) max_w = cur_w;
 

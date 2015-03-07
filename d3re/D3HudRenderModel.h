@@ -8,12 +8,13 @@
 #include "mge/defs.h"
 #include "mge/Image.h"
 #include "mge/Positionable.h"
+#include "d3re/TextRenderer.h"
 
 class D3HudRenderModel : public RenderModel, public Positionable {
 public:
     D3HudRenderModel(uint uiImageId, const Rect &rcArea);
-    D3HudRenderModel(const std::string &data, const Rect &rcArea, float textSize = 1.f);
-    D3HudRenderModel(uint uiImageId, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize = 1.f);
+    D3HudRenderModel(const std::string &data, const Rect &rcArea, TextRenderer::CharacterFilter *filter);
+    D3HudRenderModel(uint uiImageId, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, TextRenderer::CharacterFilter *filter);
     virtual ~D3HudRenderModel();
 
     virtual void render(RenderEngine *re);
@@ -30,12 +31,14 @@ public:
     int getFrameH() { return m_iFrameH; }
     int getRepsW()  { return m_iRepsW; }
     int getRepsH()  { return m_iRepsH; }
+    TextRenderer::CharacterFilter *getFilter() { return m_filter; }
 
     void setImageColor(const Color &cr) { m_crImageColor = cr; }
     Color &getImageColor() { return m_crImageColor; }
 
     void updateDrawArea(const Rect &rc);
-    void updateText(const std::string &data, float textSize = -1.f);
+    void updateText(const std::string &data);
+    void updateFilter(TextRenderer::CharacterFilter *filter);
     std::string getText() { return m_sData; }
 
     void centerVertically(bool bCenter);
@@ -47,8 +50,8 @@ private:
 
     uint m_uiImageId;
 
+    TextRenderer::CharacterFilter *m_filter;
     std::string m_sData;
-    float m_fTextSize;
 
     Rect m_rcDrawArea;
     Point m_ptTextPos;

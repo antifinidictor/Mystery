@@ -117,20 +117,23 @@ Player::~Player() {
         s_pHud->clearInventory();
     }
 
-    GameManager::get()->registerPlayer(NULL);
-    s_pHud->registerPlayer(NULL);
+    if(GameManager::get() != NULL) {
+        GameManager::get()->registerPlayer(NULL);
+        s_pHud->registerPlayer(NULL);
+    }
 
     PWE::get()->freeId(getId());
     delete m_pPhysicsModel;
     delete m_pRenderModel;
 
     //Delete the speech bubble if it and its parent panels still exist
-    ContainerRenderModel *panel;
-    SpeechBubble *bubble;
-    panel  = D3RE::get()->getHudContainer();
-    panel  = (panel != NULL) ? panel->get<ContainerRenderModel*>(HUD_MISC) : NULL;
-    bubble = (panel != NULL) ? panel->get<SpeechBubble*>(m_uiSpeechBubbleId) : NULL;
-    if(bubble != NULL) { delete bubble; }
+    ContainerRenderModel *panel = D3RE::get()->getHudContainer();
+    if(panel != NULL) {
+        panel = panel->get<ContainerRenderModel*>(HUD_MISC);
+        if(panel != NULL) {
+            panel->erase(m_uiSpeechBubbleId);
+        }
+    }
 }
 
 GameObject*
@@ -178,15 +181,30 @@ Player::update(float fDeltaTime) {
     }
 
 
+    //Get the head position of the player
     Point pos = m_pPhysicsModel->getPosition();
+    pos.y += m_pPhysicsModel->getCollisionModel(0)->getBounds().h;
     //printf("Player position (line %d): (%f,%f,%f)\n", __LINE__, pos.x, pos.y, pos.z);
 
     //Update speech bubble position, if we have a bubble
     SpeechBubble *bubble = D3RE::get()->getHudContainer()
         ->get<ContainerRenderModel*>(HUD_MISC)
         ->get<SpeechBubble*>(m_uiSpeechBubbleId);
+
+    //TODO: Remove this test
+    if(bubble == NULL) {
+        bubble = new SpeechBubble(m_uiSpeechBubbleId,
+                                  "Players will have a much smaller message, as shown.",
+                                  pos);
+        D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_MISC)->add(m_uiSpeechBubbleId, bubble);
+    }
+
     if(bubble != NULL) {
-        bubble->updatePosition(pos);
+        if(!bubble->update(pos)) {
+            D3RE::get()->getHudContainer()
+                ->get<ContainerRenderModel*>(HUD_MISC)
+                ->erase(m_uiSpeechBubbleId);
+        }
     }
 
     m_bFirst = false;

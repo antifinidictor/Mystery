@@ -39,23 +39,27 @@ Character::Character(uint uiId, uint uiImageId, Point ptPos)
     m_pPhysicsModel->addCollisionModel(new BoxCollisionModel(bxVolume));
     m_pRenderModel = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
     m_pRenderModel->setFrameW(SOUTH);
-    m_pCurAction = new WanderAction(this);//NoAction();
-    m_pPhysicsModel->setListener(m_pCurAction);
+    pushAction(new WanderAction(this));
+    m_pPhysicsModel->setListener(m_vActions.back());
 }
 
 Character::~Character() {
     PWE::get()->freeId(getId());
     delete m_pPhysicsModel;
     delete m_pRenderModel;
-    delete m_pCurAction;
+    for(std::vector<Action*>::iterator it = m_vActions.begin(), end = m_vActions.end(); it != end; ++it) {
+        delete *it;
+    }
+    m_vActions.clear();
 
     //Delete the speech bubble if it and its parent panels still exist
-    ContainerRenderModel *panel;
-    SpeechBubble *bubble;
-    panel  = D3RE::get()->getHudContainer();
-    panel  = (panel != NULL) ? panel->get<ContainerRenderModel*>(HUD_MISC) : NULL;
-    bubble = (panel != NULL) ? panel->get<SpeechBubble*>(m_uiSpeechBubbleId) : NULL;
-    if(bubble != NULL) { delete bubble; }
+    ContainerRenderModel *panel = D3RE::get()->getHudContainer();
+    if(panel != NULL) {
+        panel = panel->get<ContainerRenderModel*>(HUD_MISC);
+        if(panel != NULL) {
+            panel->erase(m_uiSpeechBubbleId);
+        }
+    }
 }
 
 GameObject*
@@ -85,14 +89,11 @@ Character::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 
 bool
 Character::update(float fDeltaTime) {
-    m_pCurAction->update(fDeltaTime);
-
-    //TODO: Remove this test
-    static bool first = true;
-    if(first) {
-        first = false;
-        SpeechBubble *bubble = new SpeechBubble("#000000#This #FF0000#is #00FF00#a #0000FF#simple #000000#message.", m_pPhysicsModel->getCenter());
-        D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_MISC)->add(m_uiSpeechBubbleId, bubble);
+    if(m_vActions.size() > 0) {
+        Action *curAction = m_vActions.back();
+        if(curAction != NULL) {
+            curAction->update(fDeltaTime);
+        }
     }
 
     //Update direction frame
@@ -106,9 +107,23 @@ Character::update(float fDeltaTime) {
     SpeechBubble *bubble = D3RE::get()->getHudContainer()
         ->get<ContainerRenderModel*>(HUD_MISC)
         ->get<SpeechBubble*>(m_uiSpeechBubbleId);
+
+    //TODO: Remove this test
+    if(bubble == NULL) {
+        Point pos = m_pPhysicsModel->getPosition();
+        pos.y += m_pPhysicsModel->getCollisionModel(0)->getBounds().h;
+        bubble = new SpeechBubble(m_uiSpeechBubbleId, LOREM_IPSUM, pos);
+        D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_MISC)->add(m_uiSpeechBubbleId, bubble);
+    }
+
     if(bubble != NULL) {
         Point pos = m_pPhysicsModel->getPosition();
-        bubble->updatePosition(pos);
+        pos.y += m_pPhysicsModel->getCollisionModel(0)->getBounds().h;
+        if(!bubble->update(pos)) {
+            D3RE::get()->getHudContainer()
+                ->get<ContainerRenderModel*>(HUD_MISC)
+                ->erase(m_uiSpeechBubbleId);
+        }
     }
 
     return false;
@@ -149,4 +164,16 @@ Character::moveTowards(const Point &pt, float speed) {
 void
 Character::standStill() {
     m_pRenderModel->setFrameH(NPC_STANDING);
+}
+
+
+void
+Character::popAction() {
+    delete m_vActions.back();
+    m_vActions.pop_back();
+}
+
+void
+Character::pushAction(Action *action) {
+    m_vActions.push_back(action);
 }

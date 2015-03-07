@@ -140,8 +140,8 @@ enum GameManagerState {
 };
 
 enum HudContainers {
-    HUD_MISC,
     HUD_TOPBAR,
+    HUD_MISC,
     HUD_BOTTOMBAR,
     NUM_HUD_ELEMENTS
 };

@@ -93,12 +93,21 @@ ContainerRenderModel::erase(uint id) {
 
 void
 ContainerRenderModel::clear() {
+static std::string spaces = "";
+    //printf(__FILE__" %d: Number of models = %d for obj %x {\n", __LINE__, m_mModels.size(), this);
     for(std::map<uint, RenderModel*>::iterator iter = m_mModels.begin();
             iter != m_mModels.end(); ++iter) {
+        //printf(__FILE__" %d: Obj %d @ %x, child of %x, child of %x\n", __LINE__, iter->first, iter->second, this, m_pParent);
+printf("%s%x:%d; %x {\n", spaces.c_str(), iter->second, iter->first, this);
+spaces.push_back('\t');
         iter->second->setParent(NULL);
         delete iter->second;
+//spaces.pop_back();
+spaces.erase(spaces.end()-1);
+printf("%s} (%x:%d; %x)\n", spaces.c_str(), iter->second, iter->first, this);
     }
     m_mModels.clear();
+    //printf(__FILE__" %d: Number of remaining models = %d for obj %x }\n", __LINE__, m_mModels.size(), this);
 }
 /*
 template <class RenderModelType>

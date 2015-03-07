@@ -23,7 +23,7 @@ TextDisplay::registerText(const std::string &text, OnTextDoneCallback cb, float 
     Rect rcPanelArea = panel->getDrawArea();
     Rect rcTextArea = TextRenderer::get()->getArea(text.c_str(), rcPanelArea.w, rcPanelArea.h / 2);
     rcTextArea.y -= rcTextArea.h / 2 + fabs((float)(rand() % 10)) * 5;
-    D3HudRenderModel *hmdl = new D3HudRenderModel(text, rcTextArea);
+    D3HudRenderModel *hmdl = new D3HudRenderModel(text, rcTextArea, new TextRenderer::BasicCharacterFilter(1.f));
 
     //
     m_lsTexts.push_back(TextInfo(m_uiNextTextId, cb, fRate));

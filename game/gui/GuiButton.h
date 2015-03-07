@@ -21,7 +21,7 @@ public:
                 Rect(ptPos.x, ptPos.y, BUTTON_WIDTH, BUTTON_HEIGHT),
                 label,
                 Point(0,0,0),
-                textSize
+                new TextRenderer::BasicCharacterFilter(textSize)
             ),
             m_uiId(PWE::get()->genId()),    //For listener use
             m_uiEventId(uiEventId),

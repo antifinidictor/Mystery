@@ -847,11 +847,11 @@ DraggableHud::initPlayerHud() {
         TEXTURE_TILE_SIZE * 3,
         TEXTURE_TILE_SIZE - 12
     );
-    D3HudRenderModel *label = new D3HudRenderModel("area", rcAreaLabel,1.0f);
+    D3HudRenderModel *label = new D3HudRenderModel("area", rcAreaLabel, new TextRenderer::BasicCharacterFilter(1.0f));
     label->centerHorizontally(true);
     panel->add(MGHUD_CUR_AREA, label);
 
-    label = new D3HudRenderModel("action", rcActionLabel,0.8f);
+    label = new D3HudRenderModel("action", rcActionLabel, new TextRenderer::BasicCharacterFilter(0.8f));
     label->centerHorizontally(true);
     label->centerVertically(true);
     panel->add(MGHUD_CUR_ACTION, label);
@@ -885,7 +885,7 @@ DraggableHud::initHealthBarHud(ContainerRenderModel *panel) {
     D3HudRenderModel *middle = new D3HudRenderModel(barId, Rect(BAR_X + BAR_SIZE,BAR_Y,BAR_WIDTH - BAR_SIZE * 2,BAR_SIZE));
     D3HudRenderModel *rightEdge = new D3HudRenderModel(barId, Rect(BAR_X + BAR_WIDTH - BAR_SIZE,BAR_Y,BAR_SIZE,BAR_SIZE));
 
-    D3HudRenderModel *label = new D3HudRenderModel("99", Rect(BAR_X+BAR_WIDTH/2.f - 10.f,BAR_Y,20.f,BAR_SIZE),0.8f);
+    D3HudRenderModel *label = new D3HudRenderModel("99", Rect(BAR_X+BAR_WIDTH/2.f - 10.f,BAR_Y,20.f,BAR_SIZE), new TextRenderer::BasicCharacterFilter(0.8f));
     D3HudRenderModel *bar = new D3HudRenderModel(barId, Rect(BAR_X+1,BAR_Y,BAR_WIDTH-2,BAR_SIZE));
 
     rightEdge->setFrameH(2);
@@ -958,11 +958,11 @@ DraggableHud::initSideButtonHud(ContainerRenderModel *panel) {
         ptQuitButtonPos.y + BUTTON_SPACING,
         0
     );
-    D3HudRenderModel *label = new D3HudRenderModel("", rcItemNameLabel,1.0f);
+    D3HudRenderModel *label = new D3HudRenderModel("", rcItemNameLabel, new TextRenderer::BasicCharacterFilter(1.0f));
     label->centerHorizontally(true);
     panel->add(MGHUD_SIDEBUTTON_ITEMNAME, label);
 
-    label = new D3HudRenderModel("", rcItemDescLabel,0.8f);
+    label = new D3HudRenderModel("", rcItemDescLabel, new TextRenderer::BasicCharacterFilter(0.8f));
     panel->add(MGHUD_SIDEBUTTON_ITEMDESC, label);
 
     GuiButton *btn;
@@ -1015,11 +1015,11 @@ DraggableHud::initSideTypeHud(ContainerRenderModel *panel) {
         ptActionButtonPos.y + BUTTON_SPACING,
         0
     );
-    D3HudRenderModel *label = new D3HudRenderModel("", rcMessageLabel,1.0f);
+    D3HudRenderModel *label = new D3HudRenderModel("", rcMessageLabel, new TextRenderer::BasicCharacterFilter(1.0f));
     label->centerHorizontally(true);
     panel->add(MGHUD_SIDETYPE_MESSAGE, label);
 
-    label = new D3HudRenderModel("", rcTextLabel,0.9f);
+    label = new D3HudRenderModel("", rcTextLabel, new TextRenderer::BasicCharacterFilter(0.9f));
     panel->add(MGHUD_SIDETYPE_TEXT, label);
 
     GuiButton *btn;
@@ -1056,7 +1056,7 @@ DraggableHud::initSideConfirmHud(ContainerRenderModel *panel) {
         ptActionButtonPos.y + BUTTON_SPACING,
         0
     );
-    D3HudRenderModel *label = new D3HudRenderModel("", rcMessageLabel,1.0f);
+    D3HudRenderModel *label = new D3HudRenderModel("", rcMessageLabel, new TextRenderer::BasicCharacterFilter(1.0f));
     label->centerHorizontally(true);
     panel->add(MGHUD_SIDECONFIRM_MESSAGE, label);
 

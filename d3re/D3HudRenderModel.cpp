@@ -8,8 +8,8 @@
 
 D3HudRenderModel::D3HudRenderModel(uint uiImageId, const Rect &rcArea)
     :   m_uiImageId(uiImageId),
+        m_filter(NULL),
         m_sData(""),
-        m_fTextSize(-1.f),
         m_rcDrawArea(rcArea),
         m_ptTextPos(rcArea.x, rcArea.y, 0.f),
         m_bVertCenter(false),
@@ -22,10 +22,10 @@ D3HudRenderModel::D3HudRenderModel(uint uiImageId, const Rect &rcArea)
 {
 }
 
-D3HudRenderModel::D3HudRenderModel(const std::string &data, const Rect &rcArea, float textSize)
+D3HudRenderModel::D3HudRenderModel(const std::string &data, const Rect &rcArea, TextRenderer::CharacterFilter *filter)
     :   m_uiImageId(0),
+        m_filter(filter),
         m_sData(data),
-        m_fTextSize(textSize),
         m_rcDrawArea(rcArea),
         m_ptTextPos(rcArea.x, rcArea.y, 0.f),
         m_bVertCenter(false),
@@ -36,27 +36,30 @@ D3HudRenderModel::D3HudRenderModel(const std::string &data, const Rect &rcArea, 
         m_iRepsH(1),
         m_crImageColor(0xFF, 0xFF, 0xFF)
 {
+    updateText(data);
 }
 
-D3HudRenderModel::D3HudRenderModel(uint uiImageId, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, float textSize) {
-    m_uiImageId = uiImageId;
-    m_rcDrawArea = rcArea;
-
-    m_fTextSize = textSize;
-    m_sData = data;
-    m_ptTextPos = Point(ptTextOffset.x + rcArea.x, ptTextOffset.y + rcArea.y, ptTextOffset.z);
-
-    m_iFrameW = 0;
-    m_iFrameH = 0;
-    m_iRepsW = 1;
-    m_iRepsH = 1;
-
-    m_crImageColor = Color(0xFF, 0xFF, 0xFF);
-    m_bVertCenter = false;
-    m_bHorizCenter = false;
+D3HudRenderModel::D3HudRenderModel(uint uiImageId, const Rect &rcArea, const std::string &data, const Point &ptTextOffset, TextRenderer::CharacterFilter *filter)
+    :   m_uiImageId(uiImageId),
+        m_filter(filter),
+        m_sData(data),
+        m_rcDrawArea(rcArea),
+        m_ptTextPos(ptTextOffset.x + rcArea.x, ptTextOffset.y + rcArea.y, ptTextOffset.z),
+        m_bVertCenter(false),
+        m_bHorizCenter(false),
+        m_iFrameW(0),
+        m_iFrameH(0),
+        m_iRepsW(1),
+        m_iRepsH(1),
+        m_crImageColor(0xFF, 0xFF, 0xFF)
+{
+    updateText(data);
 }
 
 D3HudRenderModel::~D3HudRenderModel() {
+    if(m_filter != NULL) {
+        delete m_filter;
+    }
 }
 
 void
@@ -65,7 +68,7 @@ D3HudRenderModel::render(RenderEngine *re) {
     if(pImage != NULL) {
         renderImage(pImage);
     }
-    if(m_fTextSize > 0.f) {
+    if(m_filter != NULL) {
         renderText();
     }
 }
@@ -95,17 +98,22 @@ D3HudRenderModel::updateDrawArea(const Rect &rc) {
 }
 
 void
-D3HudRenderModel::updateText(const std::string &data, float textSize) {
-    if(textSize > 0.f) {
-        m_fTextSize = textSize;
-    } else if(m_fTextSize < 0.f) {
-        m_fTextSize = 1.f;
+D3HudRenderModel::updateFilter(TextRenderer::CharacterFilter *filter) {
+    //Clear out the old filter and insert the knew one
+    if(m_filter != NULL) {
+        delete m_filter;
     }
-    Rect rcOldTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
+    m_filter = filter;
+    updateText(m_sData);
+}
+
+void
+D3HudRenderModel::updateText(const std::string &data) {
+    Rect rcOldTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_filter);
     m_sData = data;
 
     //Center the text in the box
-    Rect rcNewTextArea = TextRenderer::get()->getArea(data, 0.f, 0.f, m_fTextSize);
+    Rect rcNewTextArea = TextRenderer::get()->getArea(data, 0.f, 0.f, m_filter);
 
     if(m_bVertCenter) {
         m_ptTextPos.y -= rcNewTextArea.h / 2 - rcOldTextArea.h / 2;
@@ -113,20 +121,22 @@ D3HudRenderModel::updateText(const std::string &data, float textSize) {
     if(m_bHorizCenter) {
         m_ptTextPos.x -= rcNewTextArea.w / 2 - rcOldTextArea.w / 2;
     }
+
+    float margin = m_ptTextPos.x - m_rcDrawArea.x;
+    if(!m_bHorizCenter) {
+        TextRenderer::get()->splitText(m_sData, m_rcDrawArea.w - margin * 2, m_filter);
+    }
 }
-
-
-
 
 void
 D3HudRenderModel::centerVertically(bool bCenter) {
     if(m_bVertCenter && !bCenter) {
         //Shift the text so it is not centered
-        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
+        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_filter);
         m_ptTextPos.y -= m_rcDrawArea.h / 2 - rcTextArea.h / 2;
     } else if(!m_bVertCenter && bCenter) {
         //Shift the text so it is centered
-        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
+        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_filter);
         m_ptTextPos.y += m_rcDrawArea.h / 2 - rcTextArea.h / 2;
     }
     m_bVertCenter = bCenter;
@@ -136,11 +146,11 @@ void
 D3HudRenderModel::centerHorizontally(bool bCenter) {
     if(m_bHorizCenter && !bCenter) {
         //Shift the text so it is NOT centered
-        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
+        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_filter);
         m_ptTextPos.x -= m_rcDrawArea.w / 2 - rcTextArea.w / 2;
     } else if(!m_bHorizCenter && bCenter) {
         //Shift the text so it IS centered
-        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_fTextSize);
+        Rect rcTextArea = TextRenderer::get()->getArea(m_sData, 0.f, 0.f, m_filter);
         m_ptTextPos.x += m_rcDrawArea.w / 2 - rcTextArea.w / 2;
     }
     m_bHorizCenter = bCenter;
@@ -194,12 +204,8 @@ D3HudRenderModel::renderText() {
     Point ptPos = getParentPosition();
     glTranslatef(ptPos.x, ptPos.y, ptPos.z);
 
-    std::string splitData = m_sData;
-    float margin = m_ptTextPos.x - m_rcDrawArea.x;
     glColor3f(1.f,1.f,1.f);
-    if(!m_bHorizCenter) {
-        TextRenderer::get()->splitText(splitData, m_rcDrawArea.w - margin * 2, m_fTextSize);
-    }
-    TextRenderer::get()->render(splitData.c_str(), m_ptTextPos.x, m_ptTextPos.y, m_fTextSize);
+    //Old pos of splitting text
+    TextRenderer::get()->render(m_sData.c_str(), m_ptTextPos.x, m_ptTextPos.y, m_filter);
     glPopMatrix();
 }

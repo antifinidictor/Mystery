@@ -236,6 +236,8 @@
 		<Unit filename="game/gui/DraggableItem.cpp" />
 		<Unit filename="game/gui/DraggableItem.h" />
 		<Unit filename="game/gui/GuiButton.h" />
+		<Unit filename="game/gui/SpeechBubble.cpp" />
+		<Unit filename="game/gui/SpeechBubble.h" />
 		<Unit filename="game/gui/TextDisplay.cpp" />
 		<Unit filename="game/gui/TextDisplay.h" />
 		<Unit filename="game/items/Item.cpp" />

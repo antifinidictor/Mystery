@@ -31,7 +31,7 @@ class GameManager : public GameObject
 public:
     static void init() { m_pInstance = new GameManager(PWE::get()->genId()); }
     static GameManager *get() { return m_pInstance; }
-    static void clean() { delete m_pInstance; }
+    static void clean() { delete m_pInstance; m_pInstance = NULL; }
 
     //File i/o
     static GameObject* read(const boost::property_tree::ptree &pt, const std::string &keyBase);

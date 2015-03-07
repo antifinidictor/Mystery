@@ -23,6 +23,37 @@ using namespace std;
 
 GameManager *GameManager::m_pInstance;
 
+
+
+class DumpTreeFunctor {
+    int m_depth;
+
+public:
+    DumpTreeFunctor(int depth)
+        :   m_depth(depth)
+    {
+    }
+
+    bool operator()(uint id, RenderModel *mdl) {
+        ContainerRenderModel *cmdl = dynamic_cast<ContainerRenderModel*>(mdl);
+        string spaces(m_depth, '\t');
+        if(cmdl != NULL) {
+            printf("%s%p:%d {\n", spaces.c_str(), mdl, id);
+
+            //Recursively dump this item's subtree
+            DumpTreeFunctor child(m_depth + 1);
+            cmdl->forEachModel(child);
+
+            printf("%s} (%p:%d)\n", spaces.c_str(), mdl, id);
+        } else {
+            //Otherwise, print this item
+            printf("%s%p:%d (not a container)\n", spaces.c_str(), mdl, id);
+        }
+        return false;
+    }
+};
+
+
 GameManager::GameManager(uint uiId)
     :   m_uiId(uiId),
         m_uiFlags(0),
@@ -445,10 +476,15 @@ GameManager::initBasicHud() {
 
     ContainerRenderModel *miscHudItems = new ContainerRenderModel(NULL, Rect(0.f, 0.f, SCREEN_HEIGHT, SCREEN_WIDTH));
     panel->add(HUD_MISC, miscHudItems);
+
+    DumpTreeFunctor ftor(0);
+    panel->forEachModel(ftor);
 }
 
 void
 GameManager::cleanBasicHud() {
+    DumpTreeFunctor ftor(0);
+    D3RE::get()->getHudContainer()->forEachModel(ftor);
     D3RE::get()->getHudContainer()->clear();
 }
 
@@ -570,7 +606,6 @@ GameManager::registerPlayer(Listener *pPlayer) {
     //The GameManager needs to know about the player so it can tell it to update the HUD
     m_pPlayerListener = pPlayer;
 }
-
 
 void
 GameManager::pushState(GameManagerState eNewState) {

@@ -17,6 +17,7 @@
 #include "game/game_defs.h"
 #include "tpe/tpe.h"
 #include "d3re/d3re.h"
+#include <vector>
 class Action;
 
 class Character : public GameObject
@@ -50,16 +51,21 @@ public:
     void setDirection(int iFrame) { m_pRenderModel->setFrameW(iFrame); m_iDirection = iFrame; }
     int getDirection() { return m_iDirection; }
 
+    //Action functions: Adjust the action stack
+    void popAction();
+    void pushAction(Action *action);
+
     //Single-update functions: Call once per update
     void moveTowards(const Point &pt, float speed = 1.f);
     void standStill();
+
 private:
     uint m_uiId;
     flag_t m_uiFlags;
 
     D3SpriteRenderModel *m_pRenderModel;
     TimePhysicsModel   *m_pPhysicsModel;
-    Action *m_pCurAction;
+    std::vector<Action *> m_vActions;
 
     int m_iAnimTimer;
     uint m_uiAnimState;
