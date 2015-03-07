@@ -21,6 +21,7 @@ Character::Character(uint uiId, uint uiImageId, Point ptPos)
         m_iAnimTimer(0),
         m_uiAnimState(0),
         m_iDirection(SOUTH),
+        m_bPopAction(false),
         m_uiSpeechBubbleId(GameManager::get()->getMiscHudId())
 {
     Image *img = D3RE::get()->getImage(uiImageId);
@@ -40,7 +41,6 @@ Character::Character(uint uiId, uint uiImageId, Point ptPos)
     m_pRenderModel = new D3SpriteRenderModel(m_pPhysicsModel, img->m_uiID, rcDrawArea);
     m_pRenderModel->setFrameW(SOUTH);
     pushAction(new WanderAction(this));
-    m_pPhysicsModel->setListener(m_vActions.back());
 }
 
 Character::~Character() {
@@ -89,12 +89,25 @@ Character::write(boost::property_tree::ptree &pt, const std::string &keyBase) {
 
 bool
 Character::update(float fDeltaTime) {
-    if(m_vActions.size() > 0) {
-        Action *curAction = m_vActions.back();
-        if(curAction != NULL) {
-            curAction->update(fDeltaTime);
+    //Pop action, if requested
+    if(m_bPopAction) {
+        m_bPopAction = false;
+
+        delete m_vActions.back();
+        m_vActions.pop_back();
+
+        //Make sure the new action is a listener once more
+        if(m_vActions.size() > 0) {
+            m_pPhysicsModel->setListener(m_vActions.back());
+        } else {
+            //Make sure we always have an action
+            pushAction(new NoAction(this));
         }
     }
+
+    //Perform action
+    Action *curAction = m_vActions.back();
+    curAction->update(fDeltaTime);
 
     //Update direction frame
     int relativeDir = m_iDirection - angle2dir(D3RE::get()->getLookAngle() + M_PI / 2);
@@ -107,14 +120,6 @@ Character::update(float fDeltaTime) {
     SpeechBubble *bubble = D3RE::get()->getHudContainer()
         ->get<ContainerRenderModel*>(HUD_MISC)
         ->get<SpeechBubble*>(m_uiSpeechBubbleId);
-
-    //TODO: Remove this test
-    if(bubble == NULL) {
-        Point pos = m_pPhysicsModel->getPosition();
-        pos.y += m_pPhysicsModel->getCollisionModel(0)->getBounds().h;
-        bubble = new SpeechBubble(m_uiSpeechBubbleId, LOREM_IPSUM, pos);
-        D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_MISC)->add(m_uiSpeechBubbleId, bubble);
-    }
 
     if(bubble != NULL) {
         Point pos = m_pPhysicsModel->getPosition();
@@ -169,11 +174,14 @@ Character::standStill() {
 
 void
 Character::popAction() {
-    delete m_vActions.back();
-    m_vActions.pop_back();
+    m_bPopAction = true;
 }
 
 void
 Character::pushAction(Action *action) {
+    if(action == NULL) {
+        action = new NoAction(this);
+    }
     m_vActions.push_back(action);
+    m_pPhysicsModel->setListener(action);
 }

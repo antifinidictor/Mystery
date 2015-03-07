@@ -191,13 +191,15 @@ Player::update(float fDeltaTime) {
         ->get<ContainerRenderModel*>(HUD_MISC)
         ->get<SpeechBubble*>(m_uiSpeechBubbleId);
 
+#if 0
     //TODO: Remove this test
     if(bubble == NULL) {
         bubble = new SpeechBubble(m_uiSpeechBubbleId,
-                                  "Players will have a much smaller message, as shown.",
+                                  LOREM_IPSUM,
                                   pos);
         D3RE::get()->getHudContainer()->get<ContainerRenderModel*>(HUD_MISC)->add(m_uiSpeechBubbleId, bubble);
     }
+#endif
 
     if(bubble != NULL) {
         if(!bubble->update(pos)) {

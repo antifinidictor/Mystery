@@ -16222,7 +16222,7 @@
 	<boost/lexical_cast.hpp>
 	<limits>
 
-1425251743 /home/naheisey/Documents/projects/games/Mystery/game/game_defs.h
+1425718384 /home/naheisey/Documents/projects/games/Mystery/game/game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -16258,7 +16258,7 @@
 	"mge/defs.h"
 	<map>
 
-1425717438 source:/home/naheisey/Documents/projects/games/Mystery/game/character/Character.cpp
+1425719160 source:/home/naheisey/Documents/projects/games/Mystery/game/character/Character.cpp
 	"Character.h"
 	"Action.h"
 	"WanderAction.h"
@@ -16266,7 +16266,7 @@
 	"game/gui/SpeechBubble.h"
 	"game/GameManager.h"
 
-1425717054 /home/naheisey/Documents/projects/games/Mystery/game/character/Character.h
+1425718479 /home/naheisey/Documents/projects/games/Mystery/game/character/Character.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
@@ -16314,8 +16314,9 @@
 	"mge/Event.h"
 	"WorldOctree.h"
 
-1399145648 source:/home/naheisey/Documents/projects/games/Mystery/game/character/WanderAction.cpp
+1425718611 source:/home/naheisey/Documents/projects/games/Mystery/game/character/WanderAction.cpp
 	"WanderAction.h"
+	"TalkAction.h"
 	"Character.h"
 
 1397616328 source:/home/naheisey/Documents/projects/games/Mystery/game/FxSprite.cpp
@@ -16559,7 +16560,7 @@
 	<boost/property_tree/xml_parser.hpp>
 	<boost/property_tree/info_parser.hpp>
 
-1425716154 source:/home/naheisey/Documents/projects/games/Mystery/game/Player.cpp
+1425719217 source:/home/naheisey/Documents/projects/games/Mystery/game/Player.cpp
 	"Player.h"
 	"bae/BasicAudioEngine.h"
 	"tpe/tpe.h"
@@ -16851,7 +16852,7 @@
 	"SDL.h"
 	"mge/defs.h"
 
-1425251743 /home/naheisey/Documents/projects/games/Mystery//game/game_defs.h
+1425718384 /home/naheisey/Documents/projects/games/Mystery//game/game_defs.h
 	"mge/defs.h"
 	"mge/Event.h"
 
@@ -17125,7 +17126,7 @@
 	"mge/PixelMap.h"
 	"tpe/CollisionModel.h"
 
-1425717054 /home/naheisey/Documents/projects/games/Mystery//game/character/Character.h
+1425718479 /home/naheisey/Documents/projects/games/Mystery//game/character/Character.h
 	"mge/GameObject.h"
 	"game/game_defs.h"
 	"tpe/tpe.h"
@@ -18307,4 +18308,11 @@
 	"mge/defs.h"
 	"d3re/d3re.h"
 	<string>
+
+1425718893 source:/home/naheisey/Documents/projects/games/Mystery/game/character/TalkAction.cpp
+	"TalkAction.h"
+	"game/gui/SpeechBubble.h"
+
+1425718056 /home/naheisey/Documents/projects/games/Mystery/game/character/TalkAction.h
+	"Action.h"
 

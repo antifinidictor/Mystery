@@ -1,5 +1,7 @@
 #include "WanderAction.h"
+#include "TalkAction.h"
 #include "Character.h"
+
 #define WAIT_LENGTH 100
 WanderAction::WanderAction(Character *pActor)
   : Action(pActor)
@@ -59,6 +61,12 @@ WanderAction::callBack(uint cID, void *data, uint uiEventId) {
 }
 void
 WanderAction::handleCollision(HandleCollisionData *data) {
+    if(data->obj->getType() == TYPE_PLAYER) {
+        //Talk to them
+        m_pActor->pushAction(new TalkAction(m_pActor));
+        return;
+    }
+
     //You can collide and bounce with a wall in any of the three local cardinal directions
     uint uiMyDirection = m_pActor->getDirection();
     uint uiMyLeft = (uiMyDirection + 1) % NUM_CARDINAL_DIRECTIONS;

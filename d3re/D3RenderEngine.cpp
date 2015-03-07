@@ -169,6 +169,21 @@ rayIntersects(const Point &ptRay, const Point &ptRayStart, const Box &bxBounds) 
 
 void
 D3RenderEngine::render() {
+
+#ifdef LIGHTING_TEST
+    //Lighting test
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat mat_shininess[] = { 50.0 };
+    GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
+
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+#endif
+
     //glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Update look direction
@@ -243,6 +258,10 @@ D3RenderEngine::render() {
     }
     m_lsCirclesToDraw.clear();
     SDL_UnlockMutex(m_mxDrawPrimitive);
+
+#ifdef LIGHTING_TEST
+    glDisable(GL_LIGHTING);
+#endif
 
     prepHud();
     glDisable(GL_DEPTH_TEST);   //Disable depth test

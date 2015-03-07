@@ -39,6 +39,7 @@ public:
     virtual uint getType()                      { return TYPE_GENERAL; }
     virtual const std::string getClass()        { return getClassName(); }
     static const std::string getClassName()     { return "Character"; }
+    virtual uint getSpeechBubbleId()            { return m_uiSpeechBubbleId; }
 
     //Render model
     virtual RenderModel  *getRenderModel()      { return m_pRenderModel; }
@@ -70,6 +71,7 @@ private:
     int m_iAnimTimer;
     uint m_uiAnimState;
     int m_iDirection;
+    bool m_bPopAction;
 
     uint m_uiSpeechBubbleId;
 };
